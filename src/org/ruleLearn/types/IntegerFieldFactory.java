@@ -21,7 +21,7 @@ import org.ruleLearn.data.AttributePreferenceType;
 /**
  * Factory for {@link IntegerField}, employing abstract factory design pattern.
  * 
- * @author Jurek Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
+ * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
  * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
  */
 public class IntegerFieldFactory {
@@ -84,7 +84,7 @@ public class IntegerFieldFactory {
 		 * @param otherField other field that this field is being compared to
 		 * @return see {@Link FieldComparisonResult}
 		 */
-		protected FieldComparisonResult isEqualTo(Field otherField) {
+		public FieldComparisonResult isEqualTo(Field otherField) {
 			try {
 				return (this.value == ((NoneIntegerField)otherField).value ? 
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
@@ -102,7 +102,7 @@ public class IntegerFieldFactory {
 		public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
 			return this.isEqualTo(otherField);
 		}
-		
+
 	}
 	
 	/**
@@ -126,7 +126,6 @@ public class IntegerFieldFactory {
 			}
 		}
 
-
 		@Override
 		public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
 			try {
@@ -136,6 +135,22 @@ public class IntegerFieldFactory {
 			catch (ClassCastException exception) {
 				return FieldComparisonResult.UNCOMPARABLE;
 			}
+		}
+
+		@Override
+		public FieldComparisonResult isEqualTo(Field otherField) {
+			try {
+				return (this.value == ((GainIntegerField)otherField).value ? 
+						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+			} catch (ClassCastException exception) {
+				return FieldComparisonResult.UNCOMPARABLE;
+			}
+		}
+
+		@Override
+		public FieldComparisonResult isDifferentThan(Field otherField) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 	
@@ -168,6 +183,16 @@ public class IntegerFieldFactory {
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
 			}
 			catch (ClassCastException exception) {
+				return FieldComparisonResult.UNCOMPARABLE;
+			}
+		}
+		
+		@Override
+		public FieldComparisonResult isEqualTo(Field otherField) {
+			try {
+				return (this.value == ((CostIntegerField)otherField).value ? 
+						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+			} catch (ClassCastException exception) {
 				return FieldComparisonResult.UNCOMPARABLE;
 			}
 		}

@@ -24,7 +24,7 @@ package org.ruleLearn.data;
  */
 public enum AttributePreferenceType {
 	/**
-	 * Type of an attribute without preferences
+	 * Type of an attribute without preferences (regular attribute)
 	 */
 	NONE,
 	/**

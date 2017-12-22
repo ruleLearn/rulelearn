@@ -39,5 +39,20 @@ public abstract class Field {
 	 * @return <code>true</code> if this field is at most as good as the other field 
 	 */
 	abstract public FieldComparisonResult isAtMostAsGoodAs(Field otherField);
-
+	
+	/**
+	 * Tells if this field is equal to the given field (has the same value).
+	 * 
+	 * @param otherField other field that this field is being compared to
+	 * @return <code>true</code> if this field is equal to the other field 
+	 */
+	abstract public FieldComparisonResult isEqualTo(Field otherField);
+	
+	/**
+	 * Tells if this field is not equal to the given field (has different value).
+	 * 
+	 * @param otherField other field that this field is being compared to
+	 * @return <code>true</code> if this field is not equal to the other field 
+	 */
+	abstract public FieldComparisonResult isDifferentThan(Field otherField);
 }

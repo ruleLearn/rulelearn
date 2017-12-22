@@ -34,7 +34,22 @@ public abstract class IntegerField extends SimpleField {
 	 */
 	protected IntegerField() {}
 	
+	/**
+	 * Constructor setting value of this field.
+	 * 
+	 * @param value value of created field
+	 */
 	protected IntegerField(int value) {
 		this.value = value;
+	}
+	
+	@Override
+	public FieldComparisonResult isDifferentThan(Field otherField) {
+		switch (this.isEqualTo(otherField)) {
+			case TRUE: return FieldComparisonResult.FALSE;
+			case FALSE: return FieldComparisonResult.TRUE;
+			case UNCOMPARABLE: return FieldComparisonResult.UNCOMPARABLE;
+			default: return FieldComparisonResult.UNCOMPARABLE;
+		}
 	}
 }

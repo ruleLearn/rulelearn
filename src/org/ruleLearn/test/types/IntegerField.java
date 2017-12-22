@@ -49,7 +49,7 @@ public class IntegerField extends SimpleField {
 	 * @param otherField other field that this field is being compared to
 	 * @return see {@Link FieldComparisonResult}
 	 */
-	protected FieldComparisonResult isEqualTo(Field otherField) {
+	public FieldComparisonResult isEqualTo(Field otherField) {
 		try {
 			return (this.value == ((IntegerField)otherField).value ? 
 					FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
@@ -66,6 +66,16 @@ public class IntegerField extends SimpleField {
 	@Override
 	public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
 		return this.isEqualTo(otherField);
+	}
+
+	@Override
+	public FieldComparisonResult isDifferentThan(Field otherField) {
+		switch (this.isEqualTo(otherField)) {
+			case TRUE: return FieldComparisonResult.FALSE;
+			case FALSE: return FieldComparisonResult.TRUE;
+			case UNCOMPARABLE: return FieldComparisonResult.UNCOMPARABLE;
+			default: return FieldComparisonResult.UNCOMPARABLE;
+		}
 	}
 
 }

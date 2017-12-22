@@ -41,7 +41,7 @@ public class FieldTest {
 	 */
 	public static void main(String[] args) {
 		
-		int n = 10000;
+		int n = 100000;
 		long bef, aft;
 		DecimalFormat df = new DecimalFormat("0.###");
 		String line = "";

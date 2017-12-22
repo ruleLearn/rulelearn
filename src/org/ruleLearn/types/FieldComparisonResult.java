@@ -24,15 +24,15 @@ package org.ruleLearn.types;
  */
 public enum FieldComparisonResult {
 	/**
-	 * Relation in question is verified between two fields.
+	 * Relation in question between two fields is verified positively.
 	 */
 	TRUE,
 	/**
-	 * Relation in question is not verified between two fields.
+	 * Relation in question between two fields is verified negatively.
 	 */
 	FALSE,
 	/**
-	 * Two fields are uncomparable (i.e., not-comparable).
+	 * Two fields are uncomparable (i.e., not-comparable). Relation in question between two fields can be neither verified as true nor as false.
 	 */
 	UNCOMPARABLE
 }
