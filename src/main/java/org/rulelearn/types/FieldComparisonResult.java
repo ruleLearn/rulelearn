@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ruleLearn.data;
+
+package org.rulelearn.types;
 
 /**
- * Preference type of an attribute in information table.
+ * Result of comparing two fields preference type of the attribute which values are represented by fields are taken into account. 
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public enum AttributePreferenceType {
+public enum FieldComparisonResult {
 	/**
-	 * Type of an attribute without preferences (regular attribute)
+	 * Relation in question between two fields is verified positively.
 	 */
-	NONE,
+	TRUE,
 	/**
-	 * Type of cost-type criterion
+	 * Relation in question between two fields is verified negatively.
 	 */
-	COST,
+	FALSE,
 	/**
-	 * Type of gain-type criterion
+	 * Two fields are uncomparable (i.e., not-comparable). Relation in question between two fields can be neither verified positively nor negatively.
 	 */
-	GAIN
+	UNCOMPARABLE
 }

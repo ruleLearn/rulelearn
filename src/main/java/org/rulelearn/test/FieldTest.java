@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.ruleLearn.test;
+package org.rulelearn.test;
 
 import java.text.DecimalFormat;
 
-import org.ruleLearn.data.AttributePreferenceType;
-import org.ruleLearn.test.types.CostIntegerField;
-import org.ruleLearn.test.types.GainIntegerField;
-import org.ruleLearn.test.types.IntegerField;
-import org.ruleLearn.types.Field;
-import org.ruleLearn.types.IntegerFieldFactory;
+import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.test.types.CostIntegerField;
+import org.rulelearn.test.types.GainIntegerField;
+import org.rulelearn.test.types.IntegerField;
+import org.rulelearn.types.Field;
+import org.rulelearn.types.IntegerFieldFactory;
 
 /**
  * FieldTest

@@ -1,8 +1,8 @@
-package org.ruleLearn.test;
+package org.rulelearn.test;
 
-import org.ruleLearn.data.AttributePreferenceType;
-import org.ruleLearn.types.Field;
-import org.ruleLearn.types.IntegerFieldFactory;
+import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.types.Field;
+import org.rulelearn.types.IntegerFieldFactory;
 
 /**
  * Tests for ruleLearn preview.

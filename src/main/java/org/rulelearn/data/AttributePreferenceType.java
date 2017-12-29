@@ -13,43 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.ruleLearn.types;
+package org.rulelearn.data;
 
 /**
- * Field representing integer number value.
- * Should be instantiated using {@link IntegerFieldFactory#create(int, AttributePreferenceType)}.
+ * Preference type of an attribute in information table.
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class IntegerField extends SimpleField {
+public enum AttributePreferenceType {
 	/**
-	 * Value of this field.
+	 * Type of an attribute without preferences (regular attribute)
 	 */
-	protected int value = 0;
-	
+	NONE,
 	/**
-	 * Constructor preventing object creation.
+	 * Type of cost-type criterion
 	 */
-	protected IntegerField() {}
-	
+	COST,
 	/**
-	 * Constructor setting value of this field.
-	 * 
-	 * @param value value of created field
+	 * Type of gain-type criterion
 	 */
-	protected IntegerField(int value) {
-		this.value = value;
-	}
-	
-	@Override
-	public FieldComparisonResult isDifferentThan(Field otherField) {
-		switch (this.isEqualTo(otherField)) {
-			case TRUE: return FieldComparisonResult.FALSE;
-			case FALSE: return FieldComparisonResult.TRUE;
-			case UNCOMPARABLE: return FieldComparisonResult.UNCOMPARABLE;
-			default: return FieldComparisonResult.UNCOMPARABLE;
-		}
-	}
+	GAIN
 }

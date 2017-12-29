@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ruleLearn.types;
+package org.rulelearn.types;
 
 /**
  * EnumerationField

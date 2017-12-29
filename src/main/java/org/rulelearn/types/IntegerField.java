@@ -14,37 +14,35 @@
  * limitations under the License.
  */
 
-package org.ruleLearn.types;
+package org.rulelearn.types;
 
 /**
- * Field representing a real number value.
- * Should be instantiated using {@link ReakFieldFactory#create(int, AttributePreferenceType)}.
- *
- * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
- * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
- *
+ * Field representing integer number value.
+ * Should be instantiated using {@link IntegerFieldFactory#create(int, AttributePreferenceType)}.
+ * 
+ * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+ * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class RealField extends SimpleField {
-
+public abstract class IntegerField extends SimpleField {
 	/**
 	 * Value of this field.
 	 */
-	protected double value = 0;
+	protected int value = 0;
 	
 	/**
 	 * Constructor preventing object creation.
 	 */
-	protected RealField() {}
+	protected IntegerField() {}
 	
 	/**
 	 * Constructor setting value of this field.
 	 * 
 	 * @param value value of created field
 	 */
-	protected RealField(double value) {
+	protected IntegerField(int value) {
 		this.value = value;
 	}
-
+	
 	@Override
 	public FieldComparisonResult isDifferentThan(Field otherField) {
 		switch (this.isEqualTo(otherField)) {

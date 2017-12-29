@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ruleLearn.types;
+package org.rulelearn.types;
 
 /**
  * Top level class for all simple fields (i.e., representing simple values) in an information table.

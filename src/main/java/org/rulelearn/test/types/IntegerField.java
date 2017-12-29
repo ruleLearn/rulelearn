@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.ruleLearn.test.types;
+package org.rulelearn.test.types;
 
-import org.ruleLearn.types.Field;
-import org.ruleLearn.types.FieldComparisonResult;
-import org.ruleLearn.types.SimpleField;
+import org.rulelearn.types.Field;
+import org.rulelearn.types.FieldComparisonResult;
+import org.rulelearn.types.SimpleField;
 
 /**
  * IntegerField

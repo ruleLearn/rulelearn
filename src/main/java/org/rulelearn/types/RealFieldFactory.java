@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.ruleLearn.types;
+package org.rulelearn.types;
 
-import org.ruleLearn.data.AttributePreferenceType;
+import org.rulelearn.data.AttributePreferenceType;
 
 /**
  * Factory for {@link RealField}, employing abstract factory design pattern.
