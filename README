@@ -1,0 +1,16 @@
+ruleLearn - open source library for learning rule models from decision examples and applying these models to classify or rank new examples
+
+Configuration of text files:
+-----
+UTF-8 encoding
+LF line endings
+
+Configuration of Gradle build:
+-----
+Developers should either extend/supply 'gradle.properties' file (in the main directory of the project
+or in the USER_HOME/.gradle directory), specifying inside this local path to the installed Java JDK,
+e.g., on a Windows machine:
+
+org.gradle.java.home=C:\\Program Files\\Java\\jdk-9.0.1
+
+or set JAVA_HOME environmental variable to local path to the installed Java JDK.

@@ -28,8 +28,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 /**
  * ElementSet
  *
- * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
- * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
+ * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+ * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
 public class ElementSet {
