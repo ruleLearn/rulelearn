@@ -23,8 +23,8 @@ import org.ruleLearn.types.SimpleField;
 /**
  * IntegerField
  *
- * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
- * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
+ * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+ * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
 public class IntegerField extends SimpleField {
@@ -47,7 +47,7 @@ public class IntegerField extends SimpleField {
 	 * Tells if this field is equal to the given field
 	 * 
 	 * @param otherField other field that this field is being compared to
-	 * @return see {@Link FieldComparisonResult}
+	 * @return see {@link FieldComparisonResult}
 	 */
 	public FieldComparisonResult isEqualTo(Field otherField) {
 		try {

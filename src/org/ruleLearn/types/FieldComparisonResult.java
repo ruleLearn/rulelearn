@@ -19,8 +19,8 @@ package org.ruleLearn.types;
 /**
  * Result of comparing two fields preference type of the attribute which values are represented by fields are taken into account. 
  * 
- * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
- * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
+ * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+ * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public enum FieldComparisonResult {
 	/**
@@ -32,7 +32,7 @@ public enum FieldComparisonResult {
 	 */
 	FALSE,
 	/**
-	 * Two fields are uncomparable (i.e., not-comparable). Relation in question between two fields can be neither verified as true nor as false.
+	 * Two fields are uncomparable (i.e., not-comparable). Relation in question between two fields can be neither verified positively nor negatively.
 	 */
 	UNCOMPARABLE
 }

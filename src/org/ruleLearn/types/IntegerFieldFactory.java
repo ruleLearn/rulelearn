@@ -19,10 +19,10 @@ package org.ruleLearn.types;
 import org.ruleLearn.data.AttributePreferenceType;
 
 /**
- * Factory for {@link IntegerField}, employing abstract factory design pattern.
+ * Factory for {@link IntegerField}, employing abstract factory and singleton design patterns.
  * 
- * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
- * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
+ * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+ * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class IntegerFieldFactory {
 	
@@ -101,8 +101,8 @@ public class IntegerFieldFactory {
 	/**
 	 * Field representing an integer number value, for an attribute without preference type.
 	 * 
-	 * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
-	 * @author Marcin Szeląg
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	private class NoneIntegerField extends IntegerField {
 		public NoneIntegerField(int value) {
@@ -136,10 +136,10 @@ public class IntegerFieldFactory {
 	}
 	
 	/**
-	 * Field representing an integer number value,, for an attribute with gain-type preference.
+	 * Field representing an integer number value, for an attribute with gain-type preference.
 	 * 
-	 * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
-	 * @author Marcin Szeląg
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	private class GainIntegerField extends IntegerField {
 		public GainIntegerField(int value) {
@@ -188,8 +188,8 @@ public class IntegerFieldFactory {
 	/**
 	 * Field representing an integer number value, for an attribute with cost-type preference.
 	 * 
-	 * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
-	 * @author Marcin Szeląg
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	private class CostIntegerField extends IntegerField {
 		public CostIntegerField(int value) {
