@@ -104,7 +104,7 @@ public class ElementSet {
 	}
 	
 	//TODO comparator?
-	public FieldComparisonResult isEqualTo(ElementSet otherSet) {
+	public TernaryLogicValue isEqualTo(ElementSet otherSet) {
 		if (otherSet != null) {
 			String [] otherElements = otherSet.getElements();
 			if (elements.length == otherElements.length) {
@@ -112,19 +112,19 @@ public class ElementSet {
 				while ((elements[i] != null) && (otherElements[i] != null) && (elements[i].compareTo(otherElements[i]) == 0))
 					i++;
 				if (i < elements.length-1)
-					return FieldComparisonResult.FALSE;
+					return TernaryLogicValue.FALSE;
 				else
-					return FieldComparisonResult.TRUE;
+					return TernaryLogicValue.TRUE;
 			}
 			else {
-				return FieldComparisonResult.FALSE;
+				return TernaryLogicValue.FALSE;
 			}
 		}
-		return FieldComparisonResult.UNCOMPARABLE;
+		return TernaryLogicValue.UNCOMPARABLE;
 	}
 	
 	//TODO approximate comparator (hash-based)?
-	public FieldComparisonResult hasEqualHash(ElementSet otherSet) throws IOException, NoSuchAlgorithmException {
+	public TernaryLogicValue hasEqualHash(ElementSet otherSet) throws IOException, NoSuchAlgorithmException {
 		if (otherSet != null) {
 			String [] otherElements = otherSet.getElements();
 			if (elements.length == otherElements.length) {
@@ -144,14 +144,14 @@ public class ElementSet {
 				byte [] doer = m.digest();
 				// compare hash codes
 				if (MessageDigest.isEqual(der, doer))
-					return FieldComparisonResult.TRUE;
+					return TernaryLogicValue.TRUE;
 				else
-					return FieldComparisonResult.FALSE;
+					return TernaryLogicValue.FALSE;
 			}
 		    else {
-				return FieldComparisonResult.FALSE;
+				return TernaryLogicValue.FALSE;
 			}
 		}
-		return FieldComparisonResult.UNCOMPARABLE;
+		return TernaryLogicValue.UNCOMPARABLE;
 	}
 }

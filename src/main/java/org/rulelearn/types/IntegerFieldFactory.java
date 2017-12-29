@@ -113,24 +113,24 @@ public class IntegerFieldFactory {
 		 * Tells if this field is equal to the given field
 		 * 
 		 * @param otherField other field that this field is being compared to
-		 * @return see {@Link FieldComparisonResult}
+		 * @return see {@Link TernaryLogicValue}
 		 */
-		public FieldComparisonResult isEqualTo(Field otherField) {
+		public TernaryLogicValue isEqualTo(Field otherField) {
 			try {
 				return (this.value == ((NoneIntegerField)otherField).value ? 
-						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			} catch (ClassCastException exception) {
-				return FieldComparisonResult.UNCOMPARABLE;
+				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
 		
 		@Override
-		public FieldComparisonResult isAtLeastAsGoodAs(Field otherField) {
+		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
 			return this.isEqualTo(otherField);
 		}
 
 		@Override
-		public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
+		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			return this.isEqualTo(otherField);
 		}
 	}
@@ -147,39 +147,39 @@ public class IntegerFieldFactory {
 		}
 		
 		@Override
-		public FieldComparisonResult isAtLeastAsGoodAs(Field otherField) {
+		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
 			try {
 				return (this.value >= ((GainIntegerField)otherField).value ? 
-						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
-				return FieldComparisonResult.UNCOMPARABLE;
+				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
 
 		@Override
-		public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
+		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			try {
 				return (this.value <= ((GainIntegerField)otherField).value ? 
-						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
-				return FieldComparisonResult.UNCOMPARABLE;
+				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
 
 		@Override
-		public FieldComparisonResult isEqualTo(Field otherField) {
+		public TernaryLogicValue isEqualTo(Field otherField) {
 			try {
 				return (this.value == ((GainIntegerField)otherField).value ? 
-						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			} catch (ClassCastException exception) {
-				return FieldComparisonResult.UNCOMPARABLE;
+				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
 
 		@Override
-		public FieldComparisonResult isDifferentThan(Field otherField) {
+		public TernaryLogicValue isDifferentThan(Field otherField) {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -197,35 +197,35 @@ public class IntegerFieldFactory {
 		}
 		
 		@Override
-		public FieldComparisonResult isAtLeastAsGoodAs(Field otherField) {
+		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
 			try {
 				return (this.value <= ((CostIntegerField)otherField).value ?
-						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
-				return FieldComparisonResult.UNCOMPARABLE;
+				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
 
 
 		@Override
-		public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
+		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			try {
 				return (this.value >= ((CostIntegerField)otherField).value ?
-						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
-				return FieldComparisonResult.UNCOMPARABLE;
+				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
 		
 		@Override
-		public FieldComparisonResult isEqualTo(Field otherField) {
+		public TernaryLogicValue isEqualTo(Field otherField) {
 			try {
 				return (this.value == ((CostIntegerField)otherField).value ? 
-						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			} catch (ClassCastException exception) {
-				return FieldComparisonResult.UNCOMPARABLE;
+				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
 	}

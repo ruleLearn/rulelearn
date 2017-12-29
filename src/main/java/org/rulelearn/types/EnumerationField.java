@@ -51,16 +51,16 @@ public abstract class EnumerationField extends SimpleField {
 	}
 	
 	@Override
-	public FieldComparisonResult isDifferentThan(Field otherField) {
+	public TernaryLogicValue isDifferentThan(Field otherField) {
 		switch (this.isEqualTo(otherField)) {
-			case TRUE: return FieldComparisonResult.FALSE;
-			case FALSE: return FieldComparisonResult.TRUE;
-			case UNCOMPARABLE: return FieldComparisonResult.UNCOMPARABLE;
-			default: return FieldComparisonResult.UNCOMPARABLE;
+			case TRUE: return TernaryLogicValue.FALSE;
+			case FALSE: return TernaryLogicValue.TRUE;
+			case UNCOMPARABLE: return TernaryLogicValue.UNCOMPARABLE;
+			default: return TernaryLogicValue.UNCOMPARABLE;
 		}
 	}
 	
-	public FieldComparisonResult hasEqualElementSet(EnumerationField otherField) {
+	public TernaryLogicValue hasEqualElementSet(EnumerationField otherField) {
 		return set.isEqualTo(otherField.getElementSet());
 	}
 

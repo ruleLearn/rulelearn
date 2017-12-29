@@ -38,9 +38,9 @@ public class IntegerFieldTest {
 		IntegerField iField1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
 		IntegerField iField1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
 		
-		assertEquals(iField1a.isAtLeastAsGoodAs(iField0), FieldComparisonResult.TRUE);
-		assertEquals(iField1a.isAtLeastAsGoodAs(iField1b), FieldComparisonResult.TRUE);
-		assertEquals(iField0.isAtLeastAsGoodAs(iField1a), FieldComparisonResult.FALSE);
+		assertEquals(iField1a.isAtLeastAsGoodAs(iField0), TernaryLogicValue.TRUE);
+		assertEquals(iField1a.isAtLeastAsGoodAs(iField1b), TernaryLogicValue.TRUE);
+		assertEquals(iField0.isAtLeastAsGoodAs(iField1a), TernaryLogicValue.FALSE);
 	}
 	
 	/**
@@ -52,9 +52,9 @@ public class IntegerFieldTest {
 		IntegerField iField1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
 		IntegerField iField1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
 		
-		assertEquals(iField1a.isAtLeastAsGoodAs(iField0), FieldComparisonResult.FALSE);
-		assertEquals(iField1a.isAtLeastAsGoodAs(iField1b), FieldComparisonResult.TRUE);
-		assertEquals(iField0.isAtLeastAsGoodAs(iField1a), FieldComparisonResult.TRUE);
+		assertEquals(iField1a.isAtLeastAsGoodAs(iField0), TernaryLogicValue.FALSE);
+		assertEquals(iField1a.isAtLeastAsGoodAs(iField1b), TernaryLogicValue.TRUE);
+		assertEquals(iField0.isAtLeastAsGoodAs(iField1a), TernaryLogicValue.TRUE);
 	}
 	
 	
@@ -67,9 +67,9 @@ public class IntegerFieldTest {
 		IntegerField iField1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
 		IntegerField iField1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
 		
-		assertEquals(iField0.isAtMostAsGoodAs(iField1a), FieldComparisonResult.TRUE);
-		assertEquals(iField1a.isAtMostAsGoodAs(iField1b), FieldComparisonResult.TRUE);
-		assertEquals(iField1a.isAtMostAsGoodAs(iField0), FieldComparisonResult.FALSE);
+		assertEquals(iField0.isAtMostAsGoodAs(iField1a), TernaryLogicValue.TRUE);
+		assertEquals(iField1a.isAtMostAsGoodAs(iField1b), TernaryLogicValue.TRUE);
+		assertEquals(iField1a.isAtMostAsGoodAs(iField0), TernaryLogicValue.FALSE);
 	}
 	
 	/**
@@ -81,9 +81,9 @@ public class IntegerFieldTest {
 		IntegerField iField1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
 		IntegerField iField1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
 		
-		assertEquals(iField0.isAtMostAsGoodAs(iField1a), FieldComparisonResult.FALSE);
-		assertEquals(iField1a.isAtMostAsGoodAs(iField1b), FieldComparisonResult.TRUE);
-		assertEquals(iField1a.isAtMostAsGoodAs(iField0), FieldComparisonResult.TRUE);
+		assertEquals(iField0.isAtMostAsGoodAs(iField1a), TernaryLogicValue.FALSE);
+		assertEquals(iField1a.isAtMostAsGoodAs(iField1b), TernaryLogicValue.TRUE);
+		assertEquals(iField1a.isAtMostAsGoodAs(iField0), TernaryLogicValue.TRUE);
 	}
 	
 	/**
@@ -95,9 +95,9 @@ public class IntegerFieldTest {
 		IntegerField iField1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
 		IntegerField iField1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
 		
-		assertEquals(iField0.isEqualTo(iField1a), FieldComparisonResult.FALSE);
-		assertEquals(iField1a.isEqualTo(iField1b), FieldComparisonResult.TRUE);
-		assertEquals(iField1a.isEqualTo(iField0), FieldComparisonResult.FALSE);
+		assertEquals(iField0.isEqualTo(iField1a), TernaryLogicValue.FALSE);
+		assertEquals(iField1a.isEqualTo(iField1b), TernaryLogicValue.TRUE);
+		assertEquals(iField1a.isEqualTo(iField0), TernaryLogicValue.FALSE);
 	}
 	
 	/**
@@ -109,9 +109,9 @@ public class IntegerFieldTest {
 		IntegerField iField1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
 		IntegerField iField1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
 		
-		assertEquals(iField0.isDifferentThan(iField1a), FieldComparisonResult.TRUE);
-		assertEquals(iField1a.isDifferentThan(iField1b), FieldComparisonResult.FALSE);
-		assertEquals(iField1a.isDifferentThan(iField0), FieldComparisonResult.TRUE);
+		assertEquals(iField0.isDifferentThan(iField1a), TernaryLogicValue.TRUE);
+		assertEquals(iField1a.isDifferentThan(iField1b), TernaryLogicValue.FALSE);
+		assertEquals(iField1a.isDifferentThan(iField0), TernaryLogicValue.TRUE);
 	}	
 	
 }

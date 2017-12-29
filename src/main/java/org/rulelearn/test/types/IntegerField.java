@@ -17,7 +17,7 @@
 package org.rulelearn.test.types;
 
 import org.rulelearn.types.Field;
-import org.rulelearn.types.FieldComparisonResult;
+import org.rulelearn.types.TernaryLogicValue;
 import org.rulelearn.types.SimpleField;
 
 /**
@@ -47,34 +47,34 @@ public class IntegerField extends SimpleField {
 	 * Tells if this field is equal to the given field
 	 * 
 	 * @param otherField other field that this field is being compared to
-	 * @return see {@link FieldComparisonResult}
+	 * @return see {@link TernaryLogicValue}
 	 */
-	public FieldComparisonResult isEqualTo(Field otherField) {
+	public TernaryLogicValue isEqualTo(Field otherField) {
 		try {
 			return (this.value == ((IntegerField)otherField).value ? 
-					FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+					TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 		} catch (ClassCastException exception) {
-			return FieldComparisonResult.UNCOMPARABLE;
+			return TernaryLogicValue.UNCOMPARABLE;
 		}
 	}
 	
 	@Override
-	public FieldComparisonResult isAtLeastAsGoodAs(Field otherField) {
+	public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
 		return this.isEqualTo(otherField);
 	}
 
 	@Override
-	public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
+	public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 		return this.isEqualTo(otherField);
 	}
 
 	@Override
-	public FieldComparisonResult isDifferentThan(Field otherField) {
+	public TernaryLogicValue isDifferentThan(Field otherField) {
 		switch (this.isEqualTo(otherField)) {
-			case TRUE: return FieldComparisonResult.FALSE;
-			case FALSE: return FieldComparisonResult.TRUE;
-			case UNCOMPARABLE: return FieldComparisonResult.UNCOMPARABLE;
-			default: return FieldComparisonResult.UNCOMPARABLE;
+			case TRUE: return TernaryLogicValue.FALSE;
+			case FALSE: return TernaryLogicValue.TRUE;
+			case UNCOMPARABLE: return TernaryLogicValue.UNCOMPARABLE;
+			default: return TernaryLogicValue.UNCOMPARABLE;
 		}
 	}
 

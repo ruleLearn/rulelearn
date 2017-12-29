@@ -46,12 +46,12 @@ public abstract class RealField extends SimpleField {
 	}
 
 	@Override
-	public FieldComparisonResult isDifferentThan(Field otherField) {
+	public TernaryLogicValue isDifferentThan(Field otherField) {
 		switch (this.isEqualTo(otherField)) {
-			case TRUE: return FieldComparisonResult.FALSE;
-			case FALSE: return FieldComparisonResult.TRUE;
-			case UNCOMPARABLE: return FieldComparisonResult.UNCOMPARABLE;
-			default: return FieldComparisonResult.UNCOMPARABLE;
+			case TRUE: return TernaryLogicValue.FALSE;
+			case FALSE: return TernaryLogicValue.TRUE;
+			case UNCOMPARABLE: return TernaryLogicValue.UNCOMPARABLE;
+			default: return TernaryLogicValue.UNCOMPARABLE;
 		}
 	}
 }

@@ -17,7 +17,7 @@
 package org.rulelearn.test.types;
 
 import org.rulelearn.types.Field;
-import org.rulelearn.types.FieldComparisonResult;
+import org.rulelearn.types.TernaryLogicValue;
 
 /**
  * CostIntegerField
@@ -32,25 +32,25 @@ public class CostIntegerField extends IntegerField {
 	}
 	
 	@Override
-	public FieldComparisonResult isAtLeastAsGoodAs(Field otherField) {
+	public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
 		try {
 			return (this.value <= ((CostIntegerField)otherField).value ?
-					FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+					TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 		}
 		catch (ClassCastException exception) {
-			return FieldComparisonResult.UNCOMPARABLE;
+			return TernaryLogicValue.UNCOMPARABLE;
 		}
 	}
 
 
 	@Override
-	public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
+	public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 		try {
 			return (this.value >= ((CostIntegerField)otherField).value ?
-					FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+					TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 		}
 		catch (ClassCastException exception) {
-			return FieldComparisonResult.UNCOMPARABLE;
+			return TernaryLogicValue.UNCOMPARABLE;
 		}
 	}
 }

@@ -116,14 +116,14 @@ public class EnumerationFieldFactory {
 		 * This method does not compare element sets. If necessary element sets should be compared by
 		 * 
 		 * @param otherField other field that this field is being compared to
-		 * @return see {@Link FieldComparisonResult}
+		 * @return see {@link TernaryLogicValue}
 		 */
-		public FieldComparisonResult isEqualTo(Field otherField) {
+		public TernaryLogicValue isEqualTo(Field otherField) {
 			try {
 				return (this.getIndex() == ((EnumerationField)otherField).getIndex() ? 
-						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			} catch (ClassCastException exception) {
-				return FieldComparisonResult.UNCOMPARABLE;
+				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
 		
@@ -131,10 +131,10 @@ public class EnumerationFieldFactory {
 		 * Tells if this field is at least as good as the given field.
 		 * 
 		 * @param otherField other field that this field is being compared to
-		 * @return see {@Link FieldComparisonResult} 
+		 * @return see {@link TernaryLogicValue} 
 		 */
 		@Override
-		public FieldComparisonResult isAtLeastAsGoodAs(Field otherField) {
+		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
 			return this.isEqualTo(otherField);
 		}
 
@@ -142,10 +142,10 @@ public class EnumerationFieldFactory {
 		 * Tells if this field is at most as good as the given field.
 		 * 
 		 * @param otherField other field that this field is being compared to
-		 * @return see {@Link FieldComparisonResult} 
+		 * @return see {@link TernaryLogicValue} 
 		 */
 		@Override
-		public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
+		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			return this.isEqualTo(otherField);
 		}
 	}
@@ -165,16 +165,16 @@ public class EnumerationFieldFactory {
 		 * Tells if this field is at least as good as the given field.
 		 * 
 		 * @param otherField other field that this field is being compared to
-		 * @return see {@Link FieldComparisonResult} 
+		 * @return see {@link TernaryLogicValue} 
 		 */
 		@Override
-		public FieldComparisonResult isAtLeastAsGoodAs(Field otherField) {
+		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
 			try {
 				return (this.getIndex() >= ((GainEnumerationField)otherField).getIndex() ?
-						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
-				return FieldComparisonResult.UNCOMPARABLE;
+				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
 
@@ -182,31 +182,31 @@ public class EnumerationFieldFactory {
 		 * Tells if this field is at most as good as the given field.
 		 * 
 		 * @param otherField other field that this field is being compared to
-		 * @return see {@Link FieldComparisonResult} 
+		 * @return see {@link TernaryLogicValue} 
 		 */
 		@Override
-		public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
+		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			try {
 				return (this.getIndex() <= ((GainEnumerationField)otherField).getIndex() ?
-						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
-				return FieldComparisonResult.UNCOMPARABLE;
+				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
 
 		@Override
-		public FieldComparisonResult isEqualTo(Field otherField) {
+		public TernaryLogicValue isEqualTo(Field otherField) {
 			try {
 				return (this.getIndex() == ((EnumerationField)otherField).getIndex() ? 
-						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			} catch (ClassCastException exception) {
-				return FieldComparisonResult.UNCOMPARABLE;
+				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
 
 		@Override
-		public FieldComparisonResult isDifferentThan(Field otherField) {
+		public TernaryLogicValue isDifferentThan(Field otherField) {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -227,16 +227,16 @@ public class EnumerationFieldFactory {
 		 * Tells if this field is at least as good as the given field.
 		 * 
 		 * @param otherField other field that this field is being compared to
-		 * @return see {@Link FieldComparisonResult} 
+		 * @return see {@link TernaryLogicValue} 
 		 */
 		@Override
-		public FieldComparisonResult isAtLeastAsGoodAs(Field otherField) {
+		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
 			try {
 				return (this.getIndex() <= ((CostEnumerationField)otherField).getIndex() ?
-						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
-				return FieldComparisonResult.UNCOMPARABLE;
+				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
 
@@ -244,26 +244,26 @@ public class EnumerationFieldFactory {
 		 * Tells if this field is at most as good as the given field.
 		 * 
 		 * @param otherField other field that this field is being compared to
-		 * @return see {@Link FieldComparisonResult} 
+		 * @return see {@link TernaryLogicValue} 
 		 */
 		@Override
-		public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
+		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			try {
 				return (this.getIndex() >= ((CostEnumerationField)otherField).getIndex() ?
-						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
-				return FieldComparisonResult.UNCOMPARABLE;
+				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
 		
 		@Override
-		public FieldComparisonResult isEqualTo(Field otherField) {
+		public TernaryLogicValue isEqualTo(Field otherField) {
 			try {
 				return (this.getIndex() == ((EnumerationField)otherField).getIndex() ?
-						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
+						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			} catch (ClassCastException exception) {
-				return FieldComparisonResult.UNCOMPARABLE;
+				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
 	}

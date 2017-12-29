@@ -28,9 +28,9 @@ public abstract class Field {
 	 * Tells if this field is at least as good as the given field.
 	 * 
 	 * @param otherField other field that this field is being compared to
-	 * @return see {@link FieldComparisonResult} 
+	 * @return see {@link TernaryLogicValue} 
 	 */
-	abstract public FieldComparisonResult isAtLeastAsGoodAs(Field otherField);
+	abstract public TernaryLogicValue isAtLeastAsGoodAs(Field otherField);
 	
 	/**
 	 * Tells if this field is at most as good as the given field.
@@ -38,7 +38,7 @@ public abstract class Field {
 	 * @param otherField other field that this field is being compared to
 	 * @return <code>true</code> if this field is at most as good as the other field 
 	 */
-	abstract public FieldComparisonResult isAtMostAsGoodAs(Field otherField);
+	abstract public TernaryLogicValue isAtMostAsGoodAs(Field otherField);
 	
 	/**
 	 * Tells if this field is equal to the given field (has the same value).
@@ -46,7 +46,7 @@ public abstract class Field {
 	 * @param otherField other field that this field is being compared to
 	 * @return <code>true</code> if this field is equal to the other field 
 	 */
-	abstract public FieldComparisonResult isEqualTo(Field otherField);
+	abstract public TernaryLogicValue isEqualTo(Field otherField);
 	
 	/**
 	 * Tells if this field is not equal to the given field (has different value).
@@ -54,5 +54,5 @@ public abstract class Field {
 	 * @param otherField other field that this field is being compared to
 	 * @return <code>true</code> if this field is not equal to the other field 
 	 */
-	abstract public FieldComparisonResult isDifferentThan(Field otherField);
+	abstract public TernaryLogicValue isDifferentThan(Field otherField);
 }
