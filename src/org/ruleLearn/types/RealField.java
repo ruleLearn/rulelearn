@@ -17,32 +17,34 @@
 package org.ruleLearn.types;
 
 /**
- * Field representing integer number value.
- * Should be instantiated using {@link IntegerFieldFactory#create(int, AttributePreferenceType)}.
- * 
+ * Field representing a real number value.
+ * Should be instantiated using {@link ReakFieldFactory#create(int, AttributePreferenceType)}.
+ *
  * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
  * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
+ *
  */
-public abstract class IntegerField extends SimpleField {
+public abstract class RealField extends SimpleField {
+
 	/**
 	 * Value of this field.
 	 */
-	protected int value = 0;
+	protected double value = 0;
 	
 	/**
 	 * Constructor preventing object creation.
 	 */
-	protected IntegerField() {}
+	protected RealField() {}
 	
 	/**
 	 * Constructor setting value of this field.
 	 * 
 	 * @param value value of created field
 	 */
-	protected IntegerField(int value) {
+	protected RealField(double value) {
 		this.value = value;
 	}
-	
+
 	@Override
 	public FieldComparisonResult isDifferentThan(Field otherField) {
 		switch (this.isEqualTo(otherField)) {

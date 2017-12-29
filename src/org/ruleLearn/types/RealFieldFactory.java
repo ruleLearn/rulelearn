@@ -19,26 +19,26 @@ package org.ruleLearn.types;
 import org.ruleLearn.data.AttributePreferenceType;
 
 /**
- * Factory for {@link IntegerField}, employing abstract factory design pattern.
- * 
+ * Factory for {@link RealField}, employing abstract factory design pattern.
+ *
  * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
  * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
+ *
  */
-public class IntegerFieldFactory {
-	
+public class RealFieldFactory {
 	/**
 	 * The only instance of this factory.
 	 */
-	protected static IntegerFieldFactory fieldFactory = null;
+	protected static RealFieldFactory fieldFactory = null;
 	
 	/**
 	 * Retrieves the only instance of this factory (singleton).
 	 * 
 	 * @return the only instance of this factory
 	 */
-	public static IntegerFieldFactory getInstance() {
+	public static RealFieldFactory getInstance() {
 		if (fieldFactory == null) {
-			fieldFactory = new IntegerFieldFactory();
+			fieldFactory = new RealFieldFactory();
 		}
 		return fieldFactory;
 	}
@@ -46,66 +46,66 @@ public class IntegerFieldFactory {
 	/**
 	 * Constructor preventing object creation.
 	 */
-	private IntegerFieldFactory() {}
+	private RealFieldFactory() {	}
 	
 	/**
-	 * Factory method for creating an instance of {@link IntegerField}
+	 * Factory method for creating an instance of {@link RealField}
 	 * 
 	 * @param value value of the created field
 	 * @param preferenceType preference type of the attribute that the field value refers to
 	 * 
 	 * @return created field
 	 */
-	public IntegerField create(int value, AttributePreferenceType preferenceType) {
+	public RealField create(double value, AttributePreferenceType preferenceType) {
 		switch (preferenceType) {
-			case NONE: return new NoneIntegerField(value);
-			case GAIN: return new GainIntegerField(value);
-			case COST: return new CostIntegerField(value); 
-			default: return new NoneIntegerField(value);
+			case NONE: return new NoneRealField(value);
+			case GAIN: return new GainRealField(value);
+			case COST: return new CostRealField(value);
+			default: return new NoneRealField(value);
 		}
 	}
 	
 	/**
-	 * Factory method for cloning/duplicating an instance of {@link IntegerField}
+	 * Factory method for cloning/duplicating an instance of {@link RealField}
 	 * 
 	 * @param field to be cloned
 	 * 
 	 * @return created field
 	 */
-	public IntegerField clone (NoneIntegerField field) {
-		return new NoneIntegerField(field.value);
+	public RealField clone (NoneRealField field) {
+		return new NoneRealField(field.value);
 	}
 	
 	/**
-	 * Factory method for cloning/duplicating an instance of {@link IntegerField}
+	 * Factory method for cloning/duplicating an instance of {@link RealField}
 	 * 
 	 * @param field to be cloned
 	 * 
 	 * @return created field
 	 */
-	public IntegerField clone (GainIntegerField field) {
-		return new GainIntegerField(field.value);
+	public RealField clone (GainRealField field) {
+		return new GainRealField(field.value);
 	}
 	
 	/**
-	 * Factory method for cloning/duplicating an instance of {@link IntegerField}
+	 * Factory method for cloning/duplicating an instance of {@link RealField}
 	 * 
 	 * @param field to be cloned
 	 * 
 	 * @return created field
 	 */
-	public IntegerField clone (CostIntegerField field) {
-		return new CostIntegerField(field.value);
+	public RealField clone (CostRealField field) {
+		return new CostRealField(field.value);
 	}
 	
 	/**
-	 * Field representing an integer number value, for an attribute without preference type.
+	 * Field representing a real number value, for an attribute without preference type.
 	 * 
 	 * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
 	 * @author Marcin Szeląg
 	 */
-	private class NoneIntegerField extends IntegerField {
-		public NoneIntegerField(int value) {
+	private class NoneRealField extends RealField {
+		public NoneRealField(double value) {
 			super(value);
 		}
 		
@@ -117,7 +117,7 @@ public class IntegerFieldFactory {
 		 */
 		public FieldComparisonResult isEqualTo(Field otherField) {
 			try {
-				return (this.value == ((NoneIntegerField)otherField).value ? 
+				return (this.value == ((NoneRealField)otherField).value ? 
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
 			} catch (ClassCastException exception) {
 				return FieldComparisonResult.UNCOMPARABLE;
@@ -136,20 +136,20 @@ public class IntegerFieldFactory {
 	}
 	
 	/**
-	 * Field representing an integer number value,, for an attribute with gain-type preference.
+	 * Field representing a real number value, for an attribute with gain-type preference.
 	 * 
 	 * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
 	 * @author Marcin Szeląg
 	 */
-	private class GainIntegerField extends IntegerField {
-		public GainIntegerField(int value) {
+	private class GainRealField extends RealField {
+		public GainRealField(double value) {
 			super(value);
 		}
 		
 		@Override
 		public FieldComparisonResult isAtLeastAsGoodAs(Field otherField) {
 			try {
-				return (this.value >= ((GainIntegerField)otherField).value ? 
+				return (this.value >= ((GainRealField)otherField).value ? 
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -160,7 +160,7 @@ public class IntegerFieldFactory {
 		@Override
 		public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
 			try {
-				return (this.value <= ((GainIntegerField)otherField).value ? 
+				return (this.value <= ((GainRealField)otherField).value ? 
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -171,7 +171,7 @@ public class IntegerFieldFactory {
 		@Override
 		public FieldComparisonResult isEqualTo(Field otherField) {
 			try {
-				return (this.value == ((GainIntegerField)otherField).value ? 
+				return (this.value == ((GainRealField)otherField).value ? 
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
 			} catch (ClassCastException exception) {
 				return FieldComparisonResult.UNCOMPARABLE;
@@ -186,20 +186,20 @@ public class IntegerFieldFactory {
 	}
 	
 	/**
-	 * Field representing an integer number value, for an attribute with cost-type preference.
+	 * Field representing a real number value, for an attribute with cost-type preference.
 	 * 
 	 * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
 	 * @author Marcin Szeląg
 	 */
-	private class CostIntegerField extends IntegerField {
-		public CostIntegerField(int value) {
+	private class CostRealField extends RealField {
+		public CostRealField(double value) {
 			super(value);
 		}
 		
 		@Override
 		public FieldComparisonResult isAtLeastAsGoodAs(Field otherField) {
 			try {
-				return (this.value <= ((CostIntegerField)otherField).value ?
+				return (this.value <= ((CostRealField)otherField).value ?
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -211,7 +211,7 @@ public class IntegerFieldFactory {
 		@Override
 		public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
 			try {
-				return (this.value >= ((CostIntegerField)otherField).value ?
+				return (this.value >= ((CostRealField)otherField).value ?
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -222,11 +222,11 @@ public class IntegerFieldFactory {
 		@Override
 		public FieldComparisonResult isEqualTo(Field otherField) {
 			try {
-				return (this.value == ((CostIntegerField)otherField).value ? 
+				return (this.value == ((CostRealField)otherField).value ? 
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
 			} catch (ClassCastException exception) {
 				return FieldComparisonResult.UNCOMPARABLE;
 			}
 		}
-	}
+	}	
 }

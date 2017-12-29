@@ -19,26 +19,26 @@ package org.ruleLearn.types;
 import org.ruleLearn.data.AttributePreferenceType;
 
 /**
- * Factory for {@link IntegerField}, employing abstract factory design pattern.
- * 
+ * EnumerationFieldFactory
+ *
  * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
  * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
+ *
  */
-public class IntegerFieldFactory {
-	
+public class EnumerationFieldFactory {
 	/**
 	 * The only instance of this factory.
 	 */
-	protected static IntegerFieldFactory fieldFactory = null;
+	protected static EnumerationFieldFactory fieldFactory = null;
 	
 	/**
 	 * Retrieves the only instance of this factory (singleton).
 	 * 
 	 * @return the only instance of this factory
 	 */
-	public static IntegerFieldFactory getInstance() {
+	public static EnumerationFieldFactory getInstance() {
 		if (fieldFactory == null) {
-			fieldFactory = new IntegerFieldFactory();
+			fieldFactory = new EnumerationFieldFactory();
 		}
 		return fieldFactory;
 	}
@@ -46,89 +46,104 @@ public class IntegerFieldFactory {
 	/**
 	 * Constructor preventing object creation.
 	 */
-	private IntegerFieldFactory() {}
+	private EnumerationFieldFactory() {}
 	
 	/**
-	 * Factory method for creating an instance of {@link IntegerField}
+	 * Factory method for creating an instance of {@link EnumerationField}
 	 * 
-	 * @param value value of the created field
+	 * @param set element set of the created field
+	 * @param index position in the element set of enumeration which represents value of the field
 	 * @param preferenceType preference type of the attribute that the field value refers to
 	 * 
 	 * @return created field
 	 */
-	public IntegerField create(int value, AttributePreferenceType preferenceType) {
+	public EnumerationField create(ElementSet set, int index, AttributePreferenceType preferenceType) {
 		switch (preferenceType) {
-			case NONE: return new NoneIntegerField(value);
-			case GAIN: return new GainIntegerField(value);
-			case COST: return new CostIntegerField(value); 
-			default: return new NoneIntegerField(value);
+			case NONE: return new NoneEnumerationField(set, index);
+			case GAIN: return new GainEnumerationField(set, index);
+			case COST: return new CostEnumerationField(set, index);
+			default: return new NoneEnumerationField(set, index);
 		}
 	}
 	
 	/**
-	 * Factory method for cloning/duplicating an instance of {@link IntegerField}
+	 * Factory method for cloning/duplicating an instance of {@link EnumerationField}
 	 * 
 	 * @param field to be cloned
 	 * 
 	 * @return created field
 	 */
-	public IntegerField clone (NoneIntegerField field) {
-		return new NoneIntegerField(field.value);
+	public EnumerationField clone (NoneEnumerationField field) {
+		return new NoneEnumerationField(field.getElementSet(), field.getIndex());
 	}
 	
 	/**
-	 * Factory method for cloning/duplicating an instance of {@link IntegerField}
+	 * Factory method for cloning/duplicating an instance of {@link EnumerationField}
 	 * 
 	 * @param field to be cloned
 	 * 
 	 * @return created field
 	 */
-	public IntegerField clone (GainIntegerField field) {
-		return new GainIntegerField(field.value);
+	public EnumerationField clone (GainEnumerationField field) {
+		return new GainEnumerationField(field.getElementSet(), field.getIndex());
 	}
 	
 	/**
-	 * Factory method for cloning/duplicating an instance of {@link IntegerField}
+	 * Factory method for cloning/duplicating an instance of {@link EnumerationField}
 	 * 
 	 * @param field to be cloned
 	 * 
 	 * @return created field
 	 */
-	public IntegerField clone (CostIntegerField field) {
-		return new CostIntegerField(field.value);
+	public EnumerationField clone (CostEnumerationField field) {
+		return new CostEnumerationField(field.getElementSet(), field.getIndex());
 	}
 	
 	/**
-	 * Field representing an integer number value, for an attribute without preference type.
+	 * Field representing an enumeration value, for an attribute without preference type.
 	 * 
 	 * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
 	 * @author Marcin Szeląg
 	 */
-	private class NoneIntegerField extends IntegerField {
-		public NoneIntegerField(int value) {
-			super(value);
+	private class NoneEnumerationField extends EnumerationField {
+		public NoneEnumerationField(ElementSet set, int index){
+			super(set, index);
 		}
 		
 		/**
-		 * Tells if this field is equal to the given field
+		 * Tells if this field is equal to the given field.
+		 * 
+		 * This method does not compare element sets. If necessary element sets should be compared by
 		 * 
 		 * @param otherField other field that this field is being compared to
 		 * @return see {@Link FieldComparisonResult}
 		 */
 		public FieldComparisonResult isEqualTo(Field otherField) {
 			try {
-				return (this.value == ((NoneIntegerField)otherField).value ? 
+				return (this.getIndex() == ((EnumerationField)otherField).getIndex() ? 
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
 			} catch (ClassCastException exception) {
 				return FieldComparisonResult.UNCOMPARABLE;
 			}
 		}
 		
+		/**
+		 * Tells if this field is at least as good as the given field.
+		 * 
+		 * @param otherField other field that this field is being compared to
+		 * @return see {@Link FieldComparisonResult} 
+		 */
 		@Override
 		public FieldComparisonResult isAtLeastAsGoodAs(Field otherField) {
 			return this.isEqualTo(otherField);
 		}
 
+		/**
+		 * Tells if this field is at most as good as the given field.
+		 * 
+		 * @param otherField other field that this field is being compared to
+		 * @return see {@Link FieldComparisonResult} 
+		 */
 		@Override
 		public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
 			return this.isEqualTo(otherField);
@@ -136,20 +151,26 @@ public class IntegerFieldFactory {
 	}
 	
 	/**
-	 * Field representing an integer number value,, for an attribute with gain-type preference.
+	 * Field representing an enumeration value, for an attribute with gain-type preference.
 	 * 
 	 * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
 	 * @author Marcin Szeląg
 	 */
-	private class GainIntegerField extends IntegerField {
-		public GainIntegerField(int value) {
-			super(value);
+	private class GainEnumerationField extends EnumerationField {
+		public GainEnumerationField(ElementSet set, int index){
+			super(set, index);
 		}
 		
+		/**
+		 * Tells if this field is at least as good as the given field.
+		 * 
+		 * @param otherField other field that this field is being compared to
+		 * @return see {@Link FieldComparisonResult} 
+		 */
 		@Override
 		public FieldComparisonResult isAtLeastAsGoodAs(Field otherField) {
 			try {
-				return (this.value >= ((GainIntegerField)otherField).value ? 
+				return (this.getIndex() >= ((GainEnumerationField)otherField).getIndex() ?
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -157,10 +178,16 @@ public class IntegerFieldFactory {
 			}
 		}
 
+		/**
+		 * Tells if this field is at most as good as the given field.
+		 * 
+		 * @param otherField other field that this field is being compared to
+		 * @return see {@Link FieldComparisonResult} 
+		 */
 		@Override
 		public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
 			try {
-				return (this.value <= ((GainIntegerField)otherField).value ? 
+				return (this.getIndex() <= ((GainEnumerationField)otherField).getIndex() ?
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -171,7 +198,7 @@ public class IntegerFieldFactory {
 		@Override
 		public FieldComparisonResult isEqualTo(Field otherField) {
 			try {
-				return (this.value == ((GainIntegerField)otherField).value ? 
+				return (this.getIndex() == ((EnumerationField)otherField).getIndex() ? 
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
 			} catch (ClassCastException exception) {
 				return FieldComparisonResult.UNCOMPARABLE;
@@ -186,20 +213,26 @@ public class IntegerFieldFactory {
 	}
 	
 	/**
-	 * Field representing an integer number value, for an attribute with cost-type preference.
+	 * Field representing an enumeration value, for an attribute with cost-type preference.
 	 * 
 	 * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
 	 * @author Marcin Szeląg
 	 */
-	private class CostIntegerField extends IntegerField {
-		public CostIntegerField(int value) {
-			super(value);
+	private class CostEnumerationField extends EnumerationField {
+		public CostEnumerationField(ElementSet set, int index){
+			super(set, index);
 		}
 		
+		/**
+		 * Tells if this field is at least as good as the given field.
+		 * 
+		 * @param otherField other field that this field is being compared to
+		 * @return see {@Link FieldComparisonResult} 
+		 */
 		@Override
 		public FieldComparisonResult isAtLeastAsGoodAs(Field otherField) {
 			try {
-				return (this.value <= ((CostIntegerField)otherField).value ?
+				return (this.getIndex() <= ((CostEnumerationField)otherField).getIndex() ?
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -207,11 +240,16 @@ public class IntegerFieldFactory {
 			}
 		}
 
-
+		/**
+		 * Tells if this field is at most as good as the given field.
+		 * 
+		 * @param otherField other field that this field is being compared to
+		 * @return see {@Link FieldComparisonResult} 
+		 */
 		@Override
 		public FieldComparisonResult isAtMostAsGoodAs(Field otherField) {
 			try {
-				return (this.value >= ((CostIntegerField)otherField).value ?
+				return (this.getIndex() >= ((CostEnumerationField)otherField).getIndex() ?
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -222,7 +260,7 @@ public class IntegerFieldFactory {
 		@Override
 		public FieldComparisonResult isEqualTo(Field otherField) {
 			try {
-				return (this.value == ((CostIntegerField)otherField).value ? 
+				return (this.getIndex() == ((EnumerationField)otherField).getIndex() ?
 						FieldComparisonResult.TRUE : FieldComparisonResult.FALSE);
 			} catch (ClassCastException exception) {
 				return FieldComparisonResult.UNCOMPARABLE;

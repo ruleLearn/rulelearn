@@ -23,7 +23,6 @@ package org.ruleLearn.types;
  * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
  */
 public abstract class Field {
-	
 	/**
 	 * Tells if this field is at least as good as the given field.
 	 * 

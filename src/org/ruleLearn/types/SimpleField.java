@@ -23,5 +23,4 @@ package org.ruleLearn.types;
  * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
  */
 public abstract class SimpleField extends Field {
-
 }
