@@ -64,7 +64,7 @@ compileJava {
   		println ""
   		
   		options.fork = true
-  		options.forkOptions.executable = "${System.getenv('JAVA_HOME')}\\bin\\javac"
+  		options.forkOptions.executable = "${System.getenv('JAVA_HOME')}\\bin\\javac".replace("\\", "/")
   	}
   }
 }
@@ -77,7 +77,7 @@ compileTestJava {
   		println ""
   		
   		options.fork = true
-  		options.forkOptions.executable = "${System.getenv('JAVA_HOME')}\\bin\\javac"
+  		options.forkOptions.executable = "${System.getenv('JAVA_HOME')}\\bin\\javac".replace("\\", "/")
   	}
   }
 }
@@ -109,7 +109,7 @@ javadoc {
   			println "[note@build.gradle/javadoc] JAVA_HOME=${System.getenv('JAVA_HOME')}"
   			println ""
 		
-	 		setExecutable("${System.getenv('JAVA_HOME')}\\bin\\javadoc")
+	 		setExecutable("${System.getenv('JAVA_HOME')}\\bin\\javadoc".replace("\\", "/"))
 	 	}
     }
     
