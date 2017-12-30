@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package org.rulelearn.types;
+package org.rulelearn.utils;
 
 /**
- * Type of values in ternary logic.  
- * 
+ * Exception thrown when semantically uncomparable objects of the same type are requested to be compared.
+ * Such situation may occur, e.g., when comparing two fields of type {@link org.rulelearn.types.CompositeField} in an information table.
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public enum TernaryLogicValue {
+public class UncomparableException extends Exception {
+
 	/**
-	 * Truth value indicating true.
+	 * Generated serial version UID
 	 */
-	TRUE,
+	private static final long serialVersionUID = -5460524209459293416L;
+
 	/**
-	 * Truth value indicating false.
+	 * Constructs an exception with message of failure reason.
+	 * 
+	 * @param message message of this exception
 	 */
-	FALSE,
-	/**
-	 * Truth value indicating intermediate value between true and false.
-	 */
-	UNCOMPARABLE
+	public UncomparableException(String message) {
+		super(message);
+	}
+
 }

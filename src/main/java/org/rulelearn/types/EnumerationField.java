@@ -60,6 +60,30 @@ public abstract class EnumerationField extends SimpleField {
 		}
 	}
 	
+	/**
+	 * Compares this field with the other field.
+	 * 
+	 * @param otherField other field to be compared with this field
+	 * 
+	 * @return negative number when this field is smaller than the other field,<br>
+	 *         zero if both fields are equal,<br>
+	 *         positive number when this field is greater than the other field
+	 * 
+	 * @throws ClassCastException if the other field is not of type {@link EnumerationField}
+	 * @throws NullPointerException if the other field is {@code null}
+	 */
+	@Override
+	public int compareTo(SimpleField otherField) {
+		EnumerationField other = (EnumerationField)otherField;
+		if (this.index > other.index) {
+			return 1;
+		} else if (this.index < other.index) {
+			return -1;
+		} else {
+			return 0;
+		}
+	}
+	
 	public TernaryLogicValue hasEqualElementSet(EnumerationField otherField) {
 		return set.isEqualTo(otherField.getElementSet());
 	}

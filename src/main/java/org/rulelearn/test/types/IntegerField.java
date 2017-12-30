@@ -77,5 +77,29 @@ public class IntegerField extends SimpleField {
 			default: return TernaryLogicValue.UNCOMPARABLE;
 		}
 	}
+	
+	/**
+	 * Compares this field with the other field.
+	 * 
+	 * @param otherField other field to be compared with this field
+	 * 
+	 * @return negative number when this field is smaller than the other field,<br>
+	 *         zero if both fields are equal,<br>
+	 *         positive number when this field is greater than the other field
+	 * 
+	 * @throws ClassCastException if given object is not of type {@link IntegerField}
+	 * @throws NullPointerException if given object is {@code null}
+	 */
+	@Override
+	public int compareTo(SimpleField otherField) {
+		IntegerField other = (IntegerField)otherField;
+		if (this.value > other.value) {
+			return 1;
+		} else if (this.value < other.value) {
+			return -1;
+		} else {
+			return 0;
+		}
+	}
 
 }
