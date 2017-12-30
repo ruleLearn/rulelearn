@@ -178,11 +178,6 @@ public class RealFieldFactory {
 			}
 		}
 
-		@Override
-		public TernaryLogicValue isDifferentThan(Field otherField) {
-			// TODO Auto-generated method stub
-			return null;
-		}
 	}
 	
 	/**

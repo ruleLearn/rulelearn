@@ -43,6 +43,9 @@ public abstract class IntegerField extends SimpleField {
 		this.value = value;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public TernaryLogicValue isDifferentThan(Field otherField) {
 		switch (this.isEqualTo(otherField)) {
