@@ -69,33 +69,10 @@ public class IntegerFieldFactory {
 	 * Factory method for cloning/duplicating an instance of {@link IntegerField}
 	 * 
 	 * @param field to be cloned
-	 * 
 	 * @return created field
 	 */
-	public IntegerField clone (NoneIntegerField field) {
-		return new NoneIntegerField(field.value);
-	}
-	
-	/**
-	 * Factory method for cloning/duplicating an instance of {@link IntegerField}
-	 * 
-	 * @param field to be cloned
-	 * 
-	 * @return created field
-	 */
-	public IntegerField clone (GainIntegerField field) {
-		return new GainIntegerField(field.value);
-	}
-	
-	/**
-	 * Factory method for cloning/duplicating an instance of {@link IntegerField}
-	 * 
-	 * @param field to be cloned
-	 * 
-	 * @return created field
-	 */
-	public IntegerField clone (CostIntegerField field) {
-		return new CostIntegerField(field.value);
+	public IntegerField clone (IntegerField field) {
+		return field.selfClone();
 	}
 	
 	/**
@@ -105,8 +82,19 @@ public class IntegerFieldFactory {
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	private class NoneIntegerField extends IntegerField {
+		
+		/**
+		 * Constructor setting value of this field.
+		 * 
+		 * @param value value of created field
+		 */
 		public NoneIntegerField(int value) {
 			super(value);
+		}
+		
+		@Override
+		public NoneIntegerField selfClone() {
+			return new NoneIntegerField(this.value);
 		}
 		
 		/**
@@ -142,6 +130,17 @@ public class IntegerFieldFactory {
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	private class GainIntegerField extends IntegerField {
+		
+		@Override
+		public GainIntegerField selfClone() {
+			return new GainIntegerField(this.value);
+		}
+		
+		/**
+		 * Constructor setting value of this field.
+		 * 
+		 * @param value value of created field
+		 */
 		public GainIntegerField(int value) {
 			super(value);
 		}
@@ -187,8 +186,19 @@ public class IntegerFieldFactory {
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	private class CostIntegerField extends IntegerField {
+		
+		/**
+		 * Constructor setting value of this field.
+		 * 
+		 * @param value value of created field
+		 */
 		public CostIntegerField(int value) {
 			super(value);
+		}
+		
+		@Override
+		public CostIntegerField selfClone() {
+			return new CostIntegerField(this.value);
 		}
 		
 		@Override

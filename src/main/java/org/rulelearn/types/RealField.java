@@ -16,6 +16,8 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.utils.SelfCloneable;
+
 /**
  * Field representing a real number value.
  * Should be instantiated using {@link RealFieldFactory#create(double, org.rulelearn.data.AttributePreferenceType)}.
@@ -24,7 +26,7 @@ package org.rulelearn.types;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
-public abstract class RealField extends SimpleField {
+public abstract class RealField extends SimpleField implements SelfCloneable<RealField> {
 
 	/**
 	 * Value of this field.
@@ -44,9 +46,20 @@ public abstract class RealField extends SimpleField {
 	protected RealField(double value) {
 		this.value = value;
 	}
+	
+	/**
+	 * Gets value of this field.
+	 * 
+	 * @return value of this field
+	 */
+	public double getValue() {
+		return this.value;
+	}
 
 	/**
 	 * {@inheritDoc}
+	 * 
+	 * @param otherField {@inheritDoc}
 	 */
 	@Override
 	public TernaryLogicValue isDifferentThan(Field otherField) {

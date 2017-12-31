@@ -69,44 +69,32 @@ public class RealFieldFactory {
 	 * Factory method for cloning/duplicating an instance of {@link RealField}
 	 * 
 	 * @param field to be cloned
-	 * 
 	 * @return created field
 	 */
-	public RealField clone (NoneRealField field) {
-		return new NoneRealField(field.value);
-	}
-	
-	/**
-	 * Factory method for cloning/duplicating an instance of {@link RealField}
-	 * 
-	 * @param field to be cloned
-	 * 
-	 * @return created field
-	 */
-	public RealField clone (GainRealField field) {
-		return new GainRealField(field.value);
-	}
-	
-	/**
-	 * Factory method for cloning/duplicating an instance of {@link RealField}
-	 * 
-	 * @param field to be cloned
-	 * 
-	 * @return created field
-	 */
-	public RealField clone (CostRealField field) {
-		return new CostRealField(field.value);
+	public RealField clone (RealField field) {
+		return field.selfClone();
 	}
 	
 	/**
 	 * Field representing a real number value, for an attribute without preference type.
 	 * 
-	 * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
-	 * @author Marcin Szeląg
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	private class NoneRealField extends RealField {
+		
+		/**
+		 * Constructor setting value of this field.
+		 * 
+		 * @param value value of created field
+		 */
 		public NoneRealField(double value) {
 			super(value);
+		}
+		
+		@Override
+		public NoneRealField selfClone() {
+			return new NoneRealField(this.value);
 		}
 		
 		/**
@@ -138,12 +126,23 @@ public class RealFieldFactory {
 	/**
 	 * Field representing a real number value, for an attribute with gain-type preference.
 	 * 
-	 * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
-	 * @author Marcin Szeląg
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	private class GainRealField extends RealField {
+		
+		/**
+		 * Constructor setting value of this field.
+		 * 
+		 * @param value value of created field
+		 */
 		public GainRealField(double value) {
 			super(value);
+		}
+		
+		@Override
+		public GainRealField selfClone() {
+			return new GainRealField(this.value);
 		}
 		
 		@Override
@@ -183,12 +182,23 @@ public class RealFieldFactory {
 	/**
 	 * Field representing a real number value, for an attribute with cost-type preference.
 	 * 
-	 * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
-	 * @author Marcin Szeląg
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	private class CostRealField extends RealField {
+		
+		/**
+		 * Constructor setting value of this field.
+		 * 
+		 * @param value value of created field
+		 */
 		public CostRealField(double value) {
 			super(value);
+		}
+		
+		@Override
+		public CostRealField selfClone() {
+			return new CostRealField(this.value);
 		}
 		
 		@Override
@@ -201,7 +211,6 @@ public class RealFieldFactory {
 				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
-
 
 		@Override
 		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
@@ -223,5 +232,6 @@ public class RealFieldFactory {
 				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
+
 	}	
 }

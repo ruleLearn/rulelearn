@@ -16,6 +16,8 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.utils.SelfCloneable;
+
 /**
  * Field representing integer number value.
  * Should be instantiated using {@link IntegerFieldFactory#create(int, AttributePreferenceType)}.
@@ -23,7 +25,7 @@ package org.rulelearn.types;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class IntegerField extends SimpleField {
+public abstract class IntegerField extends SimpleField implements SelfCloneable<IntegerField> {
 	/**
 	 * Value of this field.
 	 */
@@ -44,7 +46,18 @@ public abstract class IntegerField extends SimpleField {
 	}
 	
 	/**
+	 * Gets value of this field.
+	 * 
+	 * @return value of this field
+	 */
+	public int getValue() {
+		return this.value;
+	}
+	
+	/**
 	 * {@inheritDoc}
+	 * 
+	 * @param otherField {@inheritDoc}
 	 */
 	@Override
 	public TernaryLogicValue isDifferentThan(Field otherField) {
