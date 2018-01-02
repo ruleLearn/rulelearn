@@ -22,45 +22,41 @@ import org.junit.jupiter.api.Test;
 import org.rulelearn.types.ComparableExt.ComparisonResult;
 import org.rulelearn.utils.UncomparableException;
 
+import static org.mockito.Mockito.*;
+
 class ComparableExtTest {
 	
-	//mock of a field
-	Field otherField = new Field() {
+	/**
+	 * Test implementation of {@link ComparableExt<Field>}.
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	private abstract class ComparableExtTestOnlyImpl implements ComparableExt<Field> {
+		/**
+		 * Method changing interface's method signature - no checked exception thrown.
+		 * 
+		 * @param otherObject {@inheritDoc}
+		 * @return {@inheritDoc}
+		 */
 		@Override
-		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
-			return null;
-		}
-		@Override
-		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
-			return null;
-		}
-		@Override
-		public TernaryLogicValue isEqualTo(Field otherField) {
-			return null;
-		}
-		@Override
-		public TernaryLogicValue isDifferentThan(Field otherField) {
-			return null;
-		}
-		@Override
-		public int compareToEx(Field otherObject) throws UncomparableException {
-			return 0;
-		}
-	};
-
+		public abstract int compareToEx(Field otherObject);
+	}
+	
+	/**
+	 * Mock of other field.
+	 */
+	private Field otherField = mock(Field.class);
+	
 	/**
 	 * Tests default interface method {@link ComparableExt#compareToEnum(Object)}.
 	 * Assumes that two fields are compared, and the first field is greater than the other field.
 	 */
 	@Test
 	void testCompareToEnum01() {
-		ComparableExt<Field> comparableExt = new ComparableExt<Field>() {
-			@Override
-			public int compareToEx(Field otherObject) throws UncomparableException {
-				return 1;
-			}
-		};		
-		
+		ComparableExtTestOnlyImpl comparableExt = mock(ComparableExtTestOnlyImpl.class);
+		when(comparableExt.compareToEx(otherField)).thenReturn(1);
+		when(comparableExt.compareToEnum(otherField)).thenCallRealMethod();
 		assertEquals(comparableExt.compareToEnum(otherField), ComparisonResult.GREATER_THAN);
 	}
 	
@@ -70,13 +66,9 @@ class ComparableExtTest {
 	 */
 	@Test
 	void testCompareToEnum02() {
-		ComparableExt<Field> comparableExt = new ComparableExt<Field>() {
-			@Override
-			public int compareToEx(Field otherObject) throws UncomparableException {
-				return -1;
-			}
-		};		
-		
+		ComparableExtTestOnlyImpl comparableExt = mock(ComparableExtTestOnlyImpl.class);
+		when(comparableExt.compareToEx(otherField)).thenReturn(-1);
+		when(comparableExt.compareToEnum(otherField)).thenCallRealMethod();
 		assertEquals(comparableExt.compareToEnum(otherField), ComparisonResult.SMALLER_THAN);
 	}
 	
@@ -86,13 +78,9 @@ class ComparableExtTest {
 	 */
 	@Test
 	void testCompareToEnum03() {
-		ComparableExt<Field> comparableExt = new ComparableExt<Field>() {
-			@Override
-			public int compareToEx(Field otherObject) throws UncomparableException {
-				return 0;
-			}
-		};		
-		
+		ComparableExtTestOnlyImpl comparableExt = mock(ComparableExtTestOnlyImpl.class);
+		when(comparableExt.compareToEx(otherField)).thenReturn(0);
+		when(comparableExt.compareToEnum(otherField)).thenCallRealMethod();
 		assertEquals(comparableExt.compareToEnum(otherField), ComparisonResult.EQUAL);
 	}
 	
@@ -100,15 +88,15 @@ class ComparableExtTest {
 	 * Tests default interface method {@link ComparableExt#compareToEnum(Object)}.
 	 * Assumes that two fields are uncomparable.
 	 */
+	@SuppressWarnings("unchecked")
 	@Test
 	void testCompareToEnum04() {
-		ComparableExt<Field> comparableExt = new ComparableExt<Field>() {
-			@Override
-			public int compareToEx(Field otherObject) throws UncomparableException {
-				throw new UncomparableException("Fields cannot be compared!");
-			}
-		};		
-		
+		ComparableExt<Field> comparableExt = (ComparableExt<Field>)mock(ComparableExt.class);
+		try {
+			when(comparableExt.compareToEx(otherField)).thenThrow(new UncomparableException("Fields are uncomparable."));
+		} catch (UncomparableException e) {
+		}
+		when(comparableExt.compareToEnum(otherField)).thenCallRealMethod();
 		assertEquals(comparableExt.compareToEnum(otherField), ComparisonResult.UNCOMPARABLE);
 	}
 
