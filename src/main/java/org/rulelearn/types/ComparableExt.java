@@ -16,7 +16,7 @@
 
 package org.rulelearn.types;
 
-import org.rulelearn.utils.UncomparableException;
+import org.rulelearn.core.UncomparableException;
 
 /**
  * Generalization of standard {@link Comparable} interface, accounting for uncomparable objects (e.g., objects of different types). 

@@ -14,43 +14,25 @@
  * limitations under the License.
  */
 
-package org.rulelearn.test.types;
-
-import org.rulelearn.types.Field;
-import org.rulelearn.types.TernaryLogicValue;
+package org.rulelearn.core;
 
 /**
- * CostIntegerField
- *
+ * Type of values in ternary logic.  
+ * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
-public class CostIntegerField extends IntegerField {
-	public CostIntegerField(int value) {
-		super(value);
-	}
-	
-	@Override
-	public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
-		try {
-			return (this.value <= ((CostIntegerField)otherField).value ?
-					TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-		}
-		catch (ClassCastException exception) {
-			return TernaryLogicValue.UNCOMPARABLE;
-		}
-	}
-
-
-	@Override
-	public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
-		try {
-			return (this.value >= ((CostIntegerField)otherField).value ?
-					TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-		}
-		catch (ClassCastException exception) {
-			return TernaryLogicValue.UNCOMPARABLE;
-		}
-	}
+public enum TernaryLogicValue {
+	/**
+	 * Truth value indicating true.
+	 */
+	TRUE,
+	/**
+	 * Truth value indicating false.
+	 */
+	FALSE,
+	/**
+	 * Truth value indicating intermediate value between true and false.
+	 */
+	UNCOMPARABLE
 }

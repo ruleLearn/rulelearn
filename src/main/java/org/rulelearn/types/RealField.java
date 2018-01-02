@@ -16,7 +16,7 @@
 
 package org.rulelearn.types;
 
-import org.rulelearn.utils.SelfCloneable;
+import org.rulelearn.core.TernaryLogicValue;
 
 /**
  * Field representing a real number value.
@@ -26,7 +26,7 @@ import org.rulelearn.utils.SelfCloneable;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
-public abstract class RealField extends SimpleField implements SelfCloneable<RealField> {
+public abstract class RealField extends SimpleField {
 
 	/**
 	 * Value of this field.

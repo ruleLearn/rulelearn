@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.types.ComparableExt.ComparisonResult;
-import org.rulelearn.utils.UncomparableException;
+import org.rulelearn.core.UncomparableException;
 
 import static org.mockito.Mockito.*;
 

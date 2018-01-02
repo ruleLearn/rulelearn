@@ -14,43 +14,29 @@
  * limitations under the License.
  */
 
-package org.rulelearn.test.types;
-
-import org.rulelearn.types.Field;
-import org.rulelearn.types.TernaryLogicValue;
+package org.rulelearn.core;
 
 /**
- * GainIntegerField
+ * Exception thrown when semantically uncomparable objects of the same type are requested to be compared.
+ * Such situation may occur, e.g., when comparing two fields of type {@link org.rulelearn.types.CompositeField} in an information table.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
-public class GainIntegerField extends IntegerField {
-	public GainIntegerField(int value) {
-		super(value);
-	}
-	
-	@Override
-	public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
-		try {
-			return (this.value >= ((GainIntegerField)otherField).value ? 
-					TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-		}
-		catch (ClassCastException exception) {
-			return TernaryLogicValue.UNCOMPARABLE;
-		}
+public class UncomparableException extends Exception {
+
+	/**
+	 * Generated serial version UID
+	 */
+	private static final long serialVersionUID = -5460524209459293416L;
+
+	/**
+	 * Constructs an exception with message of failure reason.
+	 * 
+	 * @param message message of this exception
+	 */
+	public UncomparableException(String message) {
+		super(message);
 	}
 
-
-	@Override
-	public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
-		try {
-			return (this.value <= ((GainIntegerField)otherField).value ? 
-					TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-		}
-		catch (ClassCastException exception) {
-			return TernaryLogicValue.UNCOMPARABLE;
-		}
-	}
 }

@@ -25,7 +25,7 @@ package org.rulelearn.types;
 public abstract class SimpleField extends Field implements Comparable<SimpleField> {
 	
 	/**
-	 * Compares this field with the other field. Note that this implementing method will not throw {@link org.rulelearn.utils.UncomparableException}
+	 * Compares this field with the other field. Note that this implementing method will not throw {@link org.rulelearn.core.UncomparableException}
 	 * as every two simple fields of the same type are comparable.
 	 * 
 	 * @param otherField other field to be compared with this field

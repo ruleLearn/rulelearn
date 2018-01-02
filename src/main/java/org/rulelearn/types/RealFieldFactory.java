@@ -16,6 +16,7 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
 
 /**
@@ -72,7 +73,7 @@ public class RealFieldFactory {
 	 * @return created field
 	 */
 	public RealField clone (RealField field) {
-		return field.selfClone();
+		return (RealField)field.selfClone();
 	}
 	
 	/**

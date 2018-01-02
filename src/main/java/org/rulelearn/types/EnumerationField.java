@@ -16,6 +16,8 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.TernaryLogicValue;
+
 /**
  * EnumerationField
  *
@@ -27,12 +29,12 @@ public abstract class EnumerationField extends SimpleField {
 	/**
 	 * Set of elements to which the value of this field, which is represented by index, belongs to.
 	 */
-	private ElementSet set;
+	protected ElementSet set;
 	
 	/**
 	 * Position of this element in the element set.
 	 */
-	private int index = 0;
+	protected int index = 0;
 	
 	/**
 	 * Constructor preventing object creation.
