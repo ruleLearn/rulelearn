@@ -30,15 +30,29 @@ import org.rulelearn.data.AttributePreferenceType;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class IntegerFieldTest {
+	
+	private IntegerField field0;
+	private IntegerField field1a;
+	private IntegerField field1b;
+	
+	private void setUp01(AttributePreferenceType type) {
+		this.field0 = IntegerFieldFactory.getInstance().create(0, type);
+		this.field1a = IntegerFieldFactory.getInstance().create(1, type);
+		this.field1b = IntegerFieldFactory.getInstance().create(1, type);
+	}
+	
+	private void setUp02() {
+		this.field0 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
+		this.field1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		this.field1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
+	}
 
 	/**
 	 * Tests creation and "at least" comparisons of gain-type fields
 	 */
 	@Test
 	public void testIsAtLeastAsGoodAs01() {
-		IntegerField field0 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
-		IntegerField field1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
-		IntegerField field1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		this.setUp01(AttributePreferenceType.GAIN);
 		
 		assertEquals(field1a.isAtLeastAsGoodAs(field0), TernaryLogicValue.TRUE);
 		assertEquals(field1a.isAtLeastAsGoodAs(field1b), TernaryLogicValue.TRUE);
@@ -50,9 +64,7 @@ public class IntegerFieldTest {
 	 */
 	@Test
 	public void testIsAtLeastAsGoodAs02() {
-		IntegerField field0 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST);
-		IntegerField field1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
-		IntegerField field1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
+		this.setUp01(AttributePreferenceType.COST);
 		
 		assertEquals(field1a.isAtLeastAsGoodAs(field0), TernaryLogicValue.FALSE);
 		assertEquals(field1a.isAtLeastAsGoodAs(field1b), TernaryLogicValue.TRUE);
@@ -65,9 +77,7 @@ public class IntegerFieldTest {
 	 */
 	@Test
 	public void testIsMostLeastAsGoodAs01() {
-		IntegerField field0 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
-		IntegerField field1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
-		IntegerField field1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		this.setUp01(AttributePreferenceType.GAIN);
 		
 		assertEquals(field0.isAtMostAsGoodAs(field1a), TernaryLogicValue.TRUE);
 		assertEquals(field1a.isAtMostAsGoodAs(field1b), TernaryLogicValue.TRUE);
@@ -79,9 +89,7 @@ public class IntegerFieldTest {
 	 */
 	@Test
 	public void testIsMostLeastAsGoodAs02() {
-		IntegerField field0 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST);
-		IntegerField field1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
-		IntegerField field1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
+		this.setUp01(AttributePreferenceType.COST);
 		
 		assertEquals(field0.isAtMostAsGoodAs(field1a), TernaryLogicValue.FALSE);
 		assertEquals(field1a.isAtMostAsGoodAs(field1b), TernaryLogicValue.TRUE);
@@ -93,9 +101,7 @@ public class IntegerFieldTest {
 	 */
 	@Test
 	public void testIsEqualTo01() {
-		IntegerField field0 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
-		IntegerField field1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
-		IntegerField field1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
+		this.setUp01(AttributePreferenceType.NONE);
 		
 		assertEquals(field0.isEqualTo(field1a), TernaryLogicValue.FALSE);
 		assertEquals(field1a.isEqualTo(field1b), TernaryLogicValue.TRUE);
@@ -107,9 +113,7 @@ public class IntegerFieldTest {
 	 */
 	@Test
 	public void testIsEqualTo02() {
-		IntegerField field0 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
-		IntegerField field1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
-		IntegerField field1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		this.setUp01(AttributePreferenceType.GAIN);
 		
 		assertEquals(field0.isEqualTo(field1a), TernaryLogicValue.FALSE);
 		assertEquals(field1a.isEqualTo(field1b), TernaryLogicValue.TRUE);
@@ -121,9 +125,7 @@ public class IntegerFieldTest {
 	 */
 	@Test
 	public void testIsEqualTo03() {
-		IntegerField field0 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST);
-		IntegerField field1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
-		IntegerField field1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
+		this.setUp01(AttributePreferenceType.COST);
 		
 		assertEquals(field0.isEqualTo(field1a), TernaryLogicValue.FALSE);
 		assertEquals(field1a.isEqualTo(field1b), TernaryLogicValue.TRUE);
@@ -135,9 +137,7 @@ public class IntegerFieldTest {
 	 */
 	@Test
 	public void testIsDifferentThan01() {
-		IntegerField field0 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
-		IntegerField field1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
-		IntegerField field1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
+		this.setUp01(AttributePreferenceType.NONE);
 		
 		assertEquals(field0.isDifferentThan(field1a), TernaryLogicValue.TRUE);
 		assertEquals(field1a.isDifferentThan(field1b), TernaryLogicValue.FALSE);
@@ -149,9 +149,7 @@ public class IntegerFieldTest {
 	 */
 	@Test
 	public void testIsDifferentThan02() {
-		IntegerField field0 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
-		IntegerField field1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
-		IntegerField field1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		this.setUp01(AttributePreferenceType.GAIN);
 		
 		assertEquals(field0.isDifferentThan(field1a), TernaryLogicValue.TRUE);
 		assertEquals(field1a.isDifferentThan(field1b), TernaryLogicValue.FALSE);
@@ -163,9 +161,7 @@ public class IntegerFieldTest {
 	 */
 	@Test
 	public void testIsDifferentThan03() {
-		IntegerField field0 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST);
-		IntegerField field1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
-		IntegerField field1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
+		this.setUp01(AttributePreferenceType.COST);
 		
 		assertEquals(field0.isDifferentThan(field1a), TernaryLogicValue.TRUE);
 		assertEquals(field1a.isDifferentThan(field1b), TernaryLogicValue.FALSE);
@@ -177,9 +173,7 @@ public class IntegerFieldTest {
 	 */
 	@Test
 	public void testCompareTo01() {
-		IntegerField field0 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
-		IntegerField field1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
-		IntegerField field1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
+		this.setUp02();
 		
 		assertTrue(field0.compareTo(field1a) < 0);
 		assertTrue(field1a.compareTo(field0) > 0);
@@ -191,20 +185,18 @@ public class IntegerFieldTest {
 	 */
 	@Test
 	public void testSelfClone01() {
-		IntegerField fieldNone = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
-		IntegerField fieldCost = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
-		IntegerField fieldGain = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
+		this.setUp02();
 		
-		Field otherField = fieldNone.selfClone();
+		Field otherField = field0.selfClone();
 		assertTrue(otherField instanceof IntegerField);
-		assertEquals(((IntegerField)otherField).getValue(), fieldNone.getValue());
+		assertEquals(((IntegerField)otherField).getValue(), field0.getValue());
 		
-		otherField = fieldCost.selfClone();
+		otherField = field1a.selfClone();
 		assertTrue(otherField instanceof IntegerField);
-		assertEquals(((IntegerField)otherField).getValue(), fieldCost.getValue());
+		assertEquals(((IntegerField)otherField).getValue(), field1a.getValue());
 		
-		otherField = fieldGain.selfClone();
+		otherField = field1b.selfClone();
 		assertTrue(otherField instanceof IntegerField);
-		assertEquals(((IntegerField)otherField).getValue(), fieldGain.getValue());
+		assertEquals(((IntegerField)otherField).getValue(), field1b.getValue());
 	}
 }
