@@ -17,6 +17,7 @@
 package org.rulelearn.types;
 
 import org.rulelearn.core.SelfCloneable;
+import org.rulelearn.core.TernaryLogicValue;
 
 /**
  * Top level class for all fields (values) in an information table.

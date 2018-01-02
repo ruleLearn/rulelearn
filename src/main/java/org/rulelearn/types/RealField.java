@@ -16,6 +16,8 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.TernaryLogicValue;
+
 /**
  * Field representing a real number value.
  * Should be instantiated using {@link RealFieldFactory#create(double, org.rulelearn.data.AttributePreferenceType)}.

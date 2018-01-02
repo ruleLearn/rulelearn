@@ -16,6 +16,8 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.TernaryLogicValue;
+
 /**
  * Field representing integer number value.
  * Should be instantiated using {@link IntegerFieldFactory#create(int, AttributePreferenceType)}.

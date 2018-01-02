@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.types.ComparableExt.ComparisonResult;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
 
 class ComparableExtTest {

@@ -16,6 +16,8 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.TernaryLogicValue;
+
 /**
  * EnumerationField
  *
