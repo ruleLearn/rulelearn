@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.types.ComparableExt.ComparisonResult;
-import org.rulelearn.utils.UncomparableException;
+import org.rulelearn.core.UncomparableException;
 
 class ComparableExtTest {
 	
@@ -45,6 +45,11 @@ class ComparableExtTest {
 		@Override
 		public int compareToEx(Field otherObject) throws UncomparableException {
 			return 0;
+		}
+		@Override
+		public Field selfClone() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	};
 

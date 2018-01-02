@@ -16,8 +16,6 @@
 
 package org.rulelearn.types;
 
-import org.rulelearn.utils.SelfCloneable;
-
 /**
  * Field representing a real number value.
  * Should be instantiated using {@link RealFieldFactory#create(double, org.rulelearn.data.AttributePreferenceType)}.
@@ -26,7 +24,7 @@ import org.rulelearn.utils.SelfCloneable;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
-public abstract class RealField extends SimpleField implements SelfCloneable<RealField> {
+public abstract class RealField extends SimpleField {
 
 	/**
 	 * Value of this field.

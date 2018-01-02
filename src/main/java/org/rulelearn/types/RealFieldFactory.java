@@ -72,7 +72,7 @@ public class RealFieldFactory {
 	 * @return created field
 	 */
 	public RealField clone (RealField field) {
-		return field.selfClone();
+		return (RealField)field.selfClone();
 	}
 	
 	/**

@@ -185,4 +185,25 @@ public class IntegerFieldTest {
 		assertTrue(field1a.compareTo(field1b) == 0);
 	}
 	
+	/**
+	 * Tests {@link IntegerField#selfClone()} method.
+	 */
+	@Test
+	public void testSelfClone01() {
+		IntegerField fieldNone = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
+		IntegerField fieldCost = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		IntegerField fieldGain = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
+		
+		Field otherField = fieldNone.selfClone();
+		assertTrue(otherField instanceof IntegerField);
+		assertEquals(((IntegerField)otherField).getValue(), fieldNone.getValue());
+		
+		otherField = fieldCost.selfClone();
+		assertTrue(otherField instanceof IntegerField);
+		assertEquals(((IntegerField)otherField).getValue(), fieldCost.getValue());
+		
+		otherField = fieldGain.selfClone();
+		assertTrue(otherField instanceof IntegerField);
+		assertEquals(((IntegerField)otherField).getValue(), fieldGain.getValue());
+	}
 }

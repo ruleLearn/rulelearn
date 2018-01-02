@@ -73,41 +73,30 @@ public class EnumerationFieldFactory {
 	 * 
 	 * @return created field
 	 */
-	public EnumerationField clone (NoneEnumerationField field) {
-		return new NoneEnumerationField(field.getElementSet(), field.getIndex());
-	}
-	
-	/**
-	 * Factory method for cloning/duplicating an instance of {@link EnumerationField}
-	 * 
-	 * @param field to be cloned
-	 * 
-	 * @return created field
-	 */
-	public EnumerationField clone (GainEnumerationField field) {
-		return new GainEnumerationField(field.getElementSet(), field.getIndex());
-	}
-	
-	/**
-	 * Factory method for cloning/duplicating an instance of {@link EnumerationField}
-	 * 
-	 * @param field to be cloned
-	 * 
-	 * @return created field
-	 */
-	public EnumerationField clone (CostEnumerationField field) {
-		return new CostEnumerationField(field.getElementSet(), field.getIndex());
+	public EnumerationField clone (EnumerationField field) {
+		return (EnumerationField)field.selfClone();
 	}
 	
 	/**
 	 * Field representing an enumeration value, for an attribute without preference type.
 	 * 
-	 * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
-	 * @author Marcin Szeląg
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	private class NoneEnumerationField extends EnumerationField {
+		/**
+		 * Constructor setting value of this field.
+		 * 
+		 * @param set element set of the created field
+		 * @param index position in the element set of enumeration which represents value of the field
+		 */
 		public NoneEnumerationField(ElementSet set, int index){
 			super(set, index);
+		}
+		
+		@Override
+		public NoneEnumerationField selfClone() {
+			return new NoneEnumerationField(this.set, this.index);
 		}
 		
 		/**
@@ -153,12 +142,23 @@ public class EnumerationFieldFactory {
 	/**
 	 * Field representing an enumeration value, for an attribute with gain-type preference.
 	 * 
-	 * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
-	 * @author Marcin Szeląg
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	private class GainEnumerationField extends EnumerationField {
+		/**
+		 * Constructor setting value of this field.
+		 * 
+		 * @param set element set of the created field
+		 * @param index position in the element set of enumeration which represents value of the field
+		 */
 		public GainEnumerationField(ElementSet set, int index){
 			super(set, index);
+		}
+		
+		@Override
+		public GainEnumerationField selfClone() {
+			return new GainEnumerationField(this.set, this.index);
 		}
 		
 		/**
@@ -215,12 +215,23 @@ public class EnumerationFieldFactory {
 	/**
 	 * Field representing an enumeration value, for an attribute with cost-type preference.
 	 * 
-	 * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
-	 * @author Marcin Szeląg
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	private class CostEnumerationField extends EnumerationField {
+		/**
+		 * Constructor setting value of this field.
+		 * 
+		 * @param set element set of the created field
+		 * @param index position in the element set of enumeration which represents value of the field
+		 */
 		public CostEnumerationField(ElementSet set, int index){
 			super(set, index);
+		}
+		
+		@Override
+		public CostEnumerationField selfClone() {
+			return new CostEnumerationField(this.set, this.index);
 		}
 		
 		/**

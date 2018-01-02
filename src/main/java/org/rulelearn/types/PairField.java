@@ -16,7 +16,7 @@
 
 package org.rulelearn.types;
 
-import org.rulelearn.utils.UncomparableException;
+import org.rulelearn.core.UncomparableException;
 
 /**
  * Field composed of two simple fields of the same sub-type of {@link SimpleField}.
@@ -75,6 +75,14 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	public TernaryLogicValue isDifferentThan(Field otherField) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/* {@inheritDoc}
+	 * @return {@inheritDoc} 
+	 */
+	@Override
+	public PairField<T> selfClone() {
+		return new PairField<T>(firstValue, secondValue);
 	}
 
 }

@@ -16,13 +16,15 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.SelfCloneable;
+
 /**
  * Top level class for all fields (values) in an information table.
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class Field implements ComparableExt<Field> {
+public abstract class Field implements ComparableExt<Field>, SelfCloneable<Field> {
 	
 	/**
 	 * Tells if this field is at least as good as the given field.

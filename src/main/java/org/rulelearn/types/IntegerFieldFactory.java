@@ -72,7 +72,8 @@ public class IntegerFieldFactory {
 	 * @return created field
 	 */
 	public IntegerField clone (IntegerField field) {
-		return field.selfClone();
+		// TODO check if correct
+		return (IntegerField)field.selfClone();
 	}
 	
 	/**
