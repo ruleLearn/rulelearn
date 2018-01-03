@@ -52,7 +52,7 @@ public class ElementListTest {
 			this.list2 = new ElementList(domain1);
 		}
 		catch (NoSuchAlgorithmException ex) {
-			System.out.println("No such hash algorithm: "+ ex.getMessage());
+			System.out.println(ex.getMessage());
 		}
 	}
 	
@@ -62,7 +62,7 @@ public class ElementListTest {
 			this.list2 = new ElementList(domain2);
 		}
 		catch (NoSuchAlgorithmException ex) {
-			System.out.println("No such hash algorithm: "+ ex.getMessage());
+			System.out.println(ex.getMessage());
 		}
 	}
 	
@@ -72,7 +72,7 @@ public class ElementListTest {
 			this.list3 = new ElementList(domain4);
 		}
 		catch (NoSuchAlgorithmException ex) {
-			System.out.println("No such hash algorithm: "+ ex.getMessage());
+			System.out.println(ex.getMessage());
 		}
 	}
 	
@@ -82,7 +82,7 @@ public class ElementListTest {
 			this.list2 = new ElementList(domain3, algorithm2);
 		}
 		catch (NoSuchAlgorithmException ex) {
-			System.out.println("No such hash algorithm: "+ ex.getMessage());
+			System.out.println(ex.getMessage());
 		}
 	}
 	
