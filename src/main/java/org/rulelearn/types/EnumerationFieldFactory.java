@@ -70,9 +70,8 @@ public class EnumerationFieldFactory {
 	/**
 	 * Factory method for cloning/duplicating an instance of {@link EnumerationField}.
 	 * 
-	 * @param field to be cloned
-	 * 
-	 * @return created field
+	 * @param field field to be cloned
+	 * @return cloned field
 	 */
 	public EnumerationField clone (EnumerationField field) {
 		return field.selfClone();
@@ -91,7 +90,7 @@ public class EnumerationFieldFactory {
 		 * @param set element set of the created field
 		 * @param index position in the element set of enumeration which represents value of the field
 		 */
-		public NoneEnumerationField(ElementList list, int index){
+		public NoneEnumerationField(ElementList list, int index) {
 			super(list, index);
 		}
 		

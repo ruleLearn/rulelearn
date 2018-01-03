@@ -69,8 +69,8 @@ public class IntegerFieldFactory {
 	/**
 	 * Factory method for cloning/duplicating an instance of {@link IntegerField}.
 	 * 
-	 * @param field to be cloned
-	 * @return created field
+	 * @param field field to be cloned
+	 * @return cloned field
 	 */
 	public IntegerField clone(IntegerField field) {
 		return field.selfClone();

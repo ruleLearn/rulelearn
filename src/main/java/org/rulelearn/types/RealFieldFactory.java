@@ -69,8 +69,8 @@ public class RealFieldFactory {
 	/**
 	 * Factory method for cloning/duplicating an instance of {@link RealField}
 	 * 
-	 * @param field to be cloned
-	 * @return created field
+	 * @param field field to be cloned
+	 * @return cloned field
 	 */
 	public RealField clone (RealField field) {
 		return field.selfClone();
