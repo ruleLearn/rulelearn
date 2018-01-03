@@ -70,7 +70,8 @@ public abstract class IntegerField extends SimpleField {
 	}
 	
 	/**
-	 * Compares this field with the other field.
+	 * Compares this field with the other field. Takes into account only the value of this field,
+	 * ignoring its preference type.
 	 * 
 	 * @param otherField other field to be compared with this field
 	 * 

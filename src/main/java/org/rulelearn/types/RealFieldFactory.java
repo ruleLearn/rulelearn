@@ -73,7 +73,7 @@ public class RealFieldFactory {
 	 * @return created field
 	 */
 	public RealField clone (RealField field) {
-		return (RealField)field.selfClone();
+		return field.selfClone();
 	}
 	
 	/**
@@ -94,6 +94,7 @@ public class RealFieldFactory {
 		}
 		
 		@Override
+		@SuppressWarnings("unchecked")
 		public NoneRealField selfClone() {
 			return new NoneRealField(this.value);
 		}
@@ -142,6 +143,7 @@ public class RealFieldFactory {
 		}
 		
 		@Override
+		@SuppressWarnings("unchecked")
 		public GainRealField selfClone() {
 			return new GainRealField(this.value);
 		}
@@ -198,6 +200,7 @@ public class RealFieldFactory {
 		}
 		
 		@Override
+		@SuppressWarnings("unchecked")
 		public CostRealField selfClone() {
 			return new CostRealField(this.value);
 		}
