@@ -50,7 +50,7 @@ public class IntegerFieldTest {
 	}
 
 	/**
-	 * Tests creation and "at least" comparisons of gain-type fields
+	 * Tests construction and "at least" comparisons of gain-type fields
 	 */
 	@Test
 	public void testIsAtLeastAsGoodAs01() {
@@ -62,7 +62,7 @@ public class IntegerFieldTest {
 	}
 	
 	/**
-	 * Tests creation and "at most" comparisons of cost-type fields
+	 * Tests construction and "at most" comparisons of cost-type fields
 	 */
 	@Test
 	public void testIsAtLeastAsGoodAs02() {
@@ -75,7 +75,7 @@ public class IntegerFieldTest {
 	
 	
 	/**
-	 * Tests creation and "at most" comparisons of gain-type fields
+	 * Tests construction and "at most" comparisons of gain-type fields
 	 */
 	@Test
 	public void testIsAtMostAsGoodAs01() {
@@ -87,7 +87,7 @@ public class IntegerFieldTest {
 	}
 	
 	/**
-	 * Tests creation and "at most" comparisons of cost-type fields
+	 * Tests construction and "at most" comparisons of cost-type fields
 	 */
 	@Test
 	public void testIsAtMostAsGoodAs02() {
@@ -99,7 +99,7 @@ public class IntegerFieldTest {
 	}
 	
 	/**
-	 * Tests creation and "is equal" comparisons of fields without preference type
+	 * Tests construction and "is equal" comparisons of fields without preference type
 	 */
 	@Test
 	public void testIsEqualTo01() {
@@ -111,7 +111,7 @@ public class IntegerFieldTest {
 	}
 	
 	/**
-	 * Tests creation and "is equal" comparisons of gain-type fields
+	 * Tests construction and "is equal" comparisons of gain-type fields
 	 */
 	@Test
 	public void testIsEqualTo02() {
@@ -123,7 +123,7 @@ public class IntegerFieldTest {
 	}
 	
 	/**
-	 * Tests creation and "is equal" comparisons of cost-type fields
+	 * Tests construction and "is equal" comparisons of cost-type fields
 	 */
 	@Test
 	public void testIsEqualTo03() {
@@ -135,7 +135,7 @@ public class IntegerFieldTest {
 	}
 	
 	/**
-	 * Tests creation and "is different than" comparisons of fields without preference type
+	 * Tests construction and "is different than" comparisons of fields without preference type
 	 */
 	@Test
 	public void testIsDifferentThan01() {
@@ -147,7 +147,7 @@ public class IntegerFieldTest {
 	}
 	
 	/**
-	 * Tests creation and "is different than" comparisons of fields with gain-type preference
+	 * Tests construction and "is different than" comparisons of fields with gain-type preference
 	 */
 	@Test
 	public void testIsDifferentThan02() {
@@ -159,7 +159,7 @@ public class IntegerFieldTest {
 	}
 	
 	/**
-	 * Tests creation and "is different than" comparisons of fields with cost-type preference
+	 * Tests construction and "is different than" comparisons of fields with cost-type preference
 	 */
 	@Test
 	public void testIsDifferentThan03() {
@@ -182,6 +182,7 @@ public class IntegerFieldTest {
 		assertTrue(field1a.compareTo(field1b) == 0);
 	}
 	
+
 	/**
 	 * Tests {@link IntegerField#selfClone()} method.
 	 */
