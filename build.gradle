@@ -66,6 +66,7 @@ compileJava {
   		
   		options.fork = true
   		options.forkOptions.executable = "${System.getenv('JAVA_HOME')}\\bin\\javac".replace("\\", "/")
+  		options.compilerArgs << "-Xlint:unchecked"
   	}
   }
 }

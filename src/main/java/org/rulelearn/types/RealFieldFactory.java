@@ -95,8 +95,12 @@ public class RealFieldFactory {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public NoneRealField selfClone() {
-			return new NoneRealField(this.value);
+//		//unfortunately the following implementation would cause a warning by javac:
+//		public NoneRealField selfClone() {
+//			return new NoneRealField(this.value);
+//		}
+		public <S extends Field> S selfClone() {
+			return (S)new NoneRealField(this.value);
 		}
 		
 		/**
@@ -144,8 +148,11 @@ public class RealFieldFactory {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public GainRealField selfClone() {
-			return new GainRealField(this.value);
+//		public GainRealField selfClone() {
+//			return new GainRealField(this.value);
+//		}
+		public <S extends Field> S selfClone() {
+			return (S)new GainRealField(this.value);
 		}
 		
 		@Override
@@ -201,8 +208,11 @@ public class RealFieldFactory {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public CostRealField selfClone() {
-			return new CostRealField(this.value);
+//		public CostRealField selfClone() {
+//			return new CostRealField(this.value);
+//		}
+		public <S extends Field> S selfClone() {
+			return (S)new CostRealField(this.value);
 		}
 		
 		@Override

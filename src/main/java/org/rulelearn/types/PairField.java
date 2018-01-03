@@ -84,8 +84,26 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public PairField<T> selfClone() {
-		return new PairField<T>(firstValue, secondValue);
+	public <S extends Field> S selfClone() {
+		return (S)new PairField<T>(firstValue, secondValue);
+	}
+
+	/**
+	 * Gets the first value in this pair.
+	 * 
+	 * @return the first value in this pair.
+	 */
+	public T getFirstValue() {
+		return firstValue;
+	}
+
+	/**
+	 * Gets the second value in this pair.
+	 * 
+	 * @return the second value in this pair.
+	 */
+	public T getSecondValue() {
+		return secondValue;
 	}
 
 }
