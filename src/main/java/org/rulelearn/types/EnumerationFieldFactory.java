@@ -20,7 +20,7 @@ import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
 
 /**
- * EnumerationFieldFactory
+ * Factory for {@link EnumerationField}, employing abstract factory and singleton design patterns.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -50,32 +50,32 @@ public class EnumerationFieldFactory {
 	private EnumerationFieldFactory() {}
 	
 	/**
-	 * Factory method for creating an instance of {@link EnumerationField}
+	 * Factory method for creating an instance of {@link EnumerationField}.
 	 * 
-	 * @param set element set of the created field
-	 * @param index position in the element set of enumeration which represents value of the field
+	 * @param list element list of the created field
+	 * @param index position in the element list of enumeration which represents value of the field
 	 * @param preferenceType preference type of the attribute that the field value refers to
 	 * 
 	 * @return created field
 	 */
-	public EnumerationField create(ElementSet set, int index, AttributePreferenceType preferenceType) {
+	public EnumerationField create(ElementList list, int index, AttributePreferenceType preferenceType) {
 		switch (preferenceType) {
-			case NONE: return new NoneEnumerationField(set, index);
-			case GAIN: return new GainEnumerationField(set, index);
-			case COST: return new CostEnumerationField(set, index);
-			default: return new NoneEnumerationField(set, index);
+			case NONE: return new NoneEnumerationField(list, index);
+			case GAIN: return new GainEnumerationField(list, index);
+			case COST: return new CostEnumerationField(list, index);
+			default: return new NoneEnumerationField(list, index);
 		}
 	}
 	
 	/**
-	 * Factory method for cloning/duplicating an instance of {@link EnumerationField}
+	 * Factory method for cloning/duplicating an instance of {@link EnumerationField}.
 	 * 
 	 * @param field to be cloned
 	 * 
 	 * @return created field
 	 */
 	public EnumerationField clone (EnumerationField field) {
-		return (EnumerationField)field.selfClone();
+		return field.selfClone();
 	}
 	
 	/**
@@ -91,13 +91,14 @@ public class EnumerationFieldFactory {
 		 * @param set element set of the created field
 		 * @param index position in the element set of enumeration which represents value of the field
 		 */
-		public NoneEnumerationField(ElementSet set, int index){
-			super(set, index);
+		public NoneEnumerationField(ElementList list, int index){
+			super(list, index);
 		}
 		
 		@Override
+		@SuppressWarnings("unchecked")
 		public NoneEnumerationField selfClone() {
-			return new NoneEnumerationField(this.set, this.index);
+			return new NoneEnumerationField(this.list, this.index);
 		}
 		
 		/**
@@ -153,13 +154,14 @@ public class EnumerationFieldFactory {
 		 * @param set element set of the created field
 		 * @param index position in the element set of enumeration which represents value of the field
 		 */
-		public GainEnumerationField(ElementSet set, int index){
-			super(set, index);
+		public GainEnumerationField(ElementList list, int index){
+			super(list, index);
 		}
 		
 		@Override
+		@SuppressWarnings("unchecked")
 		public GainEnumerationField selfClone() {
-			return new GainEnumerationField(this.set, this.index);
+			return new GainEnumerationField(this.list, this.index);
 		}
 		
 		/**
@@ -226,13 +228,14 @@ public class EnumerationFieldFactory {
 		 * @param set element set of the created field
 		 * @param index position in the element set of enumeration which represents value of the field
 		 */
-		public CostEnumerationField(ElementSet set, int index){
-			super(set, index);
+		public CostEnumerationField(ElementList list, int index){
+			super(list, index);
 		}
 		
 		@Override
+		@SuppressWarnings("unchecked")
 		public CostEnumerationField selfClone() {
-			return new CostEnumerationField(this.set, this.index);
+			return new CostEnumerationField(this.list, this.index);
 		}
 		
 		/**
