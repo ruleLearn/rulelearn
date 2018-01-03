@@ -19,20 +19,21 @@ package org.rulelearn.types;
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
- * EnumerationField
- *
+ * Field representing enumeration value.
+ * Should be instantiated using {@link EnumerationFieldFactory#create(ElementList, int, org.rulelearn.data.AttributePreferenceType)}.
+ * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
 public abstract class EnumerationField extends SimpleField {
 	/**
-	 * Set of elements to which the value of this field, which is represented by index, belongs to.
+	 * List of elements representing enumeration.
 	 */
-	protected ElementSet set;
+	protected ElementList list;
 	
 	/**
-	 * Position of this element in the element set.
+	 * Position on element list which is equivalent to value of this field.
 	 */
 	protected int index = 0;
 	
@@ -44,14 +45,19 @@ public abstract class EnumerationField extends SimpleField {
 	/**
 	 * Constructor setting value of this field.
 	 * 
-	 * @param set element set of the created field
-	 * @param index position in the element set of enumeration which represents value of the field
+	 * @param list element list of the created field
+	 * @param index position in the element list of enumeration which represents value of the field
 	 */
-	protected EnumerationField(ElementSet set, int index) {
-		this.set = set;
+	protected EnumerationField(ElementList list, int index) {
+		this.list = list;
 		this.index = index;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param otherField {@inheritDoc}
+	 */
 	@Override
 	public TernaryLogicValue isDifferentThan(Field otherField) {
 		switch (this.isEqualTo(otherField)) {
@@ -86,39 +92,53 @@ public abstract class EnumerationField extends SimpleField {
 		}
 	}
 	
-	public TernaryLogicValue hasEqualElementSet(EnumerationField otherField) {
-		return set.isEqualTo(otherField.getElementSet());
-	}
-
 	/**
-	 * Get the element set of enumeration
+	 * Checks whether element list of this field has equal hash to element list of the given other field.
 	 * 
-	 * @return the element set
+	 * @return result of comparison; see {@link TernaryLogicValue}
 	 */
-	public ElementSet getElementSet() {
-		return set;
+	public TernaryLogicValue hasEqualHashOfElementList(EnumerationField otherField) {
+		return list.hasEqualHash(otherField.getElementList());
+	}
+	
+	/**
+	 * Checks whether element list of this field is equal to element list of the given other field.
+	 * 
+	 * @return result of comparison; see {@link TernaryLogicValue}
+	 */
+	public TernaryLogicValue hasEqualElementList(EnumerationField otherField) {
+		return list.isEqualTo(otherField.getElementList());
 	}
 
 	/**
-	 * Get the position (index) in the element set of enumeration which represents value of the field
+	 * Gets the element list of enumeration.
 	 * 
-	 * @return the index
+	 * @return the element list {@link ElementList}
+	 */
+	public ElementList getElementList() {
+		return list;
+	}
+
+	/**
+	 * Gets the position (index) on the element list of enumeration which represents value of the field.
+	 * 
+	 * @return index of element on list
 	 */
 	public int getIndex() {
 		return index;
 	}
 	
 	/**
-	 * Get element name.
+	 * Gets element.
 	 * 
-	 * @return string that is the name of this element 
+	 * @return {@link String} element 
 	 */
-	public String getElementName() {
-		return set.getElementName(index);
+	public String getElement() {
+		return list.getElement(index);
 	}
 
 	/**
-	 * Set the element set of enumeration 
+	 * Sets the element set of enumeration 
 	 * 
 	 * @param set to be set
 	 *
@@ -131,7 +151,7 @@ public abstract class EnumerationField extends SimpleField {
 	}*/
 	
 	/**
-	 * Set the position in the element set of enumeration which represents value of the field
+	 * Sets the position in the element set of enumeration which represents value of the field
 	 * 
 	 * @param index the index to set
 	 *
