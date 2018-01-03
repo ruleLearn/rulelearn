@@ -78,7 +78,7 @@ public class IntegerFieldTest {
 	 * Tests creation and "at most" comparisons of gain-type fields
 	 */
 	@Test
-	public void testIsMostLeastAsGoodAs01() {
+	public void testIsAtMostAsGoodAs01() {
 		this.setUp01(AttributePreferenceType.GAIN);
 		
 		assertEquals(field0.isAtMostAsGoodAs(field1a), TernaryLogicValue.TRUE);
@@ -90,7 +90,7 @@ public class IntegerFieldTest {
 	 * Tests creation and "at most" comparisons of cost-type fields
 	 */
 	@Test
-	public void testIsMostLeastAsGoodAs02() {
+	public void testIsAtMostAsGoodAs02() {
 		this.setUp01(AttributePreferenceType.COST);
 		
 		assertEquals(field0.isAtMostAsGoodAs(field1a), TernaryLogicValue.FALSE);
@@ -235,7 +235,7 @@ public class IntegerFieldTest {
 		catch (ClassCastException exception) {
 			System.out.println(exception.getMessage());
 		}
-	}	
+	}
 
 	/**
 	 * Tests {@link IntegerField#selfClone()} method for a field without preference type.
@@ -243,7 +243,7 @@ public class IntegerFieldTest {
 	@Test
 	public void testSelfClone02None() {
 		IntegerField field = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
-		this.testSelfCloneHelper(field);		
+		this.testSelfCloneHelper(field);
 	}
 	
 	/**
@@ -252,7 +252,7 @@ public class IntegerFieldTest {
 	@Test
 	public void testSelfClone02Gain() {
 		IntegerField field = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
-		this.testSelfCloneHelper(field);		
+		this.testSelfCloneHelper(field);
 	}
 	
 	/**
@@ -261,8 +261,7 @@ public class IntegerFieldTest {
 	@Test
 	public void testSelfClone02Cost() {
 		IntegerField field = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST);
-		this.testSelfCloneHelper(field);		
+		this.testSelfCloneHelper(field);
 	}
-	
 	
 }
