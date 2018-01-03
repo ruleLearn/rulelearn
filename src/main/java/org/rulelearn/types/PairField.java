@@ -78,10 +78,12 @@ public class PairField<T extends SimpleField> extends CompositeField {
 		return null;
 	}
 
-	/* {@inheritDoc}
+	/** {@inheritDoc}
+	 * 
 	 * @return {@inheritDoc} 
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public PairField<T> selfClone() {
 		return new PairField<T>(firstValue, secondValue);
 	}

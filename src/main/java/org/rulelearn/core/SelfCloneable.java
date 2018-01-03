@@ -27,9 +27,10 @@ package org.rulelearn.core;
 public interface SelfCloneable<T> {
 	
 	/**
-	 * Clones this object.
+	 * Clones this object. Type (class) of the returned clone is defined by the implementing class.
+	 * It should be exactly that class.
 	 * 
 	 * @return clone of this object
 	 */
-	public T selfClone();
+	public <S extends T> S selfClone();
 }

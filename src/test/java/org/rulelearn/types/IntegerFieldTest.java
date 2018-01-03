@@ -18,6 +18,7 @@ package org.rulelearn.types;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.core.TernaryLogicValue;
@@ -29,6 +30,7 @@ import org.rulelearn.data.AttributePreferenceType;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
+//@RunWith(JUnitPlatform.class)
 public class IntegerFieldTest {
 	
 	private IntegerField field0;
@@ -187,16 +189,80 @@ public class IntegerFieldTest {
 	public void testSelfClone01() {
 		this.setUp02();
 		
-		Field otherField = field0.selfClone();
-		assertTrue(otherField instanceof IntegerField);
-		assertEquals(((IntegerField)otherField).getValue(), field0.getValue());
+		IntegerField clonedField = field0.selfClone();
+		assertEquals(clonedField.getClass(), field0.getClass());
+		assertEquals(((IntegerField)clonedField).getValue(), field0.getValue());
 		
-		otherField = field1a.selfClone();
-		assertTrue(otherField instanceof IntegerField);
-		assertEquals(((IntegerField)otherField).getValue(), field1a.getValue());
+		clonedField = field1a.selfClone();
+		assertEquals(clonedField.getClass(), field1a.getClass());
+		assertEquals(((IntegerField)clonedField).getValue(), field1a.getValue());
 		
-		otherField = field1b.selfClone();
-		assertTrue(otherField instanceof IntegerField);
-		assertEquals(((IntegerField)otherField).getValue(), field1b.getValue());
+		clonedField = field1b.selfClone();
+		assertEquals(clonedField.getClass(), field1b.getClass());
+		assertEquals(((IntegerField)clonedField).getValue(), field1b.getValue());
 	}
+	
+	@SuppressWarnings("unused")
+	private void testSelfCloneHelper(Field field) {
+		IntegerField f1 = field.<IntegerField>selfClone();
+		assertEquals(f1.getClass(), field.getClass());
+		assertEquals(f1.getValue(), ((IntegerField)field).getValue());
+		
+		Field f2 = field.<IntegerField>selfClone();
+		assertEquals(f2.getClass(), field.getClass());
+		assertEquals(((IntegerField)f2).getValue(), ((IntegerField)field).getValue());
+		
+		IntegerField f3 = field.selfClone();
+		assertEquals(f3.getClass(), field.getClass());
+		assertEquals(f3.getValue(), ((IntegerField)field).getValue());
+		
+		Field f4 = field.selfClone();
+		assertEquals(f4.getClass(), field.getClass());
+		assertEquals(((IntegerField)f4).getValue(), ((IntegerField)field).getValue());
+		
+		try {
+			RealField f5 = field.selfClone();
+			fail("Cloning of integer field should not give a real field.");
+		}
+		catch (ClassCastException exception) {
+			System.out.println(exception.getMessage());
+		}
+		
+		try {
+			RealField f6 = field.<RealField>selfClone();
+			fail("Cloning of integer field with explicit return type should not give a real field.");
+		}
+		catch (ClassCastException exception) {
+			System.out.println(exception.getMessage());
+		}
+	}	
+
+	/**
+	 * Tests {@link IntegerField#selfClone()} method for a field without preference type.
+	 */
+	@Test
+	public void testSelfClone02None() {
+		Field field = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
+		this.testSelfCloneHelper(field);		
+	}
+	
+	/**
+	 * Tests {@link IntegerField#selfClone()} method for a field with gain-type preference.
+	 */
+	@Test
+	public void testSelfClone02Gain() {
+		Field field = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
+		this.testSelfCloneHelper(field);		
+	}
+	
+	/**
+	 * Tests {@link IntegerField#selfClone()} method for a field with cost-type preference.
+	 */
+	@Test
+	public void testSelfClone02Cost() {
+		Field field = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST);
+		this.testSelfCloneHelper(field);		
+	}
+	
+	
 }

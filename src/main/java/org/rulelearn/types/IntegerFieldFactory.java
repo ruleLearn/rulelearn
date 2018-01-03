@@ -67,14 +67,13 @@ public class IntegerFieldFactory {
 	}
 	
 	/**
-	 * Factory method for cloning/duplicating an instance of {@link IntegerField}
+	 * Factory method for cloning/duplicating an instance of {@link IntegerField}.
 	 * 
 	 * @param field to be cloned
 	 * @return created field
 	 */
-	public IntegerField clone (IntegerField field) {
-		// TODO check if correct
-		return (IntegerField)field.selfClone();
+	public IntegerField clone(IntegerField field) {
+		return field.selfClone();
 	}
 	
 	/**
@@ -95,9 +94,13 @@ public class IntegerFieldFactory {
 		}
 		
 		@Override
+		@SuppressWarnings("unchecked")
 		public NoneIntegerField selfClone() {
 			return new NoneIntegerField(this.value);
 		}
+//		public <S extends Field> S selfClone() {
+//			return (S)new NoneIntegerField(this.value);
+//		}
 		
 		/**
 		 * Tells if this field is equal to the given field
@@ -134,6 +137,7 @@ public class IntegerFieldFactory {
 	private class GainIntegerField extends IntegerField {
 		
 		@Override
+		@SuppressWarnings("unchecked")
 		public GainIntegerField selfClone() {
 			return new GainIntegerField(this.value);
 		}
@@ -199,6 +203,7 @@ public class IntegerFieldFactory {
 		}
 		
 		@Override
+		@SuppressWarnings("unchecked")
 		public CostIntegerField selfClone() {
 			return new CostIntegerField(this.value);
 		}
