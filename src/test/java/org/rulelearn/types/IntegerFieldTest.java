@@ -203,7 +203,7 @@ public class IntegerFieldTest {
 	}
 	
 	@SuppressWarnings("unused")
-	private void testSelfCloneHelper(Field field) {
+	private void testSelfCloneHelper(IntegerField field) {
 		IntegerField f1 = field.<IntegerField>selfClone();
 		assertEquals(f1.getClass(), field.getClass());
 		assertEquals(f1.getValue(), ((IntegerField)field).getValue());
@@ -242,7 +242,7 @@ public class IntegerFieldTest {
 	 */
 	@Test
 	public void testSelfClone02None() {
-		Field field = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
+		IntegerField field = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
 		this.testSelfCloneHelper(field);		
 	}
 	
@@ -251,7 +251,7 @@ public class IntegerFieldTest {
 	 */
 	@Test
 	public void testSelfClone02Gain() {
-		Field field = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
+		IntegerField field = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
 		this.testSelfCloneHelper(field);		
 	}
 	
@@ -260,7 +260,7 @@ public class IntegerFieldTest {
 	 */
 	@Test
 	public void testSelfClone02Cost() {
-		Field field = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST);
+		IntegerField field = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST);
 		this.testSelfCloneHelper(field);		
 	}
 	
