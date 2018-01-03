@@ -95,12 +95,13 @@ public class IntegerFieldFactory {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public NoneIntegerField selfClone() {
-			return new NoneIntegerField(this.value);
-		}
-//		public <S extends Field> S selfClone() {
-//			return (S)new NoneIntegerField(this.value);
+//		//unfortunately the following implementation would cause a warning by javac:
+//		public NoneIntegerField selfClone() {
+//			return new NoneIntegerField(this.value);
 //		}
+		public <S extends Field> S selfClone() {
+			return (S)new NoneIntegerField(this.value);
+		}
 		
 		/**
 		 * Tells if this field is equal to the given field
@@ -138,9 +139,10 @@ public class IntegerFieldFactory {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public GainIntegerField selfClone() {
-			return new GainIntegerField(this.value);
+		public <S extends Field> S selfClone() {
+			return (S)new GainIntegerField(this.value);
 		}
+		
 		
 		/**
 		 * Constructor setting value of this field.
@@ -204,8 +206,8 @@ public class IntegerFieldFactory {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public CostIntegerField selfClone() {
-			return new CostIntegerField(this.value);
+		public <S extends Field> S selfClone() {
+			return (S)new CostIntegerField(this.value);
 		}
 		
 		@Override

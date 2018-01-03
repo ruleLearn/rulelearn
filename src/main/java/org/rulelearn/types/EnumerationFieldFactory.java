@@ -97,8 +97,8 @@ public class EnumerationFieldFactory {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public NoneEnumerationField selfClone() {
-			return new NoneEnumerationField(this.list, this.index);
+		public <S extends Field> S selfClone() {
+			return (S)new NoneEnumerationField(this.list, this.index);
 		}
 		
 		/**
@@ -160,10 +160,9 @@ public class EnumerationFieldFactory {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public GainEnumerationField selfClone() {
-			return new GainEnumerationField(this.list, this.index);
+		public <S extends Field> S selfClone() {
+			return (S)new GainEnumerationField(this.list, this.index);
 		}
-		
 		/**
 		 * Tells if this field is at least as good as the given field.
 		 * 
@@ -234,8 +233,8 @@ public class EnumerationFieldFactory {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public CostEnumerationField selfClone() {
-			return new CostEnumerationField(this.list, this.index);
+		public <S extends Field> S selfClone() {
+			return (S)new CostEnumerationField(this.list, this.index);
 		}
 		
 		/**

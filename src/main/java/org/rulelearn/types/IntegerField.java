@@ -93,4 +93,5 @@ public abstract class IntegerField extends SimpleField {
 			return 0;
 		}
 	}
+
 }
