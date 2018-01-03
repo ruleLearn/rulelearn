@@ -90,6 +90,7 @@ public class ElementListTest {
 	 * Tests construction of element list.
 	 */
 	@Test
+	@SuppressWarnings("unused")
 	public void testConstruction01() {
 		try {
 			ElementList list = new ElementList(domain2, algorithm1);
@@ -104,6 +105,7 @@ public class ElementListTest {
 	 * Tests construction of element list.
 	 */
 	@Test
+	@SuppressWarnings("unused")
 	public void testConstruction02() {
 		try {
 			ElementList list = new ElementList(null);
