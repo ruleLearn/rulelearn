@@ -95,6 +95,7 @@ public abstract class EnumerationField extends SimpleField {
 	/**
 	 * Checks whether element list of this field has equal hash to element list of the given other field.
 	 * 
+	 * @param otherField other field that this field is being compared to
 	 * @return result of comparison; see {@link TernaryLogicValue}
 	 */
 	public TernaryLogicValue hasEqualHashOfElementList(EnumerationField otherField) {
@@ -104,6 +105,7 @@ public abstract class EnumerationField extends SimpleField {
 	/**
 	 * Checks whether element list of this field is equal to element list of the given other field.
 	 * 
+	 * @param otherField other field that this field is being compared to
 	 * @return result of comparison; see {@link TernaryLogicValue}
 	 */
 	public TernaryLogicValue hasEqualElementList(EnumerationField otherField) {

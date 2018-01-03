@@ -18,7 +18,6 @@ package org.rulelearn.types;
 
 import org.rulelearn.core.TernaryLogicValue;
 
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -34,22 +33,22 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
  */
 public class ElementList {
 	/**
-	 * Array of {@link String} elements of an enumeration
+	 * Array of {@link String} elements of an enumeration.
 	 */
 	protected String [] elements = null;
 	
 	/**
-	 * Map of elements of an enumeration
+	 * Map of elements of an enumeration.
 	 */
 	protected Object2IntMap<String> map = null;
 	
 	/**
-	 * Default algorithm used to calculate hash value of element list
+	 * Default algorithm used to calculate hash value of element list.
 	 */
 	protected static final String DEFAULT_HASH_ALGORITHM = "SHA-256";
 	
 	/**
-	 * Hash value used for quicker comparison of element lists
+	 * Hash value used for quicker comparison of element lists.
 	 */
 	protected byte [] hash = null;
 	
@@ -58,8 +57,9 @@ public class ElementList {
 	 * 
 	 * @param elements array of {@link String} elements
 	 * @throws NullPointerException when elements is null
+	 * @throws NoSuchAlgorithmException when algorithm is not on the list of algorithms provided in {@link MessageDigest}.
 	 */
-	public ElementList (String [] elements) throws IOException, NoSuchAlgorithmException {
+	public ElementList (String [] elements) throws NullPointerException, NoSuchAlgorithmException {
 		this(elements, DEFAULT_HASH_ALGORITHM);
 	}
 	
@@ -69,24 +69,25 @@ public class ElementList {
 	 * @param elements array of {@link String} elements
 	 * @param algorithm algorithm used to calculate hash
 	 * @throws NullPointerException when elements is null
+	 * @throws NoSuchAlgorithmException when algorithm is not on the list of algorithms provided in {@link MessageDigest}.
 	 */
-	public ElementList (String [] elements, String algorithm) throws IOException, NoSuchAlgorithmException {
+	public ElementList (String [] elements, String algorithm) throws NullPointerException, NoSuchAlgorithmException {
 		if (elements != null) {
 			int size = elements.length;
-			elements = new String [size];
+			this.elements = new String [size];
 			int [] indices = new int [size];
 			for (int i=0; i < elements.length; i++) {
 				this.elements[i] = new String(elements[i]);
 				indices[i] = i;
 			}
-			this.map = new Object2IntOpenHashMap<String>(elements, indices);
+			this.map = new Object2IntOpenHashMap<String>(this.elements, indices);
 			// TODO set default value for the project
 			this.map.defaultReturnValue(Integer.MIN_VALUE);
 			
 			// calculate hash code
 			MessageDigest m = MessageDigest.getInstance(algorithm);
-			for (int i = 0; i < elements.length; i++)
-				m.update(elements[i].getBytes());
+			for (int i = 0; i < this.elements.length; i++)
+				m.update(this.elements[i].getBytes());
 			this.hash = m.digest();
 		}
 		else {
@@ -100,18 +101,19 @@ public class ElementList {
 	 * @param index position of the element
 	 * @return {@link String} element
 	 */
-	public String getElement (int index) {
+	public String getElement (int index) throws ArrayIndexOutOfBoundsException {
 		if ((index >= 0) && (index < elements.length)) {
 			return elements[index];
 		}
 		// TODO exception? default value for the project
 		else {
-			return null;
+			//return null;
+			throw new ArrayIndexOutOfBoundsException(index);
 		}
 	}
 	
 	/**
-	 * Gets index of element according to its value.
+	 * Gets index of element on the list according to its value. If element is not present in the list returns negative value. 
 	 * 
 	 * @param value value of the element
 	 * @return index (position) of the element
@@ -155,9 +157,11 @@ public class ElementList {
 			String [] otherElements = otherList.getElements();
 			if (elements.length == otherElements.length) {
 				int i = 0;
-				while ((elements[i] != null) && (otherElements[i] != null) && (elements[i].compareTo(otherElements[i]) == 0))
+				int length = elements.length;
+				while ( (i < length) && (elements[i] != null) && (otherElements[i] != null) && 
+						(elements[i].compareTo(otherElements[i]) == 0))
 					i++;
-				if (i < elements.length-1)
+				if (i < elements.length)
 					return TernaryLogicValue.FALSE;
 				else
 					return TernaryLogicValue.TRUE;
@@ -166,7 +170,8 @@ public class ElementList {
 				return TernaryLogicValue.FALSE;
 			}
 		}
-		return TernaryLogicValue.UNCOMPARABLE;
+		else 
+			return TernaryLogicValue.UNCOMPARABLE;
 	}
 	
 	/**
@@ -180,9 +185,10 @@ public class ElementList {
 			byte [] otherHash = otherList.getHash();
 			if (hash.length == otherHash.length) {
 				int i = 0;
-				while ((hash[i] == otherHash[i]))
+				int length = hash.length;
+				while ((i < length) && (hash[i] == otherHash[i]))
 					i++;
-				if (i < elements.length-1)
+				if (i < length)
 					return TernaryLogicValue.FALSE;
 				else
 					return TernaryLogicValue.TRUE;
@@ -191,6 +197,7 @@ public class ElementList {
 				return TernaryLogicValue.FALSE;
 			}
 		}
-		return TernaryLogicValue.UNCOMPARABLE;
+		else
+			return TernaryLogicValue.UNCOMPARABLE;
 	}
 }
