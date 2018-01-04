@@ -52,17 +52,10 @@ public class EnumerationFieldFactoryTest {
 	void testCreate01() {
 		setUp01();
 		
-		int index = -5; // negative index is OK (it is not checked)
+		int index = 0;
 		EnumerationField field = EnumerationFieldFactory.getInstance().create(domain1, index, AttributePreferenceType.NONE);
 		
 		assertEquals(field.getValue(), index);
-		try {
-			field.getElement();
-			fail("Getting element with negative index should result in an exception.");
-		}
-		catch (IndexOutOfBoundsException ex) {
-			System.out.println(ex);
-		}
 	}
 	
 	/**
@@ -72,7 +65,7 @@ public class EnumerationFieldFactoryTest {
 	void testCreate02() {
 		setUp01();
 		
-		int index = 0;
+		int index = 1;
 		EnumerationField field = EnumerationFieldFactory.getInstance().create(domain1, index, AttributePreferenceType.GAIN);
 		
 		assertEquals(field.getValue(), index);
@@ -85,10 +78,54 @@ public class EnumerationFieldFactoryTest {
 	void testCreate03() {
 		setUp01();
 		
-		int index = 5;
+		int index = 2;
 		EnumerationField field = EnumerationFieldFactory.getInstance().create(domain1, index, AttributePreferenceType.COST);
 		
 		assertEquals(field.getValue(), index);
+	}
+	
+	/**
+	 * Tests creation of enumeration field without (with null domain).
+	 */
+	@Test
+	@SuppressWarnings("unused")
+	void testCreate04() {
+		
+		int index = 2;
+		try {
+			EnumerationField field = EnumerationFieldFactory.getInstance().create(domain1, index, AttributePreferenceType.COST);
+			fail("Construction of enumeration field with null domain should result in an exception.");
+		}
+		catch (IndexOutOfBoundsException ex) {
+			System.out.println(ex);
+		}
+	}
+	
+	/**
+	 * Tests creation of enumeration field with incorrect index.
+	 */
+	@Test
+	@SuppressWarnings("unused")
+	void testCreate05() {
+		setUp01();
+		
+		int index = -1;
+		try {
+			EnumerationField field = EnumerationFieldFactory.getInstance().create(domain1, index, AttributePreferenceType.COST);
+			fail("Construction of enumeration field with negative index value should result in an exception.");
+		}
+		catch (IndexOutOfBoundsException ex) {
+			System.out.println(ex);
+		}
+		
+		index = domain1.getSize();
+		try {
+			EnumerationField field = EnumerationFieldFactory.getInstance().create(domain1, index, AttributePreferenceType.COST);
+			fail("Construction of enumeration field with index value out of domain should result in an exception.");
+		}
+		catch (IndexOutOfBoundsException ex) {
+			System.out.println(ex);
+		}
 	}
 	
 	/**
@@ -96,7 +133,9 @@ public class EnumerationFieldFactoryTest {
 	 */
 	@Test
 	void testClone01() {
-		int index = 1;
+		setUp01();
+		
+		int index = 3;
 		EnumerationField field = EnumerationFieldFactory.getInstance().create(domain1, index, AttributePreferenceType.NONE);
 		EnumerationField clonedField = EnumerationFieldFactory.getInstance().clone(field);
 		assertEquals(clonedField.getValue(), index);
@@ -108,7 +147,9 @@ public class EnumerationFieldFactoryTest {
 	 */
 	@Test
 	void testClone02() {
-		int index = 1;
+		setUp01();
+		
+		int index = 2;
 		EnumerationField field = EnumerationFieldFactory.getInstance().create(domain1, index, AttributePreferenceType.GAIN);
 		EnumerationField clonedField = EnumerationFieldFactory.getInstance().clone(field);
 		assertEquals(clonedField.getValue(), index);
@@ -120,6 +161,8 @@ public class EnumerationFieldFactoryTest {
 	 */
 	@Test
 	void testClone03() {
+		setUp01();
+		
 		int index = 1;
 		EnumerationField field = EnumerationFieldFactory.getInstance().create(domain1, index, AttributePreferenceType.COST);
 		EnumerationField clonedField = EnumerationFieldFactory.getInstance().clone(field);

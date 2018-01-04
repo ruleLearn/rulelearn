@@ -47,11 +47,16 @@ public abstract class EnumerationField extends SimpleField {
 	 * 
 	 * @param list element list of the created field
 	 * @param index position in the element list of enumeration which represents value of the field
+	 * @throws IndexOutOfBoundsException when list is null and/or index is incorrect 
 	 */
-	protected EnumerationField(ElementList list, int index) {
-		this.list = list;
-		// TODO should the correctness of index be checked here? (throws IndexOutOfBoundsException)
-		this.index = index;
+	protected EnumerationField(ElementList list, int index) throws IndexOutOfBoundsException {
+		if (list != null) {
+			this.list = list;
+			if ((index >= 0) && (index < list.getSize()))
+				this.index = index;
+			else throw new IndexOutOfBoundsException();
+		}
+		else throw new IndexOutOfBoundsException();
 	}
 	
 	/**

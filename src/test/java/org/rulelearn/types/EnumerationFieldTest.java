@@ -310,6 +310,7 @@ public class EnumerationFieldTest {
 	 */
 	@Test
 	public void testSelfClone02None() {
+		this.setUp02();
 		EnumerationField field = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.NONE);
 		this.testSelfCloneHelper(field);
 	}
@@ -319,6 +320,7 @@ public class EnumerationFieldTest {
 	 */
 	@Test
 	public void testSelfClone02Gain() {
+		this.setUp02();
 		EnumerationField field = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.GAIN);
 		this.testSelfCloneHelper(field);
 	}
@@ -328,6 +330,7 @@ public class EnumerationFieldTest {
 	 */
 	@Test
 	public void testSelfClone02Cost() {
+		this.setUp02();
 		EnumerationField field = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.COST);
 		this.testSelfCloneHelper(field);
 	}
