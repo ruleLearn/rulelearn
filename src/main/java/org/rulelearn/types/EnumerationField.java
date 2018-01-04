@@ -52,7 +52,7 @@ public abstract class EnumerationField extends SimpleField {
 	protected EnumerationField(ElementList list, int index) throws IndexOutOfBoundsException {
 		if (list != null) {
 			this.list = list;
-			if ((index >= 0) && (index < list.getSize()))
+			if ((index >= 0) && (index < this.list.getSize()))
 				this.index = index;
 			else throw new IndexOutOfBoundsException();
 		}
