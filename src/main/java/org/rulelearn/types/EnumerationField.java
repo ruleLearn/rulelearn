@@ -50,6 +50,7 @@ public abstract class EnumerationField extends SimpleField {
 	 */
 	protected EnumerationField(ElementList list, int index) {
 		this.list = list;
+		// TODO should the correctness of index be checked here? (throws IndexOutOfBoundsException)
 		this.index = index;
 	}
 	
@@ -126,7 +127,7 @@ public abstract class EnumerationField extends SimpleField {
 	 * 
 	 * @return index of element on list
 	 */
-	public int getIndex() {
+	public int getValue() {
 		return index;
 	}
 	

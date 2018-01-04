@@ -110,7 +110,7 @@ public class EnumerationFieldFactory {
 		 */
 		public TernaryLogicValue isEqualTo(Field otherField) {
 			try {
-				return (this.getIndex() == ((EnumerationField)otherField).getIndex() ? 
+				return (this.getValue() == ((EnumerationField)otherField).getValue() ? 
 						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			} catch (ClassCastException exception) {
 				return TernaryLogicValue.UNCOMPARABLE;
@@ -171,7 +171,7 @@ public class EnumerationFieldFactory {
 		@Override
 		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
 			try {
-				return (this.getIndex() >= ((GainEnumerationField)otherField).getIndex() ?
+				return (this.getValue() >= ((GainEnumerationField)otherField).getValue() ?
 						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -188,7 +188,7 @@ public class EnumerationFieldFactory {
 		@Override
 		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			try {
-				return (this.getIndex() <= ((GainEnumerationField)otherField).getIndex() ?
+				return (this.getValue() <= ((GainEnumerationField)otherField).getValue() ?
 						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -199,18 +199,13 @@ public class EnumerationFieldFactory {
 		@Override
 		public TernaryLogicValue isEqualTo(Field otherField) {
 			try {
-				return (this.getIndex() == ((EnumerationField)otherField).getIndex() ? 
+				return (this.getValue() == ((EnumerationField)otherField).getValue() ? 
 						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			} catch (ClassCastException exception) {
 				return TernaryLogicValue.UNCOMPARABLE;
 			}
 		}
 
-		@Override
-		public TernaryLogicValue isDifferentThan(Field otherField) {
-			// TODO Auto-generated method stub
-			return null;
-		}
 	}
 	
 	/**
@@ -245,7 +240,7 @@ public class EnumerationFieldFactory {
 		@Override
 		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
 			try {
-				return (this.getIndex() <= ((CostEnumerationField)otherField).getIndex() ?
+				return (this.getValue() <= ((CostEnumerationField)otherField).getValue() ?
 						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -262,7 +257,7 @@ public class EnumerationFieldFactory {
 		@Override
 		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			try {
-				return (this.getIndex() >= ((CostEnumerationField)otherField).getIndex() ?
+				return (this.getValue() >= ((CostEnumerationField)otherField).getValue() ?
 						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -273,7 +268,7 @@ public class EnumerationFieldFactory {
 		@Override
 		public TernaryLogicValue isEqualTo(Field otherField) {
 			try {
-				return (this.getIndex() == ((EnumerationField)otherField).getIndex() ?
+				return (this.getValue() == ((EnumerationField)otherField).getValue() ?
 						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			} catch (ClassCastException exception) {
 				return TernaryLogicValue.UNCOMPARABLE;
