@@ -139,6 +139,15 @@ public class ElementList {
 	}
 	
 	/**
+	 * Gets size of element list.
+	 * 
+	 * @return size of element list
+	 */
+	public int getSize () {
+		return elements.length;
+	}
+	
+	/**
 	 * Gets hash of the element list.
 	 * 
 	 * @return array of bytes representing hash value
