@@ -99,6 +99,7 @@ public class ElementList {
 	 * Gets element according to the index.
 	 * 
 	 * @param index position of the element
+	 * @throws ArrayIndexOutOfBoundsException when index is incorrect
 	 * @return {@link String} element
 	 */
 	public String getElement (int index) throws ArrayIndexOutOfBoundsException {
