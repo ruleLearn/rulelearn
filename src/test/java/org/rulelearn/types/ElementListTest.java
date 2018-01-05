@@ -166,6 +166,17 @@ public class ElementListTest {
 	}
 	
 	/**
+	 * Tests construction and size of element lists.
+	 */
+	@Test
+	public void testSieze01() {
+		this.setUp03();
+		
+		assertEquals(list1.getSize(), 3);
+		assertEquals(list3.getSize(), 4);
+	}
+	
+	/**
 	 * Tests construction and getting elements from element lists.
 	 */
 	@Test
