@@ -17,11 +17,27 @@
 package org.rulelearn.types;
 
 /**
- * Field representing an unknown value.
+ * Field representing a single unknown value (unknown value of a simple field).
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class UnknownField extends Field {
+public abstract class UnknownSimpleField extends SimpleField {
 
+//	@Override
+//	@SuppressWarnings("unchecked")
+//	public <S extends Field> S selfClone() {
+//		return (S)new UnknownSimpleField();
+//	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@code false}, as value of this simple field is always unknown (missing).
+	 */
+	@Override
+	public boolean hasValue() {
+		return false;
+	}
+	
 }

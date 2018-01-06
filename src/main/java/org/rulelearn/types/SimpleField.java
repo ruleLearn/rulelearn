@@ -16,13 +16,16 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.ReverseComparable;
+import org.rulelearn.core.TernaryLogicValue;
+
 /**
  * Top level class for all simple fields (i.e., representing simple values) in an information table.
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class SimpleField extends Field implements Comparable<SimpleField> {
+public abstract class SimpleField extends Field implements Comparable<SimpleField>, ReverseComparable<SimpleField> {
 	
 	/**
 	 * Compares this field with the other field. Note that this implementing method will not throw {@link org.rulelearn.core.UncomparableException}
@@ -41,5 +44,27 @@ public abstract class SimpleField extends Field implements Comparable<SimpleFiel
 	public int compareToEx(Field otherField) {
 		return compareTo((SimpleField)otherField);
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param otherField {@inheritDoc}
+	 */
+	@Override
+	public TernaryLogicValue isDifferentThan(Field otherField) {
+		switch (this.isEqualTo(otherField)) {
+			case TRUE: return TernaryLogicValue.FALSE;
+			case FALSE: return TernaryLogicValue.TRUE;
+			case UNCOMPARABLE: return TernaryLogicValue.UNCOMPARABLE;
+			default: return TernaryLogicValue.UNCOMPARABLE;
+		}
+	}
+	
+	/**
+	 * Tells if this field has a value (the value is known, not missing).
+	 * 
+	 * @return {@code true} if this field has some value, {@code false} if value of this field is unknown (missing)
+	 */
+	abstract public boolean hasValue();
 
 }

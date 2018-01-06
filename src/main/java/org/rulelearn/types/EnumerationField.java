@@ -60,42 +60,48 @@ public abstract class EnumerationField extends SimpleField {
 	}
 	
 	/**
-	 * {@inheritDoc}
+	 * Compares this field with the other field. Takes into account only the value of this field,
+	 * ignoring its preference type.
 	 * 
-	 * @param otherField {@inheritDoc}
-	 */
-	@Override
-	public TernaryLogicValue isDifferentThan(Field otherField) {
-		switch (this.isEqualTo(otherField)) {
-			case TRUE: return TernaryLogicValue.FALSE;
-			case FALSE: return TernaryLogicValue.TRUE;
-			case UNCOMPARABLE: return TernaryLogicValue.UNCOMPARABLE;
-			default: return TernaryLogicValue.UNCOMPARABLE;
-		}
-	}
-	
-	/**
-	 * Compares this field with the other field.
-	 * 
-	 * @param otherField other field to be compared with this field
+	 * @param otherField other field that this field is going to be compared to
 	 * 
 	 * @return negative number when this field is smaller than the other field,<br>
 	 *         zero if both fields are equal,<br>
 	 *         positive number when this field is greater than the other field
 	 * 
-	 * @throws ClassCastException if the other field is not of type {@link EnumerationField}
+	 * @throws ClassCastException if the other simple field has a value (i.e., its value is not missing according to {@link SimpleField#hasValue()}) and is not of type {@link EnumerationField}
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	@Override
 	public int compareTo(SimpleField otherField) {
-		EnumerationField other = (EnumerationField)otherField;
-		if (this.index > other.index) {
-			return 1;
-		} else if (this.index < other.index) {
-			return -1;
-		} else {
-			return 0;
+		if (otherField.hasValue()) {
+			EnumerationField other = (EnumerationField)otherField;
+			if (this.index > other.index) {
+				return 1;
+			} else if (this.index < other.index) {
+				return -1;
+			} else {
+				return 0;
+			}
+		} else { //missing value => delegate comparison to the other field
+			return otherField.reverseCompareTo(this);
 		}
+	}
+	
+	/**
+	 * Compares the other field to this field. Does the reverse comparison than {@link Comparable#compareTo(Object)}.
+	 * 
+	 * @param otherField other field to be compared to this field
+	 * @return negative number when the other field is smaller than this field,<br>
+	 *         zero if both field are equal,<br>
+	 *         positive number when the other field is greater than this field
+	 * 
+	 * @throws ClassCastException {@inheritDoc}
+	 * @throws NullPointerException if the other field is {@code null}
+	 */
+	@Override
+	public int reverseCompareTo(SimpleField otherField) {
+		return otherField.compareTo(this); //perform "normal" comparison
 	}
 	
 	/**
@@ -143,6 +149,16 @@ public abstract class EnumerationField extends SimpleField {
 	 */
 	public String getElement() {
 		return list.getElement(index);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@code true}, as value of this enumeration field is always known.
+	 */
+	@Override
+	public boolean hasValue() {
+		return true;
 	}
 
 	/**

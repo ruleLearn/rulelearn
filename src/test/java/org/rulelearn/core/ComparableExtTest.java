@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.rulelearn.types;
+package org.rulelearn.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import org.rulelearn.types.ComparableExt.ComparisonResult;
+import org.rulelearn.core.ComparableExt.ComparisonResult;
+import org.rulelearn.types.Field;
 import org.rulelearn.core.UncomparableException;
 
 import static org.mockito.Mockito.*;

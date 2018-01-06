@@ -31,7 +31,7 @@ public interface SelfCloneable<T> {
 	 * It should be exactly that class.
 	 * 
 	 * @return clone of this object
-	 * @param <S> class of cloned objects
+	 * @param <S> class of cloned object
 	 */
 	public <S extends T> S selfClone();
 }
