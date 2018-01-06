@@ -1,0 +1,129 @@
+/*
+ * Copyright (C) Jerzy Błaszczyński, Marcin Szeląg
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'java'
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2' //adds junitPlatformTest task
+	}
+}
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    //jcenter()
+    mavenCentral()
+}
+
+dependencies {
+ 	//adding FastUtil library
+	compile("it.unimi.dsi:fastutil:8.1.1")
+	runtime("it.unimi.dsi:fastutil:8.1.1")
+	
+	testCompile("org.junit.jupiter:junit-jupiter-api:5.0.2")
+	testRuntime("org.junit.jupiter:junit-jupiter-engine:5.0.2")
+	
+	testRuntime("org.junit.platform:junit-platform-launcher:1.0.2")
+	
+	testCompile("org.mockito:mockito-core:2.13.0")
+	
+	
+	//For running JUnit 4 based tests:
+	//testCompile("junit:junit:4.12")
+    //testRuntime("org.junit.vintage:junit-vintage-engine:4.12.2")
+	
+	// To avoid compiler warnings about @API annotations in JUnit code
+	testCompileOnly('org.apiguardian:apiguardian-api:1.0.0') //licenced under Apache License 2.0; https://github.com/apiguardian-team/apiguardian
+	
+	// To use Log4J's LogManager
+	testRuntime("org.apache.logging.log4j:log4j-core:2.10.0") //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/
+	testRuntime("org.apache.logging.log4j:log4j-jul:2.10.0") //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/
+}
+
+compileJava {
+  if (project.properties["org.gradle.java.home"] == null ) {
+  	if (System.getenv('JAVA_HOME') != null) {
+  		println "[note@build.gradle/compileJava] Property org.gradle.java.home is not set - Gradle assumes JAVA_HOME environmental variable to point to Java JDK directory"
+  		println "[note@build.gradle/compileJava] JAVA_HOME=${System.getenv('JAVA_HOME')}"
+  		println ""
+  		
+  		options.fork = true
+  		options.forkOptions.executable = "${System.getenv('JAVA_HOME')}\\bin\\javac".replace("\\", "/")
+  		options.compilerArgs << "-Xlint:unchecked"
+  	}
+  }
+}
+
+compileTestJava {
+  if (project.properties["org.gradle.java.home"] == null ) {
+  	if (System.getenv('JAVA_HOME') != null) {
+  		println "[note@build.gradle/compileTestJava] Property org.gradle.java.home is not set - Gradle assumes JAVA_HOME environmental variable to point to Java JDK directory"
+  		println "[note@build.gradle/compileTestJava] JAVA_HOME=${System.getenv('JAVA_HOME')}"
+  		println ""
+  		
+  		options.fork = true
+  		options.forkOptions.executable = "${System.getenv('JAVA_HOME')}\\bin\\javac".replace("\\", "/")
+  	}
+  }
+}
+
+junitPlatform {
+	// platformVersion '1.0.2'
+	filters {
+		engines {
+			// include 'junit-jupiter', 'junit-vintage'
+			// exclude 'custom-engine'
+		}
+		tags {
+			// include 'fast'
+			// exclude 'slow'
+		}
+		// includeClassNamePattern '.*Test'
+	}
+	enableStandardTestTask true
+	// reportsDir file('build/test-results/junit-platform') // this is the default
+	logManager 'org.apache.logging.log4j.jul.LogManager'
+}
+
+javadoc {
+	options.author = true
+	options.addStringOption("charset", "UTF-8")
+	
+	if (project.properties["org.gradle.java.home"] == null ) {
+		if (System.getenv('JAVA_HOME') != null) {
+			println "[note@build.gradle/javadoc] Property org.gradle.java.home is not set - Gradle assumes JAVA_HOME environmental variable to point to Java JDK directory"
+  			println "[note@build.gradle/javadoc] JAVA_HOME=${System.getenv('JAVA_HOME')}"
+  			println ""
+		
+	 		setExecutable("${System.getenv('JAVA_HOME')}\\bin\\javadoc".replace("\\", "/"))
+	 	}
+    }
+    
+    if (project.properties["generate.test.javadoc"] == "true") {
+    	println "[note@build.gradle/javadoc] Generating documentation also for test classes"
+    	println ""
+    	
+    	classpath += sourceSets.test.compileClasspath
+    	source += sourceSets.test.allJava
+    } else {
+    	println "[note@build.gradle/javadoc] Skipping generation of documentation for test classes"
+    	println ""
+    }
+}

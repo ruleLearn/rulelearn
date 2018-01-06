@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package org.ruleLearn.data;
+package org.rulelearn.core;
 
 /**
- * Preference type of an attribute in information table.
+ * Type of values in ternary logic.  
  * 
- * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
- * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
+ * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+ * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public enum AttributePreferenceType {
+public enum TernaryLogicValue {
 	/**
-	 * Type of an attribute without preferences
+	 * Truth value indicating true.
 	 */
-	NONE,
+	TRUE,
 	/**
-	 * Type of cost-type criterion
+	 * Truth value indicating false.
 	 */
-	COST,
+	FALSE,
 	/**
-	 * Type of gain-type criterion
+	 * Truth value indicating intermediate value between true and false.
 	 */
-	GAIN
+	UNCOMPARABLE
 }

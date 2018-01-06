@@ -14,25 +14,14 @@
  * limitations under the License.
  */
 
-package org.ruleLearn.types;
+package org.rulelearn.types;
 
 /**
- * Result of comparing two fields preference type of the attribute which values are represented by fields are taken into account. 
- * 
- * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
- * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
+ * Field composed of more than one simple field.
+ *
+ * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+ * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public enum FieldComparisonResult {
-	/**
-	 * Relation in question is verified between two fields.
-	 */
-	TRUE,
-	/**
-	 * Relation in question is not verified between two fields.
-	 */
-	FALSE,
-	/**
-	 * Two fields are uncomparable (i.e., not-comparable).
-	 */
-	UNCOMPARABLE
+public abstract class CompositeField extends Field {
+
 }

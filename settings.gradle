@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) Jerzy Błaszczyński, Marcin Szeląg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +14,13 @@
  * limitations under the License.
  */
 
-package org.ruleLearn.types;
+rootProject.name = 'ruleLearn'
 
-/**
- * Field representing integer value.
- * Should be instantiated using {@link IntegerFieldFactory#create(int, AttributePreferenceType)}.
- * 
- * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
- * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
- */
-public abstract class IntegerField extends SimpleField {
-	/**
-	 * Value of this field.
-	 */
-	protected int value = 0;
-	
-	/**
-	 * Object creation preventing constructor.
-	 */
-	protected IntegerField() {}
-	
-	protected IntegerField(int value) {
-		this.value = value;
-	}
+//check unmutable property "org.gradle.java.home"
+if (properties["org.gradle.java.home"] == null && System.getenv('JAVA_HOME') == null) {
+	println ""
+	println "[ERROR@settings.gradle] Incorrect settings. Neither org.gradle.java.home property nor JAVA_HOME environmental variable is set. " +
+		"org.gradle.java.home property can be assigned a value (path to Java JDK directory) in 'gradle.properties' file, located in the project root directory " +
+		"or USER_HOME/.gradle directory. " +
+		"JAVA_HOME environmental variable can be set in system settings."
 }

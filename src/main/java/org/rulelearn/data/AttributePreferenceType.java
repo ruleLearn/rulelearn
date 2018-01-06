@@ -13,15 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.ruleLearn.types;
+package org.rulelearn.data;
 
 /**
- * Top level class for all simple fields (i.e., representing simple values) in an information table.
+ * Preference type of an attribute in information table.
  * 
- * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
- * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
+ * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+ * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class SimpleField extends Field {
-
+public enum AttributePreferenceType {
+	/**
+	 * Type of an attribute without preferences (regular attribute)
+	 */
+	NONE,
+	/**
+	 * Type of cost-type criterion
+	 */
+	COST,
+	/**
+	 * Type of gain-type criterion
+	 */
+	GAIN
 }
