@@ -131,6 +131,7 @@ public class ElementList {
 	
 	/**
 	 * Gets elements.
+	 * TODO - add javadoc comment concerning returning reference
 	 * 
 	 * @return array of {@link String} elements
 	 */

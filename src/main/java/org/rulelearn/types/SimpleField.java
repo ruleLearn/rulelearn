@@ -16,7 +16,6 @@
 
 package org.rulelearn.types;
 
-import org.rulelearn.core.ReverseComparable;
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
@@ -25,7 +24,7 @@ import org.rulelearn.core.TernaryLogicValue;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class SimpleField extends Field implements Comparable<SimpleField>, ReverseComparable<SimpleField> {
+public abstract class SimpleField extends Field implements Comparable<SimpleField> {
 	
 	/**
 	 * Compares this field with the other field. Note that this implementing method will not throw {@link org.rulelearn.core.UncomparableException}
@@ -59,12 +58,5 @@ public abstract class SimpleField extends Field implements Comparable<SimpleFiel
 			default: return TernaryLogicValue.UNCOMPARABLE;
 		}
 	}
-	
-	/**
-	 * Tells if this field has a value (the value is known, not missing).
-	 * 
-	 * @return {@code true} if this field has some value, {@code false} if value of this field is unknown (missing)
-	 */
-	abstract public boolean hasValue();
 
 }

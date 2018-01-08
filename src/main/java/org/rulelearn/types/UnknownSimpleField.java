@@ -16,28 +16,20 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.ReverseComparable;
+
 /**
  * Field representing a single unknown value (unknown value of a simple field).
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class UnknownSimpleField extends SimpleField {
+public abstract class UnknownSimpleField extends SimpleField implements ReverseComparable<SimpleField> {
 
 //	@Override
 //	@SuppressWarnings("unchecked")
 //	public <S extends Field> S selfClone() {
 //		return (S)new UnknownSimpleField();
 //	}
-
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @return {@code false}, as value of this simple field is always unknown (missing).
-	 */
-	@Override
-	public boolean hasValue() {
-		return false;
-	}
 	
 }
