@@ -35,7 +35,7 @@ public abstract class EnumerationField extends SimpleField {
 	/**
 	 * Position on element list which is equivalent to value of this field.
 	 */
-	protected int index = 0;
+	protected int value = 0;
 	
 	/**
 	 * Constructor preventing object creation.
@@ -53,7 +53,7 @@ public abstract class EnumerationField extends SimpleField {
 		if (list != null) {
 			this.list = list;
 			if ((index >= 0) && (index < this.list.getSize()))
-				this.index = index;
+				this.value = index;
 			else throw new IndexOutOfBoundsException();
 		}
 		else throw new IndexOutOfBoundsException();
@@ -78,9 +78,9 @@ public abstract class EnumerationField extends SimpleField {
 			return ((UnknownSimpleField)otherField).reverseCompareTo(this); //missing value => delegate comparison to the other field
 		} else {
 			EnumerationField other = (EnumerationField)otherField;
-			if (this.index > other.index) {
+			if (this.value > other.value) {
 				return 1;
-			} else if (this.index < other.index) {
+			} else if (this.value < other.value) {
 				return -1;
 			} else {
 				return 0;
@@ -123,7 +123,7 @@ public abstract class EnumerationField extends SimpleField {
 	 * @return index of element on list
 	 */
 	public int getValue() {
-		return index;
+		return value;
 	}
 	
 	/**
@@ -132,7 +132,7 @@ public abstract class EnumerationField extends SimpleField {
 	 * @return {@link String} element 
 	 */
 	public String getElement() {
-		return list.getElement(index);
+		return list.getElement(value);
 	}
 
 	/**
