@@ -97,13 +97,13 @@ public class EnumerationFieldFactory {
 		@Override
 		@SuppressWarnings("unchecked")
 		public <S extends Field> S selfClone() {
-			return (S)new NoneEnumerationField(this.list, this.index);
+			return (S)new NoneEnumerationField(this.list, this.value);
 		}
 		
 		@Override
 		public TernaryLogicValue isEqualTo(Field otherField) {
 			try {
-				return (this.getValue() == ((EnumerationField)otherField).getValue() ? 
+				return (this.value == ((EnumerationField)otherField).value ? 
 						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			} catch (ClassCastException exception) {
 				return TernaryLogicValue.UNCOMPARABLE;
@@ -163,7 +163,7 @@ public class EnumerationFieldFactory {
 		@Override
 		@SuppressWarnings("unchecked")
 		public <S extends Field> S selfClone() {
-			return (S)new GainEnumerationField(this.list, this.index);
+			return (S)new GainEnumerationField(this.list, this.value);
 		}
 		/**
 		 * Tells if this field is at least as good as the given field.
@@ -174,7 +174,7 @@ public class EnumerationFieldFactory {
 		@Override
 		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
 			try {
-				return (this.getValue() >= ((GainEnumerationField)otherField).getValue() ?
+				return (this.value >= ((GainEnumerationField)otherField).value ?
 						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -191,7 +191,7 @@ public class EnumerationFieldFactory {
 		@Override
 		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			try {
-				return (this.getValue() <= ((GainEnumerationField)otherField).getValue() ?
+				return (this.value <= ((GainEnumerationField)otherField).value ?
 						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -202,7 +202,7 @@ public class EnumerationFieldFactory {
 		@Override
 		public TernaryLogicValue isEqualTo(Field otherField) {
 			try {
-				return (this.getValue() == ((EnumerationField)otherField).getValue() ? 
+				return (this.value == ((EnumerationField)otherField).value ? 
 						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			} catch (ClassCastException exception) {
 				return TernaryLogicValue.UNCOMPARABLE;
@@ -231,7 +231,7 @@ public class EnumerationFieldFactory {
 		@Override
 		@SuppressWarnings("unchecked")
 		public <S extends Field> S selfClone() {
-			return (S)new CostEnumerationField(this.list, this.index);
+			return (S)new CostEnumerationField(this.list, this.value);
 		}
 		
 		/**
@@ -243,7 +243,7 @@ public class EnumerationFieldFactory {
 		@Override
 		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
 			try {
-				return (this.getValue() <= ((CostEnumerationField)otherField).getValue() ?
+				return (this.value <= ((CostEnumerationField)otherField).value ?
 						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -260,7 +260,7 @@ public class EnumerationFieldFactory {
 		@Override
 		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			try {
-				return (this.getValue() >= ((CostEnumerationField)otherField).getValue() ?
+				return (this.value >= ((CostEnumerationField)otherField).value ?
 						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			}
 			catch (ClassCastException exception) {
@@ -271,7 +271,7 @@ public class EnumerationFieldFactory {
 		@Override
 		public TernaryLogicValue isEqualTo(Field otherField) {
 			try {
-				return (this.getValue() == ((EnumerationField)otherField).getValue() ?
+				return (this.value == ((EnumerationField)otherField).value ?
 						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 			} catch (ClassCastException exception) {
 				return TernaryLogicValue.UNCOMPARABLE;
