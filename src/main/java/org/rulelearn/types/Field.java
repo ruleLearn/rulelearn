@@ -56,8 +56,8 @@ public abstract class Field implements ComparableExt<Field>, SelfCloneable<Field
 	 * Tells if this field is equal to the given field (has the same value).
 	 * 
 	 * @param otherField other field that this field is being compared to
-	 * @return {@link TernaryLogicValue#TRUE} if this field is at least as good as the other field,<br>
-	 *         {@link TernaryLogicValue#FALSE} if this field is not at least as good as the other field,<br>
+	 * @return {@link TernaryLogicValue#TRUE} if this field is equal to the other field,<br>
+	 *         {@link TernaryLogicValue#FALSE} if this field is not equal to the other field,<br>
 	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other field prevents comparison
 	 *         of this field and the other field.
 	 * @throws NullPointerException if the other field is {@code null}
@@ -68,11 +68,20 @@ public abstract class Field implements ComparableExt<Field>, SelfCloneable<Field
 	 * Tells if this field is not equal to the given field (has different value).
 	 * 
 	 * @param otherField other field that this field is being compared to
-	 * @return {@link TernaryLogicValue#TRUE} if this field is at least as good as the other field,<br>
-	 *         {@link TernaryLogicValue#FALSE} if this field is not at least as good as the other field,<br>
+	 * @return {@link TernaryLogicValue#TRUE} if this field is not equal to the other field,<br>
+	 *         {@link TernaryLogicValue#FALSE} if this field is equal to the other field,<br>
 	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other field prevents comparison
 	 *         of this field and the other field.
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
-	abstract public TernaryLogicValue isDifferentThan(Field otherField);
+	public TernaryLogicValue isDifferentThan(Field otherField) {
+		//negate and return the result of isEqualTo method
+		switch (this.isEqualTo(otherField)) {
+			case TRUE: return TernaryLogicValue.FALSE;
+			case FALSE: return TernaryLogicValue.TRUE;
+			case UNCOMPARABLE: return TernaryLogicValue.UNCOMPARABLE;
+			default: return TernaryLogicValue.UNCOMPARABLE;
+		}
+	}
+	
 }

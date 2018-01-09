@@ -102,11 +102,15 @@ public class EnumerationFieldFactory {
 		
 		@Override
 		public TernaryLogicValue isEqualTo(Field otherField) {
-			try {
-				return (this.value == ((EnumerationField)otherField).value ? 
-						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-			} catch (ClassCastException exception) {
-				return TernaryLogicValue.UNCOMPARABLE;
+			if (otherField instanceof UnknownSimpleField) {
+				return ((UnknownSimpleField)otherField).reverseIsEqualTo(this); //missing value => delegate comparison to the other field
+			} else {
+				try {
+					return (this.value == ((EnumerationField)otherField).value ? 
+							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
+				} catch (ClassCastException exception) {
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
 			}
 		}
 		
@@ -173,12 +177,16 @@ public class EnumerationFieldFactory {
 		 */
 		@Override
 		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
-			try {
-				return (this.value >= ((GainEnumerationField)otherField).value ?
-						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-			}
-			catch (ClassCastException exception) {
-				return TernaryLogicValue.UNCOMPARABLE;
+			if (otherField instanceof UnknownSimpleField) {
+				return ((UnknownSimpleField)otherField).reverseIsAtLeastAsGoodAs(this); //missing value => delegate comparison to the other field
+			} else {
+				try {
+					return (this.value >= ((GainEnumerationField)otherField).value ?
+							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
+				}
+				catch (ClassCastException exception) {
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
 			}
 		}
 
@@ -190,22 +198,30 @@ public class EnumerationFieldFactory {
 		 */
 		@Override
 		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
-			try {
-				return (this.value <= ((GainEnumerationField)otherField).value ?
-						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-			}
-			catch (ClassCastException exception) {
-				return TernaryLogicValue.UNCOMPARABLE;
+			if (otherField instanceof UnknownSimpleField) {
+				return ((UnknownSimpleField)otherField).reverseIsAtMostAsGoodAs(this); //missing value => delegate comparison to the other field
+			} else {
+				try {
+					return (this.value <= ((GainEnumerationField)otherField).value ?
+							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
+				}
+				catch (ClassCastException exception) {
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
 			}
 		}
 
 		@Override
 		public TernaryLogicValue isEqualTo(Field otherField) {
-			try {
-				return (this.value == ((EnumerationField)otherField).value ? 
-						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-			} catch (ClassCastException exception) {
-				return TernaryLogicValue.UNCOMPARABLE;
+			if (otherField instanceof UnknownSimpleField) {
+				return ((UnknownSimpleField)otherField).reverseIsEqualTo(this); //missing value => delegate comparison to the other field
+			} else {
+				try {
+					return (this.value == ((EnumerationField)otherField).value ? 
+							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
+				} catch (ClassCastException exception) {
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
 			}
 		}
 
@@ -242,12 +258,16 @@ public class EnumerationFieldFactory {
 		 */
 		@Override
 		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
-			try {
-				return (this.value <= ((CostEnumerationField)otherField).value ?
-						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-			}
-			catch (ClassCastException exception) {
-				return TernaryLogicValue.UNCOMPARABLE;
+			if (otherField instanceof UnknownSimpleField) {
+				return ((UnknownSimpleField)otherField).reverseIsAtLeastAsGoodAs(this); //missing value => delegate comparison to the other field
+			} else {
+				try {
+					return (this.value <= ((CostEnumerationField)otherField).value ?
+							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
+				}
+				catch (ClassCastException exception) {
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
 			}
 		}
 
@@ -259,22 +279,30 @@ public class EnumerationFieldFactory {
 		 */
 		@Override
 		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
-			try {
-				return (this.value >= ((CostEnumerationField)otherField).value ?
-						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-			}
-			catch (ClassCastException exception) {
-				return TernaryLogicValue.UNCOMPARABLE;
+			if (otherField instanceof UnknownSimpleField) {
+				return ((UnknownSimpleField)otherField).reverseIsAtMostAsGoodAs(this); //missing value => delegate comparison to the other field
+			} else {
+				try {
+					return (this.value >= ((CostEnumerationField)otherField).value ?
+							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
+				}
+				catch (ClassCastException exception) {
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
 			}
 		}
 		
 		@Override
 		public TernaryLogicValue isEqualTo(Field otherField) {
-			try {
-				return (this.value == ((EnumerationField)otherField).value ?
-						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-			} catch (ClassCastException exception) {
-				return TernaryLogicValue.UNCOMPARABLE;
+			if (otherField instanceof UnknownSimpleField) {
+				return ((UnknownSimpleField)otherField).reverseIsEqualTo(this); //missing value => delegate comparison to the other field
+			} else {
+				try {
+					return (this.value == ((EnumerationField)otherField).value ?
+							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
+				} catch (ClassCastException exception) {
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
 			}
 		}
 	}

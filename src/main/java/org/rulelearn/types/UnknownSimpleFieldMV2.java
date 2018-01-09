@@ -20,7 +20,10 @@ import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.SimpleField;
 
 /**
- * UnknownSimpleFieldMV2
+ * Class implementing a missing attribute value handled according to approach denoted by mv_2. This approach is described in:<br>
+ * M. Szeląg, J. Błaszczyński, R. Słowiński, Rough Set Analysis of Classification Data with Missing Values.
+ * [In]: L. Polkowski et al. (Eds.): Rough Sets, International Joint Conference, IJCRS 2017, Olsztyn, Poland, July 3–7, 2017,
+ * Proceedings, Part I. Lecture Notes in Artificial Intelligence, vol. 10313, Springer, 2017, pp. 552–565.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -35,7 +38,7 @@ public class UnknownSimpleFieldMV2 extends UnknownSimpleField {
 	 *         {@link TernaryLogicValue#FALSE} otherwise.
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
-	private TernaryLogicValue comparesWith(Field otherField) {
+	private TernaryLogicValue canBeComparedWith(Field otherField) {
 		if (otherField == null) {
 			throw new NullPointerException("Field is null.");
 		} else {
@@ -83,17 +86,32 @@ public class UnknownSimpleFieldMV2 extends UnknownSimpleField {
 
 	@Override
 	public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
-		return this.comparesWith(otherField);
+		return this.canBeComparedWith(otherField);
 	}
 
 	@Override
 	public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
-		return this.comparesWith(otherField);
+		return this.canBeComparedWith(otherField);
 	}
 
 	@Override
 	public TernaryLogicValue isEqualTo(Field otherField) {
-		return this.comparesWith(otherField);
+		return this.canBeComparedWith(otherField);
+	}
+
+	@Override
+	public TernaryLogicValue reverseIsAtLeastAsGoodAs(Field otherField) {
+		return this.canBeComparedWith(otherField);
+	}
+
+	@Override
+	public TernaryLogicValue reverseIsAtMostAsGoodAs(Field otherField) {
+		return this.canBeComparedWith(otherField);
+	}
+
+	@Override
+	public TernaryLogicValue reverseIsEqualTo(Field otherField) {
+		return this.canBeComparedWith(otherField);
 	}
 
 }

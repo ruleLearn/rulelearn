@@ -74,12 +74,6 @@ public class PairField<T1 extends SimpleField, T2 extends SimpleField> extends C
 		return null;
 	}
 
-	@Override
-	public TernaryLogicValue isDifferentThan(Field otherField) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	/** {@inheritDoc}
 	 * 
 	 * @return {@inheritDoc} 

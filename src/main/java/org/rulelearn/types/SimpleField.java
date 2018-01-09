@@ -16,8 +16,6 @@
 
 package org.rulelearn.types;
 
-import org.rulelearn.core.TernaryLogicValue;
-
 /**
  * Top level class for all simple fields (i.e., representing simple values) in an information table.
  * 
@@ -44,19 +42,4 @@ public abstract class SimpleField extends Field implements Comparable<SimpleFiel
 		return compareTo((SimpleField)otherField);
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @param otherField {@inheritDoc}
-	 */
-	@Override
-	public TernaryLogicValue isDifferentThan(Field otherField) {
-		switch (this.isEqualTo(otherField)) {
-			case TRUE: return TernaryLogicValue.FALSE;
-			case FALSE: return TernaryLogicValue.TRUE;
-			case UNCOMPARABLE: return TernaryLogicValue.UNCOMPARABLE;
-			default: return TernaryLogicValue.UNCOMPARABLE;
-		}
-	}
-
 }

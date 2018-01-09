@@ -17,6 +17,7 @@
 package org.rulelearn.types;
 
 import org.rulelearn.core.ReverseComparable;
+import org.rulelearn.core.TernaryLogicValue;
 
 /**
  * Field representing a single unknown value (unknown value of a simple field).
@@ -26,10 +27,40 @@ import org.rulelearn.core.ReverseComparable;
  */
 public abstract class UnknownSimpleField extends SimpleField implements ReverseComparable<SimpleField> {
 
-//	@Override
-//	@SuppressWarnings("unchecked")
-//	public <S extends Field> S selfClone() {
-//		return (S)new UnknownSimpleField();
-//	}
+	/**
+	 * Tells if the given other field is at least as good as this field.
+	 * 
+	 * @param otherField other field to be compared to this field
+	 * @return {@link TernaryLogicValue#TRUE} if the other field is at least as good as this field,<br>
+	 *         {@link TernaryLogicValue#FALSE} if the other field is not at least as good as this field,<br>
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other field prevents comparison
+	 *         of the other field to this field.
+	 * @throws NullPointerException if the other field is {@code null}
+	 */
+	abstract public TernaryLogicValue reverseIsAtLeastAsGoodAs(Field otherField);
+	
+	/**
+	 * Tells if the given other field is at most as good as this field.
+	 * 
+	 * @param otherField other field to be compared to this field
+	 * @return {@link TernaryLogicValue#TRUE} if the other field is at most as good as this field,<br>
+	 *         {@link TernaryLogicValue#FALSE} if the other field is not at most as good as this field,<br>
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other field prevents comparison
+	 *         of the other field to this field.
+	 * @throws NullPointerException if the other field is {@code null}
+	 */
+	abstract public TernaryLogicValue reverseIsAtMostAsGoodAs(Field otherField);
+	
+	/**
+	 * Tells if the given other field is equal to this field (has the same value).
+	 * 
+	 * @param otherField other field to be compared to this field
+	 * @return {@link TernaryLogicValue#TRUE} if the other field is equal to this field,<br>
+	 *         {@link TernaryLogicValue#FALSE} if the other field is not equal to this field,<br>
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other field prevents comparison
+	 *         of the other field to this field.
+	 * @throws NullPointerException if the other field is {@code null}
+	 */
+	abstract public TernaryLogicValue reverseIsEqualTo(Field otherField);
 	
 }
