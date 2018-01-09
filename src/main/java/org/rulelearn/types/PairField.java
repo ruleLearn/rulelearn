@@ -24,18 +24,20 @@ import org.rulelearn.core.UncomparableException;
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
+ * 
+ * @param <T1> class of the first simple field in the pair
+ * @param <T2> class of the second simple field in the pair
  */
-public class PairField<T extends SimpleField> extends CompositeField {
+public class PairField<T1 extends SimpleField, T2 extends SimpleField> extends CompositeField {
 	
 	/**
 	 * The first value in this pair.
 	 */
-	protected T firstValue;
+	protected T1 firstValue;
 	/**
 	 * The second value in this pair.
 	 */
-	protected T secondValue;
+	protected T2 secondValue;
 	
 	/**
 	 * Constructor setting both values.
@@ -43,7 +45,7 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	 * @param firstValue first value of this pair
 	 * @param secondValue second value of this pair
 	 */
-	public PairField(T firstValue, T secondValue) {
+	public PairField(T1 firstValue, T2 secondValue) {
 		this.firstValue = firstValue;
 		this.secondValue = secondValue;
 	}
@@ -85,7 +87,7 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <S extends Field> S selfClone() {
-		return (S)new PairField<T>(firstValue, secondValue);
+		return (S)new PairField<T1,T2>(firstValue, secondValue);
 	}
 
 	/**
@@ -93,7 +95,7 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	 * 
 	 * @return the first value in this pair.
 	 */
-	public T getFirstValue() {
+	public T1 getFirstValue() {
 		return firstValue;
 	}
 
@@ -102,7 +104,7 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	 * 
 	 * @return the second value in this pair.
 	 */
-	public T getSecondValue() {
+	public T2 getSecondValue() {
 		return secondValue;
 	}
 

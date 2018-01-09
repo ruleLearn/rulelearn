@@ -32,7 +32,11 @@ public abstract class Field implements ComparableExt<Field>, SelfCloneable<Field
 	 * Tells if this field is at least as good as the given field.
 	 * 
 	 * @param otherField other field that this field is being compared to
-	 * @return see {@link TernaryLogicValue} 
+	 * @return {@link TernaryLogicValue#TRUE} if this field is at least as good as the other field,<br>
+	 *         {@link TernaryLogicValue#FALSE} if this field is not at least as good as the other field,<br>
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other field prevents comparison
+	 *         of this field and the other field.
+	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	abstract public TernaryLogicValue isAtLeastAsGoodAs(Field otherField);
 	
@@ -40,7 +44,11 @@ public abstract class Field implements ComparableExt<Field>, SelfCloneable<Field
 	 * Tells if this field is at most as good as the given field.
 	 * 
 	 * @param otherField other field that this field is being compared to
-	 * @return see {@link TernaryLogicValue} 
+	 * @return {@link TernaryLogicValue#TRUE} if this field is at least as good as the other field,<br>
+	 *         {@link TernaryLogicValue#FALSE} if this field is not at least as good as the other field,<br>
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other field prevents comparison
+	 *         of this field and the other field.
+	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	abstract public TernaryLogicValue isAtMostAsGoodAs(Field otherField);
 	
@@ -48,7 +56,11 @@ public abstract class Field implements ComparableExt<Field>, SelfCloneable<Field
 	 * Tells if this field is equal to the given field (has the same value).
 	 * 
 	 * @param otherField other field that this field is being compared to
-	 * @return see {@link TernaryLogicValue} 
+	 * @return {@link TernaryLogicValue#TRUE} if this field is at least as good as the other field,<br>
+	 *         {@link TernaryLogicValue#FALSE} if this field is not at least as good as the other field,<br>
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other field prevents comparison
+	 *         of this field and the other field.
+	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	abstract public TernaryLogicValue isEqualTo(Field otherField);
 	
@@ -56,7 +68,11 @@ public abstract class Field implements ComparableExt<Field>, SelfCloneable<Field
 	 * Tells if this field is not equal to the given field (has different value).
 	 * 
 	 * @param otherField other field that this field is being compared to
-	 * @return see {@link TernaryLogicValue} 
+	 * @return {@link TernaryLogicValue#TRUE} if this field is at least as good as the other field,<br>
+	 *         {@link TernaryLogicValue#FALSE} if this field is not at least as good as the other field,<br>
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other field prevents comparison
+	 *         of this field and the other field.
+	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	abstract public TernaryLogicValue isDifferentThan(Field otherField);
 }

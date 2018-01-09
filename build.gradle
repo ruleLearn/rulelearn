@@ -127,3 +127,9 @@ javadoc {
     	println ""
     }
 }
+
+task all(dependsOn: ["junitPlatformTest", "jar", "javadoc"], description: "Performs all tasks") {
+	doLast {
+		println("Building ruleLearn completed.")
+	}
+}

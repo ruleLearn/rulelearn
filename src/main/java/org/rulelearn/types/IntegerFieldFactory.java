@@ -103,12 +103,7 @@ public class IntegerFieldFactory {
 			return (S)new NoneIntegerField(this.value);
 		}
 		
-		/**
-		 * Tells if this field is equal to the given field
-		 * 
-		 * @param otherField other field that this field is being compared to
-		 * @return see {@Link TernaryLogicValue}
-		 */
+		@Override
 		public TernaryLogicValue isEqualTo(Field otherField) {
 			try {
 				return (this.value == ((NoneIntegerField)otherField).value ? 
@@ -118,11 +113,33 @@ public class IntegerFieldFactory {
 			}
 		}
 		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * As for an attribute without preference type, one cannot decide whether one value is at least as good as some other value,
+		 * this method has no semantic meaning. It is left for convenience sake only - calling this method gives the same result
+		 * as calling method {@link #isEqualTo(Field)}.
+		 * 
+		 * @param otherField {@inheritDoc}
+		 * @return {@inheritDoc}
+		 * @throws NullPointerException {@inheritDoc}
+		 */
 		@Override
 		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
 			return this.isEqualTo(otherField);
 		}
 
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * As for an attribute without preference type, one cannot decide whether one value is at most as good as some other value,
+		 * this method has no semantic meaning. It is left for convenience sake only - calling this method gives the same result
+		 * as calling method {@link #isEqualTo(Field)}.
+		 * 
+		 * @param otherField {@inheritDoc}
+		 * @return {@inheritDoc}
+		 * @throws NullPointerException {@inheritDoc}
+		 */
 		@Override
 		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			return this.isEqualTo(otherField);
@@ -137,13 +154,6 @@ public class IntegerFieldFactory {
 	 */
 	private class GainIntegerField extends IntegerField {
 		
-		@Override
-		@SuppressWarnings("unchecked")
-		public <S extends Field> S selfClone() {
-			return (S)new GainIntegerField(this.value);
-		}
-		
-		
 		/**
 		 * Constructor setting value of this field.
 		 * 
@@ -151,6 +161,12 @@ public class IntegerFieldFactory {
 		 */
 		public GainIntegerField(int value) {
 			super(value);
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public <S extends Field> S selfClone() {
+			return (S)new GainIntegerField(this.value);
 		}
 		
 		@Override
