@@ -23,7 +23,7 @@ package org.rulelearn.types;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class IntegerField extends SimpleField {
+public abstract class IntegerField extends KnownSimpleField {
 	/**
 	 * Value of this field.
 	 */
@@ -66,18 +66,14 @@ public abstract class IntegerField extends SimpleField {
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	@Override
-	public int compareTo(SimpleField otherField) {
-		if (otherField instanceof UnknownSimpleField) {
-			return ((UnknownSimpleField)otherField).reverseCompareTo(this); //missing value => delegate comparison to the other field
+	public int compareTo(KnownSimpleField otherField) {
+		IntegerField other = (IntegerField)otherField;
+		if (this.value > other.value) {
+			return 1;
+		} else if (this.value < other.value) {
+			return -1;
 		} else {
-			IntegerField other = (IntegerField)otherField;
-			if (this.value > other.value) {
-				return 1;
-			} else if (this.value < other.value) {
-				return -1;
-			} else {
-				return 0;
-			}
+			return 0;
 		}
 	}
 

@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-package org.rulelearn.types;
+package org.rulelearn.core;
 
 /**
- * Top level class for all (known and unknown) simple values in an information table.
- * 
+ * Result of comparison of two objects - the object of interest (the first object), and the other object (the second object).
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class SimpleField extends Field {
-	
+public enum ComparisonResult {
+	/**
+	 * Value indicating that the object of interest is greater than the other object. 
+	 */
+	GREATER_THAN,
+	/**
+	 * Value indicating that the object of interest is smaller than the other object.
+	 */
+	SMALLER_THAN,
+	/**
+	 * Value indicating that the object of interest is equal to the other object.
+	 */
+	EQUAL,
+	/**
+	 * Value indicating that the object of interest is uncomparable with the other object.
+	 */
+	UNCOMPARABLE
 }

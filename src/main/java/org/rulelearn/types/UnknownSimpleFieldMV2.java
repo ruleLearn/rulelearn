@@ -16,6 +16,7 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.ComparableExt;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.SimpleField;
 
@@ -57,31 +58,39 @@ public class UnknownSimpleFieldMV2 extends UnknownSimpleField {
 	 * Compares this field with the other field.
 	 * 
 	 * @param otherField other field to which this field is being compared to
-	 * @return zero, as this field is assumed to be equal to any other non-null simple field
+	 * @return zero, if the other field is an instance of {@link SimpleField}
+	 * 
+	 * @throws ClassCastException if the other field is not an instance of {@link SimpleField}
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	@Override
-	public int compareTo(SimpleField otherField) {
+	public int compareToEx(Field otherField) {
 		if (otherField == null) {
-			throw new NullPointerException("Field is null.");
-		} else {
+			throw new NullPointerException("Other field is null.");
+		} else if (otherField instanceof SimpleField) {
 			return 0;
+		} else {
+			throw new ClassCastException("Other field is not a simple field.");
 		}
 	}
 	
 	/**
-	 * Compares the other field to this field. Does the reverse comparison than {@link Comparable#compareTo(Object)}.
+	 * Compares the other field to this field. Does the reverse comparison than {@link ComparableExt#compareToEx(Object)}.
 	 * 
 	 * @param otherField other field to be compared to this field
-	 * @return zero, as any other non-null simple field is assumed to be equal to this field
+	 * @return zero, if the other field is an instance of {@link SimpleField}
+	 * 
+	 * @throws ClassCastException if the other field is not an instance of {@link SimpleField}
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	@Override
-	public int reverseCompareTo(SimpleField otherField) {
+	public int reverseCompareToEx(SimpleField otherField) {
 		if (otherField == null) {
-			throw new NullPointerException("Field is null.");
-		} else {
+			throw new NullPointerException("Other field is null.");
+		} else if (otherField instanceof SimpleField) {
 			return 0;
+		} else {
+			throw new ClassCastException("Other field is not a simple field.");
 		}
 	}
 

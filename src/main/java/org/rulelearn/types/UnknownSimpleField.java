@@ -16,16 +16,16 @@
 
 package org.rulelearn.types;
 
-import org.rulelearn.core.ReverseComparable;
+import org.rulelearn.core.ReverseComparableExt;
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
- * Field representing a single unknown value (unknown value of a simple field).
+ * Top level class for all missing (unknown) simple values in an information table.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class UnknownSimpleField extends SimpleField implements ReverseComparable<SimpleField> {
+public abstract class UnknownSimpleField extends SimpleField implements ReverseComparableExt<SimpleField> {
 
 	/**
 	 * Tells if the given other field is at least as good as this field.

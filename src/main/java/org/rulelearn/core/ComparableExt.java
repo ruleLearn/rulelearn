@@ -19,10 +19,12 @@ package org.rulelearn.core;
 import org.rulelearn.core.UncomparableException;
 
 /**
- * Generalization of standard {@link Comparable} interface, accounting for uncomparable objects (e.g., objects of different types). 
+ * Generalization of standard {@link Comparable} interface, accounting for uncomparable objects. 
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+ * 
+ * @param <T> class of objects that this object can be compared to 
  */
 public interface ComparableExt<T> {
 	
@@ -31,13 +33,13 @@ public interface ComparableExt<T> {
 	 * This is an extended version of {@link Comparable#compareTo(Object)} that can be used to
 	 * compare objects that may turn out to be semantically uncomparable - see {@link UncomparableException}.
 	 * 
-	 * @param otherObject other object to be compared with this object
+	 * @param otherObject other object that this object is compared to
 	 * 
-	 * @return negative value when this object is smaller than the other object,<br>
+	 * @return negative value if this object is smaller than the other object,<br>
 	 *         zero if both objects are equal,<br>
-	 *         positive number when this object is greater than the other object
+	 *         positive number if this object is greater than the other object
 	 * 
-	 * @throws ClassCastException if the other object is of different type than this object
+	 * @throws ClassCastException if type of the other object is such that this object cannot be compared to the other object
 	 * @throws NullPointerException if the other object is {@code null}
 	 * @throws UncomparableException if this object is semantically uncomparable with the other object
 	 */
@@ -45,13 +47,16 @@ public interface ComparableExt<T> {
 	
 	/**
 	 * Compares two objects - this object, being the object of interest, and the other object.
-	 * Conveniently wraps {{@link #compareToEx(Object)},
-	 * handling possible {@link UncomparableException} exception.
+	 * Conveniently wraps {@link ComparableExt#compareToEx(Object)},
+	 * handling possible {@link UncomparableException} exception by returning {@link ComparisonResult#UNCOMPARABLE}.
 	 * 
-	 * @param otherObject other object to be compared with this object
-	 * @return see {@link ComparisonResult}
+	 * @param otherObject other object that this object is compared to
+	 * @return {@link ComparisonResult#SMALLER_THAN} if this object is smaller than the other object,<br>
+	 *         {@link ComparisonResult#EQUAL} if both objects are equal,<br>
+	 *         {@link ComparisonResult#GREATER_THAN} if this object is greater than the other object,
+	 *         {@link ComparisonResult#UNCOMPARABLE} if this object is semantically uncomparable with the other object
 	 * 
-	 * @throws ClassCastException if the other object is of different type than this object
+	 * @throws ClassCastException if type of the other object is such that this object cannot be compared to the other object
 	 * @throws NullPointerException if the other object is {@code null}
 	 */
 	public default ComparisonResult compareToEnum(T otherObject) {
@@ -68,31 +73,6 @@ public interface ComparableExt<T> {
 		} catch (UncomparableException exception) {
 			return ComparisonResult.UNCOMPARABLE;
 		}
-	}
-	
-	/**
-	 * Result of comparison of two objects - the object of interest (first object), and the other object (second object).
-	 *
-	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
-	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
-	 */
-	public enum ComparisonResult {
-		/**
-		 * Value indicating that the object of interest is greater than the other object. 
-		 */
-		GREATER_THAN,
-		/**
-		 * Value indicating that the object of interest is smaller than the other object.
-		 */
-		SMALLER_THAN,
-		/**
-		 * Value indicating that the object of interest is equal to the other object.
-		 */
-		EQUAL,
-		/**
-		 * Value indicating that the object of interest is uncomparable with the other object.
-		 */
-		UNCOMPARABLE
 	}
 
 }
