@@ -50,7 +50,7 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 		if (otherField == null) {
 			throw new NullPointerException("Field is null.");
 		} else {
-			return (otherField instanceof SimpleField) ? true : false;
+			return (otherField instanceof SimpleField);
 		}
 	}
 	
@@ -81,19 +81,15 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 	 * @return zero, as any other non-null simple field is assumed to be equal to this field
 	 * 
 	 * @throws NullPointerException if the other field is {@code null}
-	 * @throws UncomparableException if the other object does not represent a missing value (so one cannot decide
-	 *         the result of comparison of the other known simple field and this unknown simple field)
+	 * @throws UncomparableException if the other field is not {@code null} (so one cannot decide
+	 *         the result of comparison of the other known simple field to this unknown simple field)
 	 */
 	@Override
-	public int reverseCompareToEx(SimpleField otherField) throws UncomparableException {
+	public int reverseCompareToEx(KnownSimpleField otherField) throws UncomparableException {
 		if (otherField == null) {
 			throw new NullPointerException("Field is null.");
 		} else {
-			if (otherField instanceof UnknownSimpleFieldMV15) {
-				return 0;
-			} else {
-				throw new UncomparableException("Other field cannot be compared to this unknown field.");
-			}
+			throw new UncomparableException("Other field cannot be compared to this unknown field.");
 		}
 	}
 
@@ -131,41 +127,29 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 	}
 
 	@Override
-	public TernaryLogicValue reverseIsAtLeastAsGoodAs(Field otherField) {
-		if (this.canBeComparedWith(otherField)) {
-			if (otherField instanceof UnknownSimpleFieldMV15) {
-				return TernaryLogicValue.TRUE;
-			} else {
-				return TernaryLogicValue.FALSE;
-			}
+	public TernaryLogicValue reverseIsAtLeastAsGoodAs(KnownSimpleField otherField) {
+		if (otherField == null) {
+			throw new NullPointerException("Field is null.");
 		} else {
-			return TernaryLogicValue.UNCOMPARABLE;
+			return TernaryLogicValue.FALSE;
 		}
 	}
 
 	@Override
-	public TernaryLogicValue reverseIsAtMostAsGoodAs(Field otherField) {
-		if (this.canBeComparedWith(otherField)) {
-			if (otherField instanceof UnknownSimpleFieldMV15) {
-				return TernaryLogicValue.TRUE;
-			} else {
-				return TernaryLogicValue.FALSE;
-			}
+	public TernaryLogicValue reverseIsAtMostAsGoodAs(KnownSimpleField otherField) {
+		if (otherField == null) {
+			throw new NullPointerException("Field is null.");
 		} else {
-			return TernaryLogicValue.UNCOMPARABLE;
+			return TernaryLogicValue.FALSE;
 		}
 	}
 
 	@Override
-	public TernaryLogicValue reverseIsEqualTo(Field otherField) {
-		if (this.canBeComparedWith(otherField)) {
-			if (otherField instanceof UnknownSimpleFieldMV15) {
-				return TernaryLogicValue.TRUE;
-			} else {
-				return TernaryLogicValue.FALSE;
-			}
+	public TernaryLogicValue reverseIsEqualTo(KnownSimpleField otherField) {
+		if (otherField == null) {
+			throw new NullPointerException("Field is null.");
 		} else {
-			return TernaryLogicValue.UNCOMPARABLE;
+			return TernaryLogicValue.FALSE;
 		}
 	}
 

@@ -25,7 +25,7 @@ import org.rulelearn.core.TernaryLogicValue;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class UnknownSimpleField extends SimpleField implements ReverseComparableExt<SimpleField> {
+public abstract class UnknownSimpleField extends SimpleField implements ReverseComparableExt<KnownSimpleField> {
 
 	/**
 	 * Tells if the given other field is at least as good as this field.
@@ -37,7 +37,7 @@ public abstract class UnknownSimpleField extends SimpleField implements ReverseC
 	 *         of the other field to this field.
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
-	abstract public TernaryLogicValue reverseIsAtLeastAsGoodAs(Field otherField);
+	abstract public TernaryLogicValue reverseIsAtLeastAsGoodAs(KnownSimpleField otherField);
 	
 	/**
 	 * Tells if the given other field is at most as good as this field.
@@ -49,7 +49,7 @@ public abstract class UnknownSimpleField extends SimpleField implements ReverseC
 	 *         of the other field to this field.
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
-	abstract public TernaryLogicValue reverseIsAtMostAsGoodAs(Field otherField);
+	abstract public TernaryLogicValue reverseIsAtMostAsGoodAs(KnownSimpleField otherField);
 	
 	/**
 	 * Tells if the given other field is equal to this field (has the same value).
@@ -61,6 +61,6 @@ public abstract class UnknownSimpleField extends SimpleField implements ReverseC
 	 *         of the other field to this field.
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
-	abstract public TernaryLogicValue reverseIsEqualTo(Field otherField);
+	abstract public TernaryLogicValue reverseIsEqualTo(KnownSimpleField otherField);
 	
 }
