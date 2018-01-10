@@ -13,25 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.rulelearn.data;
 
 /**
- * Preference type of an attribute in information table.
- * 
+ * Missing value type of an attribute in information table.
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+ *
  */
-public enum AttributePreferenceType {
+public enum AttributeMissingValueType {
 	/**
-	 * Type of an attribute without preferences (regular attribute).
+	 * M15 type {@link org.rulelearn.types.UnknownSimpleFieldMV15}.
 	 */
-	NONE,
+	MV15,
 	/**
-	 * Type of cost-type criterion.
+	 * M2 type {@link org.rulelearn.types.UnknownSimpleFieldMV2}.
 	 */
-	COST,
-	/**
-	 * Type of gain-type criterion.
-	 */
-	GAIN
+	MV2,
 }

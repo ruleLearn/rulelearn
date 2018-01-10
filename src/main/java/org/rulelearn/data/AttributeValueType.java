@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.rulelearn.data;
 
 /**
- * Preference type of an attribute in information table.
- * 
+ * Value type of an attribute in information table.
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+ *
  */
-public enum AttributePreferenceType {
+public enum AttributeValueType {
 	/**
-	 * Type of an attribute without preferences (regular attribute).
+	 * Integer type {@link org.rulelearn.types.IntegerField}.
 	 */
-	NONE,
+	INTEGER,
 	/**
-	 * Type of cost-type criterion.
+	 * Real type {@link org.rulelearn.types.RealField}.
 	 */
-	COST,
+	REAL,
 	/**
-	 * Type of gain-type criterion.
+	 * Enumeration type {@link org.rulelearn.types.EnumerationField}.
 	 */
-	GAIN
+	ENUMERATION
 }
