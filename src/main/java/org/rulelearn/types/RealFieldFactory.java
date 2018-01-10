@@ -103,26 +103,47 @@ public class RealFieldFactory {
 			return (S)new NoneRealField(this.value);
 		}
 		
-		/**
-		 * Tells if this field is equal to the given field
-		 * 
-		 * @param otherField other field that this field is being compared to
-		 * @return see {@link TernaryLogicValue}
-		 */
+		@Override
 		public TernaryLogicValue isEqualTo(Field otherField) {
-			try {
-				return (this.value == ((NoneRealField)otherField).value ? 
-						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-			} catch (ClassCastException exception) {
-				return TernaryLogicValue.UNCOMPARABLE;
+			if (otherField instanceof UnknownSimpleField) {
+				return ((UnknownSimpleField)otherField).reverseIsEqualTo(this); //missing value => delegate comparison to the other field
+			} else {
+				try {
+					return (this.value == ((NoneRealField)otherField).value ? 
+							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
+				} catch (ClassCastException exception) {
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
 			}
 		}
 		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * As for an attribute without preference type, one cannot decide whether one value is at least as good as some other value,
+		 * this method has no semantic meaning. It is left for convenience sake only - calling this method gives the same result
+		 * as calling method {@link #isEqualTo(Field)}.
+		 * 
+		 * @param otherField {@inheritDoc}
+		 * @return {@inheritDoc}
+		 * @throws NullPointerException {@inheritDoc}
+		 */
 		@Override
 		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
 			return this.isEqualTo(otherField);
 		}
 
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * As for an attribute without preference type, one cannot decide whether one value is at most as good as some other value,
+		 * this method has no semantic meaning. It is left for convenience sake only - calling this method gives the same result
+		 * as calling method {@link #isEqualTo(Field)}.
+		 * 
+		 * @param otherField {@inheritDoc}
+		 * @return {@inheritDoc}
+		 * @throws NullPointerException {@inheritDoc}
+		 */
 		@Override
 		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			return this.isEqualTo(otherField);
@@ -157,33 +178,45 @@ public class RealFieldFactory {
 		
 		@Override
 		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
-			try {
-				return (this.value >= ((GainRealField)otherField).value ? 
-						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-			}
-			catch (ClassCastException exception) {
-				return TernaryLogicValue.UNCOMPARABLE;
+			if (otherField instanceof UnknownSimpleField) {
+				return ((UnknownSimpleField)otherField).reverseIsAtLeastAsGoodAs(this); //missing value => delegate comparison to the other field
+			} else {
+				try {
+					return (this.value >= ((GainRealField)otherField).value ? 
+							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
+				}
+				catch (ClassCastException exception) {
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
 			}
 		}
 
 		@Override
 		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
-			try {
-				return (this.value <= ((GainRealField)otherField).value ? 
-						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-			}
-			catch (ClassCastException exception) {
-				return TernaryLogicValue.UNCOMPARABLE;
+			if (otherField instanceof UnknownSimpleField) {
+				return ((UnknownSimpleField)otherField).reverseIsAtMostAsGoodAs(this); //missing value => delegate comparison to the other field
+			} else {
+				try {
+					return (this.value <= ((GainRealField)otherField).value ? 
+							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
+				}
+				catch (ClassCastException exception) {
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
 			}
 		}
 
 		@Override
 		public TernaryLogicValue isEqualTo(Field otherField) {
-			try {
-				return (this.value == ((GainRealField)otherField).value ? 
-						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-			} catch (ClassCastException exception) {
-				return TernaryLogicValue.UNCOMPARABLE;
+			if (otherField instanceof UnknownSimpleField) {
+				return ((UnknownSimpleField)otherField).reverseIsEqualTo(this); //missing value => delegate comparison to the other field
+			} else {
+				try {
+					return (this.value == ((GainRealField)otherField).value ? 
+							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
+				} catch (ClassCastException exception) {
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
 			}
 		}
 
@@ -217,33 +250,45 @@ public class RealFieldFactory {
 		
 		@Override
 		public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
-			try {
-				return (this.value <= ((CostRealField)otherField).value ?
-						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-			}
-			catch (ClassCastException exception) {
-				return TernaryLogicValue.UNCOMPARABLE;
+			if (otherField instanceof UnknownSimpleField) {
+				return ((UnknownSimpleField)otherField).reverseIsAtLeastAsGoodAs(this); //missing value => delegate comparison to the other field
+			} else {
+				try {
+					return (this.value <= ((CostRealField)otherField).value ?
+							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
+				}
+				catch (ClassCastException exception) {
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
 			}
 		}
 
 		@Override
 		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
-			try {
-				return (this.value >= ((CostRealField)otherField).value ?
-						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-			}
-			catch (ClassCastException exception) {
-				return TernaryLogicValue.UNCOMPARABLE;
+			if (otherField instanceof UnknownSimpleField) {
+				return ((UnknownSimpleField)otherField).reverseIsAtMostAsGoodAs(this); //missing value => delegate comparison to the other field
+			} else {
+				try {
+					return (this.value >= ((CostRealField)otherField).value ?
+							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
+				}
+				catch (ClassCastException exception) {
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
 			}
 		}
 		
 		@Override
 		public TernaryLogicValue isEqualTo(Field otherField) {
-			try {
-				return (this.value == ((CostRealField)otherField).value ? 
-						TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
-			} catch (ClassCastException exception) {
-				return TernaryLogicValue.UNCOMPARABLE;
+			if (otherField instanceof UnknownSimpleField) {
+				return ((UnknownSimpleField)otherField).reverseIsEqualTo(this); //missing value => delegate comparison to the other field
+			} else {
+				try {
+					return (this.value == ((CostRealField)otherField).value ? 
+							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
+				} catch (ClassCastException exception) {
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
 			}
 		}
 

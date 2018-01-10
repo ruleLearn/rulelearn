@@ -35,7 +35,7 @@ public abstract class EnumerationField extends SimpleField {
 	/**
 	 * Position on element list which is equivalent to value of this field.
 	 */
-	protected int index = 0;
+	protected int value = 0;
 	
 	/**
 	 * Constructor preventing object creation.
@@ -53,7 +53,7 @@ public abstract class EnumerationField extends SimpleField {
 		if (list != null) {
 			this.list = list;
 			if ((index >= 0) && (index < this.list.getSize()))
-				this.index = index;
+				this.value = index;
 			else throw new IndexOutOfBoundsException();
 		}
 		else throw new IndexOutOfBoundsException();
@@ -69,39 +69,23 @@ public abstract class EnumerationField extends SimpleField {
 	 *         zero if both fields are equal,<br>
 	 *         positive number when this field is greater than the other field
 	 * 
-	 * @throws ClassCastException if the other simple field has a value (i.e., its value is not missing according to {@link SimpleField#hasValue()}) and is not of type {@link EnumerationField}
+	 * @throws ClassCastException if the other simple field has a value (i.e., it is not an instance of {@link UnknownSimpleField}) and is not of type {@link EnumerationField}
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	@Override
 	public int compareTo(SimpleField otherField) {
-		if (otherField.hasValue()) {
+		if (otherField instanceof UnknownSimpleField) {
+			return ((UnknownSimpleField)otherField).reverseCompareTo(this); //missing value => delegate comparison to the other field
+		} else {
 			EnumerationField other = (EnumerationField)otherField;
-			if (this.index > other.index) {
+			if (this.value > other.value) {
 				return 1;
-			} else if (this.index < other.index) {
+			} else if (this.value < other.value) {
 				return -1;
 			} else {
 				return 0;
 			}
-		} else { //missing value => delegate comparison to the other field
-			return otherField.reverseCompareTo(this);
 		}
-	}
-	
-	/**
-	 * Compares the other field to this field. Does the reverse comparison than {@link Comparable#compareTo(Object)}.
-	 * 
-	 * @param otherField other field to be compared to this field
-	 * @return negative number when the other field is smaller than this field,<br>
-	 *         zero if both field are equal,<br>
-	 *         positive number when the other field is greater than this field
-	 * 
-	 * @throws ClassCastException {@inheritDoc}
-	 * @throws NullPointerException if the other field is {@code null}
-	 */
-	@Override
-	public int reverseCompareTo(SimpleField otherField) {
-		return otherField.compareTo(this); //perform "normal" comparison
 	}
 	
 	/**
@@ -139,7 +123,7 @@ public abstract class EnumerationField extends SimpleField {
 	 * @return index of element on list
 	 */
 	public int getValue() {
-		return index;
+		return value;
 	}
 	
 	/**
@@ -148,17 +132,7 @@ public abstract class EnumerationField extends SimpleField {
 	 * @return {@link String} element 
 	 */
 	public String getElement() {
-		return list.getElement(index);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @return {@code true}, as value of this enumeration field is always known.
-	 */
-	@Override
-	public boolean hasValue() {
-		return true;
+		return list.getElement(value);
 	}
 
 	/**

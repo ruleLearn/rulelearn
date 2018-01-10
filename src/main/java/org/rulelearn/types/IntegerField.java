@@ -62,12 +62,14 @@ public abstract class IntegerField extends SimpleField {
 	 *         zero if both fields are equal,<br>
 	 *         positive number when this field is greater than the other field
 	 * 
-	 * @throws ClassCastException if the other simple field has a value (i.e., its value is not missing according to {@link SimpleField#hasValue()}) and is not of type {@link IntegerField}
+	 * @throws ClassCastException if the other simple field has a value (i.e., it is not an instance of {@link UnknownSimpleField}) and is not of type {@link IntegerField}
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	@Override
 	public int compareTo(SimpleField otherField) {
-		if (otherField.hasValue()) {
+		if (otherField instanceof UnknownSimpleField) {
+			return ((UnknownSimpleField)otherField).reverseCompareTo(this); //missing value => delegate comparison to the other field
+		} else {
 			IntegerField other = (IntegerField)otherField;
 			if (this.value > other.value) {
 				return 1;
@@ -76,35 +78,7 @@ public abstract class IntegerField extends SimpleField {
 			} else {
 				return 0;
 			}
-		} else { //missing value => delegate comparison to the other field
-			return otherField.reverseCompareTo(this);
 		}
-	}
-	
-	/**
-	 * Compares the other field to this field. Does the reverse comparison than {@link Comparable#compareTo(Object)}.
-	 * 
-	 * @param otherField other field to be compared to this field
-	 * @return negative number when the other field is smaller than this field,<br>
-	 *         zero if both field are equal,<br>
-	 *         positive number when the other field is greater than this field
-	 * 
-	 * @throws ClassCastException {@inheritDoc}
-	 * @throws NullPointerException if the other field is {@code null}
-	 */
-	@Override
-	public int reverseCompareTo(SimpleField otherField) {
-		return otherField.compareTo(this); //perform "normal" comparison
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @return {@code true}, as value of this integer field is always known.
-	 */
-	@Override
-	public boolean hasValue() {
-		return true;
 	}
 
 }

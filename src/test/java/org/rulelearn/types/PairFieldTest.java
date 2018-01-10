@@ -36,7 +36,7 @@ class PairFieldTest {
 	void testPairField01() {
 		IntegerField firstField = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
 		IntegerField secondField = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.NONE);
-		PairField<IntegerField> field = new PairField<IntegerField>(firstField, secondField);
+		PairField<IntegerField,IntegerField> field = new PairField<IntegerField,IntegerField>(firstField, secondField);
 		
 		assertEquals(field.getFirstValue().getValue(), firstField.getValue());
 		assertEquals(field.getSecondValue().getValue(), secondField.getValue());
@@ -58,9 +58,9 @@ class PairFieldTest {
 	void testSelfClone() {
 		IntegerField firstField = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
 		IntegerField secondField = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.NONE);
-		PairField<IntegerField> field = new PairField<IntegerField>(firstField, secondField);
+		PairField<IntegerField,IntegerField> field = new PairField<IntegerField,IntegerField>(firstField, secondField);
 		
-		PairField<IntegerField> clonedField = field.selfClone();
+		PairField<IntegerField,IntegerField> clonedField = field.selfClone();
 		
 		assertEquals(field.getFirstValue().getValue(), clonedField.getFirstValue().getValue());
 		assertEquals(field.getSecondValue().getValue(), clonedField.getSecondValue().getValue());
