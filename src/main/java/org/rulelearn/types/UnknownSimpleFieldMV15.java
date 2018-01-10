@@ -65,12 +65,10 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 	 */
 	@Override
 	public int compareToEx(Field otherField) {
-		if (otherField == null) {
-			throw new NullPointerException("Other field is null.");
-		} else if (otherField instanceof SimpleField) {
+		if (this.canBeComparedWith(otherField)) {
 			return 0;
 		} else {
-			throw new ClassCastException("Other field is not a simple field.");
+			throw new ClassCastException("Other field cannot be compared to this uknown field.");
 		}
 	}
 
