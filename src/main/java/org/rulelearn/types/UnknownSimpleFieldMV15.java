@@ -42,8 +42,8 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 	 * Checks if the given field is not {@code null} and if this field can be compared with that field (i.e., it is of type {@link SimpleField}).
 	 * 
 	 * @param otherField other field that this field is being compared to
-	 * @return {@link TernaryLogicValue#TRUE} if this field can be compared with the other field,<br>
-	 *         {@link TernaryLogicValue#FALSE} otherwise.
+	 * @return {@code true} if this field can be compared with the other field,<br>
+	 *         {@code false} otherwise.
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	private boolean canBeComparedWith(Field otherField) {

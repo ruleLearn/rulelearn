@@ -38,7 +38,8 @@ public abstract class KnownSimpleField extends SimpleField implements Comparable
 	 * 
 	 * @throws ClassCastException if type of the other field is neither {@link KnownSimpleField} nor {@link UnknownSimpleField}
 	 * @throws NullPointerException if the other field is {@code null}
-	 * @throws UncomparableException if this field is semantically uncomparable with the other field
+	 * @throws UncomparableException if the other field represents an unknown value (i.e., is of type {@link UnknownSimpleField},
+	 *         and value of this field cannot be compared with that unknown value
 	 */
 	@Override
 	public int compareToEx(Field otherField) throws UncomparableException {
