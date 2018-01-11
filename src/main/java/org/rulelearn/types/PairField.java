@@ -44,8 +44,17 @@ public class PairField<T1 extends SimpleField, T2 extends SimpleField> extends C
 	 * 
 	 * @param firstValue first value of this pair
 	 * @param secondValue second value of this pair
+	 * 
+	 * @throws NullPointerException if any of the given values is {@code null}
 	 */
 	public PairField(T1 firstValue, T2 secondValue) {
+		if (firstValue == null) {
+			throw new NullPointerException("The first value in the pair is null.");
+		}
+		if (secondValue == null) {
+			throw new NullPointerException("The second value in the pair is null.");
+		}
+		
 		this.firstValue = firstValue;
 		this.secondValue = secondValue;
 	}
@@ -58,20 +67,44 @@ public class PairField<T1 extends SimpleField, T2 extends SimpleField> extends C
 
 	@Override
 	public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
-		// TODO Auto-generated method stub
-		return null;
+		if (otherField instanceof PairField<?,?>) {
+			if (this.firstValue.isAtLeastAsGoodAs(((PairField<?,?>)otherField).firstValue) ==  TernaryLogicValue.TRUE &&
+					this.secondValue.isAtMostAsGoodAs(((PairField<?,?>)otherField).secondValue) ==  TernaryLogicValue.TRUE) {
+				return TernaryLogicValue.TRUE;
+			} else {
+				return TernaryLogicValue.FALSE;
+			}
+		} else {
+			return TernaryLogicValue.UNCOMPARABLE;
+		}
 	}
 
 	@Override
 	public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
-		// TODO Auto-generated method stub
-		return null;
+		if (otherField instanceof PairField<?,?>) {
+			if (this.firstValue.isAtMostAsGoodAs(((PairField<?,?>)otherField).firstValue) ==  TernaryLogicValue.TRUE &&
+					this.secondValue.isAtLeastAsGoodAs(((PairField<?,?>)otherField).secondValue) ==  TernaryLogicValue.TRUE) {
+				return TernaryLogicValue.TRUE;
+			} else {
+				return TernaryLogicValue.FALSE;
+			}
+		} else {
+			return TernaryLogicValue.UNCOMPARABLE;
+		}
 	}
 
 	@Override
 	public TernaryLogicValue isEqualTo(Field otherField) {
-		// TODO Auto-generated method stub
-		return null;
+		if (otherField instanceof PairField<?,?>) {
+			if (this.firstValue.isEqualTo(((PairField<?,?>)otherField).firstValue) ==  TernaryLogicValue.TRUE &&
+					this.secondValue.isEqualTo(((PairField<?,?>)otherField).secondValue) ==  TernaryLogicValue.TRUE) {
+				return TernaryLogicValue.TRUE;
+			} else {
+				return TernaryLogicValue.FALSE;
+			}
+		} else {
+			return TernaryLogicValue.UNCOMPARABLE;
+		}
 	}
 
 	/** {@inheritDoc}
