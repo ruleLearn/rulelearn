@@ -60,9 +60,33 @@ public class PairField<T1 extends SimpleField, T2 extends SimpleField> extends C
 	}
 
 	@Override
-	public int compareToEx(Field otherObject) throws UncomparableException {
-		// TODO Auto-generated method stub
-		return 0;
+	public int compareToEx(Field otherField) throws UncomparableException {
+		if (otherField instanceof PairField<?,?>) {
+			int firstCompareExResult;
+			int secondCompareExResult;
+			
+			try {
+				firstCompareExResult = this.firstValue.compareToEx(((PairField<?,?>)otherField).firstValue);
+				secondCompareExResult = this.secondValue.compareToEx(((PairField<?,?>)otherField).secondValue);
+				
+				if (firstCompareExResult == 0 && secondCompareExResult == 0) {
+					return 0;
+				} else if (firstCompareExResult >= 0 &&
+						secondCompareExResult <= 0) {
+					return 1;
+				} else if (firstCompareExResult <= 0 &&
+						secondCompareExResult >= 0) {
+					return -1;
+				} else {
+					throw new UncomparableException("This pair field cannot be compared with the other pair field.");
+				}
+			} catch (UncomparableException exception) { //first or second values cannot be compared
+				throw new UncomparableException("This pair field cannot be compared with the other pair field.");
+			}			
+		} else {
+			throw new ClassCastException("This pair field cannot be compared with the other field.");
+		}
+		
 	}
 
 	@Override
