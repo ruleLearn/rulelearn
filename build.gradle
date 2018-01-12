@@ -37,6 +37,10 @@ dependencies {
 	compile("it.unimi.dsi:fastutil:8.1.1")
 	runtime("it.unimi.dsi:fastutil:8.1.1")
 	
+	//adding Moshi library
+	compile('com.squareup.moshi:moshi:1.5.0')
+	runtime('com.squareup.moshi:moshi:1.5.0')
+	
 	testCompile("org.junit.jupiter:junit-jupiter-api:5.0.2")
 	testRuntime("org.junit.jupiter:junit-jupiter-engine:5.0.2")
 	

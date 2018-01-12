@@ -17,7 +17,7 @@
 rootProject.name = 'ruleLearn'
 
 //check unmutable property "org.gradle.java.home"
-if (properties["org.gradle.java.home"] == null && System.getenv('JAVA_HOME') == null) {
+if ((properties["org.gradle.java.home"] == null) && (System.getenv('JAVA_HOME') == null)) {
 	println ""
 	println "[ERROR@settings.gradle] Incorrect settings. Neither org.gradle.java.home property nor JAVA_HOME environmental variable is set. " +
 		"org.gradle.java.home property can be assigned a value (path to Java JDK directory) in 'gradle.properties' file, located in the project root directory " +
