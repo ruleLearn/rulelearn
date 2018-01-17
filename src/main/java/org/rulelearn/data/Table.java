@@ -17,6 +17,7 @@
 package org.rulelearn.data;
 
 import java.util.List;
+import org.rulelearn.core.InnerObjectReference;
 import org.rulelearn.types.Field;
 
 /**
@@ -42,12 +43,15 @@ public class Table {
 	protected Index2IdMapper mapper;
 	
 	/**
-	 * Constructs this table.
+	 * Constructs this table. It is assumed that the number of attributes is equal to the number of fields
+	 * for each object, and, moreover, that type of a field corresponding to i-th attribute
+	 * is the same as the type of field returned by {@link Attribute#getValueType()}.
 	 * 
 	 * @param attributes attributes corresponding two columns of this table
 	 * @param fields fields corresponding two rows of this table
 	 * @param mapper translator of object's index, which is meaningful in this table only,
 	 *        to unique object's id, which is meaningful in general
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public Table(Attribute[] attributes, List<Field[]> fields, Index2IdMapper mapper) {
 		this.attributes = attributes.clone();
@@ -57,6 +61,9 @@ public class Table {
 			this.fields[i] = fields.get(i);
 		}
 		
+		if (mapper == null) {
+			throw new NullPointerException("Mapper is null.");	
+		}
 		this.mapper = mapper;
 	}
 	
@@ -108,6 +115,26 @@ public class Table {
 	 */
 	public int getNumberOfAttributes() {
 		return this.attributes.length;
+	}
+	
+	/**
+	 * Gets attributes for which this table stores values.
+	 * The returned array should be cloned before applying any modification.
+	 * 
+	 * @return attributes for which this table stores values
+	 */
+	@InnerObjectReference
+	public Attribute[] getAttributes () {
+		return this.attributes;
+	}
+	
+	/**
+	 * Gets mapper that maps indices of objects stored in this table to their unique ids.
+	 * 
+	 * @return mapper that maps indices of objects stored in this table to their unique ids
+	 */
+	public Index2IdMapper getIndex2IdMapper() {
+		return this.mapper;
 	}
 	
 }

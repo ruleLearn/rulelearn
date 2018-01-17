@@ -25,9 +25,20 @@ package org.rulelearn.data;
 public class Index2IdMapper {
 	
 	/**
-	 * Maps object's index to its id: objectIndex2Id[objectIndex] == objectId.
+	 * Maps object's index to its id - objectIndex2Id[objectIndex] == objectId.
 	 */
 	protected int[] objectIndex2Id;
+	
+	/**
+	 * Constructor of this mapper that memorizes mapping between object's index
+	 * (array index) and unique object's id.
+	 * 
+	 * @param objectIndex2Id array mapping object's index to unique object's id - {@code objectIndex2Id[objectIndex] == objectId}
+	 * @throws NullPointerException if given array is {@code null}
+	 */
+	public Index2IdMapper(int[] objectIndex2Id) {
+		this.objectIndex2Id = objectIndex2Id.clone();
+	}
 	
 	/**
 	 * Gets unique id of an object (row) having a given index in an information table.

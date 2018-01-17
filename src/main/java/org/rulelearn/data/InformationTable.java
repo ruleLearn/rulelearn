@@ -29,7 +29,7 @@ import org.rulelearn.types.Field;
 public class InformationTable {
 	
 	/**
-	 * All attributes of an information table.
+	 * All attributes of an information table (condition and description ones together).
 	 */
 	protected Attribute[] attributes;
 	
@@ -50,13 +50,23 @@ public class InformationTable {
 	/**
 	 * Information table constructor.
 	 * 
-	 * @param attributes all attributes of an information table
+	 * @param attributes all attributes of an information table (condition and description ones together)
 	 * @param fields list of field vectors; each vector contains condition and description field values
 	 *        of a single object of this information table
 	 * @param mapper translating object's index to it's unique id
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public InformationTable(Attribute[] attributes,  List<Field[]> fields, Index2IdMapper mapper) {
-		//TODO
+	public InformationTable(Attribute[] attributes, List<Field[]> fields, Index2IdMapper mapper) {
+		this.attributes = attributes.clone();
+		
+		for (int i = 0; i < attributes.length; i++) {
+			//TODO: split attributes and fields
+		}		
+		
+		if (mapper == null) {
+			throw new NullPointerException("Mapper is null.");	
+		}
+		this.mapper = mapper;
 	}
 	
 //	public InformationTable(String metadataPath, String dataPath) {

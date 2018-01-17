@@ -37,6 +37,7 @@ public class PreferenceInformation {
 	 * 
 	 * @param objectIndex index identifying an object
 	 * @return preference information (e.g., decision class label, relation label) corresponding to the object with given index
+	 * @throws IndexOutOfBoundsException if given object's index is out of range of indices of objects for which preference information has been stored
 	 */
 	public Field getPreferenceInformation(int objectIndex) {
 		return preferenceInformation[objectIndex];

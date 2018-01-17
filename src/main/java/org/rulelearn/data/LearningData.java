@@ -33,5 +33,35 @@ public class LearningData {
 	 * Preference information concerning considered objects.
 	 */
 	protected PreferenceInformation preferenceInformation;
+	
+	/**
+	 * Constructor storing table with values of condition attributes
+	 * and preference information concerning considered objects
+	 * 
+	 * @param conditionTable table with values of condition attributes for considered objects, stored directly in this object
+	 * @param preferenceInformation preference information concerning considered objects, stored directly in this object
+	 */
+	public LearningData(Table conditionTable, PreferenceInformation preferenceInformation) {
+		this.conditionTable = conditionTable;
+		this.preferenceInformation = preferenceInformation;
+	}
+
+	/**
+	 * Gets table with values of condition attributes for objects that this learning data concern. 
+	 * 
+	 * @return table with values of condition attributes for objects that this learning data concern.
+	 */
+	public Table getConditionTable() {
+		return conditionTable;
+	}
+
+	/**
+	 * Gets preference information concerning objects that this learning data concern.
+	 * 
+	 * @return preference information concerning objects that this learning data concern
+	 */
+	public PreferenceInformation getPreferenceInformation() {
+		return preferenceInformation;
+	}
 
 }
