@@ -19,6 +19,7 @@ package org.rulelearn.types;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.data.AttributePreferenceType;
 
 /**
@@ -36,10 +37,27 @@ class PairFieldTest {
 	void testPairField01() {
 		IntegerField firstField = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
 		IntegerField secondField = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.NONE);
-		PairField<IntegerField,IntegerField> field = new PairField<IntegerField,IntegerField>(firstField, secondField);
+		PairField<IntegerField> field = new PairField<>(firstField, secondField);
 		
 		assertEquals(field.getFirstValue().getValue(), firstField.getValue());
 		assertEquals(field.getSecondValue().getValue(), secondField.getValue());
+	}
+	
+	/**
+	 * Test for {@link PairField} class constructor.
+	 */
+	@Test
+	void testPairField02() {
+		IntegerField firstField = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		RealField secondField = RealFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN);
+		
+		try {
+			@SuppressWarnings("unused")
+			PairField<SimpleField> field = new PairField<>(firstField, secondField);
+			fail("Different types of fields in a pair should throw an exception.");
+		} catch (InvalidTypeException exception) {			
+		}
+		
 	}
 	
 //	/**
@@ -58,9 +76,9 @@ class PairFieldTest {
 	void testSelfClone() {
 		IntegerField firstField = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
 		IntegerField secondField = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.NONE);
-		PairField<IntegerField,IntegerField> field = new PairField<IntegerField,IntegerField>(firstField, secondField);
+		PairField<IntegerField> field = new PairField<IntegerField>(firstField, secondField);
 		
-		PairField<IntegerField,IntegerField> clonedField = field.selfClone();
+		PairField<IntegerField> clonedField = field.selfClone();
 		
 		assertEquals(field.getFirstValue().getValue(), clonedField.getFirstValue().getValue());
 		assertEquals(field.getSecondValue().getValue(), clonedField.getSecondValue().getValue());
