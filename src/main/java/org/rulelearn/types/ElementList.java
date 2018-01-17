@@ -52,6 +52,11 @@ public class ElementList {
 	 */
 	protected byte [] hash = null;
 	
+	/** 
+	 * Algorithm used to calculate hash value of element list.
+	 */
+	protected String algorithm = DEFAULT_HASH_ALGORITHM;
+	
 	/**
 	 * Creates an element list and sets element list according to an array of {@link String} elements and creates a hash value using {@link DEFAULT_HASH_ALGORITHM} algorithm. 
 	 * 
@@ -85,6 +90,7 @@ public class ElementList {
 			this.map.defaultReturnValue(Integer.MIN_VALUE);
 			
 			// calculate hash code
+			this.algorithm = algorithm;
 			MessageDigest m = MessageDigest.getInstance(algorithm);
 			for (int i = 0; i < this.elements.length; i++)
 				m.update(this.elements[i].getBytes());
