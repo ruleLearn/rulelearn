@@ -29,7 +29,7 @@ import org.rulelearn.types.Field;
 public class InformationTable {
 	
 	/**
-	 * All attributes of an information table
+	 * All attributes of an information table.
 	 */
 	protected Attribute[] attributes;
 	
@@ -47,7 +47,15 @@ public class InformationTable {
 	 */
 	protected Table descriptionTable;
 	
-	InformationTable(Attribute[] attributes,  List<Field[]> fields, Index2IdMapper mapper) {
+	/**
+	 * Information table constructor.
+	 * 
+	 * @param attributes all attributes of an information table
+	 * @param fields list of field vectors; each vector contains condition and description field values
+	 *        of a single object of this information table
+	 * @param mapper translating object's index to it's unique id
+	 */
+	public InformationTable(Attribute[] attributes,  List<Field[]> fields, Index2IdMapper mapper) {
 		//TODO
 	}
 	

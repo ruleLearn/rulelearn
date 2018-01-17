@@ -25,7 +25,13 @@ package org.rulelearn.data;
  */
 public class LearningData {
 	
+	/**
+	 * Table with values of condition attributes for considered objects.
+	 */
 	protected Table conditionTable;
+	/**
+	 * Preference information concerning considered objects.
+	 */
 	protected PreferenceInformation preferenceInformation;
 
 }

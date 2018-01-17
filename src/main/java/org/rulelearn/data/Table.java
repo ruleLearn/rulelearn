@@ -28,8 +28,17 @@ import org.rulelearn.types.Field;
  */
 public class Table {
 	
+	/**
+	 * All attributes for which this table stores values.
+	 */
 	protected Attribute[] attributes;
-	protected List<Field[]> fields;
+	/**
+	 * All fields stored in this table, indexed by object's index and attribute's index.
+	 */
+	protected Field[][] fields;
+	/**
+	 *  Mapper from object's index to its unique id.
+	 */
 	protected Index2IdMapper mapper;
 	
 	/**
@@ -41,9 +50,13 @@ public class Table {
 	 *        to unique object's id, which is meaningful in general
 	 */
 	public Table(Attribute[] attributes, List<Field[]> fields, Index2IdMapper mapper) {
-		//TODO
 		this.attributes = attributes.clone();
-		this.fields = fields;
+		this.fields = new Field[fields.size()][];
+		
+		for (int i = 0; i < this.fields.length; i++) {
+			this.fields[i] = fields.get(i);
+		}
+		
 		this.mapper = mapper;
 	}
 	
@@ -55,7 +68,7 @@ public class Table {
 	 * @return field of this table corresponding to given indices
 	 */
 	public Field getField(int objectIndex, int attributeIndex) {
-		return this.fields.get(objectIndex)[attributeIndex];
+		return this.fields[objectIndex][attributeIndex];
 	}
 		
 	/**
@@ -65,7 +78,7 @@ public class Table {
 	 * @return fields of this table corresponding to given index
 	 */
 	public Field[] getFields(int objectIndex) {
-		return this.fields.get(objectIndex);
+		return this.fields[objectIndex];
 	}
 	
 	/**
@@ -77,6 +90,24 @@ public class Table {
 	public Table select(int[] objectIndices) {
 		//TODO
 		return null;
+	}
+	
+	/**
+	 * Gets number of objects stored in this table.
+	 * 
+	 * @return number of objects stored in this table
+	 */
+	public int getNumberOfObjects() {
+		return this.fields.length;
+	}
+	
+	/**
+	 * Gets number of attributes stored in this table.
+	 * 
+	 * @return number of attributes stored in this table
+	 */
+	public int getNumberOfAttributes() {
+		return this.attributes.length;
 	}
 	
 }

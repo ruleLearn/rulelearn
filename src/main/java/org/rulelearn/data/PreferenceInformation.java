@@ -16,6 +16,7 @@
 
 package org.rulelearn.data;
 
+import java.util.List;
 import org.rulelearn.types.Field;
 
 /**
@@ -25,6 +26,11 @@ import org.rulelearn.types.Field;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class PreferenceInformation {
+	
+	/**
+	 * List of preference information for subsequent objects; i-th entry stores preference information for i-th object.
+	 */
+	protected Field[] preferenceInformation;
 
 	/**
 	 * Gets preference information for an object (example, pair of examples) identified by the given index.
@@ -33,7 +39,17 @@ public class PreferenceInformation {
 	 * @return preference information (e.g., decision class label, relation label) corresponding to the object with given index
 	 */
 	public Field getPreferenceInformation(int objectIndex) {
-		//TODO
-		return null;
+		return preferenceInformation[objectIndex];
+	}
+	
+	/**
+	 * Constructor storing preference information for each object whose index corresponds to an entry in the given list.
+	 *  
+	 * @param preferenceInformation list of preference informations for subsequent objects;
+	 *        i-th entry stores preference information for i-th object
+	 * @throws NullPointerException if the given list is {@code null}
+	 */
+	public PreferenceInformation(List<Field> preferenceInformation) {
+		this.preferenceInformation = (Field[])preferenceInformation.toArray();
 	}
 }
