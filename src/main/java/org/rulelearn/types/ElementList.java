@@ -53,21 +53,21 @@ public class ElementList {
 	protected byte [] hash = null;
 	
 	/**
-	 * Creates an element list and sets element list according to an array of {@link String} elements. 
+	 * Creates an element list and sets element list according to an array of {@link String} elements and creates a hash value using {@link DEFAULT_HASH_ALGORITHM} algorithm. 
 	 * 
 	 * @param elements array of {@link String} elements
 	 * @throws NullPointerException when elements is null
-	 * @throws NoSuchAlgorithmException when algorithm is not on the list of algorithms provided in {@link MessageDigest}.
+	 * @throws NoSuchAlgorithmException when algorithm {@link DEFAULT_HASH_ALGORITHM} is not on the list of algorithms provided in {@link MessageDigest}.
 	 */
 	public ElementList (String [] elements) throws NullPointerException, NoSuchAlgorithmException {
 		this(elements, DEFAULT_HASH_ALGORITHM);
 	}
 	
 	/**
-	 * Creates an element list and sets element list according to an array of {@link String} elements. 
+	 * Creates an element list and sets element list according to an array of {@link String} elements and creates a hash value using algorithm. 
 	 * 
 	 * @param elements array of {@link String} elements
-	 * @param algorithm algorithm used to calculate hash
+	 * @param algorithm algorithm, from the list provided in {@link MessageDigest}, used to calculate hash
 	 * @throws NullPointerException when elements is null
 	 * @throws NoSuchAlgorithmException when algorithm is not on the list of algorithms provided in {@link MessageDigest}.
 	 */
