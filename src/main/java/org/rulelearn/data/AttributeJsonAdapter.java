@@ -19,7 +19,9 @@ package org.rulelearn.data;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.Field;
+import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.UnknownSimpleField;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
 import org.rulelearn.types.json.EnumerationFieldJson;
 import org.rulelearn.types.json.FieldJson;
 
@@ -72,12 +74,17 @@ public class AttributeJsonAdapter {
 		}
 		return ejson;
 	}
+	
+	@FromJson Attribute attributeFromJson (String json) {
+		return new Attribute("a1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), 
+				new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
+	}
 		
 	@FromJson Field fieldFromJson (Field field) {
-		return null;
+		return IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
 	}
 	
 	@FromJson UnknownSimpleField fieldFromJson (UnknownSimpleField field) {
-		return null;
+		return new UnknownSimpleFieldMV2();
 	}
 }

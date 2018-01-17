@@ -17,6 +17,7 @@
 package org.rulelearn.data;
 
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;
@@ -76,6 +77,30 @@ public class AttributeTest {
 
 		String json = jsonAdapter.toJson(attributes);
 		System.out.println(json);
+	}
+	
+	@Test
+	public void testReConstruction01() {
+		Attribute attribute = null;
+		
+		String json = "{" +
+				"\"active\":true," +
+				"\"missingValueType\":\"org.rulelearn.types.UnknownSimpleFieldMV2\"," +
+				"\"name\":\"a1\","+
+				"\"preferenceType\":\"GAIN\"," +
+				"\"type\":\"CONDITION\"," +
+				"\"valueType\":{\"type\":\"org.rulelearn.types.IntegerFieldFactory\"}" +
+				"}";
+		
+		Moshi moshi = new Moshi.Builder().add(new AttributeJsonAdapter()).build();
+		JsonAdapter<Attribute> jsonAdapter = moshi.adapter(Attribute.class);
+
+		try {
+			attribute = jsonAdapter.fromJson(json);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
 	}
 	
 }
