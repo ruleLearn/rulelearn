@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.rulelearn.types;
+package org.rulelearn.types.json;
 
 /**
  * EnumerationFieldJson

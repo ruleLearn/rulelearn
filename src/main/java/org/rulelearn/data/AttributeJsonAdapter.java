@@ -18,10 +18,10 @@ package org.rulelearn.data;
 
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
-import org.rulelearn.types.EnumerationFieldJson;
 import org.rulelearn.types.Field;
-import org.rulelearn.types.FieldJson;
 import org.rulelearn.types.UnknownSimpleField;
+import org.rulelearn.types.json.EnumerationFieldJson;
+import org.rulelearn.types.json.FieldJson;
 
 import com.squareup.moshi.*;
 
