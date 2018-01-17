@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package org.rulelearn.data;
+package org.rulelearn.data.json;
 
+import org.rulelearn.data.Attribute;
+import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.AttributeType;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.Field;
