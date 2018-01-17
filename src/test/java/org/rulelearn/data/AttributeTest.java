@@ -16,20 +16,16 @@
 
 package org.rulelearn.data;
 
-
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;
-import org.rulelearn.data.json.AttributeJsonAdapter;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationFieldFactory;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
 
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
+import com.google.gson.Gson;
 
 /**
  * Test for {@link Attribute}
@@ -73,36 +69,16 @@ public class AttributeTest {
 			System.out.println(ex);
 		}
 		
-		Moshi moshi = new Moshi.Builder().add(new AttributeJsonAdapter()).build();
-		JsonAdapter<Attribute[]> jsonAdapter = moshi.adapter(Attribute[].class);
-
-		String json = jsonAdapter.toJson(attributes);
+		Gson gson = new Gson();
+		String json = gson.toJson(attributes);
 		System.out.println(json);
+		
 	}
 	
 	@Test
 	public void testReConstruction01() {
 		Attribute attribute = null;
 		
-		String json = "{" +
-				"\"active\":true," +
-				"\"missingValueType\":\"org.rulelearn.types.UnknownSimpleFieldMV2\"," +
-				"\"name\":\"a1\","+
-				"\"preferenceType\":\"GAIN\"," +
-				"\"type\":\"CONDITION\"," +
-				"\"valueType\":{\"type\":\"org.rulelearn.types.IntegerFieldFactory\"}" +
-				"}";
-		
-		Moshi moshi = new Moshi.Builder().add(new AttributeJsonAdapter()).build();
-		JsonAdapter<Attribute> jsonAdapter = moshi.adapter(Attribute.class);
-
-//		try {
-//			// TODO correct - inner Moshi errors 
-//			attribute = jsonAdapter.fromJson(json);
-//		}
-//		catch (IOException ex) {
-//			System.out.println(ex);
-//		}
 	}
 	
 }
