@@ -19,6 +19,7 @@ package org.rulelearn.data;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;
+import org.rulelearn.data.json.AttributeDeserializer;
 import org.rulelearn.data.json.AttributeSerializer;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
@@ -102,9 +103,10 @@ public class AttributeTest {
 		
 		try {
 			String [] values = {"0", "1", "2"}; 
+			ElementList domain = new ElementList(values);
 			attribute = new Attribute("d1", true, AttributeType.CONDITION, 
-					new PairField<EnumerationField>(EnumerationFieldFactory.getInstance().create(new ElementList(values), 0, AttributePreferenceType.GAIN), 
-							EnumerationFieldFactory.getInstance().create(new ElementList(values), 1, AttributePreferenceType.GAIN)), 
+					new PairField<EnumerationField>(EnumerationFieldFactory.getInstance().create(domain, 0, AttributePreferenceType.GAIN), 
+							EnumerationFieldFactory.getInstance().create(domain, 1, AttributePreferenceType.GAIN)), 
 					new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
 			attributes[2] = attribute;
 		}
@@ -124,6 +126,19 @@ public class AttributeTest {
 	public void testReConstruction01() {
 		Attribute attribute = null;
 		
+		String json = "{" +
+			    "\"name\": \"a1\"," +
+			    "\"active\": true," +
+			    "\"preferenceType\": \"none\"," +
+			    "\"type\": \"condition\"," +
+			    "\"valueType\": \"integer\"," +
+			    "\"missingValueType\": \"mv2\"" +
+			  "}"; 
+		
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		attribute = gson.fromJson(json, Attribute.class);
 	}
 	
 }

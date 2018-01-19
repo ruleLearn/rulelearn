@@ -154,6 +154,16 @@ public class ElementList {
 		return elements.length;
 	}
 	
+	
+	/**
+	 * Gets algorithm used to calculate hash value of element list.
+	 * 
+	 * @return {@link String} name of algorithm
+	 */
+	public String getAlgorithm() {
+		return algorithm;
+	}
+
 	/**
 	 * Gets hash of the element list.
 	 * 

@@ -51,17 +51,17 @@ public class AttributeSerializer implements JsonSerializer<Attribute> {
 	public JsonElement serialize(Attribute src, Type typeOfSrc, JsonSerializationContext context) {
 		JsonObject json = new JsonObject();
 		
-		json.addProperty("active", src.isActive());
 		json.addProperty("name", src.getName());
+		json.addProperty("active", src.isActive());
 		switch (src.getPreferenceType()) {
-			case COST : json.addProperty("preferenceType", "COST"); break;
-			case GAIN : json.addProperty("preferencetype", "GAIN"); break;
-			default: json.addProperty("preferencetype", "NONE");
+			case COST : json.addProperty("preferenceType", "cost"); break;
+			case GAIN : json.addProperty("preferencetype", "gain"); break;
+			default: json.addProperty("preferenceType", "none");
 		}
 		switch (src.getType()) {
-			case CONDITION : json.addProperty("type", "CONDITION"); break;
-			case DECISION : json.addProperty("type", "DECISION"); break;
-			default: json.addProperty("type", "DESCRIPTION");
+			case CONDITION : json.addProperty("type", "condition"); break;
+			case DECISION : json.addProperty("type", "decision"); break;
+			default: json.addProperty("type", "description");
 		}
 		
 		Field type;
@@ -79,42 +79,43 @@ public class AttributeSerializer implements JsonSerializer<Attribute> {
 		if (type instanceof SimpleField) {
 			if (type instanceof IntegerField) {
 				if (pair) {
-					jsonPairArray.add("Integer");
+					jsonPairArray.add("integer");
 					json.add("valueType", jsonPairArray);
 				}
 				else
-					json.addProperty("valueType", "Integer");
+					json.addProperty("valueType", "integer");
 			}
 			else if (type instanceof RealField) {
 				if (pair) {
-					jsonPairArray.add("Real");
+					jsonPairArray.add("real");
 					json.add("valueType", jsonPairArray);
 				}
 				else
-					json.addProperty("valueType", "Real");
+					json.addProperty("valueType", "real");
 			}
 			else if (type instanceof EnumerationField) {
 				if (pair) {
-					jsonPairArray.add("Enumeration");
+					jsonPairArray.add("enumeration");
 					json.add("valueType", jsonPairArray);
 				}
 				else 
-					json.addProperty("valueType", "Enumeration");
+					json.addProperty("valueType", "enumeration");
 				
-				ElementList elements = ((EnumerationField)type).getElementList();
-				JsonArray jsonElementsArray = new JsonArray(elements.getSize());
-				for (int i = 0; i < elements.getSize(); i++) {
-					jsonElementsArray.add(elements.getElement(i));
+				ElementList domain = ((EnumerationField)type).getElementList();
+				JsonArray jsonDomain = new JsonArray(domain.getSize());
+				for (int i = 0; i < domain.getSize(); i++) {
+					jsonDomain.add(domain.getElement(i));
 				}
-				json.add("domain", jsonElementsArray);
+				json.add("domain", jsonDomain);
+				json.addProperty("algorithm", domain.getAlgorithm());
 			}
 		}
 		
 		UnknownSimpleField missingType = src.getMissingValueType();
 		if (missingType instanceof UnknownSimpleFieldMV15)
-			json.addProperty("missingValueType", "M15");
+			json.addProperty("missingValueType", "mv1.5");
 		else
-			json.addProperty("missingValueType", "M2");
+			json.addProperty("missingValueType", "mv2");
 		
 		return json;
 	}
