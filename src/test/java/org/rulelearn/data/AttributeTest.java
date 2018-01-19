@@ -137,7 +137,7 @@ public class AttributeTest {
 			  "{" +
 			    "\"name\": \"a2\"," +
 			    "\"active\": true," +
-			    "\"preferenceType\": \"none\"," +
+			    "\"preferenceType\": \"cost\"," +
 			    "\"type\": \"condition\"," +
 			    "\"valueType\": [\"pair\",\"integer\"]" +
 			  "}," +
@@ -156,8 +156,8 @@ public class AttributeTest {
 			    "\"type\": \"decision\"," +
 			    "\"valueType\": \"enumeration\"," +
 			    "\"domain\": [\"1\",\"2\"]," +
-			    "\"missingValueType\": \"mv1.5\"" +
-			  "}," +
+			    "\"missingValueType\": \"mv2\"" +
+			  "}" +
 		"]"; 
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
@@ -167,7 +167,6 @@ public class AttributeTest {
 		attributes = gson.fromJson(json, Attribute[].class);
 	
 		System.out.println(gson.toJson(attributes).toString());
-	
 	}
 	
 }
