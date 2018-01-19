@@ -16,8 +16,11 @@
 
 package org.rulelearn.data;
 
+import org.rulelearn.core.ReadOnlyArrayReference;
+import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
+
 /**
- * Mapper from object's index to its unique id. Index corresponds to a single information table.
+ * Mapper from object's index to its unique id. Each object's index corresponds to a single information table.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -31,13 +34,30 @@ public class Index2IdMapper {
 	
 	/**
 	 * Constructor of this mapper that memorizes mapping between object's index
-	 * (array index) and unique object's id.
+	 * (equal to array index) and unique object's id.
 	 * 
 	 * @param objectIndex2Id array mapping object's index to unique object's id - {@code objectIndex2Id[objectIndex] == objectId}
 	 * @throws NullPointerException if given array is {@code null}
 	 */
 	public Index2IdMapper(int[] objectIndex2Id) {
-		this.objectIndex2Id = objectIndex2Id.clone();
+		this(objectIndex2Id, false);
+	}
+	
+	/**
+	 * Constructor of this mapper that memorizes mapping between object's index
+	 * (equal to array index) and unique object's id.<br>
+	 * <br>
+	 * This constructor can be used in certain circumstances to accelerate object construction.
+	 * 
+	 * @param objectIndex2Id array mapping object's index to unique object's id - {@code objectIndex2Id[objectIndex] == objectId}
+	 * @param accelerateByReadOnlyParam tells if construction of this object should be accelerated by assuming that the given reference
+	 *        to an array of unique identifiers is not going to be used outside this class to modify that array
+	 *        (and thus, this object does not need to clone the array for internal use)
+	 * @throws NullPointerException if given array is {@code null}
+	 */
+	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT)
+	public Index2IdMapper(int[] objectIndex2Id, boolean accelerateByReadOnlyParam) {
+		this.objectIndex2Id = accelerateByReadOnlyParam ? objectIndex2Id : objectIndex2Id.clone();
 	}
 	
 	/**
@@ -45,7 +65,7 @@ public class Index2IdMapper {
 	 * 
 	 * @param objectIndex index of an object in an information table
 	 * @return unique id of an object in an information table
-	 * @throws IndexOutOfBoundsException if given index is lower than zero or is not smaller than {@link #getSize()}
+	 * @throws IndexOutOfBoundsException if given index is lower than zero or is not smaller than {@link #getNumberOfObjects()}
 	 */
 	public int getId(int objectIndex) {
 		return objectIndex2Id[objectIndex];
@@ -56,7 +76,7 @@ public class Index2IdMapper {
 	 * 
 	 * @return number of objects whose indices are mapped to unique identifiers.
 	 */
-	public int getSize() {
+	public int getNumberOfObjects() {
 		return this.objectIndex2Id.length;
 	}
 

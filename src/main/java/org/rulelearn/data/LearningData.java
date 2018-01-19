@@ -17,7 +17,7 @@
 package org.rulelearn.data;
 
 /**
- * Data available for learning process, composed of values of condition attributes for considered objects
+ * Data available for learning process, aggregating table with values of condition attributes for considered objects,
  * and preference information concerning these objects. 
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
@@ -36,7 +36,7 @@ public class LearningData {
 	
 	/**
 	 * Constructor storing table with values of condition attributes
-	 * and preference information concerning considered objects
+	 * and preference information concerning considered objects.
 	 * 
 	 * @param conditionTable table with values of condition attributes for considered objects, stored directly in this object
 	 * @param preferenceInformation preference information concerning considered objects, stored directly in this object

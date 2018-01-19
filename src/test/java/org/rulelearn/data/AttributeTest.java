@@ -16,8 +16,6 @@
 
 package org.rulelearn.data;
 
-
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;

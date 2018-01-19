@@ -17,12 +17,27 @@
 package org.rulelearn.core;
 
 /**
- * Annotation used for methods that return reference to a field of a class (give direct access to an object being a field of a class).
- * Such objects are not intended to be modified, unless cloned first. For instance, if an array of objects is returned by some method annotated
- * with this annotation, then none of its elements should be removed or replaced by some other object.
+ * Enumeration for locations of read-only array references in method's signature
+ * (e.g., in method's input = passed as method's parameter; in method's output = obtained as method's result).
+ * A reference to an array object is considered to be read-only if it should not be used to modify the array content.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public @interface InnerObjectReference {
+public enum ReadOnlyArrayReferenceLocation {
+	/**
+	 * Value indicating that the respective method accepts a read-only array reference as an input parameter.
+	 */
+	INPUT,
+	/**
+	 * Value indicating that the respective method returns a read-only array reference
+	 * (i.e., a reference that should not be used to modify the array).
+	 */
+	OUTPUT,
+	/**
+	 * Value indicating that the respective method accepts a read-only array reference as an input parameter,
+	 * and returns a read-only array reference (i.e., a reference that should not be used to modify the array).
+	 */
+	INPUT_AND_OUTPUT
 }
+

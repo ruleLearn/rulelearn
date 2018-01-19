@@ -16,7 +16,11 @@
 
 package org.rulelearn.data;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.rulelearn.core.ReadOnlyArrayReference;
+import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.types.Field;
 
 /**
@@ -54,23 +58,125 @@ public class InformationTable {
 	 * @param fields list of field vectors; each vector contains condition and description field values
 	 *        of a single object of this information table
 	 * @param mapper translating object's index to it's unique id
+	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public InformationTable(Attribute[] attributes, List<Field[]> fields, Index2IdMapper mapper) {
-		this.attributes = attributes.clone();
+		this(attributes, fields, mapper, false);
+	}
+	
+	/**
+	 * Information table constructor.<br>
+	 * <br>
+	 * This constructor can be used in certain circumstances to accelerate object construction.
+	 * 
+	 * @param attributes all attributes of an information table (condition and description ones together)
+	 * @param fields list of field vectors; each vector contains condition and description field values
+	 *        of a single object of this information table
+	 * @param mapper translating object's index to it's unique id
+	 * @param accelerateByReadOnlyParams tells if construction of this object should be accelerated by assuming that the given reference
+	 *        to an array of attributes and references to arrays of fields present at the given list are not going to be used outside this class
+	 *        to modify that arrays (and thus, this object does not need to clone the arrays for internal use)
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws IllegalArgumentException if given list of {@link Field} arrays is empty
+	 */
+	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT)
+	public InformationTable(Attribute[] attributes, List<Field[]> fields, Index2IdMapper mapper, boolean accelerateByReadOnlyParams) {
+		if (fields.isEmpty()) {
+			throw new IllegalArgumentException("Information table cannot be created with and empty list of values of objects.");
+		}
 		
-		for (int i = 0; i < attributes.length; i++) {
-			//TODO: split attributes and fields
-		}		
+		if (attributes.length != fields.get(0).length) {
+			//TODO: use customized runtime exception subclass
+			throw new RuntimeException("The number of attributes and object's fields in an information table do not match.");
+		}
 		
 		if (mapper == null) {
 			throw new NullPointerException("Mapper is null.");	
 		}
+		
+		int numberOfConditionAttributes = 0;
+		int numberOfDescriptionAttributes = 0;
+		
+		for (int i = 0; i < attributes.length; i++) { //scout
+			if (attributes[i].getType() == AttributeType.CONDITION) {
+				numberOfConditionAttributes++;
+			} else if (attributes[i].getType() == AttributeType.DESCRIPTION) {
+				numberOfDescriptionAttributes++;
+			}
+		}
+		
+		Attribute[] conditionAttributes = new Attribute[numberOfConditionAttributes];
+		Attribute[] descriptionAttributes = new Attribute[numberOfDescriptionAttributes];
+		int conditionAttributeIndex = 0;
+		int descriptionAttributeIndex = 0;
+		
+		for (int i = 0; i < attributes.length; i++) { //split attributes
+			if (attributes[i].getType() == AttributeType.CONDITION) {
+				conditionAttributes[conditionAttributeIndex++] = attributes[i];
+			} else if (attributes[i].getType() == AttributeType.DESCRIPTION) {
+				descriptionAttributes[descriptionAttributeIndex++] = attributes[i];
+			}
+		}
+		
+		List<Field[]> conditionFieldsList = new ArrayList<>();
+		List<Field[]> descritpionFieldsList = new ArrayList<>();
+		
+		Field[] conditionFields;
+		Field[] descriptionFields;
+		
+		//split fields
+		for (Field[] values : fields) { //choose row (single object)
+			conditionFields = new Field[numberOfConditionAttributes];
+			descriptionFields = new Field[numberOfDescriptionAttributes];
+			conditionAttributeIndex = 0;
+			descriptionAttributeIndex = 0;
+			
+			for (int i = 0; i < attributes.length; i++) { //choose column (single attribute)
+				if (attributes[i].getType() == AttributeType.CONDITION) {
+					conditionFields[conditionAttributeIndex++] = values[i];
+				} else if (attributes[i].getType() == AttributeType.DESCRIPTION) {
+					descriptionFields[descriptionAttributeIndex++] = values[i];
+				} 
+			}
+			
+			conditionFieldsList.add(conditionFields);
+			descritpionFieldsList.add(descriptionFields);
+		}
+		
+		this.attributes = accelerateByReadOnlyParams ? attributes : attributes.clone(); //remember all attributes (both condition and description ones)
+		
+		this.conditionTable = new Table(conditionAttributes, conditionFieldsList, mapper, true);
+		this.descriptionTable = new Table(descriptionAttributes, descritpionFieldsList, mapper, true);
+		
 		this.mapper = mapper;
 	}
 	
 //	public InformationTable(String metadataPath, String dataPath) {
 
 //}
+	
+	/**
+	 * Gets all attributes of this information table (condition and description ones together).
+	 *  
+	 * @return array with all attributes of this information table
+	 */
+	public Attribute[] getAttributes() {
+		return this.attributes.clone();
+	}
+	
+	/**
+	 * Gets all attributes of this information table (condition and description ones together).
+	 *  
+	 * @return array with all attributes of this information table
+	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
+	 *        at the cost of returning a read-only array, or should return a safe array (that can be
+	 *        modified outside this object), at the cost of returning the result slower
+	 */
+	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
+	public Attribute[] getAttributes(boolean accelerateByReadOnlyResult) {
+		return accelerateByReadOnlyResult ? this.attributes : this.attributes.clone();
+	}
 	
 }
