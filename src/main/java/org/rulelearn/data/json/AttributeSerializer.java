@@ -70,7 +70,7 @@ public class AttributeSerializer implements JsonSerializer<Attribute> {
 		if (src.getValueType() instanceof PairField<?>) {
 			type = ((PairField<?>)src.getValueType()).getFirstValue();
 			pair = true;
-			jsonPairArray.add("Pair");
+			jsonPairArray.add("pair");
 		}
 		else {
 			type = src.getValueType();

@@ -30,7 +30,6 @@ import org.rulelearn.types.PairField;
 import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
-import org.rulelearn.types.json.IntegerFieldSerializer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -91,7 +90,7 @@ public class AttributeTest {
 	@Test
 	public void testConstruction02() {
 		Attribute[] attributes = new Attribute[3];
-		//TODO Should be default value taken from a config class
+		//TODO Default values should be taken from a default configuration class
 		Attribute attribute = new Attribute("c1", true, AttributeType.CONDITION, 
 				new PairField<IntegerField>(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN)), 
 				new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
@@ -124,21 +123,51 @@ public class AttributeTest {
 	
 	@Test
 	public void testReConstruction01() {
-		Attribute attribute = null;
+		Attribute [] attributes = null;
 		
-		String json = "{" +
+		String json = "[" + 
+			 "{" +
 			    "\"name\": \"a1\"," +
 			    "\"active\": true," +
 			    "\"preferenceType\": \"none\"," +
 			    "\"type\": \"condition\"," +
 			    "\"valueType\": \"integer\"," +
 			    "\"missingValueType\": \"mv2\"" +
-			  "}"; 
+			  "}," +
+			  "{" +
+			    "\"name\": \"a2\"," +
+			    "\"active\": true," +
+			    "\"preferenceType\": \"none\"," +
+			    "\"type\": \"condition\"," +
+			    "\"valueType\": [\"pair\",\"integer\"]" +
+			  "}," +
+			  "{" +
+			    "\"name\": \"a3\"," +
+			    "\"active\": true," +
+			    "\"preferenceType\": \"gain\"," +
+			    "\"type\": \"condition\"," +
+			    "\"valueType\": \"real\"," +
+			    "\"missingValueType\": \"mv1.5\"" +
+			  "}," +
+			  "{" +
+			    "\"name\": \"d\"," +
+			    "\"active\": true," +
+			    "\"preferenceType\": \"gain\"," +
+			    "\"type\": \"decision\"," +
+			    "\"valueType\": \"enumeration\"," +
+			    "\"domain\": [\"1\",\"2\"]," +
+			    "\"missingValueType\": \"mv1.5\"" +
+			  "}," +
+		"]"; 
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
-		attribute = gson.fromJson(json, Attribute.class);
+		attributes = gson.fromJson(json, Attribute[].class);
+	
+		System.out.println(gson.toJson(attributes).toString());
+	
 	}
 	
 }

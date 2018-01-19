@@ -111,6 +111,7 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 			}
 			
 			// set valueType
+			//TODO Default values should be taken from a default configuration class
 			if (value.compareTo("integer") == 0) {
 				if (	pair)
 					valueType = new PairField<IntegerField>(IntegerFieldFactory.getInstance().create(0, preferenceType), IntegerFieldFactory.getInstance().create(0, preferenceType));
@@ -166,7 +167,7 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 		element = json.getAsJsonObject().get("missingValueType");
 		if (element != null) {
 			value = element.getAsString().toLowerCase();
-			if (value.compareTo("m1.5") == 0)
+			if (value.compareTo("mv1.5") == 0)
 				missingValueType = new UnknownSimpleFieldMV15();
 			else // in case it is not provided set mv2
 				missingValueType = new UnknownSimpleFieldMV2();
