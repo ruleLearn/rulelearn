@@ -19,6 +19,7 @@ package org.rulelearn.data;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;
+import org.rulelearn.data.json.AttributeSerializer;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
@@ -28,8 +29,10 @@ import org.rulelearn.types.PairField;
 import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
+import org.rulelearn.types.json.IntegerFieldSerializer;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Test for {@link Attribute}
@@ -73,7 +76,9 @@ public class AttributeTest {
 			System.out.println(ex);
 		}
 		
-		Gson gson = new Gson();
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		String json = gson.toJson(attributes);
 		System.out.println(json);
 		
@@ -107,7 +112,9 @@ public class AttributeTest {
 			System.out.println(ex);
 		}
 		
-		Gson gson = new Gson();
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		String json = gson.toJson(attributes);
 		System.out.println(json);
 		
