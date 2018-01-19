@@ -17,24 +17,24 @@
 package org.rulelearn.core;
 
 /**
- * Exception thrown when type of an object is different than expected.
+ * Exception thrown when parameter value passed to a method is incorrect.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class InvalidTypeException extends RuntimeException {
-	
+public class InvalidValueException extends RuntimeException {
+
 	/**
 	 * Generated serial version UID.
 	 */
-	private static final long serialVersionUID = 5456589721053220126L;
+	private static final long serialVersionUID = -2215129413746834379L;
 
 	/**
 	 * Constructs an exception with message of failure reason.
 	 * 
 	 * @param message message of this exception
 	 */
-	public InvalidTypeException(String message) {
+	public InvalidValueException(String message) {
 		super(message);
 	}
 

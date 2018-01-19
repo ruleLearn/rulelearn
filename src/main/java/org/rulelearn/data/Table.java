@@ -51,8 +51,8 @@ public class Table {
 	 * 
 	 * @param attributes attributes corresponding two columns of this table
 	 * @param fields fields corresponding two rows of this table
-	 * @param mapper translator of object's index, which is meaningful in this table only,
-	 *        to unique object's id, which is meaningful in general
+	 * @param mapper translator of object's index (being meaningful in this table only)
+	 *        to unique object's id (being meaningful in general)
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public Table(Attribute[] attributes, List<Field[]> fields, Index2IdMapper mapper) {
