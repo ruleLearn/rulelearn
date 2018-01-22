@@ -19,7 +19,6 @@ package org.rulelearn.core;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import org.rulelearn.core.ComparableExt.ComparisonResult;
 import org.rulelearn.types.Field;
 import org.rulelearn.core.UncomparableException;
 

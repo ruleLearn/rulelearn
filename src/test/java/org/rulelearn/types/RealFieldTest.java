@@ -170,7 +170,7 @@ public class RealFieldTest {
 	}
 	
 	/**
-	 * Tests {@link RealField#compareTo(SimpleField)} method.
+	 * Tests {@link RealField#compareTo(KnownSimpleField)} method.
 	 */
 	@Test
 	public void testCompareTo01() {

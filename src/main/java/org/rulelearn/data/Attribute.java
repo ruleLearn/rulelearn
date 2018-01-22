@@ -16,12 +16,14 @@
 
 package org.rulelearn.data;
 
+import org.rulelearn.types.Field;
+import org.rulelearn.types.UnknownSimpleField;
+
 /**
  * Top level class for an attribute.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
 public class Attribute {
 	/**
@@ -40,21 +42,21 @@ public class Attribute {
 	protected AttributeType type;
 	
 	/**
-	 * Type of value {@link AttributeValueType} of an attribute. 
+	 * Type of value {@link Field} of an attribute. 
 	 */
-	protected AttributeValueType valueType;
+	protected Field valueType;
 	
 	/**
-	 * Type of missing value {@link AttributeMissingValueType} of an attribute. 
+	 * Type of missing value {@link UnknownSimpleField} of an attribute. 
 	 */
-	protected AttributeMissingValueType missingValueType;
+	protected UnknownSimpleField missingValueType;
 	
 	/**
 	 * Preference type {@link AttributePreferenceType} of an attribute. 
 	 */
 	protected AttributePreferenceType preferenceType;
 	
-	public Attribute (String name, boolean active, AttributeType type, AttributeValueType valueType, AttributeMissingValueType missingValueType, AttributePreferenceType preferenceType) {
+	public Attribute (String name, boolean active, AttributeType type, Field valueType, UnknownSimpleField missingValueType, AttributePreferenceType preferenceType) {
 		this.name = name;
 		this.active = active;
 		this.type = type;
@@ -91,20 +93,20 @@ public class Attribute {
 	}
 
 	/**
-	 * Gets value type {@link AttributeValueType} of this attribute.
+	 * Gets value type {@link Field} of this attribute.
 	 * 
 	 * @return the attribute value type
 	 */
-	public AttributeValueType getValueType() {
+	public Field getValueType() {
 		return valueType;
 	}
 
 	/**
-	 * Gets missing value type {@link AttributeMissingValueType} of this attribute.
+	 * Gets missing value type {@link UnknownSimpleField} of this attribute.
 	 * 
 	 * @return the attribute missing value type
 	 */
-	public AttributeMissingValueType getMissingValueType() {
+	public UnknownSimpleField getMissingValueType() {
 		return missingValueType;
 	}
 

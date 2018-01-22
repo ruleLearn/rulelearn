@@ -14,26 +14,30 @@
  * limitations under the License.
  */
 
-package org.rulelearn.data;
+package org.rulelearn.core;
 
 /**
- * Value type of an attribute in information table.
+ * Enumeration for locations of read-only array references in method's signature
+ * (e.g., in method's input = passed as method's parameter; in method's output = obtained as method's result).
+ * A reference to an array object is considered to be read-only if it should not be used to modify the array content.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
-public enum AttributeValueType {
+public enum ReadOnlyArrayReferenceLocation {
 	/**
-	 * Integer type {@link org.rulelearn.types.IntegerField}.
+	 * Value indicating that the respective method accepts a read-only array reference as an input parameter.
 	 */
-	INTEGER,
+	INPUT,
 	/**
-	 * Real type {@link org.rulelearn.types.RealField}.
+	 * Value indicating that the respective method returns a read-only array reference
+	 * (i.e., a reference that should not be used to modify the array).
 	 */
-	REAL,
+	OUTPUT,
 	/**
-	 * Enumeration type {@link org.rulelearn.types.EnumerationField}.
+	 * Value indicating that the respective method accepts a read-only array reference as an input parameter,
+	 * and returns a read-only array reference (i.e., a reference that should not be used to modify the array).
 	 */
-	ENUMERATION
+	INPUT_AND_OUTPUT
 }
+

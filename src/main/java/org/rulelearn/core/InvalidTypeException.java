@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
-package org.rulelearn.data;
+package org.rulelearn.core;
 
 /**
- * Missing value type of an attribute in information table.
+ * Exception thrown when type of an object is different than expected.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
-public enum AttributeMissingValueType {
+public class InvalidTypeException extends RuntimeException {
+	
 	/**
-	 * M15 type {@link org.rulelearn.types.UnknownSimpleFieldMV15}.
+	 * Generated serial version UID.
 	 */
-	MV15,
+	private static final long serialVersionUID = 5456589721053220126L;
+
 	/**
-	 * M2 type {@link org.rulelearn.types.UnknownSimpleFieldMV2}.
+	 * Constructs an exception with message of failure reason.
+	 * 
+	 * @param message message of this exception
 	 */
-	MV2,
+	public InvalidTypeException(String message) {
+		super(message);
+	}
+
 }

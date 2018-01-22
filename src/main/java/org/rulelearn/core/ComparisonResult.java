@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package org.rulelearn.data;
+package org.rulelearn.core;
 
 /**
- * Type of an attribute in information table.
+ * Result of comparison of two objects - the object of interest (the first object), and the other object (the second object).
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public enum AttributeType {
+public enum ComparisonResult {
 	/**
-	 * Type of a description attribute.
+	 * Value indicating that the object of interest is greater than the other object. 
 	 */
-	DESCRIPTION,
+	GREATER_THAN,
 	/**
-	 * Type of a condition attribute.
+	 * Value indicating that the object of interest is smaller than the other object.
 	 */
-	CONDITION,
+	SMALLER_THAN,
 	/**
-	 * Type of a decision attribute.
+	 * Value indicating that the object of interest is equal to the other object.
 	 */
-	DECISION
+	EQUAL,
+	/**
+	 * Value indicating that the object of interest is uncomparable with the other object.
+	 */
+	UNCOMPARABLE
 }

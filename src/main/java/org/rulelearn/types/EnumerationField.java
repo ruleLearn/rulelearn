@@ -26,7 +26,7 @@ import org.rulelearn.core.TernaryLogicValue;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
-public abstract class EnumerationField extends SimpleField {
+public abstract class EnumerationField extends KnownSimpleField {
 	/**
 	 * List of elements representing enumeration.
 	 */
@@ -73,18 +73,14 @@ public abstract class EnumerationField extends SimpleField {
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	@Override
-	public int compareTo(SimpleField otherField) {
-		if (otherField instanceof UnknownSimpleField) {
-			return ((UnknownSimpleField)otherField).reverseCompareTo(this); //missing value => delegate comparison to the other field
+	public int compareTo(KnownSimpleField otherField) {
+		EnumerationField other = (EnumerationField)otherField;
+		if (this.value > other.value) {
+			return 1;
+		} else if (this.value < other.value) {
+			return -1;
 		} else {
-			EnumerationField other = (EnumerationField)otherField;
-			if (this.value > other.value) {
-				return 1;
-			} else if (this.value < other.value) {
-				return -1;
-			} else {
-				return 0;
-			}
+			return 0;
 		}
 	}
 	

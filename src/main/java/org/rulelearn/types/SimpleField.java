@@ -17,29 +17,11 @@
 package org.rulelearn.types;
 
 /**
- * Top level class for all simple fields (i.e., representing simple values) in an information table.
+ * Top level class for all (known and unknown) simple values in an information table.
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class SimpleField extends Field implements Comparable<SimpleField> {
-	
-	/**
-	 * Compares this field with the other field. Note that this implementing method will not throw {@link org.rulelearn.core.UncomparableException}
-	 * as every two simple fields of the same type are comparable.
-	 * 
-	 * @param otherField other field to be compared with this field
-	 * 
-	 * @return negative number when this field is smaller than the other field,<br>
-	 *         zero if both fields are equal,<br>
-	 *         positive number when this field is greater than the other field
-	 * 
-	 * @throws ClassCastException if the other field is not of type {@link SimpleField}
-	 * @throws NullPointerException if the other field is {@code null}
-	 */
-	@Override
-	public int compareToEx(Field otherField) {
-		return compareTo((SimpleField)otherField);
-	}
+public abstract class SimpleField extends Field {
 	
 }

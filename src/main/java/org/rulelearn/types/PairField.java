@@ -16,6 +16,7 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
 
@@ -25,53 +26,114 @@ import org.rulelearn.core.UncomparableException;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  * 
- * @param <T1> class of the first simple field in the pair
- * @param <T2> class of the second simple field in the pair
+ * @param <T> class of the first and second simple field in the pair
  */
-public class PairField<T1 extends SimpleField, T2 extends SimpleField> extends CompositeField {
+public class PairField<T extends SimpleField> extends CompositeField {
 	
 	/**
 	 * The first value in this pair.
 	 */
-	protected T1 firstValue;
+	protected T firstValue;
 	/**
 	 * The second value in this pair.
 	 */
-	protected T2 secondValue;
+	protected T secondValue;
 	
 	/**
 	 * Constructor setting both values.
 	 * 
 	 * @param firstValue first value of this pair
 	 * @param secondValue second value of this pair
+	 * 
+	 * @throws NullPointerException if any of the given values is {@code null}
+	 * @throws InvalidTypeException if the first and the second value are of different types
 	 */
-	public PairField(T1 firstValue, T2 secondValue) {
+	public PairField(T firstValue, T secondValue) {
+		if (firstValue == null) {
+			throw new NullPointerException("The first value in the pair is null.");
+		}
+		if (secondValue == null) {
+			throw new NullPointerException("The second value in the pair is null.");
+		}
+		
+		if (!firstValue.getClass().equals(secondValue.getClass())) {
+			throw new InvalidTypeException("Types of fields in a pair have to be the same.");
+		}
+		
 		this.firstValue = firstValue;
 		this.secondValue = secondValue;
 	}
 
 	@Override
-	public int compareToEx(Field otherObject) throws UncomparableException {
-		// TODO Auto-generated method stub
-		return 0;
+	public int compareToEx(Field otherField) throws UncomparableException {
+		if (otherField instanceof PairField<?>) {
+			int firstCompareExResult;
+			int secondCompareExResult;
+			
+			try {
+				firstCompareExResult = this.firstValue.compareToEx(((PairField<?>)otherField).firstValue);
+				secondCompareExResult = this.secondValue.compareToEx(((PairField<?>)otherField).secondValue);
+			} catch (UncomparableException exception) { //first or second values in pairs cannot be compared
+				throw new UncomparableException("This pair field cannot be compared with the other pair field.");
+			}
+				
+			if (firstCompareExResult == 0 && secondCompareExResult == 0) {
+				return 0;
+			} else if (firstCompareExResult >= 0 &&
+					secondCompareExResult <= 0) {
+				return 1;
+			} else if (firstCompareExResult <= 0 &&
+					secondCompareExResult >= 0) {
+				return -1;
+			} else {
+				throw new UncomparableException("This pair field cannot be compared with the other pair field.");
+			}
+		} else {
+			throw new ClassCastException("This pair field cannot be compared with the other field.");
+		}
+		
 	}
 
 	@Override
 	public TernaryLogicValue isAtLeastAsGoodAs(Field otherField) {
-		// TODO Auto-generated method stub
-		return null;
+		if (otherField instanceof PairField<?>) {
+			if (this.firstValue.isAtLeastAsGoodAs(((PairField<?>)otherField).firstValue) ==  TernaryLogicValue.TRUE &&
+					this.secondValue.isAtMostAsGoodAs(((PairField<?>)otherField).secondValue) ==  TernaryLogicValue.TRUE) {
+				return TernaryLogicValue.TRUE;
+			} else {
+				return TernaryLogicValue.FALSE;
+			}
+		} else {
+			return TernaryLogicValue.UNCOMPARABLE;
+		}
 	}
 
 	@Override
 	public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
-		// TODO Auto-generated method stub
-		return null;
+		if (otherField instanceof PairField<?>) {
+			if (this.firstValue.isAtMostAsGoodAs(((PairField<?>)otherField).firstValue) ==  TernaryLogicValue.TRUE &&
+					this.secondValue.isAtLeastAsGoodAs(((PairField<?>)otherField).secondValue) ==  TernaryLogicValue.TRUE) {
+				return TernaryLogicValue.TRUE;
+			} else {
+				return TernaryLogicValue.FALSE;
+			}
+		} else {
+			return TernaryLogicValue.UNCOMPARABLE;
+		}
 	}
 
 	@Override
 	public TernaryLogicValue isEqualTo(Field otherField) {
-		// TODO Auto-generated method stub
-		return null;
+		if (otherField instanceof PairField<?>) {
+			if (this.firstValue.isEqualTo(((PairField<?>)otherField).firstValue) ==  TernaryLogicValue.TRUE &&
+					this.secondValue.isEqualTo(((PairField<?>)otherField).secondValue) ==  TernaryLogicValue.TRUE) {
+				return TernaryLogicValue.TRUE;
+			} else {
+				return TernaryLogicValue.FALSE;
+			}
+		} else {
+			return TernaryLogicValue.UNCOMPARABLE;
+		}
 	}
 
 	/** {@inheritDoc}
@@ -81,7 +143,7 @@ public class PairField<T1 extends SimpleField, T2 extends SimpleField> extends C
 	@Override
 	@SuppressWarnings("unchecked")
 	public <S extends Field> S selfClone() {
-		return (S)new PairField<T1,T2>(firstValue, secondValue);
+		return (S)new PairField<T>(firstValue, secondValue);
 	}
 
 	/**
@@ -89,7 +151,7 @@ public class PairField<T1 extends SimpleField, T2 extends SimpleField> extends C
 	 * 
 	 * @return the first value in this pair.
 	 */
-	public T1 getFirstValue() {
+	public T getFirstValue() {
 		return firstValue;
 	}
 
@@ -98,7 +160,7 @@ public class PairField<T1 extends SimpleField, T2 extends SimpleField> extends C
 	 * 
 	 * @return the second value in this pair.
 	 */
-	public T2 getSecondValue() {
+	public T getSecondValue() {
 		return secondValue;
 	}
 

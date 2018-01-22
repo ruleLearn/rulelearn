@@ -206,7 +206,7 @@ public class EnumerationFieldTest {
 	}
 	
 	/**
-	 * Tests {@link EnumerationField#compareTo(SimpleField)} method.
+	 * Tests {@link EnumerationField#compareTo(KnownSimpleField)} method.
 	 */
 	@Test
 	public void testCompareTo01() {

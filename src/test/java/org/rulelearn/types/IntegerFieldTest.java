@@ -171,7 +171,7 @@ public class IntegerFieldTest {
 	}
 	
 	/**
-	 * Tests {@link IntegerField#compareTo(SimpleField)} method.
+	 * Tests {@link IntegerField#compareTo(KnownSimpleField)} method.
 	 */
 	@Test
 	public void testCompareTo01() {

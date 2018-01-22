@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package org.rulelearn.data;
+package org.rulelearn.core;
 
 /**
- * Type of an attribute in information table.
+ * Exception thrown when parameter value passed to a method is incorrect.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public enum AttributeType {
+public class InvalidValueException extends RuntimeException {
+
 	/**
-	 * Type of a description attribute.
+	 * Generated serial version UID.
 	 */
-	DESCRIPTION,
+	private static final long serialVersionUID = -2215129413746834379L;
+
 	/**
-	 * Type of a condition attribute.
+	 * Constructs an exception with message of failure reason.
+	 * 
+	 * @param message message of this exception
 	 */
-	CONDITION,
-	/**
-	 * Type of a decision attribute.
-	 */
-	DECISION
+	public InvalidValueException(String message) {
+		super(message);
+	}
+
 }
