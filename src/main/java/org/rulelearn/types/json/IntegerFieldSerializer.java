@@ -16,13 +16,32 @@
 
 package org.rulelearn.types.json;
 
+import java.lang.reflect.Type;
+
+import org.rulelearn.types.IntegerField;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
 /**
- * EnumerationFieldJson
+ * IntegerFieldSerializer
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
-public class EnumerationFieldJson extends FieldJson {
-	public String [] domain;
+public class IntegerFieldSerializer implements JsonSerializer<IntegerField> {
+
+	/* (non-Javadoc)
+	 * @see com.google.gson.JsonSerializer#serialize(java.lang.Object, java.lang.reflect.Type, com.google.gson.JsonSerializationContext)
+	 */
+	@Override
+	public JsonElement serialize(IntegerField src, Type typeOfSrc, JsonSerializationContext context) {
+		JsonObject json = new JsonObject();
+		json.addProperty("valueType", "Integer");
+		return json;
+	}
+	
 }

@@ -19,15 +19,20 @@ package org.rulelearn.data;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;
-import org.rulelearn.data.json.AttributeJsonAdapter;
+import org.rulelearn.data.json.AttributeDeserializer;
+import org.rulelearn.data.json.AttributeSerializer;
 import org.rulelearn.types.ElementList;
+import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
+import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
+import org.rulelearn.types.PairField;
+import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
 
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Test for {@link Attribute}
@@ -46,8 +51,8 @@ public class AttributeTest {
 		Attribute[] attributes = new Attribute[5];
 		
 		//TODO Should be default value taken from a config class
-		Attribute attribute = new Attribute("a1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), 
-				new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
+		Attribute attribute = new Attribute("a1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE), 
+				new UnknownSimpleFieldMV2(), AttributePreferenceType.NONE);
 		attributes[0] = attribute;
 		attribute = new Attribute("c1", true, AttributeType.CONDITION, RealFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN),
 				new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
@@ -71,36 +76,97 @@ public class AttributeTest {
 			System.out.println(ex);
 		}
 		
-		Moshi moshi = new Moshi.Builder().add(new AttributeJsonAdapter()).build();
-		JsonAdapter<Attribute[]> jsonAdapter = moshi.adapter(Attribute[].class);
-
-		String json = jsonAdapter.toJson(attributes);
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		String json = gson.toJson(attributes);
 		System.out.println(json);
+		
+	}
+	
+	/**
+	 * Tests construction and serialization to JSON
+	 */
+	@Test
+	public void testConstruction02() {
+		Attribute[] attributes = new Attribute[3];
+		//TODO Default values should be taken from a default configuration class
+		Attribute attribute = new Attribute("c1", true, AttributeType.CONDITION, 
+				new PairField<IntegerField>(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN)), 
+				new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
+		attributes[0] = attribute;
+		attribute = new Attribute("c2", true, AttributeType.CONDITION, 
+				new PairField<RealField>(RealFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), RealFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN)), 
+				new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
+		attributes[1] = attribute;
+		
+		try {
+			String [] values = {"0", "1", "2"}; 
+			ElementList domain = new ElementList(values);
+			attribute = new Attribute("d1", true, AttributeType.CONDITION, 
+					new PairField<EnumerationField>(EnumerationFieldFactory.getInstance().create(domain, 0, AttributePreferenceType.GAIN), 
+							EnumerationFieldFactory.getInstance().create(domain, 1, AttributePreferenceType.GAIN)), 
+					new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
+			attributes[2] = attribute;
+		}
+		catch (NoSuchAlgorithmException ex) {
+			System.out.println(ex);
+		}
+		
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		String json = gson.toJson(attributes);
+		System.out.println(json);
+		
 	}
 	
 	@Test
 	public void testReConstruction01() {
-		Attribute attribute = null;
+		Attribute [] attributes = null;
 		
-		String json = "{" +
-				"\"active\":true," +
-				"\"missingValueType\":\"org.rulelearn.types.UnknownSimpleFieldMV2\"," +
-				"\"name\":\"a1\","+
-				"\"preferenceType\":\"GAIN\"," +
-				"\"type\":\"CONDITION\"," +
-				"\"valueType\":{\"type\":\"org.rulelearn.types.IntegerFieldFactory\"}" +
-				"}";
+		String json = "[" + 
+			 "{" +
+			    "\"name\": \"a1\"," +
+			    "\"active\": true," +
+			    "\"preferenceType\": \"none\"," +
+			    "\"type\": \"condition\"," +
+			    "\"valueType\": \"integer\"," +
+			    "\"missingValueType\": \"mv2\"" +
+			  "}," +
+			  "{" +
+			    "\"name\": \"a2\"," +
+			    "\"active\": true," +
+			    "\"preferenceType\": \"cost\"," +
+			    "\"type\": \"condition\"," +
+			    "\"valueType\": [\"pair\",\"integer\"]" +
+			  "}," +
+			  "{" +
+			    "\"name\": \"a3\"," +
+			    "\"active\": true," +
+			    "\"preferenceType\": \"gain\"," +
+			    "\"type\": \"condition\"," +
+			    "\"valueType\": \"real\"," +
+			    "\"missingValueType\": \"mv1.5\"" +
+			  "}," +
+			  "{" +
+			    "\"name\": \"d\"," +
+			    "\"active\": true," +
+			    "\"preferenceType\": \"gain\"," +
+			    "\"type\": \"decision\"," +
+			    "\"valueType\": \"enumeration\"," +
+			    "\"domain\": [\"1\",\"2\"]," +
+			    "\"missingValueType\": \"mv2\"" +
+			  "}" +
+		"]"; 
 		
-		Moshi moshi = new Moshi.Builder().add(new AttributeJsonAdapter()).build();
-		JsonAdapter<Attribute> jsonAdapter = moshi.adapter(Attribute.class);
-
-//		try {
-//			// TODO correct - inner Moshi errors 
-//			attribute = jsonAdapter.fromJson(json);
-//		}
-//		catch (IOException ex) {
-//			System.out.println(ex);
-//		}
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		attributes = gson.fromJson(json, Attribute[].class);
+	
+		System.out.println(gson.toJson(attributes).toString());
 	}
 	
 }

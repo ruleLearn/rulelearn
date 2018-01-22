@@ -40,22 +40,22 @@ public class ElementList {
 	/**
 	 * Map of elements of an enumeration.
 	 */
-	protected Object2IntMap<String> map = null;
+	protected transient Object2IntMap<String> map = null;
 	
 	/**
 	 * Default algorithm used to calculate hash value of element list.
 	 */
 	protected static final String DEFAULT_HASH_ALGORITHM = "SHA-256";
 	
-	/**
-	 * Hash value used for quicker comparison of element lists.
-	 */
-	protected byte [] hash = null;
-	
 	/** 
 	 * Algorithm used to calculate hash value of element list.
 	 */
 	protected String algorithm = DEFAULT_HASH_ALGORITHM;
+	
+	/**
+	 * Hash value used for quicker comparison of element lists.
+	 */
+	protected transient byte [] hash = null;
 	
 	/**
 	 * Creates an element list and sets element list according to an array of {@link String} elements and creates a hash value using {@link DEFAULT_HASH_ALGORITHM} algorithm. 
@@ -154,6 +154,16 @@ public class ElementList {
 		return elements.length;
 	}
 	
+	
+	/**
+	 * Gets algorithm used to calculate hash value of element list.
+	 * 
+	 * @return {@link String} name of algorithm
+	 */
+	public String getAlgorithm() {
+		return algorithm;
+	}
+
 	/**
 	 * Gets hash of the element list.
 	 * 
