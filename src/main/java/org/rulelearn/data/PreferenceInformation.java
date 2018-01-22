@@ -20,7 +20,7 @@ import java.util.List;
 import org.rulelearn.types.Field;
 
 /**
- * Preference information concerning learning objects, available in the considered decision problem (e.g., supplied by a decision maker).
+ * Preference information concerning learning objects, available in the considered decision problem (e.g., supplied by a decision maker as values of an active decision attribute).
  * This information may concern, e.g., decision class assignments or relations for pairs of learning objects. 
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)

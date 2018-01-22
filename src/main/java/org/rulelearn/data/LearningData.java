@@ -17,8 +17,8 @@
 package org.rulelearn.data;
 
 /**
- * Data available for learning process, aggregating table with values of condition attributes for considered objects,
- * and preference information concerning these objects. 
+ * Data available for the learning process, aggregating table with values of active condition attributes for considered objects,
+ * and preference information concerning these objects.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -26,7 +26,8 @@ package org.rulelearn.data;
 public class LearningData {
 	
 	/**
-	 * Table with values of condition attributes for considered objects.
+	 * Table with values of active condition attributes for considered objects.
+	 * Only such attributes are used in the learning process.
 	 */
 	protected Table conditionTable;
 	/**
@@ -35,11 +36,11 @@ public class LearningData {
 	protected PreferenceInformation preferenceInformation;
 	
 	/**
-	 * Constructor storing table with values of condition attributes
+	 * Constructor storing table with values of active condition attributes
 	 * and preference information concerning considered objects.
 	 * 
-	 * @param conditionTable table with values of condition attributes for considered objects, stored directly in this object
-	 * @param preferenceInformation preference information concerning considered objects, stored directly in this object
+	 * @param conditionTable table with values of active condition attributes for considered objects
+	 * @param preferenceInformation preference information concerning considered objects
 	 */
 	public LearningData(Table conditionTable, PreferenceInformation preferenceInformation) {
 		this.conditionTable = conditionTable;
@@ -47,9 +48,9 @@ public class LearningData {
 	}
 
 	/**
-	 * Gets table with values of condition attributes for objects that this learning data concern. 
+	 * Gets table with values of active condition attributes for objects that this learning data concern. 
 	 * 
-	 * @return table with values of condition attributes for objects that this learning data concern.
+	 * @return table with values of active condition attributes for objects that this learning data concern.
 	 */
 	public Table getConditionTable() {
 		return conditionTable;

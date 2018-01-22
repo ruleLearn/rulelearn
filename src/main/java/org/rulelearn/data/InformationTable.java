@@ -16,16 +16,14 @@
 
 package org.rulelearn.data;
 
-import java.util.ArrayList;
 import java.util.List;
-
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.types.Field;
 
 /**
- * Table storing data, i.e., fields corresponding to objects and attributes (both condition and description ones).
+ * Table storing data, i.e., fields corresponding to all considered objects and all specified attributes (condition and description ones, both active and non-active).
  * Each field is identified by object's index and attribute's index.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
@@ -33,10 +31,8 @@ import org.rulelearn.types.Field;
  */
 public class InformationTable {
 	
-	//TODO store mapping of attribute index to condition/description attribute index
-	
 	/**
-	 * All attributes of an information table (condition and description ones together).
+	 * All attributes of this information table (regardless of their type and regardless of the fact if they are active or not).
 	 */
 	protected Attribute[] attributes;
 	
@@ -46,23 +42,38 @@ public class InformationTable {
 	protected Index2IdMapper mapper;
 	
 	/**
-	 * Sub-table, corresponding to condition attributes only.
+	 * Sub-table, corresponding to active condition attributes only.
 	 * This sub-table is used in calculations.
 	 */
-	protected Table conditionTable;
+	protected Table learningTable = null;
 	/**
-	 * Sub-table, corresponding to description attributes only.
-	 * This sub-table is not used in calculations. It stores values of descriptions attributes,
-	 * mainly for the on-screen presentation of data and write-back to file.
+	 * Sub-table, corresponding to all attributes which are not active or not condition ones.
+	 * This sub-table is not used in calculations. It stores values of such supplementary attributes
+	 * mainly for the on-screen presentation of data and their write-back to file.
 	 */
-	protected Table descriptionTable;
+	protected Table supplementaryTable = null;
+	
+	/**
+	 * Maps index of an attribute of this information table to index of an (active and condition)/other attribute. Index of other attribute among other attributes is multiplied by -1 and shifted by -1.
+	 * Suppose that there are five active attributes of the following types:<br>
+	 * {@link AttributeType#CONDITION}, {@link AttributeType#DESCRIPTION}, {@link AttributeType#CONDITION}, {@link AttributeType#CONDITION}, {@link AttributeType#DESCRIPTION}.
+	 * Then, the map will be the following:<br>
+	 * attributeMap = [0, -1, 1, 2, -2].<br>
+	 * attributeMap[0] == 0 means that 0-indexed attribute among all attributes is 0-indexed attribute among active condition attributes.<br> 
+	 * attributeMap[1] == -1 means that 1-indexed attribute among all attributes is 0-indexed attribute among other attributes.<br>
+	 * attributeMap[2] == 1 means that 2-indexed attribute among all attributes is 1-indexed attribute among active condition attributes.<br>
+	 * attributeMap[3] == 2 means that 3-indexed attribute among all attributes is 2-indexed attribute among active condition attributes.<br>
+	 * attributeMap[4] == -2 means that 4-indexed attribute among all attributes is 1-indexed attribute among other attributes (-2 == (1 * -1) + (-1)).
+	 */
+	protected int[] attributeMap;
 	
 	/**
 	 * Information table constructor.
 	 * 
-	 * @param attributes all attributes of an information table (condition and description ones together)
-	 * @param fields list of field vectors; each vector contains condition and description field values
-	 *        of a single object of this information table
+	 * @param attributes all attributes of an information table (condition and description ones, both active and non-active)
+	 * @param fields list of fields of subsequent objects; each array contains subsequent fields of a single object of this information table;
+	 *        it is assumed that each array is of the same length
+	 *        (i.e., the number of fields of each object is the same)
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
@@ -75,9 +86,9 @@ public class InformationTable {
 	 * <br>
 	 * This constructor can be used in certain circumstances to accelerate object construction.
 	 * 
-	 * @param attributes all attributes of an information table (condition and description ones together)
-	 * @param fields list of fields of subsequent objects; each array contains condition and description field values
-	 *        of a single object of this information table; it is assumed that each array is of the same length
+	 * @param attributes all attributes of an information table (condition and description ones, both active and non-active)
+	 * @param fields list of fields of subsequent objects; each array contains subsequent fields of a single object of this information table;
+	 *        it is assumed that each array is of the same length
 	 *        (i.e., the number of fields of each object is the same)
 	 * @param accelerateByReadOnlyParams tells if construction of this object should be accelerated by assuming that the given reference
 	 *        to an array of attributes and references to arrays of fields present at the given list are not going to be used outside this class
@@ -93,89 +104,113 @@ public class InformationTable {
 			throw new InvalidValueException("The number of attributes and the number of objects' fields in an information table do not match.");
 		}
 		
-		int numberOfConditionAttributes = 0;
-		int numberOfDescriptionAttributes = 0;
+		int numberOfActiveConditionAttributes = 0;
 		
-		for (int i = 0; i < attributes.length; i++) { //scout
-			if (attributes[i].getType() == AttributeType.CONDITION) {
-				numberOfConditionAttributes++;
-			} else if (attributes[i].getType() == AttributeType.DESCRIPTION) {
-				numberOfDescriptionAttributes++;
+		for (int i = 0; i < attributes.length; i++) { //scout first
+			if (attributes[i].getType() == AttributeType.CONDITION &&
+					attributes[i].isActive()) { //active condition attribute
+				numberOfActiveConditionAttributes++;
 			}
 		}
 		
-		Attribute[] conditionAttributes = new Attribute[numberOfConditionAttributes];
-		Attribute[] descriptionAttributes = new Attribute[numberOfDescriptionAttributes];
-		int conditionAttributeIndex = 0;
-		int descriptionAttributeIndex = 0;
+		int numberOfOtherAttributes = attributes.length - numberOfActiveConditionAttributes;
+		
+		boolean hasActiveConditionAttributes = numberOfActiveConditionAttributes > 0;
+		boolean hasOtherAttributes = numberOfOtherAttributes > 0;
+		
+		Attribute[] activeConditionAttributes = hasActiveConditionAttributes ? new Attribute[numberOfActiveConditionAttributes] : null;
+		Attribute[] otherAttributes = hasOtherAttributes ? new Attribute[numberOfOtherAttributes] : null;
+		
+		int activeConditionAttributeIndex = 0;
+		int otherAttributeIndex = 0;
+		
+		this.attributeMap = new int[attributes.length];
 		
 		for (int i = 0; i < attributes.length; i++) { //split attributes
-			if (attributes[i].getType() == AttributeType.CONDITION) {
-				conditionAttributes[conditionAttributeIndex++] = attributes[i];
-			} else if (attributes[i].getType() == AttributeType.DESCRIPTION) {
-				descriptionAttributes[descriptionAttributeIndex++] = attributes[i];
+			if (attributes[i].getType() == AttributeType.CONDITION &&
+					attributes[i].isActive()) { //active condition attribute
+				activeConditionAttributes[activeConditionAttributeIndex] = attributes[i];
+				this.attributeMap[i] = activeConditionAttributeIndex;
+				activeConditionAttributeIndex++;
+			} else { //other attribute
+				otherAttributes[otherAttributeIndex] = attributes[i];
+				this.attributeMap[i] = this.encodeOtherAttributeIndex(otherAttributeIndex);
+				otherAttributeIndex++;
 			}
 		}
 		
-		//TODO: handle case of lack of attributes of a given type
+		Field[][] activeConditionFieldsList = hasActiveConditionAttributes ? new Field[fields.size()][] : null;
+		Field[][] otherFieldsList = hasOtherAttributes ? new Field[fields.size()][] : null;
 		
-		List<Field[]> conditionFieldsList = new ArrayList<>();
-		List<Field[]> descritpionFieldsList = new ArrayList<>();
+		Field[] activeConditionFields = null;
+		Field[] otherFields = null;
 		
-		Field[] conditionFields;
-		Field[] descriptionFields;
+		int rowIndex = 0;
 		
-		//split fields
+		//split fields into two tables
 		for (Field[] values : fields) { //choose row (single object)
-			conditionFields = new Field[numberOfConditionAttributes];
-			descriptionFields = new Field[numberOfDescriptionAttributes];
-			conditionAttributeIndex = 0;
-			descriptionAttributeIndex = 0;
+			if (hasActiveConditionAttributes) {
+				activeConditionFields = new Field[numberOfActiveConditionAttributes];
+				activeConditionAttributeIndex = 0;
+			}
+			if (hasOtherAttributes) {
+				otherFields = new Field[numberOfOtherAttributes];
+				otherAttributeIndex = 0;
+			}
 			
 			for (int i = 0; i < attributes.length; i++) { //choose column (single attribute)
-				if (attributes[i].getType() == AttributeType.CONDITION) {
-					conditionFields[conditionAttributeIndex++] = values[i];
-				} else if (attributes[i].getType() == AttributeType.DESCRIPTION) {
-					descriptionFields[descriptionAttributeIndex++] = values[i];
+				if (attributes[i].getType() == AttributeType.CONDITION &&
+						attributes[i].isActive()) { //active condition attribute
+					activeConditionFields[activeConditionAttributeIndex++] = values[i];
+				} else { //other attribute
+					otherFields[otherAttributeIndex++] = values[i];
 				} 
 			}
 			
-			conditionFieldsList.add(conditionFields);
-			descritpionFieldsList.add(descriptionFields);
+			if (hasActiveConditionAttributes) {
+				activeConditionFieldsList[rowIndex] = activeConditionFields;
+			}
+			if (hasOtherAttributes) {
+				otherFieldsList[rowIndex] = otherFields;
+			}
+			
+			rowIndex++;
 		}
 		
-		this.attributes = accelerateByReadOnlyParams ? attributes : attributes.clone(); //remember all attributes (both condition and description ones)
+		this.attributes = accelerateByReadOnlyParams ? attributes : attributes.clone(); //remember all attributes
 		//map each object (row of this information table) to a unique id, and remember that mapping
 		this.mapper = new Index2IdMapper(UniqueIdGenerator.getInstance().getUniqueIds(fields.size()), true);
 		
-		this.conditionTable = new Table(conditionAttributes, conditionFieldsList, this.mapper, true);
-		this.descriptionTable = new Table(descriptionAttributes, descritpionFieldsList, this.mapper, true);
+		this.learningTable = hasActiveConditionAttributes? new Table(activeConditionAttributes, activeConditionFieldsList, this.mapper, true) : null;
+		this.supplementaryTable = hasOtherAttributes? new Table(otherAttributes, otherFieldsList, this.mapper, true) : null;
 	}
 	
-//	public InformationTable(String metadataPath, String dataPath) {
+	//	public InformationTable(String metadataPath, String dataPath) {
 
-//}
+	//}
 	
 	/**
-	 * Gets sub-table of this information table, corresponding to condition attributes only.
+	 * Gets sub-table of this information table, corresponding to active condition attributes only.
+	 * If there is no such attribute, then returns {@code null}.
 	 * 
-	 * @return sub-table of this information table, corresponding to condition attributes only
+	 * @return sub-table of this information table, corresponding to active condition attributes only
 	 */
-	public Table getConditionTable() {
-		return this.conditionTable;
+	public Table getLearningTable() {
+		return this.learningTable;
 	}
 
 	/**
-	 * Gets sub-table of this information table, corresponding to description attributes only.
+	 * Gets sub-table of this information table, corresponding to all attributes which are not active or not condition ones.
+	 * If there is no such attribute, then returns {@code null}.
 	 * 
-	 * @return sub-table of this information table, corresponding to description attributes only
+	 * @return sub-table of this information table, corresponding to all attributes which are not active or not condition ones.
 	 */
 	public Table getDescriptionTable() {
-		return this.descriptionTable;
+		return this.supplementaryTable;
 	}
 
 	/**
-	 * Gets all attributes of this information table (condition and description ones together).
+	 * Gets all attributes of this information table (regardless of their type and regardless of the fact if they are active or not).
 	 *  
 	 * @return array with all attributes of this information table
 	 */
@@ -184,7 +219,9 @@ public class InformationTable {
 	}
 	
 	/**
-	 * Gets all attributes of this information table (condition and description ones together).
+	 * Gets all attributes of this information table (regardless of their type and regardless of the fact if they are active or not).<br>
+	 * <br>
+	 * This method can be used in certain circumstances to accelerate calculations.
 	 *  
 	 * @return array with all attributes of this information table
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
@@ -203,6 +240,32 @@ public class InformationTable {
 	 */
 	public Index2IdMapper getIndex2IdMapper() {
 		return this.mapper;
+	}
+	
+	/**
+	 * Gets field of this information table for the object and attribute identified by the given indices.
+	 * 
+	 * @param objectIndex index of an object (row of the table)
+	 * @param attributeIndex index of an attribute (column of the table)
+	 * @return field of this information table corresponding to given indices
+	 * 
+	 * @throws IndexOutOfBoundsException if given object index does not correspond to any object for which this table stores fields
+	 * @throws IndexOutOfBoundsException if given attribute index does not correspond to any attribute for which this table stores fields
+	 */
+	public Field getField(int objectIndex, int attributeIndex) {
+		if (this.attributeMap[attributeIndex] >= 0) { //active condition attribute
+			return this.learningTable.getField(objectIndex, this.attributeMap[attributeIndex]);
+		} else { //other attribute
+			return this.supplementaryTable.getField(objectIndex, this.decodeOtherAttributeIndex(this.attributeMap[attributeIndex]));
+		}
+	}
+	
+	private int encodeOtherAttributeIndex(int index) {
+		return -index - 1;
+	}
+	
+	private int decodeOtherAttributeIndex(int encodedOtherAttributeIndex) {
+		return -encodedOtherAttributeIndex - 1;
 	}
 	
 }
