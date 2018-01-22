@@ -111,7 +111,7 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 			}
 			
 			// set valueType
-			//TODO Default values should be taken from a default configuration class
+			// TODO Default values should be taken from a default configuration class
 			if (value.compareTo("integer") == 0) {
 				if (	pair)
 					valueType = new PairField<IntegerField>(IntegerFieldFactory.getInstance().create(0, preferenceType), IntegerFieldFactory.getInstance().create(0, preferenceType));
