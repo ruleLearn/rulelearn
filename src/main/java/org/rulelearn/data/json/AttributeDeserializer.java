@@ -57,14 +57,14 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 	public Attribute deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
 			throws JsonParseException {
 		String name = json.getAsJsonObject().get("name").getAsString();
-		// in case not provided set inactive
-		boolean active = false;
-		// in case not provided set description
-		AttributeType type = AttributeType.DESCRIPTION;
-		Field valueType = null;
-		UnknownSimpleField missingValueType = null;
+		// in case not provided set active
+		boolean active = true;
+		// in case not provided set condition type
+		AttributeType type = AttributeType.CONDITION;
 		// in case not provided set none
 		AttributePreferenceType preferenceType = AttributePreferenceType.NONE;
+		Field valueType = null;
+		UnknownSimpleField missingValueType = null;
 		
 		JsonElement element = json.getAsJsonObject().get("active");
 		if (element != null)
