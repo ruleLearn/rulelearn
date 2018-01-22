@@ -33,6 +33,8 @@ import org.rulelearn.types.Field;
  */
 public class InformationTable {
 	
+	//TODO store mapping of attribute index to condition/description attribute index
+	
 	/**
 	 * All attributes of an information table (condition and description ones together).
 	 */
@@ -45,10 +47,13 @@ public class InformationTable {
 	
 	/**
 	 * Sub-table, corresponding to condition attributes only.
+	 * This sub-table is used in calculations.
 	 */
 	protected Table conditionTable;
 	/**
 	 * Sub-table, corresponding to description attributes only.
+	 * This sub-table is not used in calculations. It stores values of descriptions attributes,
+	 * mainly for the on-screen presentation of data and write-back to file.
 	 */
 	protected Table descriptionTable;
 	
