@@ -32,7 +32,7 @@ class IntegerFieldFactoryTest {
 	 * Tests creation of integer field without preference type.
 	 */
 	@Test
-	void testCreate01() {
+	public void testCreate01() {
 		int value = -5;
 		IntegerField field = IntegerFieldFactory.getInstance().create(value, AttributePreferenceType.NONE);
 		
@@ -43,7 +43,7 @@ class IntegerFieldFactoryTest {
 	 * Tests creation of integer field with gain preference type.
 	 */
 	@Test
-	void testCreate02() {
+	public void testCreate02() {
 		int value = 0;
 		IntegerField field = IntegerFieldFactory.getInstance().create(value, AttributePreferenceType.GAIN);
 		
@@ -54,7 +54,7 @@ class IntegerFieldFactoryTest {
 	 * Tests creation of integer field with cost preference type..
 	 */
 	@Test
-	void testCreate03() {
+	public void testCreate03() {
 		int value = 5;
 		IntegerField field = IntegerFieldFactory.getInstance().create(value, AttributePreferenceType.COST);
 		
@@ -65,7 +65,7 @@ class IntegerFieldFactoryTest {
 	 * Tests cloning of integer field without preference type.
 	 */
 	@Test
-	void testClone01() {
+	public void testClone01() {
 		int value = 1;
 		IntegerField field = IntegerFieldFactory.getInstance().create(value, AttributePreferenceType.NONE);
 		IntegerField clonedField = IntegerFieldFactory.getInstance().clone(field);
@@ -77,7 +77,7 @@ class IntegerFieldFactoryTest {
 	 * Tests cloning of integer field with gain preference type.
 	 */
 	@Test
-	void testClone02() {
+	public void testClone02() {
 		int value = -7;
 		IntegerField field = IntegerFieldFactory.getInstance().create(value, AttributePreferenceType.GAIN);
 		IntegerField clonedField = IntegerFieldFactory.getInstance().clone(field);
@@ -89,7 +89,7 @@ class IntegerFieldFactoryTest {
 	 * Tests cloning of integer field with cost preference type.
 	 */
 	@Test
-	void testClone03() {
+	public void testClone03() {
 		int value = 0;
 		IntegerField field = IntegerFieldFactory.getInstance().create(value, AttributePreferenceType.COST);
 		IntegerField clonedField = IntegerFieldFactory.getInstance().clone(field);

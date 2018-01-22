@@ -169,7 +169,7 @@ public class ElementListTest {
 	 * Tests construction and size of element lists.
 	 */
 	@Test
-	public void testSieze01() {
+	public void testSize01() {
 		this.setUp03();
 		
 		assertEquals(list1.getSize(), 3);

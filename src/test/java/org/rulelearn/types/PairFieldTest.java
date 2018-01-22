@@ -34,7 +34,7 @@ class PairFieldTest {
 	 * Test for {@link PairField} class constructor.
 	 */
 	@Test
-	void testPairField01() {
+	public void testPairField01() {
 		IntegerField firstField = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
 		IntegerField secondField = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.NONE);
 		PairField<IntegerField> field = new PairField<>(firstField, secondField);
@@ -47,7 +47,7 @@ class PairFieldTest {
 	 * Test for {@link PairField} class constructor.
 	 */
 	@Test
-	void testPairField02() {
+	public void testPairField02() {
 		IntegerField firstField = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
 		RealField secondField = RealFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN);
 		
@@ -73,7 +73,7 @@ class PairFieldTest {
 //	}
 
 	@Test
-	void testSelfClone() {
+	public void testSelfClone() {
 		IntegerField firstField = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
 		IntegerField secondField = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.NONE);
 		PairField<IntegerField> field = new PairField<IntegerField>(firstField, secondField);
