@@ -16,6 +16,8 @@
 
 package org.rulelearn.types;
 
+import java.util.Objects;
+
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
 import org.rulelearn.types.SimpleField;

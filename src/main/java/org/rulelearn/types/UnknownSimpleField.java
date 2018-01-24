@@ -63,4 +63,32 @@ public abstract class UnknownSimpleField extends SimpleField implements ReverseC
 	 */
 	abstract public TernaryLogicValue reverseIsEqualTo(KnownSimpleField otherField);
 	
+	/**
+	 * Tells if this field object is equal to the other object.
+	 * 
+	 * @param otherObject other object that this object should be compared with
+	 * @return {@code true} if this object is equal to the other object,
+	 *         {@code false} otherwise
+	 */
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject != this) {
+			if (otherObject != null && getClass().equals(otherObject.getClass())) {
+				return true;
+			}
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+     * Gets hash code of this field.
+     *
+     * @return hash code of this field
+     */
+	@Override
+	public int hashCode () {
+		return 0;
+	}
+	
 }
