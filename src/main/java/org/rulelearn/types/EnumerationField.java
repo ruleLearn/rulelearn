@@ -117,7 +117,7 @@ public abstract class EnumerationField extends KnownSimpleField {
      */
 	@Override
 	public int hashCode () {
-		return Objects.hash(value, list.elements);
+		return Objects.hash(this.getClass(), value, list.elements);
 	}
 	
 	/**

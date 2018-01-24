@@ -16,6 +16,8 @@
 
 package org.rulelearn.types;
 
+import java.util.Objects;
+
 import org.rulelearn.core.ReverseComparableExt;
 import org.rulelearn.core.TernaryLogicValue;
 
@@ -88,7 +90,7 @@ public abstract class UnknownSimpleField extends SimpleField implements ReverseC
      */
 	@Override
 	public int hashCode () {
-		return 0;
+		return Objects.hash(this.getClass());
 	}
 	
 }

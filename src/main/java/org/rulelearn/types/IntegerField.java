@@ -108,7 +108,7 @@ public abstract class IntegerField extends KnownSimpleField {
      */
 	@Override
 	public int hashCode () {
-		return Objects.hash(value);
+		return Objects.hash(this.getClass(), value);
 	}
 	
 }
