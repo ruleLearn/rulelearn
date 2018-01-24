@@ -84,4 +84,25 @@ public abstract class Field implements ComparableExt<Field>, SelfCloneable<Field
 		}
 	}
 	
+	/**
+	 * Tells if this object is equal to the other object.
+	 * 
+	 * @param otherObject other object that this object should be compared with
+	 * @return {@code true} if this object is equal to the other object,
+	 *         {@code false} otherwise
+	 */
+	public boolean equals(Object otherObject) {
+		try {
+			if (this.isEqualTo((Field)otherObject) == TernaryLogicValue.TRUE) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (ClassCastException exception) {
+			return false;
+		} catch (NullPointerException exception) {
+			return false;
+		}
+	}
+	
 }
