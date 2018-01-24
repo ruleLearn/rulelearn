@@ -17,6 +17,7 @@
 package org.rulelearn.types;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -333,5 +334,91 @@ public class EnumerationFieldTest {
 		this.setUp02();
 		EnumerationField field = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.COST);
 		this.testSelfCloneHelper(field);
+	}
+	
+	/**
+	 * Tests {@link EnumerationField#equals(Object)} method.
+	 */
+	@Test
+	public void testEquals() {
+		try {
+			domain1 = new ElementList(values1);
+			domain2 = new ElementList(values2);
+		}
+		catch (NoSuchAlgorithmException ex) {
+			System.out.println(ex);
+		}
+		
+		EnumerationField fieldN1 = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.NONE);
+		EnumerationField fieldN2 = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.NONE);
+		EnumerationField fieldN3 = EnumerationFieldFactory.getInstance().create(domain1, 1, AttributePreferenceType.NONE);
+		EnumerationField fieldN4 = EnumerationFieldFactory.getInstance().create(domain2, 0, AttributePreferenceType.NONE);
+		EnumerationField fieldC1 = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.COST);
+		EnumerationField fieldC2 = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.COST);
+		EnumerationField fieldC3 = EnumerationFieldFactory.getInstance().create(domain1, 1, AttributePreferenceType.COST);
+		EnumerationField fieldC4 = EnumerationFieldFactory.getInstance().create(domain2, 0, AttributePreferenceType.COST);
+		EnumerationField fieldG1 = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.GAIN);
+		EnumerationField fieldG2 = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.GAIN);
+		EnumerationField fieldG3 = EnumerationFieldFactory.getInstance().create(domain1, 1, AttributePreferenceType.GAIN);
+		EnumerationField fieldG4 = EnumerationFieldFactory.getInstance().create(domain2, 0, AttributePreferenceType.GAIN);
+		
+		assertTrue(fieldN1.equals(fieldN2));
+		assertTrue(fieldC1.equals(fieldC2));
+		assertTrue(fieldG1.equals(fieldG2));
+		
+		assertFalse(fieldN1.equals(fieldC1));
+		assertFalse(fieldN1.equals(fieldG1));
+		assertFalse(fieldC1.equals(fieldG1));
+		
+		assertFalse(fieldN2.equals(fieldN3));
+		assertFalse(fieldC2.equals(fieldC3));
+		assertFalse(fieldG2.equals(fieldG3));
+		
+		assertFalse(fieldN2.equals(fieldN4));
+		assertFalse(fieldC2.equals(fieldC4));
+		assertFalse(fieldG2.equals(fieldG4));
+	}
+	
+	/**
+	 * Tests {@link EnumerationField#hashCode()} method.
+	 */
+	@Test
+	public void testHashCode() {
+		try {
+			domain1 = new ElementList(values1);
+			domain2 = new ElementList(values2);
+		}
+		catch (NoSuchAlgorithmException ex) {
+			System.out.println(ex);
+		}
+		
+		EnumerationField fieldN1 = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.NONE);
+		EnumerationField fieldN2 = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.NONE);
+		EnumerationField fieldN3 = EnumerationFieldFactory.getInstance().create(domain1, 1, AttributePreferenceType.NONE);
+		EnumerationField fieldN4 = EnumerationFieldFactory.getInstance().create(domain2, 0, AttributePreferenceType.NONE);
+		EnumerationField fieldC1 = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.COST);
+		EnumerationField fieldC2 = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.COST);
+		EnumerationField fieldC3 = EnumerationFieldFactory.getInstance().create(domain1, 1, AttributePreferenceType.COST);
+		EnumerationField fieldC4 = EnumerationFieldFactory.getInstance().create(domain2, 0, AttributePreferenceType.COST);
+		EnumerationField fieldG1 = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.GAIN);
+		EnumerationField fieldG2 = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.GAIN);
+		EnumerationField fieldG3 = EnumerationFieldFactory.getInstance().create(domain1, 1, AttributePreferenceType.GAIN);
+		EnumerationField fieldG4 = EnumerationFieldFactory.getInstance().create(domain2, 0, AttributePreferenceType.GAIN);
+		
+		assertTrue(fieldN1.hashCode() == fieldN2.hashCode());
+		assertTrue(fieldC1.hashCode() == fieldC2.hashCode());
+		assertTrue(fieldG1.hashCode() == fieldG2.hashCode());
+		
+		assertFalse(fieldN1.hashCode() == fieldC1.hashCode());
+		assertFalse(fieldN1.hashCode() == fieldG1.hashCode());
+		assertFalse(fieldC1.hashCode() == fieldG1.hashCode());
+		
+		assertFalse(fieldN2.hashCode() == fieldN3.hashCode());
+		assertFalse(fieldC2.hashCode() == fieldC3.hashCode());
+		assertFalse(fieldG2.hashCode() == fieldG3.hashCode());
+		
+		assertFalse(fieldN2.hashCode() == fieldN4.hashCode());
+		assertFalse(fieldC2.hashCode() == fieldC4.hashCode());
+		assertFalse(fieldG2.hashCode() == fieldG4.hashCode());	
 	}
 }

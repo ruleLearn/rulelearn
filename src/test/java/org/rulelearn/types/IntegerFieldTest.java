@@ -18,6 +18,7 @@ package org.rulelearn.types;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
@@ -263,6 +264,62 @@ public class IntegerFieldTest {
 	public void testSelfClone02Cost() {
 		IntegerField field = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST);
 		this.testSelfCloneHelper(field);
+	}
+	
+	/**
+	 * Tests {@link IntegerField#equals(Object)} method.
+	 */
+	@Test
+	public void testEquals() {
+		IntegerField fieldN1 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
+		IntegerField fieldN2 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
+		IntegerField fieldN3 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
+		IntegerField fieldC1 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST);
+		IntegerField fieldC2 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST);
+		IntegerField fieldC3 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
+		IntegerField fieldG1 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
+		IntegerField fieldG2 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
+		IntegerField fieldG3 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		
+		assertTrue(fieldN1.equals(fieldN2));
+		assertTrue(fieldC1.equals(fieldC2));
+		assertTrue(fieldG1.equals(fieldG2));
+		
+		assertFalse(fieldN1.equals(fieldC1));
+		assertFalse(fieldN1.equals(fieldG1));
+		assertFalse(fieldC1.equals(fieldG1));
+		
+		assertFalse(fieldN2.equals(fieldN3));
+		assertFalse(fieldC2.equals(fieldC3));
+		assertFalse(fieldG2.equals(fieldG3));
+	}
+	
+	/**
+	 * Tests {@link IntegerField#hashCode()} method.
+	 */
+	@Test
+	public void testHashCode() {
+		IntegerField fieldN1 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
+		IntegerField fieldN2 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
+		IntegerField fieldN3 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
+		IntegerField fieldC1 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST);
+		IntegerField fieldC2 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST);
+		IntegerField fieldC3 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
+		IntegerField fieldG1 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
+		IntegerField fieldG2 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
+		IntegerField fieldG3 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		
+		assertTrue(fieldN1.hashCode() == fieldN2.hashCode());
+		assertTrue(fieldC1.hashCode() == fieldC2.hashCode());
+		assertTrue(fieldG1.hashCode() == fieldG2.hashCode());
+		
+		assertFalse(fieldN1.hashCode() == fieldC1.hashCode());
+		assertFalse(fieldN1.hashCode() == fieldG1.hashCode());
+		assertFalse(fieldC1.hashCode() == fieldG1.hashCode());
+		
+		assertFalse(fieldN2.hashCode() == fieldN3.hashCode());
+		assertFalse(fieldC2.hashCode() == fieldC3.hashCode());
+		assertFalse(fieldG2.hashCode() == fieldG3.hashCode());
 	}
 	
 }
