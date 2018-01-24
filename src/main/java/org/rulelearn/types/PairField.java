@@ -167,7 +167,7 @@ public class PairField<T extends SimpleField> extends CompositeField {
      */
 	@Override
 	public int hashCode () {
-		return Objects.hash(firstValue, secondValue);
+		return Objects.hash(firstValue.getClass(), firstValue, secondValue);
 	}
 
 	/** {@inheritDoc}
