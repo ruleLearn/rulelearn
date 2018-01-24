@@ -55,7 +55,7 @@ public class AttributeSerializer implements JsonSerializer<Attribute> {
 		json.addProperty("active", src.isActive());
 		switch (src.getPreferenceType()) {
 			case COST : json.addProperty("preferenceType", "cost"); break;
-			case GAIN : json.addProperty("preferencetype", "gain"); break;
+			case GAIN : json.addProperty("preferenceType", "gain"); break;
 			default: json.addProperty("preferenceType", "none");
 		}
 		switch (src.getType()) {
