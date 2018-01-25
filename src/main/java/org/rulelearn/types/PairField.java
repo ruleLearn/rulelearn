@@ -150,7 +150,8 @@ public class PairField<T extends SimpleField> extends CompositeField {
 		if (otherObject != this) {
 			if (otherObject != null && this.getClass().equals(otherObject.getClass())) {
 				PairField<?> otherField = ((PairField<?>)otherObject);
-				return this.firstValue.equals(otherField.firstValue) && this.secondValue.equals(otherField.secondValue);
+				return ((this.firstValue.equals(otherField.firstValue)) 
+						&& this.secondValue.equals(otherField.secondValue));
 			} else {
 				return false;
 			}
