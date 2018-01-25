@@ -83,5 +83,48 @@ class PairFieldTest {
 		assertEquals(field.getFirstValue().getValue(), clonedField.getFirstValue().getValue());
 		assertEquals(field.getSecondValue().getValue(), clonedField.getSecondValue().getValue());
 	}
+	
+	/**
+	 * Tests {@link UnknownSimpleFieldMV2#equals(Object)} method.
+	 */
+	@Test
+	public void testEquals() {
+		IntegerField firstField1 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
+		IntegerField secondField1 = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.NONE);
+		PairField<IntegerField> field1 = new PairField<IntegerField>(firstField1, secondField1);
+		
+		IntegerField firstField2 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
+		IntegerField secondField2 = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.NONE);
+		PairField<IntegerField> field2 = new PairField<IntegerField>(firstField2, secondField2);
+		
+		IntegerField firstField3 = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.NONE);
+		IntegerField secondField3 = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.NONE);
+		PairField<IntegerField> field3 = new PairField<IntegerField>(firstField3, secondField3);
+		
+		assertTrue(field1.equals(field2));
+		assertFalse(field1.equals(field3));
+	}
+	
+	/**
+	 * Tests {@link UnknownSimpleFieldMV2d#hashCode()} method.
+	 */
+	@Test
+	public void testHashCode() {
+		IntegerField firstField1 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		IntegerField secondField1 = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN);
+		PairField<IntegerField> field1 = new PairField<IntegerField>(firstField1, secondField1);
+		
+		IntegerField firstField2 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		IntegerField secondField2 = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN);
+		PairField<IntegerField> field2 = new PairField<IntegerField>(firstField2, secondField2);
+		
+		IntegerField firstField3 = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN);
+		IntegerField secondField3 = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN);
+		PairField<IntegerField> field3 = new PairField<IntegerField>(firstField3, secondField3);
+		
+		assertTrue(field1.hashCode() == field2.hashCode());
+		assertFalse(field1.hashCode() == field3.hashCode());
+	
+	}
 
 }

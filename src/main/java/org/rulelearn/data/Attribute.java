@@ -16,6 +16,8 @@
 
 package org.rulelearn.data;
 
+import java.util.Objects;
+
 import org.rulelearn.types.Field;
 import org.rulelearn.types.UnknownSimpleField;
 
@@ -117,5 +119,37 @@ public class Attribute {
 	 */
 	public AttributePreferenceType getPreferenceType() {
 		return preferenceType;
+	}
+	
+	@Override
+	public boolean equals(Object object) {
+		if (object != this) {
+			if (object != null && getClass().equals(object.getClass())) {
+				final Attribute other = (Attribute) object;
+				if (this.name.compareTo(other.name) == 0) {
+	    	  			if (this.active == other.active) {
+	    	  				if (this.preferenceType == other.preferenceType) {
+	    	  					if (this.valueType.equals(other.valueType)) {
+	    	  						if (this.missingValueType.equals(other.missingValueType)) {
+	    	  							return true;
+	    	  						}
+	    	  						return false;
+	    	  					}
+	    	  					return false;
+	    	  				}
+	    	  				return false;
+	    	  			}
+	    	  			return false;
+				}
+				return false;
+			}
+			return false;
+		}
+		return true;
+	} 
+	
+	@Override
+	public int hashCode () {
+		return Objects.hash(name, active, type, valueType, missingValueType);
 	}
 }

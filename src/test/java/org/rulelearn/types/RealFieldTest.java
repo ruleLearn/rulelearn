@@ -17,6 +17,7 @@
 package org.rulelearn.types;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -261,6 +262,62 @@ public class RealFieldTest {
 	public void testSelfClone02Cost() {
 		RealField field = RealFieldFactory.getInstance().create(0, AttributePreferenceType.COST);
 		this.testSelfCloneHelper(field);
+	}
+	
+	/**
+	 * Tests {@link RealField#equals(Object)} method.
+	 */
+	@Test
+	public void testEquals() {
+		RealField fieldN1 = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.NONE);
+		RealField fieldN2 = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.NONE);
+		RealField fieldN3 = RealFieldFactory.getInstance().create(1.0, AttributePreferenceType.NONE);
+		RealField fieldC1 = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.COST);
+		RealField fieldC2 = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.COST);
+		RealField fieldC3 = RealFieldFactory.getInstance().create(1.0, AttributePreferenceType.COST);
+		RealField fieldG1 = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.GAIN);
+		RealField fieldG2 = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.GAIN);
+		RealField fieldG3 = RealFieldFactory.getInstance().create(1.0, AttributePreferenceType.GAIN);
+		
+		assertTrue(fieldN1.equals(fieldN2));
+		assertTrue(fieldC1.equals(fieldC2));
+		assertTrue(fieldG1.equals(fieldG2));
+		
+		assertFalse(fieldN1.equals(fieldC1));
+		assertFalse(fieldN1.equals(fieldG1));
+		assertFalse(fieldC1.equals(fieldG1));
+		
+		assertFalse(fieldN2.equals(fieldN3));
+		assertFalse(fieldC2.equals(fieldC3));
+		assertFalse(fieldG2.equals(fieldG3));
+	}
+	
+	/**
+	 * Tests {@link RealField#hashCode()} method.
+	 */
+	@Test
+	public void testHashCode() {
+		RealField fieldN1 = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.NONE);
+		RealField fieldN2 = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.NONE);
+		RealField fieldN3 = RealFieldFactory.getInstance().create(1.0, AttributePreferenceType.NONE);
+		RealField fieldC1 = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.COST);
+		RealField fieldC2 = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.COST);
+		RealField fieldC3 = RealFieldFactory.getInstance().create(1.0, AttributePreferenceType.COST);
+		RealField fieldG1 = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.GAIN);
+		RealField fieldG2 = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.GAIN);
+		RealField fieldG3 = RealFieldFactory.getInstance().create(1.0, AttributePreferenceType.GAIN);
+		
+		assertTrue(fieldN1.hashCode() == fieldN2.hashCode());
+		assertTrue(fieldC1.hashCode() == fieldC2.hashCode());
+		assertTrue(fieldG1.hashCode() == fieldG2.hashCode());
+		
+		assertFalse(fieldN1.hashCode() == fieldC1.hashCode());
+		assertFalse(fieldN1.hashCode() == fieldG1.hashCode());
+		assertFalse(fieldC1.hashCode() == fieldG1.hashCode());
+		
+		assertFalse(fieldN2.hashCode() == fieldN3.hashCode());
+		assertFalse(fieldC2.hashCode() == fieldC3.hashCode());
+		assertFalse(fieldG2.hashCode() == fieldG3.hashCode());
 	}
 	
 }
