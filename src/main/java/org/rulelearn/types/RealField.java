@@ -91,7 +91,7 @@ public abstract class RealField extends KnownSimpleField {
 	@Override
 	public boolean equals(Object otherObject) {
 		if (otherObject != this) {
-			if (otherObject != null && getClass().equals(otherObject.getClass())) {
+			if (otherObject != null && this.getClass().equals(otherObject.getClass())) {
 				final RealField other = (RealField) otherObject;
 				return this.value == other.value;
 			} else {

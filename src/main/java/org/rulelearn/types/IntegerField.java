@@ -89,7 +89,7 @@ public abstract class IntegerField extends KnownSimpleField {
 	@Override
 	public boolean equals(Object otherObject) {
 		if (otherObject != this) {
-			if (otherObject != null && getClass().equals(otherObject.getClass())) {
+			if (otherObject != null && this.getClass().equals(otherObject.getClass())) {
 				final IntegerField other = (IntegerField) otherObject;
 				return this.value == other.value;
 			} else {

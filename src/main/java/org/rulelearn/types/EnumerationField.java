@@ -96,7 +96,7 @@ public abstract class EnumerationField extends KnownSimpleField {
 	@Override
 	public boolean equals(Object otherObject) {
 		if (otherObject != this) {
-			if (otherObject != null && getClass().equals(otherObject.getClass())) {
+			if (otherObject != null && this.getClass().equals(otherObject.getClass())) {
 				final EnumerationField otherField = (EnumerationField) otherObject;
 				return this.value == otherField.value &&
 						this.hasEqualHashOfElementList(otherField) == TernaryLogicValue.TRUE;

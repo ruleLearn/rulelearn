@@ -163,7 +163,7 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 	@Override
 	public boolean equals(Object otherObject) {
 		if (otherObject != this) {
-			return otherObject != null && getClass().equals(otherObject.getClass());
+			return otherObject != null && this.getClass().equals(otherObject.getClass());
 		} else {
 			return true;
 		}
