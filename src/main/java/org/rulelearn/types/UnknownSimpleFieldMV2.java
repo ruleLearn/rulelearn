@@ -29,8 +29,8 @@ import org.rulelearn.types.SimpleField;
  * <ul>
  * <li>subject y dominates referent x iff for each condition criterion q, y is at least as good as x, i.e.,<br>
  * q(y) is not worse than q(x), or q(y)=*, or q(x)=*;</li>
- * <li>subject y is dominated by referent x iff for each condition criterion q, x is at least as good as y, i.e.,<br>
- * q(x) is not worse than q(y), or q(y)=*, or q(x)=*.</li>
+ * <li>subject y is dominated by referent x iff for each condition criterion q, y is at most as good as x, i.e.,<br>
+ * q(y) is not better than q(x), or q(y)=*, or q(x)=*.</li>
  * </ul>
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
