@@ -16,6 +16,8 @@
 
 package org.rulelearn.types;
 
+import java.util.Objects;
+
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
 import org.rulelearn.types.SimpleField;
@@ -149,6 +151,32 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 		} else {
 			return TernaryLogicValue.FALSE;
 		}
+	}
+	
+	/**
+	 * Tells if this field object is equal to the other object.
+	 * 
+	 * @param otherObject other object that this object should be compared with
+	 * @return {@code true} if this object is equal to the other object,
+	 *         {@code false} otherwise
+	 */
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject != this) {
+			return otherObject != null && getClass().equals(otherObject.getClass());
+		} else {
+			return true;
+		}
+	}
+	
+	/**
+     * Gets hash code of this field.
+     *
+     * @return hash code of this field
+     */
+	@Override
+	public int hashCode () {
+		return Objects.hash(this.getClass());
 	}
 
 }

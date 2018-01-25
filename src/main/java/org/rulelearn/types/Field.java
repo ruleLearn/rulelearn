@@ -91,6 +91,7 @@ public abstract class Field implements ComparableExt<Field>, SelfCloneable<Field
 	 * @return {@code true} if this object is equal to the other object,
 	 *         {@code false} otherwise
 	 */
+	@Override
 	public abstract boolean equals(Object otherObject);
 	
 	/**
@@ -98,6 +99,7 @@ public abstract class Field implements ComparableExt<Field>, SelfCloneable<Field
      *
      * @return hash code of this field
      */
+	@Override
     public abstract int hashCode(); 
 	
 }

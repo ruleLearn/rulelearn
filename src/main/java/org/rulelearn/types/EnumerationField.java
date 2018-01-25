@@ -98,16 +98,14 @@ public abstract class EnumerationField extends KnownSimpleField {
 		if (otherObject != this) {
 			if (otherObject != null && getClass().equals(otherObject.getClass())) {
 				final EnumerationField otherField = (EnumerationField) otherObject;
-				if (this.value == otherField.value) {
-					if (this.hasEqualHashOfElementList(otherField) == TernaryLogicValue.TRUE) {
-						return true;
-					}
-				}
+				return this.value == otherField.value &&
+						this.hasEqualHashOfElementList(otherField) == TernaryLogicValue.TRUE;
+			} else {
 				return false;
 			}
-			return false;
+		} else {
+			return true;
 		}
-		return true;
 	}
 	
 	/**
@@ -117,7 +115,7 @@ public abstract class EnumerationField extends KnownSimpleField {
      */
 	@Override
 	public int hashCode () {
-		return Objects.hash(this.getClass(), value, list.elements);
+		return Objects.hash(this.getClass(), value, list.getElements());
 	}
 	
 	/**
