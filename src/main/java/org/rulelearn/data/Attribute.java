@@ -121,33 +121,42 @@ public class Attribute {
 		return preferenceType;
 	}
 	
+	/**
+	 * Tells if this attribute object is equal to the other object.
+	 * 
+	 * @param otherObject other object that this object should be compared with
+	 * @return {@code true} if this object is equal to the other object,
+	 *         {@code false} otherwise
+	 */
 	@Override
-	public boolean equals(Object object) {
-		if (object != this) {
-			if (object != null && getClass().equals(object.getClass())) {
-				final Attribute other = (Attribute) object;
+	public boolean equals(Object otherObject) {
+		if (otherObject != this) {
+			if (otherObject != null && getClass().equals(otherObject.getClass())) {
+				final Attribute other = (Attribute) otherObject;
 				if (this.name.compareTo(other.name) == 0) {
 	    	  			if (this.active == other.active) {
 	    	  				if (this.preferenceType == other.preferenceType) {
 	    	  					if (this.valueType.equals(other.valueType)) {
-	    	  						if (this.missingValueType.equals(other.missingValueType)) {
-	    	  							return true;
-	    	  						}
-	    	  						return false;
+	    	  						return this.missingValueType.equals(other.missingValueType);
 	    	  					}
-	    	  					return false;
+	    	  					else return false;
 	    	  				}
-	    	  				return false;
+	    	  				else return false;
 	    	  			}
-	    	  			return false;
-				}
-				return false;
+	    	  			else return false;
+	    	  		}
+				else return false;
 			}
-			return false;
+			else return false;
 		}
-		return true;
+		else return true;
 	} 
 	
+	/**
+     * Gets hash code of this attribute.
+     *
+     * @return hash code of this field
+     */
 	@Override
 	public int hashCode () {
 		return Objects.hash(name, active, type, valueType, missingValueType);

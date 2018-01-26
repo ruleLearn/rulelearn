@@ -21,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.security.NoSuchAlgorithmException;
+
 import org.junit.jupiter.api.Test;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
@@ -290,6 +292,23 @@ public class RealFieldTest {
 		assertFalse(fieldN2.equals(fieldN3));
 		assertFalse(fieldC2.equals(fieldC3));
 		assertFalse(fieldG2.equals(fieldG3));
+		
+		IntegerField fieldI = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
+		EnumerationField fieldE = null;
+		try {
+			fieldE = EnumerationFieldFactory.getInstance().create(new ElementList(new String [] {"a","b"}), 0, AttributePreferenceType.NONE);
+		} catch (NoSuchAlgorithmException ex) {
+			System.out.println(ex);
+		}
+		PairField<RealField> fieldP = new PairField<RealField>(fieldN1, fieldN2);
+		UnknownSimpleField FieldUmv2 = new UnknownSimpleFieldMV2();
+		UnknownSimpleField FieldUmv15 = new UnknownSimpleFieldMV15();
+		
+		assertFalse(fieldN1.equals(fieldI));
+		assertFalse(fieldN1.equals(fieldE));
+		assertFalse(fieldN1.equals(fieldP));
+		assertFalse(fieldN1.equals(FieldUmv2));
+		assertFalse(fieldN1.equals(FieldUmv15));
 	}
 	
 	/**

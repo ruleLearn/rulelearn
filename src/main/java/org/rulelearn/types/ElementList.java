@@ -20,6 +20,7 @@ import org.rulelearn.core.TernaryLogicValue;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -162,6 +163,37 @@ public class ElementList {
 	 */
 	public String getAlgorithm() {
 		return algorithm;
+	}
+	
+	/**
+	 * Tells if this element list object is equal to the other object.
+	 * 
+	 * @param otherObject other object that this object should be compared with
+	 * @return {@code true} if this object is equal to the other object,
+	 *         {@code false} otherwise
+	 */
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject != this) {
+			if (otherObject != null && this.getClass().equals(otherObject.getClass())) {
+				final ElementList otherList = (ElementList) otherObject;
+				return ((this.hasEqualHash(otherList) == TernaryLogicValue.TRUE));
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
+	
+	/**
+     * Gets hash code of this element list.
+     *
+     * @return hash code of this field
+     */
+	@Override
+	public int hashCode () {
+		return Objects.hash(this.getClass(), this.elements);
 	}
 
 	/**

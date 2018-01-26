@@ -91,7 +91,7 @@ public abstract class IntegerField extends KnownSimpleField {
 		if (otherObject != this) {
 			if (otherObject != null && this.getClass().equals(otherObject.getClass())) {
 				final IntegerField other = (IntegerField) otherObject;
-				return this.value == other.value;
+				return (this.value == other.value);
 			} else {
 				return false;
 			}

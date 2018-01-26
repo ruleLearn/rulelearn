@@ -377,6 +377,18 @@ public class EnumerationFieldTest {
 		assertFalse(fieldN2.equals(fieldN4));
 		assertFalse(fieldC2.equals(fieldC4));
 		assertFalse(fieldG2.equals(fieldG4));
+		
+		IntegerField fieldI = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
+		RealField fieldR = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.NONE);
+		PairField<EnumerationField> fieldP = new PairField<EnumerationField>(fieldN1, fieldN2);
+		UnknownSimpleField FieldUmv2 = new UnknownSimpleFieldMV2();
+		UnknownSimpleField FieldUmv15 = new UnknownSimpleFieldMV15();
+		
+		assertFalse(fieldN1.equals(fieldI));
+		assertFalse(fieldN1.equals(fieldR));
+		assertFalse(fieldN1.equals(fieldP));
+		assertFalse(fieldN1.equals(FieldUmv2));
+		assertFalse(fieldN1.equals(FieldUmv15));
 	}
 	
 	/**
