@@ -18,6 +18,8 @@ package org.rulelearn.types;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.security.NoSuchAlgorithmException;
+
 import org.junit.jupiter.api.Test;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.data.AttributePreferenceType;
@@ -85,7 +87,7 @@ class PairFieldTest {
 	}
 	
 	/**
-	 * Tests {@link UnknownSimpleFieldMV2#equals(Object)} method.
+	 * Tests {@link PairField#equals(Object)} method.
 	 */
 	@Test
 	public void testEquals() {
@@ -103,10 +105,27 @@ class PairFieldTest {
 		
 		assertTrue(field1.equals(field2));
 		assertFalse(field1.equals(field3));
+		
+		IntegerField fieldI = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
+		RealField fieldR = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.NONE);
+		EnumerationField fieldE = null;
+		try {
+			fieldE = EnumerationFieldFactory.getInstance().create(new ElementList(new String [] {"a","b"}), 0, AttributePreferenceType.NONE);
+		} catch (NoSuchAlgorithmException ex) {
+			System.out.println(ex);
+		}
+		UnknownSimpleField FieldUmv2 = new UnknownSimpleFieldMV2();
+		UnknownSimpleField FieldUmv15 = new UnknownSimpleFieldMV15();
+		
+		assertFalse(field1.equals(fieldI));
+		assertFalse(field1.equals(fieldR));
+		assertFalse(field1.equals(fieldE));
+		assertFalse(field1.equals(FieldUmv2));
+		assertFalse(field1.equals(FieldUmv15));
 	}
 	
 	/**
-	 * Tests {@link UnknownSimpleFieldMV2d#hashCode()} method.
+	 * Tests {@link PairField#hashCode()} method.
 	 */
 	@Test
 	public void testHashCode() {

@@ -17,6 +17,9 @@
 package org.rulelearn.types;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.security.NoSuchAlgorithmException;
+
 import org.junit.jupiter.api.Test;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
@@ -251,6 +254,23 @@ class UnknownSimpleFieldMV2Test {
 		UnknownSimpleField mvField2 = new UnknownSimpleFieldMV2();
 		
 		assertTrue(mvField1.equals(mvField2));
+		
+		IntegerField fieldI = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
+		RealField fieldR = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.NONE);
+		EnumerationField fieldE = null;
+		try {
+			fieldE = EnumerationFieldFactory.getInstance().create(new ElementList(new String [] {"a","b"}), 0, AttributePreferenceType.NONE);
+		} catch (NoSuchAlgorithmException ex) {
+			System.out.println(ex);
+		}
+		PairField<IntegerField> fieldP = new PairField<IntegerField>(fieldI, fieldI);
+		UnknownSimpleField FieldUmv15 = new UnknownSimpleFieldMV15();
+		
+		assertFalse(mvField1.equals(fieldI));
+		assertFalse(mvField1.equals(fieldR));
+		assertFalse(mvField1.equals(fieldE));
+		assertFalse(mvField1.equals(fieldP));
+		assertFalse(mvField1.equals(FieldUmv15));		
 	}
 	
 	/**
