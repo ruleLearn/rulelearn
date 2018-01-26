@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.TernaryLogicValue;
+import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.AttributePreferenceType;
 import static org.mockito.Mockito.*;
 
@@ -379,6 +380,37 @@ class PairFieldTest {
 		verify(secondFieldMock, atMost(1)).isAtLeastAsGoodAs(secondFieldMock2);
 		assertEquals(comparisonResult, TernaryLogicValue.FALSE);
 	}
+	
+	/**
+	 * Test for {@link PairField#compareToEx(Field)} method. Uses mocks.
+	 */
+	@Test
+	public void testCompareToEx() {
+		IntegerField firstFieldMock = mock(IntegerField.class);
+		IntegerField secondFieldMock = mock(IntegerField.class);
+		PairField<IntegerField> firstPair = new PairField<>(firstFieldMock, secondFieldMock);
+		
+		int comparisonResult = 0;
+		
+		IntegerField firstFieldMock2 = mock(IntegerField.class);
+		IntegerField secondFieldMock2 = mock(IntegerField.class);
+		PairField<IntegerField> secondPair = new PairField<>(firstFieldMock2, secondFieldMock2);
+		
+		try {
+			when(firstFieldMock.compareToEx(firstFieldMock2)).thenReturn(0);
+			when(secondFieldMock.compareToEx(secondFieldMock2)).thenReturn(0);
+			
+			comparisonResult = firstPair.compareToEx(secondPair);
+			verify(firstFieldMock).compareToEx(firstFieldMock2);
+			verify(secondFieldMock).compareToEx(secondFieldMock2);
+		} catch (UncomparableException exception) {
+			fail("Pairs found to be uncomparable.");
+		}
+
+		assertEquals(comparisonResult, 0);
+	}
+	
+	//TODO: add more tests for PairField#compareToEx(Field)
 	
 	/**
 	 * Test for {@link PairField#isEqualTo(Field)} method. Uses mocks.
