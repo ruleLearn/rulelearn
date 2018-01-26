@@ -246,5 +246,27 @@ class UnknownSimpleFieldMV15Test {
 		
 		assertTrue(clonedField instanceof UnknownSimpleFieldMV15);
 	}
+	
+	/**
+	 * Tests {@link UnknownSimpleFieldMV15#equals(Object)} method.
+	 */
+	@Test
+	public void testEquals() {
+		UnknownSimpleField mvField1 = new UnknownSimpleFieldMV15();
+		UnknownSimpleField mvField2 = new UnknownSimpleFieldMV15();
+		
+		assertTrue(mvField1.equals(mvField2));
+	}
+	
+	/**
+	 * Tests {@link UnknownSimpleFieldMV15#hashCode()} method.
+	 */
+	@Test
+	public void testHashCode() {
+		UnknownSimpleField mvField1 = new UnknownSimpleFieldMV15();
+		UnknownSimpleField mvField2 = new UnknownSimpleFieldMV15();
+		
+		assertTrue(mvField1.hashCode() == mvField2.hashCode());	
+	}
 
 }

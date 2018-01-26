@@ -126,7 +126,8 @@ public class InformationTable {
 		
 		this.attributeMap = new int[attributes.length];
 		
-		for (int i = 0; i < attributes.length; i++) { //split attributes
+		//split attributes into two tables
+		for (int i = 0; i < attributes.length; i++) {
 			if (attributes[i].getType() == AttributeType.CONDITION &&
 					attributes[i].isActive()) { //active condition attribute
 				activeConditionAttributes[activeConditionAttributeIndex] = attributes[i];
@@ -181,8 +182,8 @@ public class InformationTable {
 		//map each object (row of this information table) to a unique id, and remember that mapping
 		this.mapper = new Index2IdMapper(UniqueIdGenerator.getInstance().getUniqueIds(fields.size()), true);
 		
-		this.learningTable = hasActiveConditionAttributes? new Table(activeConditionAttributes, activeConditionFieldsList, this.mapper, true) : null;
-		this.supplementaryTable = hasOtherAttributes? new Table(otherAttributes, otherFieldsList, this.mapper, true) : null;
+		this.learningTable = hasActiveConditionAttributes ? new Table(activeConditionAttributes, activeConditionFieldsList, this.mapper, true) : null;
+		this.supplementaryTable = hasOtherAttributes ? new Table(otherAttributes, otherFieldsList, this.mapper, true) : null;
 	}
 	
 	//	public InformationTable(String metadataPath, String dataPath) {
