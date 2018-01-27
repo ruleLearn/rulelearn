@@ -121,6 +121,20 @@ public class Attribute {
 		return preferenceType;
 	}
 	
+	@Override
+	public String toString () {
+		StringBuilder builder = new StringBuilder ();
+		
+		builder.append(this.active ? "+ ": "- ");
+		builder.append(this.name).append(": ");
+		builder.append(this.type).append(", ");
+		builder.append(this.preferenceType).append(", ");
+		builder.append(this.valueType).append(", ");
+		builder.append(this.missingValueType);
+		
+		return builder.toString();
+	}
+	
 	/**
 	 * Tells if this attribute object is equal to the other object.
 	 * 
