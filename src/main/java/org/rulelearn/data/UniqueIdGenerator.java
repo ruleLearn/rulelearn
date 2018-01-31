@@ -29,12 +29,19 @@ public class UniqueIdGenerator {
 	/**
 	 * Next id to be returned by this generator.
 	 */
-	private static int nextUniqueId = 0;
+	private int nextUniqueId;
 	
 	/**
 	 * The only instance of this generator.
 	 */
 	protected static UniqueIdGenerator generator = null;
+	
+	/**
+	 * Sole constructor initializing this generator.
+	 */
+	private UniqueIdGenerator() {
+		this.nextUniqueId = 0;
+	}
 	
 	/**
 	 * Retrieves the only instance of this generator (singleton).
@@ -62,6 +69,7 @@ public class UniqueIdGenerator {
 	 * 
 	 * @param numberOfIds number of unique identifiers to generate
 	 * @return array of unique identifiers
+	 * 
 	 * @throws InvalidValueException when requested number of unique identifiers to be generated is less than zero
 	 */
 	public int[] getUniqueIds(int numberOfIds) {
