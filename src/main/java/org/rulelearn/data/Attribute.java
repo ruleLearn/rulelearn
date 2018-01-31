@@ -148,12 +148,15 @@ public class Attribute {
 			if (otherObject != null && getClass().equals(otherObject.getClass())) {
 				final Attribute other = (Attribute) otherObject;
 				if (this.name.compareTo(other.name) == 0) {
-	    	  			if (this.active == other.active) {
-	    	  				if (this.preferenceType == other.preferenceType) {
-	    	  					if (this.valueType.equals(other.valueType)) {
-	    	  						return this.missingValueType.equals(other.missingValueType);
-	    	  					}
-	    	  					else return false;
+					if (this.preferenceType == other.preferenceType) {
+	    	  				if (this.type == other.type) {
+		    	  				if (this.active == other.active) {
+		    	  					if (this.valueType.equals(other.valueType)) {
+		    	  						return this.missingValueType.equals(other.missingValueType);
+		    	  					}
+		    	  					else return false;
+		    	  				}
+		    	  				else return false;
 	    	  				}
 	    	  				else return false;
 	    	  			}
@@ -173,6 +176,6 @@ public class Attribute {
      */
 	@Override
 	public int hashCode () {
-		return Objects.hash(name, active, type, valueType, missingValueType);
+		return Objects.hash(name, active, type, valueType, missingValueType, preferenceType);
 	}
 }
