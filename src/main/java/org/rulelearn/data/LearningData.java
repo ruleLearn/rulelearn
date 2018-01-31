@@ -53,7 +53,7 @@ public class LearningData {
 	 * @return table with values of active condition attributes for objects that this learning data concern.
 	 */
 	public Table getConditionTable() {
-		return conditionTable;
+		return this.conditionTable;
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class LearningData {
 	 * @return preference information concerning objects that this learning data concern
 	 */
 	public PreferenceInformation getPreferenceInformation() {
-		return preferenceInformation;
+		return this.preferenceInformation;
 	}
 
 }

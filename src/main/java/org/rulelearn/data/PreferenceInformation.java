@@ -52,7 +52,12 @@ public class PreferenceInformation {
 	 * @throws NullPointerException if the given list is {@code null}
 	 */
 	public PreferenceInformation(List<Field> preferenceInformation) {
-		this.preferenceInformation = (Field[])preferenceInformation.toArray();
+		int size = preferenceInformation.size();
+		this.preferenceInformation = new Field[size];
+		
+		for (int i = 0; i < size; i++) {
+			this.preferenceInformation[i] = preferenceInformation.get(i);
+		}
 	}
 	
 	/**
