@@ -81,10 +81,10 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 		element = json.getAsJsonObject().get("type");
 		if (element != null) {
 			value = element.getAsString().toLowerCase();
-			if (value.compareTo("condition") == 0)
-				type = AttributeType.CONDITION;
-			else if (value.compareTo("decision") == 0)
+			if (value.compareTo("decision") == 0)
 				type = AttributeType.DECISION;
+			else if (value.compareTo("description") == 0)
+				type = AttributeType.DESCRIPTION;
 		}
 		
 		boolean pair = false;
