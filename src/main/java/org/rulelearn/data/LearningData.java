@@ -29,7 +29,7 @@ public class LearningData {
 	 * Table with values of active condition attributes for considered objects.
 	 * Only such attributes are used in the learning process.
 	 */
-	protected Table conditionTable;
+	protected Table learningTable;
 	/**
 	 * Preference information concerning considered objects.
 	 */
@@ -43,7 +43,7 @@ public class LearningData {
 	 * @param preferenceInformation preference information concerning considered objects
 	 */
 	public LearningData(Table conditionTable, PreferenceInformation preferenceInformation) {
-		this.conditionTable = conditionTable;
+		this.learningTable = conditionTable;
 		this.preferenceInformation = preferenceInformation;
 	}
 
@@ -53,7 +53,7 @@ public class LearningData {
 	 * @return table with values of active condition attributes for objects that this learning data concern.
 	 */
 	public Table getConditionTable() {
-		return this.conditionTable;
+		return this.learningTable;
 	}
 
 	/**

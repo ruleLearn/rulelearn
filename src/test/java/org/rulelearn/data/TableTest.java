@@ -1,0 +1,204 @@
+/**
+ * Copyright (C) Jerzy Błaszczyński, Marcin Szeląg
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.rulelearn.data;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.rulelearn.types.Field;
+import org.rulelearn.types.IntegerFieldFactory;
+import org.rulelearn.types.UnknownSimpleFieldMV15;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
+
+/**
+ * Tests for {@link Table}.
+ *
+ * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+ * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+ */
+class TableTest {
+	
+	private int[][] fieldValues = {
+			{ 3,  0,   1},
+			{ 2, -5,  -3},
+			{ 4,  7, -15},
+			{-1,  6,  14}
+	};
+	
+	private AttributePreferenceType[] attributePreferenceTypes = {AttributePreferenceType.GAIN, AttributePreferenceType.COST, AttributePreferenceType.GAIN};
+	
+	private Attribute[] getAttributes() {
+		return new Attribute[] {
+			new Attribute("a1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), attributePreferenceTypes[0]),
+			new Attribute("a2", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST), new UnknownSimpleFieldMV15(), attributePreferenceTypes[1]),
+			new Attribute("a3", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), attributePreferenceTypes[2])
+		}; 
+	}
+	
+	private Field[][] getFields() {
+		return new Field[][] {
+			{IntegerFieldFactory.getInstance().create(fieldValues[0][0], attributePreferenceTypes[0]),
+				 IntegerFieldFactory.getInstance().create(fieldValues[0][1], attributePreferenceTypes[1]),
+				 IntegerFieldFactory.getInstance().create(fieldValues[0][2], attributePreferenceTypes[2])
+				},
+				{IntegerFieldFactory.getInstance().create(fieldValues[1][0], attributePreferenceTypes[0]),
+				 IntegerFieldFactory.getInstance().create(fieldValues[1][1], attributePreferenceTypes[1]),
+				 IntegerFieldFactory.getInstance().create(fieldValues[1][2], attributePreferenceTypes[2])
+				},
+				{IntegerFieldFactory.getInstance().create(fieldValues[2][0], attributePreferenceTypes[0]),
+				 IntegerFieldFactory.getInstance().create(fieldValues[2][1], attributePreferenceTypes[1]),
+				 IntegerFieldFactory.getInstance().create(fieldValues[2][2], attributePreferenceTypes[2])
+				},
+				{IntegerFieldFactory.getInstance().create(fieldValues[3][0], attributePreferenceTypes[0]),
+				 IntegerFieldFactory.getInstance().create(fieldValues[3][1], attributePreferenceTypes[1]),
+				 IntegerFieldFactory.getInstance().create(fieldValues[3][2], attributePreferenceTypes[2])
+				}
+			};
+	}
+	
+	private Table getTable(boolean accelerate) {
+		Field[][] fields = this.getFields();
+		Index2IdMapper mapper = new Index2IdMapper(UniqueIdGenerator.getInstance().getUniqueIds(fields.length));
+		
+		return new Table(this.getAttributes(), fields, mapper, accelerate);
+	}
+
+	/**
+	 * Test for {@link Table#getField(int, int)} method. Tests 4 x 3 table (4 objects, 3 attributes).
+	 */
+	@Test
+	void testGetField() {
+		Table table = getTable(false);
+		
+		assertEquals(table.getField(0, 0), IntegerFieldFactory.getInstance().create(fieldValues[0][0], attributePreferenceTypes[0]));
+		assertEquals(table.getField(0, 1), IntegerFieldFactory.getInstance().create(fieldValues[0][1], attributePreferenceTypes[1]));
+		assertEquals(table.getField(0, 2), IntegerFieldFactory.getInstance().create(fieldValues[0][2], attributePreferenceTypes[2]));
+		
+		assertEquals(table.getField(1, 0), IntegerFieldFactory.getInstance().create(fieldValues[1][0], attributePreferenceTypes[0]));
+		assertEquals(table.getField(1, 1), IntegerFieldFactory.getInstance().create(fieldValues[1][1], attributePreferenceTypes[1]));
+		assertEquals(table.getField(1, 2), IntegerFieldFactory.getInstance().create(fieldValues[1][2], attributePreferenceTypes[2]));
+		
+		assertEquals(table.getField(2, 0), IntegerFieldFactory.getInstance().create(fieldValues[2][0], attributePreferenceTypes[0]));
+		assertEquals(table.getField(2, 1), IntegerFieldFactory.getInstance().create(fieldValues[2][1], attributePreferenceTypes[1]));
+		assertEquals(table.getField(2, 2), IntegerFieldFactory.getInstance().create(fieldValues[2][2], attributePreferenceTypes[2]));
+		
+		assertEquals(table.getField(3, 0), IntegerFieldFactory.getInstance().create(fieldValues[3][0], attributePreferenceTypes[0]));
+		assertEquals(table.getField(3, 1), IntegerFieldFactory.getInstance().create(fieldValues[3][1], attributePreferenceTypes[1]));
+		assertEquals(table.getField(3, 2), IntegerFieldFactory.getInstance().create(fieldValues[3][2], attributePreferenceTypes[2]));
+	}
+
+	/**
+	 * Test for {@link Table#getFields(int)} method. Tests 4 x 3 table (4 objects, 3 attributes).
+	 */
+	@Test
+	void testGetFieldsInt() {
+		Table table = getTable(true);
+		
+		for (int i = 0; i < fieldValues.length; i++) {
+			Field[] fields = table.getFields(i);
+			for (int j = 0; j < fields.length; j++) {
+				assertEquals(fields[j], IntegerFieldFactory.getInstance().create(fieldValues[i][j], attributePreferenceTypes[j]));
+			}
+		}
+	}
+
+	/**
+	 * Test for {@link Table#getFields(int, boolean)} method. Tests 4 x 3 table (4 objects, 3 attributes).
+	 */
+	@Test
+	void testGetFieldsIntBoolean() {
+		Table table = getTable(true);
+		
+		for (int i = 0; i < fieldValues.length; i++) {
+			Field[] fields = table.getFields(i, true);
+			for (int j = 0; j < fields.length; j++) {
+				assertEquals(fields[j], IntegerFieldFactory.getInstance().create(fieldValues[i][j], attributePreferenceTypes[j]));
+			}
+		}
+	}
+
+	/**
+	 * Test for {@link Table#select(int[])} method}.
+	 */
+	@Test
+	void testSelect() {
+		Table table = getTable(false);
+		Table newTable = table.select(new int[]{0, 2});
+		//TODO
+		fail("Not implemented yet!");
+	}
+
+	/**
+	 * Test for {@link Table#getNumberOfObjects()} method}.
+	 */
+	@Test
+	void testGetNumberOfObjects() {
+		Table table = getTable(true);
+		assertEquals(table.getNumberOfObjects(), 4);
+	}
+
+	/**
+	 * Test for {@link Table#getNumberOfAttributes()} method}.
+	 */
+	@Test
+	void testGetNumberOfAttributes() {
+		Table table = getTable(true);
+		assertEquals(table.getNumberOfAttributes(), 3);
+	}
+
+	/**
+	 * Test for {@link Table#getAttributes()} method}.
+	 */
+	@Test
+	void testGetAttributes() {
+		Table table = getTable(true);
+		Attribute[] expectedAttributes = this.getAttributes();
+		Attribute[] attributes = table.getAttributes();
+		
+		assertEquals(attributes.length, expectedAttributes.length);
+		
+		for (int i = 0; i < attributes.length; i++) {
+			assertEquals(attributes[i], expectedAttributes[i]);
+		}
+	}
+
+	/**
+	 * Test for {@link Table#getAttributes(boolean)} method}.
+	 */
+	@Test
+	void testGetAttributesBoolean() {
+		Table table = getTable(false);
+		Attribute[] expectedAttributes = this.getAttributes();
+		Attribute[] attributes = table.getAttributes();
+		
+		assertEquals(attributes.length, expectedAttributes.length);
+		
+		for (int i = 0; i < attributes.length; i++) {
+			assertEquals(attributes[i], expectedAttributes[i]);
+		}
+	}
+
+	/**
+	 * Test for {@link Table#getIndex2IdMapper()} method}.
+	 */
+	@Test
+	void testGetIndex2IdMapper() {
+		Table table = getTable(false);
+		
+		fail("Not implemented yet!");
+	}
+
+}
