@@ -269,4 +269,26 @@ public class InformationTable {
 		return -encodedOtherAttributeIndex - 1;
 	}
 	
+	/**
+	 * TODO: write documentation
+	 * 
+	 * @param objectIndices
+	 * @return
+	 */
+	public InformationTable select(int[] objectIndices) {
+		return select(objectIndices, false);
+	}
+	
+	/**
+	 * TODO: write documentation
+	 * 
+	 * @param objectIndices
+	 * @param accelerateByReadOnlyResult
+	 * @return
+	 */
+	public InformationTable select(int[] objectIndices, boolean accelerateByReadOnlyResult) {
+		//TODO: implement
+		return null;
+	}
+	
 }

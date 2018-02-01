@@ -48,32 +48,24 @@ class TableTest {
 		}; 
 	}
 	
-	private Field[][] getFields() {
-		return new Field[][] {
-			{IntegerFieldFactory.getInstance().create(fieldValues[0][0], attributePreferenceTypes[0]),
-				 IntegerFieldFactory.getInstance().create(fieldValues[0][1], attributePreferenceTypes[1]),
-				 IntegerFieldFactory.getInstance().create(fieldValues[0][2], attributePreferenceTypes[2])
-				},
-				{IntegerFieldFactory.getInstance().create(fieldValues[1][0], attributePreferenceTypes[0]),
-				 IntegerFieldFactory.getInstance().create(fieldValues[1][1], attributePreferenceTypes[1]),
-				 IntegerFieldFactory.getInstance().create(fieldValues[1][2], attributePreferenceTypes[2])
-				},
-				{IntegerFieldFactory.getInstance().create(fieldValues[2][0], attributePreferenceTypes[0]),
-				 IntegerFieldFactory.getInstance().create(fieldValues[2][1], attributePreferenceTypes[1]),
-				 IntegerFieldFactory.getInstance().create(fieldValues[2][2], attributePreferenceTypes[2])
-				},
-				{IntegerFieldFactory.getInstance().create(fieldValues[3][0], attributePreferenceTypes[0]),
-				 IntegerFieldFactory.getInstance().create(fieldValues[3][1], attributePreferenceTypes[1]),
-				 IntegerFieldFactory.getInstance().create(fieldValues[3][2], attributePreferenceTypes[2])
-				}
-			};
+	private Field[][] getFields(int[] objectIndices) {
+		Field[][] fields = new Field[objectIndices.length][];
+		
+		for (int i = 0; i < objectIndices.length; i++) {
+			fields[i] = new Field[attributePreferenceTypes.length];
+			for (int j = 0; j < fields[i].length; j++) {
+				fields[i][j] = IntegerFieldFactory.getInstance().create(fieldValues[objectIndices[i]][j], attributePreferenceTypes[j]);
+			}
+		}
+		
+		return fields;
 	}
 	
-	private Table getTable(boolean accelerate) {
-		Field[][] fields = this.getFields();
+	private Table getTable(boolean accelerateByReadOnlyParams) {
+		Field[][] fields = this.getFields(new int[]{0, 1, 2, 3});
 		Index2IdMapper mapper = new Index2IdMapper(UniqueIdGenerator.getInstance().getUniqueIds(fields.length));
 		
-		return new Table(this.getAttributes(), fields, mapper, accelerate);
+		return new Table(this.getAttributes(), fields, mapper, accelerateByReadOnlyParams);
 	}
 
 	/**
@@ -136,9 +128,19 @@ class TableTest {
 	@Test
 	void testSelect() {
 		Table table = getTable(false);
-		Table newTable = table.select(new int[]{0, 2});
-		//TODO
-		fail("Not implemented yet!");
+		int[] objectIndices = new int[]{0, 2};
+		Table newTable = table.select(objectIndices);
+		
+		assertEquals(newTable.getNumberOfObjects(), objectIndices.length);
+		assertEquals(newTable.getNumberOfAttributes(), table.getNumberOfAttributes());
+		
+		Field[][] expectedFields = this.getFields(objectIndices);
+		
+		for (int i = 0; i < expectedFields.length; i++) {
+			for (int j = 0; j < expectedFields[i].length; j++) {
+				assertEquals(expectedFields[i][j], newTable.getField(i, j));
+			}
+		}
 	}
 
 	/**

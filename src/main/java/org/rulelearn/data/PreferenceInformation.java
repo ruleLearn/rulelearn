@@ -68,4 +68,27 @@ public class PreferenceInformation {
 	public int getNumberOfObjects() {
 		return this.preferenceInformation.length;
 	}
+	
+	/**
+	 * TODO: write documentation
+	 * 
+	 * @param objectIndices
+	 * @return
+	 */
+	public PreferenceInformation select(int[] objectIndices) {
+		return select(objectIndices, false);
+	}
+	
+	/**
+	 * TODO: write documentation
+	 * 
+	 * @param objectIndices
+	 * @param accelerateByReadOnlyResult
+	 * @return
+	 */
+	public PreferenceInformation select(int[] objectIndices, boolean accelerateByReadOnlyResult) {
+		//TODO: implement
+		return null;
+	}
+	
 }

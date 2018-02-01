@@ -124,7 +124,7 @@ public class Table {
 	 * @throws IndexOutOfBoundsException if given object index does not correspond to any object for which this table stores fields
 	 */
 	public Field[] getFields(int objectIndex) {
-		return this.fields[objectIndex].clone();
+		return this.getFields(objectIndex, false);
 	}
 	
 	/**
@@ -154,15 +154,32 @@ public class Table {
 	 * @throws IndexOutOfBoundsException if any of the given indices does not match the number of considered objects
 	 */
 	public Table select(int[] objectIndices) {
+		return this.select(objectIndices, false);
+	}
+	
+	/**
+	 * Selects rows of this table that correspond to objects with given indices.
+	 * Returns new table concerning a subset of objects (rows).
+	 *  
+	 * @param objectIndices indices of objects to select to new information table (indices can repeat)
+	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
+	 *        at the cost of returning a read-only table, or should return a safe table (that can be
+	 *        modified outside this object), at the cost of returning the result slower
+	 * @return sub-table of this table, containing only rows corresponding to objects whose index is in the given array
+	 * 
+	 * @throws NullPointerException if given array with object indices is {@code null}
+	 * @throws IndexOutOfBoundsException if any of the given indices does not match the number of considered objects
+	 */
+	public Table select(int[] objectIndices, boolean accelerateByReadOnlyResult) {
 		int[] newObjectIndex2Id = new int[objectIndices.length]; //data for new mapper
 		Field[][] newFields = new Field[objectIndices.length][];
 		
 		for (int i = 0; i < objectIndices.length; i++) {
 			newFields[i] = this.fields[objectIndices[i]]; //just copy reference to an array with fields
-			newObjectIndex2Id[i] = this.mapper.getId(objectIndices[i]);
+			newObjectIndex2Id[i] = this.mapper.getId(objectIndices[i]); //re-map object's id
 		}
 		
-		return new Table(this.attributes, newFields, new Index2IdMapper(newObjectIndex2Id), true);
+		return new Table(this.attributes, newFields, new Index2IdMapper(newObjectIndex2Id), accelerateByReadOnlyResult);
 	}
 	
 	/**
@@ -189,7 +206,7 @@ public class Table {
 	 * @return attributes for which this table stores values
 	 */
 	public Attribute[] getAttributes () {
-		return this.attributes.clone();
+		return this.getAttributes(false);
 	}
 	
 	/**

@@ -19,24 +19,26 @@ package org.rulelearn.core;
 /**
  * Enumeration for locations of read-only array references in method's signature
  * (e.g., in method's input = passed as method's parameter; in method's output = obtained as method's result).
- * A reference to an array object is considered to be read-only if it should not be used to modify the array content.
+ * A reference to an array is considered to be read-only if it should not be used to modify array content outside the class.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public enum ReadOnlyArrayReferenceLocation {
 	/**
-	 * Value indicating that the respective method accepts a read-only array reference as an input parameter.
+	 * Warns that the respective method assumes that an input parameter is a read-only array reference, i.e., such reference,
+	 * that once the method returns, this reference will not be used outside the class to modify array content.
 	 */
 	INPUT,
 	/**
-	 * Value indicating that the respective method returns a read-only array reference
-	 * (i.e., a reference that should not be used to modify the array).
+	 * Warns that the respective method returns a read-only array reference, i.e., a reference that should not be used outside the class to modify array content.
 	 */
 	OUTPUT,
 	/**
-	 * Value indicating that the respective method accepts a read-only array reference as an input parameter,
-	 * and returns a read-only array reference (i.e., a reference that should not be used to modify the array).
+	 * Warns that the respective method:<br>
+	 * - assumes that an input parameter is a read-only array reference, i.e., such reference,
+	 * that once the method returns, this reference will not be used outside the class to modify array content;<br>
+	 * - returns a read-only array reference, i.e., a reference that should not be used outside the class to modify array content.
 	 */
 	INPUT_AND_OUTPUT
 }

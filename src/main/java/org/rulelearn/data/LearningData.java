@@ -64,5 +64,27 @@ public class LearningData {
 	public PreferenceInformation getPreferenceInformation() {
 		return this.preferenceInformation;
 	}
+	
+	/**
+	 * TODO: write documentation
+	 * 
+	 * @param objectIndices
+	 * @return
+	 */
+	public LearningData select(int[] objectIndices) {
+		return select(objectIndices, false);
+	}
+	
+	/**
+	 * TODO: write documentation
+	 * 
+	 * @param objectIndices
+	 * @param accelerateByReadOnlyResult
+	 * @return
+	 */
+	public LearningData select(int[] objectIndices, boolean accelerateByReadOnlyResult) {
+		//TODO: implement
+		return null;
+	}
 
 }
