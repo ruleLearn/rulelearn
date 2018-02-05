@@ -96,7 +96,7 @@ class TableTest {
 	 * Test for {@link Table#getFields(int)} method. Tests 4 x 3 table (4 objects, 3 attributes).
 	 */
 	@Test
-	void testGetFieldsInt() {
+	void testGetFields_01() {
 		Table table = getTable(true);
 		
 		for (int i = 0; i < fieldValues.length; i++) {
@@ -111,7 +111,7 @@ class TableTest {
 	 * Test for {@link Table#getFields(int, boolean)} method. Tests 4 x 3 table (4 objects, 3 attributes).
 	 */
 	@Test
-	void testGetFieldsIntBoolean() {
+	void testGetFields_02() {
 		Table table = getTable(true);
 		
 		for (int i = 0; i < fieldValues.length; i++) {
@@ -126,20 +126,71 @@ class TableTest {
 	 * Test for {@link Table#select(int[])} method}.
 	 */
 	@Test
-	void testSelect() {
+	void testSelect_01() {
 		Table table = getTable(false);
+		
 		int[] objectIndices = new int[]{0, 2};
 		Table newTable = table.select(objectIndices);
 		
 		assertEquals(newTable.getNumberOfObjects(), objectIndices.length);
 		assertEquals(newTable.getNumberOfAttributes(), table.getNumberOfAttributes());
-		
+
+		//check fields of the new table
 		Field[][] expectedFields = this.getFields(objectIndices);
-		
 		for (int i = 0; i < expectedFields.length; i++) {
 			for (int j = 0; j < expectedFields[i].length; j++) {
 				assertEquals(expectedFields[i][j], newTable.getField(i, j));
 			}
+		}
+		
+		//check attributes of the new table
+		Attribute[] expectedAttributes = this.getAttributes();
+		Attribute[] attributes = newTable.getAttributes();
+		assertEquals(attributes.length, expectedAttributes.length);
+		for (int i = 0; i < attributes.length; i++) {
+			assertEquals(attributes[i], expectedAttributes[i]);
+		}
+		
+		//check mapper of the new table
+		Index2IdMapper newMapper = newTable.getIndex2IdMapper();
+		for (int i = 0; i < objectIndices.length; i++) {
+			assertEquals(newMapper.getId(i), table.getIndex2IdMapper().getId(objectIndices[i]));
+		}
+	}
+	
+	/**
+	 * Test for {@link Table#select(int[], boolean)} method}.
+	 */
+	@Test
+	void testSelect_02() {
+		Table table = getTable(false);
+		
+		int[] objectIndices = new int[]{1, 2, 3};
+		Table newTable = table.select(objectIndices, true);
+		
+		assertEquals(newTable.getNumberOfObjects(), objectIndices.length);
+		assertEquals(newTable.getNumberOfAttributes(), table.getNumberOfAttributes());
+
+		//check fields of the new table
+		Field[][] expectedFields = this.getFields(objectIndices);
+		for (int i = 0; i < expectedFields.length; i++) {
+			for (int j = 0; j < expectedFields[i].length; j++) {
+				assertEquals(expectedFields[i][j], newTable.getField(i, j));
+			}
+		}
+		
+		//check attributes of the new table
+		Attribute[] expectedAttributes = this.getAttributes();
+		Attribute[] attributes = newTable.getAttributes();
+		assertEquals(attributes.length, expectedAttributes.length);
+		for (int i = 0; i < attributes.length; i++) {
+			assertEquals(attributes[i], expectedAttributes[i]);
+		}
+		
+		//check mapper of the new table
+		Index2IdMapper newMapper = newTable.getIndex2IdMapper();
+		for (int i = 0; i < objectIndices.length; i++) {
+			assertEquals(newMapper.getId(i), table.getIndex2IdMapper().getId(objectIndices[i]));
 		}
 	}
 
@@ -165,7 +216,7 @@ class TableTest {
 	 * Test for {@link Table#getAttributes()} method}.
 	 */
 	@Test
-	void testGetAttributes() {
+	void testGetAttributes_01() {
 		Table table = getTable(true);
 		Attribute[] expectedAttributes = this.getAttributes();
 		Attribute[] attributes = table.getAttributes();
@@ -181,10 +232,10 @@ class TableTest {
 	 * Test for {@link Table#getAttributes(boolean)} method}.
 	 */
 	@Test
-	void testGetAttributesBoolean() {
+	void testGetAttributes_02() {
 		Table table = getTable(false);
 		Attribute[] expectedAttributes = this.getAttributes();
-		Attribute[] attributes = table.getAttributes();
+		Attribute[] attributes = table.getAttributes(true);
 		
 		assertEquals(attributes.length, expectedAttributes.length);
 		
@@ -199,8 +250,11 @@ class TableTest {
 	@Test
 	void testGetIndex2IdMapper() {
 		Table table = getTable(false);
+		Index2IdMapper mapper = table.getIndex2IdMapper();
 		
-		fail("Not implemented yet!");
+		assertNotEquals(mapper.getId(0), mapper.getId(1));
+		assertNotEquals(mapper.getId(1), mapper.getId(2));
+		assertNotEquals(mapper.getId(2), mapper.getId(3));
 	}
 
 }

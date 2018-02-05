@@ -19,7 +19,7 @@ package org.rulelearn.data;
 import org.rulelearn.core.InvalidValueException;
 
 /**
- * Generator of unique identifiers.
+ * Generator of unique identifiers. Used to ensure that each decision object has a unique id.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
