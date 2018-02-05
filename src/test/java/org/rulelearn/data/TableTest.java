@@ -42,9 +42,9 @@ class TableTest {
 	
 	private Attribute[] getAttributes() {
 		return new Attribute[] {
-			new Attribute("a1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), attributePreferenceTypes[0]),
-			new Attribute("a2", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST), new UnknownSimpleFieldMV15(), attributePreferenceTypes[1]),
-			new Attribute("a3", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), attributePreferenceTypes[2])
+			new Attribute("a1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[0]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[0]),
+			new Attribute("a2", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[1]), new UnknownSimpleFieldMV15(), attributePreferenceTypes[1]),
+			new Attribute("a3", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[2]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[2])
 		}; 
 	}
 	
@@ -72,7 +72,7 @@ class TableTest {
 	 * Test for {@link Table#getField(int, int)} method. Tests 4 x 3 table (4 objects, 3 attributes).
 	 */
 	@Test
-	void testGetField() {
+	public void testGetField() {
 		Table table = getTable(false);
 		
 		assertEquals(table.getField(0, 0), IntegerFieldFactory.getInstance().create(fieldValues[0][0], attributePreferenceTypes[0]));
@@ -96,7 +96,7 @@ class TableTest {
 	 * Test for {@link Table#getFields(int)} method. Tests 4 x 3 table (4 objects, 3 attributes).
 	 */
 	@Test
-	void testGetFields_01() {
+	public void testGetFields_01() {
 		Table table = getTable(true);
 		
 		for (int i = 0; i < fieldValues.length; i++) {
@@ -111,7 +111,7 @@ class TableTest {
 	 * Test for {@link Table#getFields(int, boolean)} method. Tests 4 x 3 table (4 objects, 3 attributes).
 	 */
 	@Test
-	void testGetFields_02() {
+	public void testGetFields_02() {
 		Table table = getTable(true);
 		
 		for (int i = 0; i < fieldValues.length; i++) {
@@ -126,7 +126,7 @@ class TableTest {
 	 * Test for {@link Table#select(int[])} method}.
 	 */
 	@Test
-	void testSelect_01() {
+	public void testSelect_01() {
 		Table table = getTable(false);
 		
 		int[] objectIndices = new int[]{0, 2};
@@ -162,7 +162,7 @@ class TableTest {
 	 * Test for {@link Table#select(int[], boolean)} method}.
 	 */
 	@Test
-	void testSelect_02() {
+	public void testSelect_02() {
 		Table table = getTable(false);
 		
 		int[] objectIndices = new int[]{1, 2, 3};
@@ -198,25 +198,25 @@ class TableTest {
 	 * Test for {@link Table#getNumberOfObjects()} method}.
 	 */
 	@Test
-	void testGetNumberOfObjects() {
+	public void testGetNumberOfObjects() {
 		Table table = getTable(true);
-		assertEquals(table.getNumberOfObjects(), 4);
+		assertEquals(table.getNumberOfObjects(), fieldValues.length);
 	}
 
 	/**
 	 * Test for {@link Table#getNumberOfAttributes()} method}.
 	 */
 	@Test
-	void testGetNumberOfAttributes() {
+	public void testGetNumberOfAttributes() {
 		Table table = getTable(true);
-		assertEquals(table.getNumberOfAttributes(), 3);
+		assertEquals(table.getNumberOfAttributes(), attributePreferenceTypes.length);
 	}
 
 	/**
 	 * Test for {@link Table#getAttributes()} method}.
 	 */
 	@Test
-	void testGetAttributes_01() {
+	public void testGetAttributes_01() {
 		Table table = getTable(true);
 		Attribute[] expectedAttributes = this.getAttributes();
 		Attribute[] attributes = table.getAttributes();
@@ -232,7 +232,7 @@ class TableTest {
 	 * Test for {@link Table#getAttributes(boolean)} method}.
 	 */
 	@Test
-	void testGetAttributes_02() {
+	public void testGetAttributes_02() {
 		Table table = getTable(false);
 		Attribute[] expectedAttributes = this.getAttributes();
 		Attribute[] attributes = table.getAttributes(true);
@@ -248,7 +248,7 @@ class TableTest {
 	 * Test for {@link Table#getIndex2IdMapper()} method}.
 	 */
 	@Test
-	void testGetIndex2IdMapper() {
+	public void testGetIndex2IdMapper() {
 		Table table = getTable(false);
 		Index2IdMapper mapper = table.getIndex2IdMapper();
 		

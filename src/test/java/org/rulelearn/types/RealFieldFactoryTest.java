@@ -65,7 +65,7 @@ class RealFieldFactoryTest {
 	 * Tests cloning of real field without preference type.
 	 */
 	@Test
-	void testClone01() {
+	public void testClone01() {
 		double value = 1;
 		RealField field = RealFieldFactory.getInstance().create(value, AttributePreferenceType.NONE);
 		RealField clonedField = RealFieldFactory.getInstance().clone(field);

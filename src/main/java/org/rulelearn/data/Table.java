@@ -147,7 +147,7 @@ public class Table {
 	 * Selects rows of this table that correspond to objects with given indices.
 	 * Returns new table concerning a subset of objects (rows).
 	 *  
-	 * @param objectIndices indices of objects to select to new information table (indices can repeat)
+	 * @param objectIndices indices of objects to select to new table (indices can repeat)
 	 * @return sub-table of this table, containing only rows corresponding to objects whose index is in the given array
 	 * 
 	 * @throws NullPointerException if given array with object indices is {@code null}
@@ -161,10 +161,10 @@ public class Table {
 	 * Selects rows of this table that correspond to objects with given indices.
 	 * Returns new table concerning a subset of objects (rows).
 	 *  
-	 * @param objectIndices indices of objects to select to new information table (indices can repeat)
+	 * @param objectIndices indices of objects to select to new table (indices can repeat)
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
 	 *        at the cost of returning a read-only table, or should return a safe table (that can be
-	 *        modified outside this object), at the cost of returning the result slower
+	 *        modified), at the cost of returning the result slower
 	 * @return sub-table of this table, containing only rows corresponding to objects whose index is in the given array
 	 * 
 	 * @throws NullPointerException if given array with object indices is {@code null}

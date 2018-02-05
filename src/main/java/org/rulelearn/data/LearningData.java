@@ -35,6 +35,7 @@ public class LearningData {
 	
 	/**
 	 * Constructor storing an information table and preference information concerning objects in the information table.
+	 * Assumes that both parameters are not {@code null}.
 	 * 
 	 * @param informationTable information table storing evaluations of objects
 	 * @param preferenceInformation preference information concerning the objects from the given information table
@@ -63,27 +64,37 @@ public class LearningData {
 	}
 	
 	/**
-	 * TODO: write documentation
+	 * Selects a subset of this learning data that correspond to objects with given indices.
+	 * Returns new learning data concerning a subset of objects.
 	 * 
-	 * @param objectIndices
+	 * @param objectIndices indices of objects to select to new learning data (indices can repeat)
+	 * @return subset of this learning data, concerning only objects whose index is in the given array
 	 * 
-	 * @return
+	 * @throws NullPointerException if given array with object indices is {@code null}
+	 * @throws IndexOutOfBoundsException if any of the given indices does not match the number of considered objects
 	 */
 	public LearningData select(int[] objectIndices) {
 		return select(objectIndices, false);
 	}
 	
 	/**
-	 * TODO: write documentation
+	 * Selects a subset of this learning data that correspond to objects with given indices.
+	 * Returns new learning data concerning a subset of objects.
 	 * 
-	 * @param objectIndices
-	 * @param accelerateByReadOnlyResult
+	 * @param objectIndices indices of objects to select to new learning data (indices can repeat)
+	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
+	 *        at the cost of returning read-only learning data, or should return safe learning data (that can be
+	 *        modified), at the cost of returning the result slower
+	 * @return subset of this learning data, concerning only objects whose index is in the given array
 	 * 
-	 * @return
+	 * @throws NullPointerException if given array with object indices is {@code null}
+	 * @throws IndexOutOfBoundsException if any of the given indices does not match the number of considered objects
 	 */
 	public LearningData select(int[] objectIndices, boolean accelerateByReadOnlyResult) {
-		//TODO: implement
-		return null;
+		InformationTable newInformationTable = this.informationTable.select(objectIndices, accelerateByReadOnlyResult);
+		PreferenceInformation newPreferenceInformation = this.preferenceInformation.select(objectIndices);
+		
+		return new LearningData(newInformationTable, newPreferenceInformation);
 	}
 
 }

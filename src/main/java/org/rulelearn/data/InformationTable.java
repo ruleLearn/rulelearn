@@ -43,13 +43,14 @@ public class InformationTable {
 	
 	/**
 	 * Sub-table, corresponding to active condition attributes only.
-	 * This sub-table is used in calculations.
+	 * This sub-table is used in calculations. Equals to {@code null} if there are no learning attributes.
 	 */
 	protected Table learningTable = null;
 	/**
 	 * Sub-table, corresponding to all attributes which are not active or not condition ones.
 	 * This sub-table is not used in calculations. It stores values of such supplementary attributes
 	 * mainly for the on-screen presentation of data and their write-back to file.
+	 * Equals to {@code null} if there are no supplementary attributes.
 	 */
 	protected Table supplementaryTable = null;
 	
@@ -67,6 +68,28 @@ public class InformationTable {
 	 * attributeMap[4] == -2 means that 4-indexed attribute among all attributes is 1-indexed attribute among supplementary attributes (-2 == (1 * -1) + (-1)).
 	 */
 	protected int[] attributeMap;
+	
+	/**
+	 * Protected constructor for internal use only, setting all data fields of this information table.
+	 * 
+	 * @param attributes all attributes of an information table (condition and description ones, both active and non-active)
+	 * @param mapper translator of object's index, which is meaningful in this information table only,
+	 *        to unique object's id, which is meaningful in general
+	 * @param learningTable learning table corresponding to learning attributes only
+	 * @param supplementaryTable supplementary table corresponding to supplementary attributes only
+	 * @param attributeMap see {@link #attributeMap}
+	 * @param accelerateByReadOnlyParams tells if construction of this object should be accelerated by assuming that the given references
+	 *        to arrays are not going to be used outside this class
+	 *        to modify that arrays (and thus, this object does not need to clone the arrays for internal use)
+	 */
+	protected InformationTable(Attribute[] attributes, Index2IdMapper mapper, Table learningTable, Table supplementaryTable, int[] attributeMap, boolean accelerateByReadOnlyParams) {
+		this.attributes = accelerateByReadOnlyParams ? attributes : attributes.clone();
+		this.mapper = mapper;
+		this.learningTable = learningTable;
+		this.supplementaryTable = supplementaryTable;
+		this.attributeMap = accelerateByReadOnlyParams ? attributeMap : attributeMap.clone();
+	}
+	
 	
 	/**
 	 * Information table constructor.
@@ -253,7 +276,7 @@ public class InformationTable {
 		if (this.attributeMap[attributeIndex] >= 0) { //learning attribute
 			return this.learningTable.getField(objectIndex, this.attributeMap[attributeIndex]);
 		} else { //supplementary attribute
-			return this.supplementaryTable.getField(objectIndex, this.decodeOtherAttributeIndex(this.attributeMap[attributeIndex]));
+			return this.supplementaryTable.getField(objectIndex, this.decodeSupplementaryAttributeIndex(this.attributeMap[attributeIndex]));
 		}
 	}
 	
@@ -261,7 +284,7 @@ public class InformationTable {
 		return -index - 1;
 	}
 	
-	private int decodeOtherAttributeIndex(int encodedOtherAttributeIndex) {
+	private int decodeSupplementaryAttributeIndex(int encodedOtherAttributeIndex) {
 		return -encodedOtherAttributeIndex - 1;
 	}
 	
@@ -276,25 +299,68 @@ public class InformationTable {
 	}
 	
 	/**
-	 * TODO: write documentation
+	 * Selects rows of this information table that correspond to objects with given indices.
+	 * Returns new information table concerning a subset of objects (rows).
 	 * 
-	 * @param objectIndices
-	 * @return
+	 * @param objectIndices indices of objects to select to new information table (indices can repeat)
+	 * @return sub-table of this information table, containing only rows corresponding to objects whose index is in the given array
+	 * 
+	 * @throws NullPointerException if given array with object indices is {@code null}
+	 * @throws IndexOutOfBoundsException if any of the given indices does not match the number of considered objects
 	 */
 	public InformationTable select(int[] objectIndices) {
 		return select(objectIndices, false);
 	}
 	
 	/**
-	 * TODO: write documentation
+	 * Selects rows of this information table that correspond to objects with given indices.
+	 * Returns new information table concerning a subset of objects (rows).
 	 * 
-	 * @param objectIndices
-	 * @param accelerateByReadOnlyResult
-	 * @return
+	 * @param objectIndices indices of objects to select to new information table (indices can repeat)
+	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
+	 *        at the cost of returning a read-only information table, or should return a safe information table (that can be
+	 *        modified), at the cost of returning the result slower
+	 * @return sub-table of this information table, containing only rows corresponding to objects whose index is in the given array
+	 * 
+	 * @throws NullPointerException if given array with object indices is {@code null}
+	 * @throws IndexOutOfBoundsException if any of the given indices does not match the number of considered objects
 	 */
 	public InformationTable select(int[] objectIndices, boolean accelerateByReadOnlyResult) {
-		//TODO: implement
-		return null;
+		Table newLearningTable = null;
+		Table newSupplementaryTable = null;
+		
+		Index2IdMapper newMapper = null;
+		
+		if (this.learningTable != null) {
+			newLearningTable = this.learningTable.select(objectIndices, accelerateByReadOnlyResult);
+			newMapper = newLearningTable.getIndex2IdMapper(); //use already calculated mapper
+		}
+		if (this.supplementaryTable != null) {
+			newSupplementaryTable = this.supplementaryTable.select(objectIndices, accelerateByReadOnlyResult);
+			if (newMapper == null) {
+				newMapper = newSupplementaryTable.getIndex2IdMapper(); //use already calculated mapper
+			}
+		}
+		
+		return new InformationTable(this.attributes, newMapper, newLearningTable, newSupplementaryTable, this.attributeMap, accelerateByReadOnlyResult);
+	}
+	
+	/**
+	 * Gets number of objects stored in this information table.
+	 * 
+	 * @return number of objects stored in this information table
+	 */
+	public int getNumberOfObjects() {
+		return this.learningTable.getNumberOfObjects();
+	}
+	
+	/**
+	 * Gets number of attributes stored in this information table.
+	 * 
+	 * @return number of attributes stored in this information table
+	 */
+	public int getNumberOfAttributes() {
+		return this.attributes.length;
 	}
 	
 }

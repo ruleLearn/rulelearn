@@ -61,6 +61,25 @@ public class PreferenceInformation {
 	}
 	
 	/**
+	 * Constructor storing preference information for each object whose index corresponds to an entry in the given array.
+	 * 
+	 * @param preferenceInformation array of preference informations for subsequent objects;
+	 *        i-th entry stores preference information for i-th object
+	 * @param accelerateByReadOnlyParam tells if construction of this object should be accelerated by assuming that the given reference
+	 *        to an array of fields is not going to be used outside this class
+	 *        to modify that array (and thus, this object does not need to clone the array for internal use)
+	 *        
+	 * @throws NullPointerException if the given array is {@code null}
+	 */
+	public PreferenceInformation(Field[] preferenceInformation, boolean accelerateByReadOnlyParam) {
+		if (preferenceInformation == null) {
+			throw new NullPointerException("Preference information is null.");
+		}
+		
+		this.preferenceInformation = accelerateByReadOnlyParam ? preferenceInformation : preferenceInformation.clone();
+	}
+	
+	/**
 	 * Gets number of learning objects for which there is stored preference information.
 	 * 
 	 * @return number of learning objects for which there is stored preference information
@@ -70,25 +89,23 @@ public class PreferenceInformation {
 	}
 	
 	/**
-	 * TODO: write documentation
+	 * Selects a subset of this preference information that correspond to objects with given indices.
+	 * Returns new preference information concerning a subset of objects.
 	 * 
-	 * @param objectIndices
-	 * @return
+	 * @param objectIndices indices of objects to select to new preference information (indices can repeat)
+	 * @return subset of this preference information, concerning only objects whose index is in the given array
+	 * 
+	 * @throws NullPointerException if the given array is {@code null}
+	 * @throws IndexOutOfBoundsException if any of the given indices does not match the number of considered objects
 	 */
 	public PreferenceInformation select(int[] objectIndices) {
-		return select(objectIndices, false);
-	}
-	
-	/**
-	 * TODO: write documentation
-	 * 
-	 * @param objectIndices
-	 * @param accelerateByReadOnlyResult
-	 * @return
-	 */
-	public PreferenceInformation select(int[] objectIndices, boolean accelerateByReadOnlyResult) {
-		//TODO: implement
-		return null;
+		Field[] newPreferenceInformation = new Field[objectIndices.length];
+		
+		for (int i = 0; i < objectIndices.length; i++) {
+			newPreferenceInformation[i] = this.preferenceInformation[objectIndices[i]];
+		}
+		
+		return new PreferenceInformation(newPreferenceInformation, true);
 	}
 	
 }
