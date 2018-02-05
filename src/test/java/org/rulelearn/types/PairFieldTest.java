@@ -381,11 +381,7 @@ class PairFieldTest {
 		assertEquals(comparisonResult, TernaryLogicValue.FALSE);
 	}
 	
-	/**
-	 * Test for {@link PairField#compareToEx(Field)} method. Uses mocks.
-	 */
-	@Test
-	public void testCompareToEx() {
+	private int compareToEx(int firstCompareToResult, int secondCompareToResult) throws UncomparableException {
 		IntegerField firstFieldMock = mock(IntegerField.class);
 		IntegerField secondFieldMock = mock(IntegerField.class);
 		PairField<IntegerField> firstPair = new PairField<>(firstFieldMock, secondFieldMock);
@@ -397,20 +393,129 @@ class PairFieldTest {
 		PairField<IntegerField> secondPair = new PairField<>(firstFieldMock2, secondFieldMock2);
 		
 		try {
-			when(firstFieldMock.compareToEx(firstFieldMock2)).thenReturn(0);
-			when(secondFieldMock.compareToEx(secondFieldMock2)).thenReturn(0);
+			when(firstFieldMock.compareToEx(firstFieldMock2)).thenReturn(firstCompareToResult);
+			when(secondFieldMock.compareToEx(secondFieldMock2)).thenReturn(secondCompareToResult);
 			
 			comparisonResult = firstPair.compareToEx(secondPair);
 			verify(firstFieldMock).compareToEx(firstFieldMock2);
 			verify(secondFieldMock).compareToEx(secondFieldMock2);
 		} catch (UncomparableException exception) {
-			fail("Pairs found to be uncomparable.");
+			throw exception;
 		}
-
-		assertEquals(comparisonResult, 0);
+		
+		return comparisonResult;
 	}
 	
-	//TODO: add more tests for PairField#compareToEx(Field)
+	/**
+	 * Test for {@link PairField#compareToEx(Field)} method. Uses mocks.
+	 */
+	@Test
+	public void testCompareToEx_01() {
+		try {
+			compareToEx(-1, -1);
+			fail("Uncomparable pairs found to be comparable.");
+		} catch (UncomparableException exception) {
+			//OK - do nothing
+		}
+	}
+	
+	/**
+	 * Test for {@link PairField#compareToEx(Field)} method. Uses mocks.
+	 */
+	@Test
+	public void testCompareToEx_02() {
+		try {
+			assertTrue(compareToEx(-1, 0) < 0);
+		} catch (UncomparableException exception) {
+			fail("Comparable pairs found to be uncomparable.");
+		}
+	}
+	
+	/**
+	 * Test for {@link PairField#compareToEx(Field)} method. Uses mocks.
+	 */
+	@Test
+	public void testCompareToEx_03() {
+		try {
+			assertTrue(compareToEx(-1, 1) < 0);
+		} catch (UncomparableException exception) {
+			fail("Comparable pairs found to be uncomparable.");
+		}
+	}
+	
+	/**
+	 * Test for {@link PairField#compareToEx(Field)} method. Uses mocks.
+	 */
+	@Test
+	public void testCompareToEx_04() {
+		try {
+			assertTrue(compareToEx(0, -1) > 0);
+		} catch (UncomparableException exception) {
+			fail("Comparable pairs found to be uncomparable.");
+		}
+	}
+	
+
+	/**
+	 * Test for {@link PairField#compareToEx(Field)} method. Uses mocks.
+	 */
+	@Test
+	public void testCompareToEx_05() {
+		try {
+			assertTrue(compareToEx(0, 0) == 0);
+		} catch (UncomparableException exception) {
+			fail("Comparable pairs found to be uncomparable.");
+		}
+	}
+	
+	/**
+	 * Test for {@link PairField#compareToEx(Field)} method. Uses mocks.
+	 */
+	@Test
+	public void testCompareToEx_06() {
+		try {
+			assertTrue(compareToEx(0, 1) < 0);
+		} catch (UncomparableException exception) {
+			fail("Comparable pairs found to be uncomparable.");
+		}
+	}
+	
+	/**
+	 * Test for {@link PairField#compareToEx(Field)} method. Uses mocks.
+	 */
+	@Test
+	public void testCompareToEx_07() {
+		try {
+			assertTrue(compareToEx(1, -1) > 0);
+		} catch (UncomparableException exception) {
+			fail("Comparable pairs found to be uncomparable.");
+		}
+	}
+	
+	/**
+	 * Test for {@link PairField#compareToEx(Field)} method. Uses mocks.
+	 */
+	@Test
+	public void testCompareToEx_08() {
+		try {
+			assertTrue(compareToEx(1, 0) > 0);
+		} catch (UncomparableException exception) {
+			fail("Comparable pairs found to be uncomparable.");
+		}
+	}
+	
+	/**
+	 * Test for {@link PairField#compareToEx(Field)} method. Uses mocks.
+	 */
+	@Test
+	public void testCompareToEx_09() {
+		try {
+			compareToEx(1, 1);
+			fail("Uncomparable pairs found to be comparable.");
+		} catch (UncomparableException exception) {
+			//OK - do nothing
+		}
+	}
 	
 	/**
 	 * Test for {@link PairField#isEqualTo(Field)} method. Uses mocks.

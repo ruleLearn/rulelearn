@@ -17,8 +17,7 @@
 package org.rulelearn.data;
 
 /**
- * Data available for the learning process, aggregating table with values of active condition attributes for considered objects,
- * and preference information concerning these objects.
+ * Data available for the learning process, composed of an information table and preference information concerning the objects in the information table.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -26,34 +25,32 @@ package org.rulelearn.data;
 public class LearningData {
 	
 	/**
-	 * Table with values of active condition attributes for considered objects.
-	 * Only such attributes are used in the learning process.
+	 * Information table used in the learning process.
 	 */
-	protected Table learningTable;
+	protected InformationTable informationTable;
 	/**
-	 * Preference information concerning considered objects.
+	 * Preference information concerning objects present in the information table.
 	 */
 	protected PreferenceInformation preferenceInformation;
 	
 	/**
-	 * Constructor storing table with values of active condition attributes
-	 * and preference information concerning considered objects.
+	 * Constructor storing an information table and preference information concerning objects in the information table.
 	 * 
-	 * @param conditionTable table with values of active condition attributes for considered objects
-	 * @param preferenceInformation preference information concerning considered objects
+	 * @param informationTable information table storing evaluations of objects
+	 * @param preferenceInformation preference information concerning the objects from the given information table
 	 */
-	public LearningData(Table conditionTable, PreferenceInformation preferenceInformation) {
-		this.learningTable = conditionTable;
+	public LearningData(InformationTable informationTable, PreferenceInformation preferenceInformation) {
+		this.informationTable = informationTable;
 		this.preferenceInformation = preferenceInformation;
 	}
 
 	/**
-	 * Gets table with values of active condition attributes for objects that this learning data concern. 
+	 * Gets the information table. 
 	 * 
-	 * @return table with values of active condition attributes for objects that this learning data concern.
+	 * @return the information table
 	 */
-	public Table getConditionTable() {
-		return this.learningTable;
+	public InformationTable getInformationTable() {
+		return this.informationTable;
 	}
 
 	/**
@@ -69,6 +66,7 @@ public class LearningData {
 	 * TODO: write documentation
 	 * 
 	 * @param objectIndices
+	 * 
 	 * @return
 	 */
 	public LearningData select(int[] objectIndices) {
@@ -80,6 +78,7 @@ public class LearningData {
 	 * 
 	 * @param objectIndices
 	 * @param accelerateByReadOnlyResult
+	 * 
 	 * @return
 	 */
 	public LearningData select(int[] objectIndices, boolean accelerateByReadOnlyResult) {

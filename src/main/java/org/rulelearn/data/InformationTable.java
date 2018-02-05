@@ -54,16 +54,17 @@ public class InformationTable {
 	protected Table supplementaryTable = null;
 	
 	/**
-	 * Maps index of an attribute of this information table to index of an (active and condition)/other attribute. Index of other attribute among other attributes is multiplied by -1 and shifted by -1.
+	 * Maps index of an attribute of this information table to index of a learning (i.e., active and condition)/supplementary (i.e., other) attribute.
+	 * Index of a supplementary attribute among supplementary attributes is multiplied by -1 and shifted by -1.
 	 * Suppose that there are five active attributes of the following types:<br>
 	 * {@link AttributeType#CONDITION}, {@link AttributeType#DESCRIPTION}, {@link AttributeType#CONDITION}, {@link AttributeType#CONDITION}, {@link AttributeType#DESCRIPTION}.
 	 * Then, the map will be the following:<br>
 	 * attributeMap = [0, -1, 1, 2, -2].<br>
-	 * attributeMap[0] == 0 means that 0-indexed attribute among all attributes is 0-indexed attribute among active condition attributes.<br> 
-	 * attributeMap[1] == -1 means that 1-indexed attribute among all attributes is 0-indexed attribute among other attributes.<br>
-	 * attributeMap[2] == 1 means that 2-indexed attribute among all attributes is 1-indexed attribute among active condition attributes.<br>
-	 * attributeMap[3] == 2 means that 3-indexed attribute among all attributes is 2-indexed attribute among active condition attributes.<br>
-	 * attributeMap[4] == -2 means that 4-indexed attribute among all attributes is 1-indexed attribute among other attributes (-2 == (1 * -1) + (-1)).
+	 * attributeMap[0] == 0 means that 0-indexed attribute among all attributes is 0-indexed attribute among learning attributes.<br> 
+	 * attributeMap[1] == -1 means that 1-indexed attribute among all attributes is 0-indexed attribute among supplementary attributes.<br>
+	 * attributeMap[2] == 1 means that 2-indexed attribute among all attributes is 1-indexed attribute among learning attributes.<br>
+	 * attributeMap[3] == 2 means that 3-indexed attribute among all attributes is 2-indexed attribute among learning attributes.<br>
+	 * attributeMap[4] == -2 means that 4-indexed attribute among all attributes is 1-indexed attribute among supplementary attributes (-2 == (1 * -1) + (-1)).
 	 */
 	protected int[] attributeMap;
 	
@@ -71,9 +72,8 @@ public class InformationTable {
 	 * Information table constructor.
 	 * 
 	 * @param attributes all attributes of an information table (condition and description ones, both active and non-active)
-	 * @param fields list of fields of subsequent objects; each array contains subsequent fields of a single object of this information table;
-	 *        it is assumed that each array is of the same length
-	 *        (i.e., the number of fields of each object is the same)
+	 * @param fields list of fields of subsequent objects; each array contains subsequent fields of a single object in this information table;
+	 *        it is assumed that each array is of the same length (i.e., the number of fields of each object is the same)
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
@@ -87,9 +87,8 @@ public class InformationTable {
 	 * This constructor can be used in certain circumstances to accelerate object construction.
 	 * 
 	 * @param attributes all attributes of an information table (condition and description ones, both active and non-active)
-	 * @param fields list of fields of subsequent objects; each array contains subsequent fields of a single object of this information table;
-	 *        it is assumed that each array is of the same length
-	 *        (i.e., the number of fields of each object is the same)
+	 * @param fields list of fields of subsequent objects; each array contains subsequent fields of a single object in this information table;
+	 *        it is assumed that each array is of the same length (i.e., the number of fields of each object is the same)
 	 * @param accelerateByReadOnlyParams tells if construction of this object should be accelerated by assuming that the given reference
 	 *        to an array of attributes and references to arrays of fields present at the given list are not going to be used outside this class
 	 *        to modify that arrays (and thus, this object does not need to clone the arrays for internal use)
@@ -104,75 +103,72 @@ public class InformationTable {
 			throw new InvalidValueException("The number of attributes and the number of objects' fields in an information table do not match.");
 		}
 		
-		int numberOfActiveConditionAttributes = 0;
+		int numberOfLearningAttributes = 0;
 		
 		for (int i = 0; i < attributes.length; i++) { //scout first
-			if (attributes[i].getType() == AttributeType.CONDITION &&
-					attributes[i].isActive()) { //active condition attribute
-				numberOfActiveConditionAttributes++;
+			if (isLearningAttribute(attributes[i])) {
+				numberOfLearningAttributes++;
 			}
 		}
 		
-		int numberOfOtherAttributes = attributes.length - numberOfActiveConditionAttributes;
+		int numberOfSupplementaryAttributes = attributes.length - numberOfLearningAttributes;
 		
-		boolean hasActiveConditionAttributes = numberOfActiveConditionAttributes > 0;
-		boolean hasOtherAttributes = numberOfOtherAttributes > 0;
+		boolean hasLearningAttributes = numberOfLearningAttributes > 0;
+		boolean hasSupplementaryAttributes = numberOfSupplementaryAttributes > 0;
 		
-		Attribute[] activeConditionAttributes = hasActiveConditionAttributes ? new Attribute[numberOfActiveConditionAttributes] : null;
-		Attribute[] otherAttributes = hasOtherAttributes ? new Attribute[numberOfOtherAttributes] : null;
+		Attribute[] learningAttributes = hasLearningAttributes ? new Attribute[numberOfLearningAttributes] : null;
+		Attribute[] supplementaryAttributes = hasSupplementaryAttributes ? new Attribute[numberOfSupplementaryAttributes] : null;
 		
-		int activeConditionAttributeIndex = 0;
-		int otherAttributeIndex = 0;
+		int learningAttributeIndex = 0;
+		int supplementaryAttributeIndex = 0;
 		
 		this.attributeMap = new int[attributes.length];
 		
 		//split attributes into two tables
 		for (int i = 0; i < attributes.length; i++) {
-			if (attributes[i].getType() == AttributeType.CONDITION &&
-					attributes[i].isActive()) { //active condition attribute
-				activeConditionAttributes[activeConditionAttributeIndex] = attributes[i];
-				this.attributeMap[i] = activeConditionAttributeIndex;
-				activeConditionAttributeIndex++;
-			} else { //other attribute
-				otherAttributes[otherAttributeIndex] = attributes[i];
-				this.attributeMap[i] = this.encodeOtherAttributeIndex(otherAttributeIndex);
-				otherAttributeIndex++;
+			if (isLearningAttribute(attributes[i])) {
+				learningAttributes[learningAttributeIndex] = attributes[i];
+				this.attributeMap[i] = learningAttributeIndex;
+				learningAttributeIndex++;
+			} else { //supplementary attribute
+				supplementaryAttributes[supplementaryAttributeIndex] = attributes[i];
+				this.attributeMap[i] = this.encodeSupplementaryAttributeIndex(supplementaryAttributeIndex);
+				supplementaryAttributeIndex++;
 			}
 		}
 		
-		Field[][] activeConditionFieldsList = hasActiveConditionAttributes ? new Field[fields.size()][] : null;
-		Field[][] otherFieldsList = hasOtherAttributes ? new Field[fields.size()][] : null;
+		Field[][] learningFieldsArray = hasLearningAttributes ? new Field[fields.size()][] : null;
+		Field[][] supplementaryFieldsArray = hasSupplementaryAttributes ? new Field[fields.size()][] : null;
 		
-		Field[] activeConditionFields = null;
-		Field[] otherFields = null;
+		Field[] learningFields = null;
+		Field[] supplementaryFields = null;
 		
 		int rowIndex = 0;
 		
 		//split fields into two tables
 		for (Field[] values : fields) { //choose row (single object)
-			if (hasActiveConditionAttributes) {
-				activeConditionFields = new Field[numberOfActiveConditionAttributes];
-				activeConditionAttributeIndex = 0;
+			if (hasLearningAttributes) {
+				learningFields = new Field[numberOfLearningAttributes];
+				learningAttributeIndex = 0;
 			}
-			if (hasOtherAttributes) {
-				otherFields = new Field[numberOfOtherAttributes];
-				otherAttributeIndex = 0;
+			if (hasSupplementaryAttributes) {
+				supplementaryFields = new Field[numberOfSupplementaryAttributes];
+				supplementaryAttributeIndex = 0;
 			}
 			
 			for (int i = 0; i < attributes.length; i++) { //choose column (single attribute)
-				if (attributes[i].getType() == AttributeType.CONDITION &&
-						attributes[i].isActive()) { //active condition attribute
-					activeConditionFields[activeConditionAttributeIndex++] = values[i];
-				} else { //other attribute
-					otherFields[otherAttributeIndex++] = values[i];
+				if (isLearningAttribute(attributes[i])) {
+					learningFields[learningAttributeIndex++] = values[i];
+				} else { //supplementary attribute
+					supplementaryFields[supplementaryAttributeIndex++] = values[i];
 				} 
 			}
 			
-			if (hasActiveConditionAttributes) {
-				activeConditionFieldsList[rowIndex] = activeConditionFields;
+			if (hasLearningAttributes) {
+				learningFieldsArray[rowIndex] = learningFields;
 			}
-			if (hasOtherAttributes) {
-				otherFieldsList[rowIndex] = otherFields;
+			if (hasSupplementaryAttributes) {
+				supplementaryFieldsArray[rowIndex] = supplementaryFields;
 			}
 			
 			rowIndex++;
@@ -182,8 +178,8 @@ public class InformationTable {
 		//map each object (row of this information table) to a unique id, and remember that mapping
 		this.mapper = new Index2IdMapper(UniqueIdGenerator.getInstance().getUniqueIds(fields.size()), true);
 		
-		this.learningTable = hasActiveConditionAttributes ? new Table(activeConditionAttributes, activeConditionFieldsList, this.mapper, true) : null;
-		this.supplementaryTable = hasOtherAttributes ? new Table(otherAttributes, otherFieldsList, this.mapper, true) : null;
+		this.learningTable = hasLearningAttributes ? new Table(learningAttributes, learningFieldsArray, this.mapper, true) : null;
+		this.supplementaryTable = hasSupplementaryAttributes ? new Table(supplementaryAttributes, supplementaryFieldsArray, this.mapper, true) : null;
 	}
 	
 	//	public InformationTable(String metadataPath, String dataPath) {
@@ -204,9 +200,9 @@ public class InformationTable {
 	 * Gets sub-table of this information table, corresponding to all attributes which are not active or not condition ones.
 	 * If there is no such attribute, then returns {@code null}.
 	 * 
-	 * @return sub-table of this information table, corresponding to all attributes which are not active or not condition ones.
+	 * @return sub-table of this information table, corresponding to all attributes which are not active or not condition ones
 	 */
-	public Table getDescriptionTable() {
+	public Table getSupplementaryTable() {
 		return this.supplementaryTable;
 	}
 
@@ -254,19 +250,29 @@ public class InformationTable {
 	 * @throws IndexOutOfBoundsException if given attribute index does not correspond to any attribute for which this table stores fields
 	 */
 	public Field getField(int objectIndex, int attributeIndex) {
-		if (this.attributeMap[attributeIndex] >= 0) { //active condition attribute
+		if (this.attributeMap[attributeIndex] >= 0) { //learning attribute
 			return this.learningTable.getField(objectIndex, this.attributeMap[attributeIndex]);
-		} else { //other attribute
+		} else { //supplementary attribute
 			return this.supplementaryTable.getField(objectIndex, this.decodeOtherAttributeIndex(this.attributeMap[attributeIndex]));
 		}
 	}
 	
-	private int encodeOtherAttributeIndex(int index) {
+	private int encodeSupplementaryAttributeIndex(int index) {
 		return -index - 1;
 	}
 	
 	private int decodeOtherAttributeIndex(int encodedOtherAttributeIndex) {
 		return -encodedOtherAttributeIndex - 1;
+	}
+	
+	/**
+	 * Tells if given attribute is a learning attribute, i.e., it is a condition and active attribute.
+	 * 
+	 * @param attribute attribute to check
+	 * @return {@code true} if given attribute is condition and active, {@code false otherwise}
+	 */
+	protected boolean isLearningAttribute(Attribute attribute) {
+		return attribute.getType() == AttributeType.CONDITION && attribute.isActive();
 	}
 	
 	/**

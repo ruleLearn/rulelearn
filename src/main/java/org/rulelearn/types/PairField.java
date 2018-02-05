@@ -23,7 +23,8 @@ import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
 
 /**
- * Field composed of two simple fields of the same sub-type of {@link SimpleField}.
+ * Composite field composed of two simple fields. If both simple fields are known, then they should be instances of the same sub-type of {@link KnownSimpleField}.
+ * It is possible that one, or even two, of the two component simple fields are unknown.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
