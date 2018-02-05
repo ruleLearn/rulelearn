@@ -16,7 +16,6 @@
 
 package org.rulelearn.data;
 
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.*;
 
@@ -29,20 +28,41 @@ import static org.mockito.Mockito.*;
 class LearningDataTest {
 
 	/**
-	 * Tests {@link LearningData#select(int[], boolean) method.
+	 * Tests {@link LearningData#select(int[], boolean) method. Only tests if proper select methods are invoked for component information table and preference information.
 	 */
 	@Test
-	public void testSelectIntArrayBoolean() {
+	public void testSelectIntArrayBoolean_01() {
 		InformationTable informationTableMock = mock(InformationTable.class);
-		PreferenceInformation preferenceInformation = mock(PreferenceInformation.class);
+		PreferenceInformation preferenceInformationMock = mock(PreferenceInformation.class);
 		
 		int[] objectIndices = new int[]{1, 2, 4};
 		
-		//when(informationTableMock.select(objectIndices, true)).thenReturn();
+		LearningData learningData = new LearningData(informationTableMock, preferenceInformationMock);
 		
-		LearningData learningData = new LearningData(informationTableMock, preferenceInformation);
+		@SuppressWarnings("unused")
+		LearningData newLearningData = learningData.select(objectIndices, true);
 		
-		//TODO: implement
+		verify(informationTableMock).select(objectIndices, true);
+		verify(preferenceInformationMock).select(objectIndices);
+	}
+	
+	/**
+	 * Tests {@link LearningData#select(int[], boolean) method. Only tests if proper select methods are invoked for component information table and preference information.
+	 */
+	@Test
+	public void testSelectIntArrayBoolean_02() {
+		InformationTable informationTableMock = mock(InformationTable.class);
+		PreferenceInformation preferenceInformationMock = mock(PreferenceInformation.class);
+		
+		int[] objectIndices = new int[]{1, 2, 4};
+		
+		LearningData learningData = new LearningData(informationTableMock, preferenceInformationMock);
+		
+		@SuppressWarnings("unused")
+		LearningData newLearningData = learningData.select(objectIndices, false);
+		
+		verify(informationTableMock).select(objectIndices, false);
+		verify(preferenceInformationMock).select(objectIndices);
 	}
 
 }
