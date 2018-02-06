@@ -19,7 +19,10 @@ package org.rulelearn.data;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;
@@ -39,6 +42,7 @@ import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
 
 /**
  * Test for {@link Attribute}
@@ -604,5 +608,39 @@ public class AttributeTest {
 		
 		assertArrayEquals(attributes, testAttributes);
 	}
+	
+	/**
+	 * Tests loading JSON file and serialization/deserialization to/from JSON
+	 */
+	@Test
+	public void testLoading() {
+		Attribute [] attributes = null;
+		Attribute [] testAttributes = null;
+		
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		
+		JsonReader jsonReader = null;
+		try {
+			jsonReader = new JsonReader(new FileReader("src/test/resources/data/csv/prioritisation.json"));
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		
+		// compare result of loading to serialization/deserialization
+		if (jsonReader != null) {
+			attributes = gson.fromJson(jsonReader, Attribute[].class);
+			String json = gson.toJson(attributes);
+			testAttributes = gson.fromJson(json, Attribute[].class);
+			
+			assertArrayEquals(attributes, testAttributes);
+		}
+		else
+			fail("Unable to load JSON test file");
+	}
+	
 	
 }
