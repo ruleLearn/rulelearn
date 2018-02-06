@@ -45,6 +45,10 @@ dependencies {
 	compile ('com.google.code.gson:gson:2.8.2')
 	runtime ('com.google.code.gson:gson:2.8.2')
 	
+	//adding uniVocity-parsers
+	compile ('com.univocity:univocity-parsers:2.5.9')
+	runtime ('com.univocity:univocity-parsers:2.5.9')
+	
 	testCompile("org.junit.jupiter:junit-jupiter-api:5.0.2")
 	testRuntime("org.junit.jupiter:junit-jupiter-engine:5.0.2")
 	
