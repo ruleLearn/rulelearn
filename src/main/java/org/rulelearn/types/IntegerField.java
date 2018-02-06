@@ -26,10 +26,15 @@ import java.util.Objects;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public abstract class IntegerField extends KnownSimpleField {
+	/** 
+	 * Default value for this type of a field.
+	 */
+	public final static int DEFAULT_VALUE = 0;
+	
 	/**
 	 * Value of this field.
 	 */
-	protected int value = 0;
+	protected int value = IntegerField.DEFAULT_VALUE;
 	
 	/**
 	 * Constructor preventing object creation.

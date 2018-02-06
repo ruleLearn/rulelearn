@@ -111,18 +111,19 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 			}
 			
 			// set valueType
-			// TODO Default values should be taken from a default configuration class
 			if (value.compareTo("integer") == 0) {
 				if (	pair)
-					valueType = new PairField<IntegerField>(IntegerFieldFactory.getInstance().create(0, preferenceType), IntegerFieldFactory.getInstance().create(0, preferenceType));
+					valueType = new PairField<IntegerField>(IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType), 
+															IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType));
 				else
 					valueType = IntegerFieldFactory.getInstance().create(0, preferenceType);
 			}
 			else if (value.compareTo("real") == 0) {
 				if (	pair)
-					valueType = new PairField<RealField>(RealFieldFactory.getInstance().create(0.0, preferenceType), RealFieldFactory.getInstance().create(0.0, preferenceType));
+					valueType = new PairField<RealField>(RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType), 
+														RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType));
 				else
-					valueType = RealFieldFactory.getInstance().create(0.0, preferenceType);
+					valueType = RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType);
 			}
 			else if (value.compareTo("enumeration") == 0) {
 				element = json.getAsJsonObject().get("domain");
@@ -147,10 +148,10 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 						}
 						
 						if (	pair)
-							valueType = new PairField<EnumerationField>(EnumerationFieldFactory.getInstance().create(domain, 0, preferenceType), 
-																		EnumerationFieldFactory.getInstance().create(domain, 0, preferenceType));
+							valueType = new PairField<EnumerationField>(EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, preferenceType), 
+																		EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, preferenceType));
 						else
-							valueType = EnumerationFieldFactory.getInstance().create(domain, 0, preferenceType);
+							valueType = EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, preferenceType);
 					}
 					else
 						throw new JsonParseException("Incorrect domain specified for enumeration type attribute.");

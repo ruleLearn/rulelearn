@@ -27,11 +27,15 @@ import java.util.Objects;
  *
  */
 public abstract class RealField extends KnownSimpleField {
-
+	/** 
+	 * Default value for this type of a field.
+	 */
+	public final static double DEFAULT_VALUE = 0.0;
+	
 	/**
 	 * Value of this field.
 	 */
-	protected double value = 0;
+	protected double value = RealField.DEFAULT_VALUE;
 	
 	/**
 	 * Constructor preventing object creation.

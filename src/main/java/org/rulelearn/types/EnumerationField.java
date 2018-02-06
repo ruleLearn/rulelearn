@@ -29,6 +29,11 @@ import org.rulelearn.core.TernaryLogicValue;
  *
  */
 public abstract class EnumerationField extends KnownSimpleField {
+	/** 
+	 * Default value for this type of a field.
+	 */
+	public final static int DEFAULT_VALUE = 0;
+	
 	/**
 	 * List of elements representing enumeration.
 	 */
@@ -37,7 +42,7 @@ public abstract class EnumerationField extends KnownSimpleField {
 	/**
 	 * Position on element list which is equivalent to value of this field.
 	 */
-	protected int value = 0;
+	protected int value = EnumerationField.DEFAULT_VALUE;
 	
 	/**
 	 * Constructor preventing object creation.
@@ -164,29 +169,4 @@ public abstract class EnumerationField extends KnownSimpleField {
 	public String getElement() {
 		return list.getElement(value);
 	}
-
-	/**
-	 * Sets the element set of enumeration 
-	 * 
-	 * @param set to be set
-	 *
-	 * TODO setters
-	 *
-	public void setElementSet(ElementSet set) {
-		this.set = set;
-		// TODO check if index is correct
-		if (index > set.)
-	}*/
-	
-	/**
-	 * Sets the position in the element set of enumeration which represents value of the field
-	 * 
-	 * @param index the index to set
-	 *
-	 * TODO setters
-	 *
-	public void setIndex(int index) {
-		// TODO check if index is correct
-		this.index = index;
-	}*/
 }

@@ -17,6 +17,8 @@
 package org.rulelearn.data;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -31,6 +33,7 @@ import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.PairField;
 import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
+import org.rulelearn.types.UnknownSimpleField;
 import org.rulelearn.types.UnknownSimpleFieldMV15;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
 
@@ -45,24 +48,49 @@ import com.google.gson.GsonBuilder;
  *
  */
 public class AttributeTest {
+	
+	private Attribute [] attributes = null;
+	
+	/**
+	 * Set attributes for {@link IntegerField} tests
+	 */
+	private void setI01() {
+		attributes = new Attribute[36];
+		UnknownSimpleField [] unknownTypeFields = {new UnknownSimpleFieldMV15(), new UnknownSimpleFieldMV2()};
+		boolean [] activities = {false, true};
+		AttributeType [] types = {AttributeType.CONDITION, AttributeType.DESCRIPTION, AttributeType.DECISION};
+		AttributePreferenceType [] preferenceTypes = {AttributePreferenceType.NONE, AttributePreferenceType.COST, AttributePreferenceType.GAIN};
+		
+		int i = 0;
+		// construct all variants of attributes
+		for (UnknownSimpleField unknownTypeField : unknownTypeFields)
+			for (boolean activity : activities ) 
+				for (AttributeType type: types)
+					for (AttributePreferenceType preferenceType: preferenceTypes) {
+						attributes[i++] = new Attribute("a"+i, activity, type, IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType), 
+							unknownTypeField, preferenceType);
+					}
+	}
+	
+	/**
+	 * Tests equals and hashCode
+	 */
+	@Test
+	public void testEqualsI01() {
+		setI01();
+		for (int i = 0; i < attributes.length; i++) 
+			for (int j = (i + 1); j < attributes.length; j++) {
+				assertNotEquals(attributes[i], attributes[j]);
+				assertFalse(attributes[i].hashCode() == attributes[j].hashCode());
+			}		
+	}
 
 	/**
 	 * Tests construction and serialization/deserialization to/from JSON
 	 */
 	@Test
 	public void testConstructionI01() {
-		Attribute [] attributes = new Attribute[3];
-		
-		//TODO Should be default value taken from a config class
-		Attribute attribute = new Attribute("a1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE), 
-				new UnknownSimpleFieldMV2(), AttributePreferenceType.NONE);
-		attributes[0] = attribute;
-		attribute = new Attribute("c1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST), 
-				new UnknownSimpleFieldMV2(), AttributePreferenceType.COST);
-		attributes[1] = attribute;
-		attribute = new Attribute("g1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), 
-				new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
-		attributes[2] = attribute;
+		setI01();
 			
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
@@ -75,22 +103,45 @@ public class AttributeTest {
 	}
 	
 	/**
+	 * Set attributes for {@link RealField} tests
+	 */
+	private void setR01() {
+		attributes = new Attribute[36];
+		UnknownSimpleField [] unknownTypeFields = {new UnknownSimpleFieldMV15(), new UnknownSimpleFieldMV2()};
+		boolean [] activities = {false, true};
+		AttributeType [] types = {AttributeType.CONDITION, AttributeType.DESCRIPTION, AttributeType.DECISION};
+		AttributePreferenceType [] preferenceTypes = {AttributePreferenceType.NONE, AttributePreferenceType.COST, AttributePreferenceType.GAIN};
+		
+		int i = 0;
+		// construct all variants of attributes
+		for (UnknownSimpleField unknownTypeField : unknownTypeFields)
+			for (boolean activity : activities ) 
+				for (AttributeType type: types)
+					for (AttributePreferenceType preferenceType: preferenceTypes) {
+						attributes[i++] = new Attribute("a"+i, activity, type, RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType), 
+							unknownTypeField, preferenceType);
+					}
+	}
+	
+	/**
+	 * Tests equals and hashCode
+	 */
+	@Test
+	public void testEqualsR01() {
+		setR01();
+		for (int i = 0; i < attributes.length; i++) 
+			for (int j = (i + 1); j < attributes.length; j++) {
+				assertNotEquals(attributes[i], attributes[j]);
+				assertFalse(attributes[i].hashCode() == attributes[j].hashCode());
+			}		
+	}
+	
+	/**
 	 * Tests construction and serialization/deserialization to/from JSON
 	 */
 	@Test
 	public void testConstructionR01() {
-		Attribute [] attributes = new Attribute[3];
-		
-		//TODO Should be default value taken from a config class
-		Attribute attribute = new Attribute("a2", true, AttributeType.CONDITION, RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.NONE), 
-				new UnknownSimpleFieldMV2(), AttributePreferenceType.NONE);
-		attributes[0] = attribute;
-		attribute = new Attribute("c2", true, AttributeType.CONDITION, RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.COST), 
-				new UnknownSimpleFieldMV2(), AttributePreferenceType.COST);
-		attributes[1] = attribute;
-		attribute = new Attribute("g2", true, AttributeType.CONDITION, RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.GAIN), 
-				new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
-		attributes[2] = attribute;
+		setR01();
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
@@ -100,6 +151,46 @@ public class AttributeTest {
 		Attribute [] testAttributes= gson.fromJson(json, Attribute[].class);
 		
 		assertArrayEquals(attributes, testAttributes);
+	}
+	
+	/**
+	 * Set attributes for {@link EnumerationField} tests
+	 */
+	private void setE01() {
+		attributes = new Attribute[36];
+		String [] labels = {"a", "b", "c"};
+		UnknownSimpleField [] unknownTypeFields = {new UnknownSimpleFieldMV15(), new UnknownSimpleFieldMV2()};
+		boolean [] activities = {false, true};
+		AttributeType [] types = {AttributeType.CONDITION, AttributeType.DESCRIPTION, AttributeType.DECISION};
+		AttributePreferenceType [] preferenceTypes = {AttributePreferenceType.NONE, AttributePreferenceType.COST, AttributePreferenceType.GAIN};
+		
+		int i = 0;
+		// construct all variants of attributes
+		for (UnknownSimpleField unknownTypeField : unknownTypeFields)
+			for (boolean activity : activities ) 
+				for (AttributeType type: types)
+					for (AttributePreferenceType preferenceType: preferenceTypes) {
+						try {
+							attributes[i++] = new Attribute("a"+i, activity, type, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 
+																EnumerationField.DEFAULT_VALUE, preferenceType), unknownTypeField, preferenceType);
+						}
+						catch (NoSuchAlgorithmException ex) {
+							System.out.println(ex);
+						}
+					}
+	}
+	
+	/**
+	 * Tests equals and hashCode
+	 */
+	@Test
+	public void testEqualsE01() {
+		setE01();
+		for (int i = 0; i < attributes.length; i++) 
+			for (int j = (i + 1); j < attributes.length; j++) {
+				assertNotEquals(attributes[i], attributes[j]);
+				assertFalse(attributes[i].hashCode() == attributes[j].hashCode());
+			}		
 	}
 	
 	/**
@@ -107,25 +198,7 @@ public class AttributeTest {
 	 */
 	@Test
 	public void testConstructionE01() {
-		Attribute [] attributes = new Attribute[3];
-		String [] labels = {"a", "b", "c"};
-		
-		//TODO Should be default value taken from a config class
-		Attribute attribute;
-		try {	
-			attribute = new Attribute("a3", true, AttributeType.CONDITION, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 0, AttributePreferenceType.NONE),
-					new UnknownSimpleFieldMV2(), AttributePreferenceType.NONE);
-			attributes[0] = attribute;
-			attribute = new Attribute("c3", true, AttributeType.CONDITION, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 0, AttributePreferenceType.COST),
-					new UnknownSimpleFieldMV2(), AttributePreferenceType.COST);
-			attributes[1] = attribute;
-			attribute = new Attribute("g3", true, AttributeType.CONDITION, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 0, AttributePreferenceType.GAIN),
-					new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
-			attributes[2] = attribute;
-		}
-		catch (NoSuchAlgorithmException ex) {
-			System.out.println(ex);
-		}
+		setE01();
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
@@ -138,40 +211,135 @@ public class AttributeTest {
 	}
 	
 	/**
+	 * Set attributes for {@link PairField} tests
+	 */
+	private void setP01() {
+		attributes = new Attribute[36];
+		UnknownSimpleField [] unknownTypeFields = {new UnknownSimpleFieldMV15(), new UnknownSimpleFieldMV2()};
+		boolean [] activities = {false, true};
+		AttributeType [] types = {AttributeType.CONDITION, AttributeType.DESCRIPTION, AttributeType.DECISION};
+		AttributePreferenceType [] preferenceTypes = {AttributePreferenceType.NONE, AttributePreferenceType.COST, AttributePreferenceType.GAIN};
+		
+		int i = 0;
+		// construct all variants of attributes
+		for (UnknownSimpleField unknownTypeField : unknownTypeFields)
+			for (boolean activity : activities ) 
+				for (AttributeType type: types)
+					for (AttributePreferenceType preferenceType: preferenceTypes) {
+						attributes[i++] = new Attribute("a"+i, activity, type, new PairField<IntegerField>(
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType), 
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType)),									
+								unknownTypeField, preferenceType);
+					}
+	}
+	
+	/**
+	 * Set attributes for {@link PairField} tests
+	 */
+	private void setP02() {
+		attributes = new Attribute[36];
+		UnknownSimpleField [] unknownTypeFields = {new UnknownSimpleFieldMV15(), new UnknownSimpleFieldMV2()};
+		boolean [] activities = {false, true};
+		AttributeType [] types = {AttributeType.CONDITION, AttributeType.DESCRIPTION, AttributeType.DECISION};
+		AttributePreferenceType [] preferenceTypes = {AttributePreferenceType.NONE, AttributePreferenceType.COST, AttributePreferenceType.GAIN};
+		
+		int i = 0;
+		// construct all variants of attributes
+		for (UnknownSimpleField unknownTypeField : unknownTypeFields)
+			for (boolean activity : activities ) 
+				for (AttributeType type: types)
+					for (AttributePreferenceType preferenceType: preferenceTypes) {
+						attributes[i++] = new Attribute("a"+i, activity, type, new PairField<RealField>(
+								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType), 
+								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType)),									
+								unknownTypeField, preferenceType);
+					}
+	}
+	
+	/**
+	 * Set attributes for {@link PairField} tests
+	 */
+	private void setP03() {
+		attributes = new Attribute[36];
+		String [] labels = {"a", "b", "c"};
+		UnknownSimpleField [] unknownTypeFields = {new UnknownSimpleFieldMV15(), new UnknownSimpleFieldMV2()};
+		boolean [] activities = {false, true};
+		AttributeType [] types = {AttributeType.CONDITION, AttributeType.DESCRIPTION, AttributeType.DECISION};
+		AttributePreferenceType [] preferenceTypes = {AttributePreferenceType.NONE, AttributePreferenceType.COST, AttributePreferenceType.GAIN};
+		
+		int i = 0;
+		// construct all variants of attributes
+		for (UnknownSimpleField unknownTypeField : unknownTypeFields)
+			for (boolean activity : activities ) 
+				for (AttributeType type: types)
+					for (AttributePreferenceType preferenceType: preferenceTypes) {
+						try {
+							attributes[i++] = new Attribute("a"+i, activity, type, new PairField<EnumerationField>(
+									EnumerationFieldFactory.getInstance().create(new ElementList(labels), EnumerationField.DEFAULT_VALUE, preferenceType), 
+									EnumerationFieldFactory.getInstance().create(new ElementList(labels), EnumerationField.DEFAULT_VALUE, preferenceType)),
+									unknownTypeField, preferenceType);
+						}
+						catch (NoSuchAlgorithmException ex) {
+							System.out.println(ex);
+						}
+					}
+	}
+	
+	/**
+	 * Tests equals and hashCode
+	 */
+	@Test
+	public void testEqualsP01() {
+		setP01();
+		for (int i = 0; i < attributes.length; i++) 
+			for (int j = (i + 1); j < attributes.length; j++) {
+				assertNotEquals(attributes[i], attributes[j]);
+				assertFalse(attributes[i].hashCode() == attributes[j].hashCode());
+			}
+		setP02();
+		for (int i = 0; i < attributes.length; i++) 
+			for (int j = (i + 1); j < attributes.length; j++) {
+				assertNotEquals(attributes[i], attributes[j]);
+				assertFalse(attributes[i].hashCode() == attributes[j].hashCode());
+			}
+		setP03();
+		for (int i = 0; i < attributes.length; i++) 
+			for (int j = (i + 1); j < attributes.length; j++) {
+				assertNotEquals(attributes[i], attributes[j]);
+				assertFalse(attributes[i].hashCode() == attributes[j].hashCode());
+			}
+	}
+	
+	/**
 	 * Tests construction and serialization/deserialization to/from JSON
 	 */
 	@Test
 	public void testConstructionP01() {
-		Attribute [] attributes = new Attribute[3];
-		//TODO Default values should be taken from a default configuration class
-		try {
-			String [] values = {"0", "1", "2"}; 
-			ElementList domain = new ElementList(values);
-			Attribute attribute = new Attribute("a4", true, AttributeType.CONDITION, 
-					new PairField<EnumerationField>(EnumerationFieldFactory.getInstance().create(domain, 0, AttributePreferenceType.NONE), 
-							EnumerationFieldFactory.getInstance().create(domain, 0, AttributePreferenceType.NONE)), 
-					new UnknownSimpleFieldMV2(), AttributePreferenceType.NONE);
-			attributes[0] = attribute;
-		}
-		catch (NoSuchAlgorithmException ex) {
-			System.out.println(ex);
-		}
-		Attribute attribute = new Attribute("c4", true, AttributeType.CONDITION, 
-				new PairField<IntegerField>(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST), IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST)), 
-				new UnknownSimpleFieldMV2(), AttributePreferenceType.COST);
-		attributes[1] = attribute;
-		attribute = new Attribute("g4", true, AttributeType.CONDITION, 
-				new PairField<RealField>(RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.GAIN), RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.GAIN)), 
-				new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
-		attributes[2] = attribute;
-		
+		setP01();
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		String json = gson.toJson(attributes);
 		Attribute [] testAttributes= gson.fromJson(json, Attribute[].class);
+		assertArrayEquals(attributes, testAttributes);
 		
+		setP02();
+		gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		gson = gsonBuilder.setPrettyPrinting().create();
+		json = gson.toJson(attributes);
+		testAttributes= gson.fromJson(json, Attribute[].class);
+		assertArrayEquals(attributes, testAttributes);
+		
+		setP03();
+		gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		gson = gsonBuilder.setPrettyPrinting().create();
+		json = gson.toJson(attributes);
+		testAttributes= gson.fromJson(json, Attribute[].class);
 		assertArrayEquals(attributes, testAttributes);
 	}
 	
@@ -182,14 +350,13 @@ public class AttributeTest {
 	public void testConstructionI02() {
 		Attribute [] attributes = new Attribute[3];
 		
-		//TODO Should be default value taken from a config class
-		Attribute attribute = new Attribute("a1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE), 
+		Attribute attribute = new Attribute("a1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.NONE), 
 				new UnknownSimpleFieldMV2(), AttributePreferenceType.NONE);
 		attributes[0] = attribute;
-		attribute = new Attribute("c1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST), 
+		attribute = new Attribute("c1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.COST), 
 				new UnknownSimpleFieldMV2(), AttributePreferenceType.COST);
 		attributes[1] = attribute;
-		attribute = new Attribute("g1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), 
+		attribute = new Attribute("g1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN), 
 				new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
 		attributes[2] = attribute;
 	
@@ -243,14 +410,13 @@ public class AttributeTest {
 	public void testConstructionR02() {
 		Attribute [] attributes = new Attribute[3];
 		
-		//TODO Should be default value taken from a config class
-		Attribute attribute = new Attribute("a2", true, AttributeType.CONDITION, RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.NONE), 
+		Attribute attribute = new Attribute("a2", true, AttributeType.CONDITION, RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.NONE), 
 				new UnknownSimpleFieldMV15(), AttributePreferenceType.NONE);
 		attributes[0] = attribute;
-		attribute = new Attribute("c2", false, AttributeType.CONDITION, RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.COST), 
+		attribute = new Attribute("c2", false, AttributeType.CONDITION, RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.COST), 
 				new UnknownSimpleFieldMV15(), AttributePreferenceType.COST);
 		attributes[1] = attribute;
-		attribute = new Attribute("g2", true, AttributeType.CONDITION, RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.GAIN), 
+		attribute = new Attribute("g2", true, AttributeType.CONDITION, RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN), 
 				new UnknownSimpleFieldMV15(), AttributePreferenceType.GAIN);
 		attributes[2] = attribute;
 	
@@ -305,17 +471,16 @@ public class AttributeTest {
 		Attribute [] attributes = new Attribute[3];
 		String [] labels = {"a", "b", "c"};
 		
-		//TODO Should be default value taken from a config class
 		Attribute attribute;
 		try {	
-			attribute = new Attribute("a3", true, AttributeType.DESCRIPTION, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 0, AttributePreferenceType.NONE),
-					new UnknownSimpleFieldMV15(), AttributePreferenceType.NONE);
+			attribute = new Attribute("a3", true, AttributeType.DESCRIPTION, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 
+					EnumerationField.DEFAULT_VALUE, AttributePreferenceType.NONE), new UnknownSimpleFieldMV15(), AttributePreferenceType.NONE);
 			attributes[0] = attribute;
-			attribute = new Attribute("c3", true, AttributeType.CONDITION, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 0, AttributePreferenceType.COST),
-					new UnknownSimpleFieldMV15(), AttributePreferenceType.COST);
+			attribute = new Attribute("c3", true, AttributeType.CONDITION, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 
+					EnumerationField.DEFAULT_VALUE, AttributePreferenceType.COST), new UnknownSimpleFieldMV15(), AttributePreferenceType.COST);
 			attributes[1] = attribute;
-			attribute = new Attribute("g3", true, AttributeType.DECISION, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 0, AttributePreferenceType.GAIN),
-					new UnknownSimpleFieldMV15(), AttributePreferenceType.GAIN);
+			attribute = new Attribute("g3", true, AttributeType.DECISION, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 
+					EnumerationField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV15(), AttributePreferenceType.GAIN);
 			attributes[2] = attribute;
 		}
 		catch (NoSuchAlgorithmException ex) {
@@ -374,13 +539,12 @@ public class AttributeTest {
 	@Test
 	public void testConstructionP02() {
 		Attribute [] attributes = new Attribute[3];
-		//TODO Default values should be taken from a default configuration class
 		try {
 			String [] values = {"0", "1", "2"}; 
 			ElementList domain = new ElementList(values);
 			Attribute attribute = new Attribute("a4", true, AttributeType.CONDITION, 
-					new PairField<EnumerationField>(EnumerationFieldFactory.getInstance().create(domain, 0, AttributePreferenceType.NONE), 
-							EnumerationFieldFactory.getInstance().create(domain, 0, AttributePreferenceType.NONE)), 
+					new PairField<EnumerationField>(EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.NONE), 
+							EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.NONE)), 
 					new UnknownSimpleFieldMV2(), AttributePreferenceType.NONE);
 			attributes[0] = attribute;
 		}
@@ -388,11 +552,12 @@ public class AttributeTest {
 			System.out.println(ex);
 		}
 		Attribute attribute = new Attribute("c4", true, AttributeType.CONDITION, 
-				new PairField<IntegerField>(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST), IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST)), 
-				new UnknownSimpleFieldMV2(), AttributePreferenceType.COST);
+				new PairField<IntegerField>(IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.COST), 
+						IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.COST)), new UnknownSimpleFieldMV2(), AttributePreferenceType.COST);
 		attributes[1] = attribute;
 		attribute = new Attribute("g4", false, AttributeType.CONDITION, 
-				new PairField<RealField>(RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.GAIN), RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.GAIN)), 
+				new PairField<RealField>(RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN), 
+						RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN)), 
 				new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
 		attributes[2] = attribute;
 		
