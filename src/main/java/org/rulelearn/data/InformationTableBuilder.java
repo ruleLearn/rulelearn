@@ -22,6 +22,8 @@ import org.rulelearn.types.Field;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+//TODO: separate active decision attribute, and evaluations on this attribute
+
 /**
  * Builder for {@link InformationTable}. Allows building of an information table by setting attributes first, and then iteratively adding objects (rows).
  *
