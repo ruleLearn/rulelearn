@@ -42,6 +42,7 @@ import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
 
 /**
@@ -642,5 +643,60 @@ public class AttributeTest {
 			fail("Unable to load JSON test file");
 	}
 	
-	
+	/**
+	 * Tests parsing JSON with empty attribute name 
+	 */
+	@Test
+	@SuppressWarnings("unused")
+	public void testEmptyName() {
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		
+		String json1 = "{" +
+				    "\"valueType\": \"enumeration\"," +
+				    "\"domain\": [\"0\",\"1\",\"2\"]" +
+				  "}";
+		String json2 = "{" +
+				    "\"name\": \"\"," +
+				    "\"valueType\": \"integer\"" +
+				  "}";
+		String json3 = "{" +
+				    "\"name\": \" \"," +
+				    "\"valueType\": \"real\"" +
+				  "}";
+		String json4 = "{" +
+				    "\"name\": \"	\"," +
+				    "\"valueType\": \"real\"" +
+				  "}";		
+		
+		try {
+			Attribute testAttribute = gson.fromJson(json1, Attribute.class);
+			fail("Parsing of JSON with definition of attributes with empty names should result in fail.");
+		}
+		catch (JsonParseException ex) {
+			System.out.println(ex.toString());
+		}
+		try {
+			Attribute testAttribute = gson.fromJson(json2, Attribute.class);
+			fail("Parsing of JSON with definition of attributes with empty names should result in fail.");
+		}
+		catch (JsonParseException ex) {
+			System.out.println(ex.toString());
+		}
+		try {
+			Attribute testAttribute = gson.fromJson(json3, Attribute.class);
+			fail("Parsing of JSON with definition of attributes with empty names should result in fail.");
+		}
+		catch (JsonParseException ex) {
+			System.out.println(ex.toString());
+		}
+		try {
+			Attribute testAttribute = gson.fromJson(json4, Attribute.class);
+			fail("Parsing of JSON with definition of attributes with empty names should result in fail.");
+		}
+		catch (JsonParseException ex) {
+			System.out.println(ex.toString());
+		}
+	}
 }
