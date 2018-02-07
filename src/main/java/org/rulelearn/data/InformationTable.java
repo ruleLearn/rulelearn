@@ -92,7 +92,7 @@ public class InformationTable {
 	
 	
 	/**
-	 * Information table constructor.
+	 * Information table constructor. Assumes that the type of fields in i-th column is compatible with the type of attribute at i-th position.
 	 * 
 	 * @param attributes all attributes of an information table (condition and description ones, both active and non-active)
 	 * @param fields list of fields of subsequent objects; each array contains subsequent fields of a single object in this information table;
@@ -105,9 +105,9 @@ public class InformationTable {
 	}
 	
 	/**
-	 * Information table constructor.<br>
+	 * Information table constructor. Assumes that the type of fields in i-th column is compatible with the type of attribute at i-th position.<br>
 	 * <br>
-	 * This constructor can be used in certain circumstances to accelerate object construction.
+	 * This constructor can be used in certain circumstances to accelerate information table construction (by not cloning arrays).
 	 * 
 	 * @param attributes all attributes of an information table (condition and description ones, both active and non-active)
 	 * @param fields list of fields of subsequent objects; each array contains subsequent fields of a single object in this information table;

@@ -35,12 +35,18 @@ public class LearningData {
 	
 	/**
 	 * Constructor storing an information table and preference information concerning objects in the information table.
-	 * Assumes that both parameters are not {@code null}.
+	 * If there is no additional information, preference information may be {@code null}. 
 	 * 
 	 * @param informationTable information table storing evaluations of objects
 	 * @param preferenceInformation preference information concerning the objects from the given information table
+	 * 
+	 * @throws NullPointerException if information table is {@code null}
 	 */
 	public LearningData(InformationTable informationTable, PreferenceInformation preferenceInformation) {
+		if (informationTable == null) {
+			throw new NullPointerException("Information table is null.");
+		}
+		
 		this.informationTable = informationTable;
 		this.preferenceInformation = preferenceInformation;
 	}
