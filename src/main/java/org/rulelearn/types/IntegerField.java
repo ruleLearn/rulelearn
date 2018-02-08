@@ -16,6 +16,8 @@
 
 package org.rulelearn.types;
 
+import java.util.Objects;
+
 /**
  * Field representing integer number value.
  * Should be instantiated using {@link IntegerFieldFactory#create(int, AttributePreferenceType)}.
@@ -24,10 +26,15 @@ package org.rulelearn.types;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public abstract class IntegerField extends KnownSimpleField {
+	/** 
+	 * Default value for this type of a field.
+	 */
+	public final static int DEFAULT_VALUE = 0;
+	
 	/**
 	 * Value of this field.
 	 */
-	protected int value = 0;
+	protected int value = IntegerField.DEFAULT_VALUE;
 	
 	/**
 	 * Constructor preventing object creation.
@@ -76,5 +83,36 @@ public abstract class IntegerField extends KnownSimpleField {
 			return 0;
 		}
 	}
-
+	
+	/**
+	 * Tells if this field object is equal to the other object.
+	 * 
+	 * @param otherObject other object that this object should be compared with
+	 * @return {@code true} if this object is equal to the other object,
+	 *         {@code false} otherwise
+	 */
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject != this) {
+			if (otherObject != null && this.getClass().equals(otherObject.getClass())) {
+				final IntegerField other = (IntegerField) otherObject;
+				return (this.value == other.value);
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
+	
+	/**
+     * Gets hash code of this field.
+     *
+     * @return hash code of this field
+     */
+	@Override
+	public int hashCode () {
+		return Objects.hash(this.getClass(), value);
+	}
+	
 }

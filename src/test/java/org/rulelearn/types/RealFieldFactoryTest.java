@@ -32,7 +32,7 @@ class RealFieldFactoryTest {
 	 * Tests creation of real field without preference type.
 	 */
 	@Test
-	void testCreate01() {
+	public void testCreate01() {
 		double value = -5;
 		RealField field = RealFieldFactory.getInstance().create(value, AttributePreferenceType.NONE);
 		
@@ -43,7 +43,7 @@ class RealFieldFactoryTest {
 	 * Tests creation of real field with gain preference type.
 	 */
 	@Test
-	void testCreate02() {
+	public void testCreate02() {
 		double value = 0;
 		RealField field = RealFieldFactory.getInstance().create(value, AttributePreferenceType.GAIN);
 		
@@ -54,7 +54,7 @@ class RealFieldFactoryTest {
 	 * Tests creation of real field with cost preference type..
 	 */
 	@Test
-	void testCreate03() {
+	public void testCreate03() {
 		double value = 5;
 		RealField field = RealFieldFactory.getInstance().create(value, AttributePreferenceType.COST);
 		
@@ -65,7 +65,7 @@ class RealFieldFactoryTest {
 	 * Tests cloning of real field without preference type.
 	 */
 	@Test
-	void testClone01() {
+	public void testClone01() {
 		double value = 1;
 		RealField field = RealFieldFactory.getInstance().create(value, AttributePreferenceType.NONE);
 		RealField clonedField = RealFieldFactory.getInstance().clone(field);
@@ -77,7 +77,7 @@ class RealFieldFactoryTest {
 	 * Tests cloning of real field with gain preference type.
 	 */
 	@Test
-	void testClone02() {
+	public void testClone02() {
 		double value = -7;
 		RealField field = RealFieldFactory.getInstance().create(value, AttributePreferenceType.GAIN);
 		RealField clonedField = RealFieldFactory.getInstance().clone(field);
@@ -89,7 +89,7 @@ class RealFieldFactoryTest {
 	 * Tests cloning of real field with cost preference type.
 	 */
 	@Test
-	void testClone03() {
+	public void testClone03() {
 		double value = 0;
 		RealField field = RealFieldFactory.getInstance().create(value, AttributePreferenceType.COST);
 		RealField clonedField = RealFieldFactory.getInstance().clone(field);

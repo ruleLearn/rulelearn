@@ -16,12 +16,14 @@
 
 package org.rulelearn.types;
 
+import java.util.Objects;
+
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
 import org.rulelearn.types.SimpleField;
 
 /**
- * Class implementing a missing attribute value handled according to approach denoted by mv_2. This approach is described in:<br>
+ * Class implementing a missing attribute value handled according to approach denoted by mv_{1.5}. This approach is described in:<br>
  * M. Szeląg, J. Błaszczyński, R. Słowiński, Rough Set Analysis of Classification Data with Missing Values.
  * [In]: L. Polkowski et al. (Eds.): Rough Sets, International Joint Conference, IJCRS 2017, Olsztyn, Poland, July 3–7, 2017,
  * Proceedings, Part I. Lecture Notes in Artificial Intelligence, vol. 10313, Springer, 2017, pp. 552–565.<br>
@@ -29,8 +31,8 @@ import org.rulelearn.types.SimpleField;
  * <ul>
  * <li>subject y dominates referent x iff for each condition criterion q, y is at least as good as x, i.e.,<br>
  * q(y) is not worse than q(x), or q(y)=*;</li>
- * <li>subject y is dominated by referent x iff for each condition criterion q, x is at least as good as y, i.e.,<br>
- * q(x) is not worse than q(y), or q(y)=*.</li>
+ * <li>subject y is dominated by referent x iff for each condition criterion q, y is at most as good as x, i.e.,<br>
+ * q(y) is not better than q(x), or q(y)=*.</li>
  * </ul>
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
@@ -149,6 +151,32 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 		} else {
 			return TernaryLogicValue.FALSE;
 		}
+	}
+	
+	/**
+	 * Tells if this field object is equal to the other object.
+	 * 
+	 * @param otherObject other object that this object should be compared with
+	 * @return {@code true} if this object is equal to the other object,
+	 *         {@code false} otherwise
+	 */
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject != this) {
+			return ((otherObject != null) && (this.getClass().equals(otherObject.getClass())));
+		} else {
+			return true;
+		}
+	}
+	
+	/**
+     * Gets hash code of this field.
+     *
+     * @return hash code of this field
+     */
+	@Override
+	public int hashCode () {
+		return Objects.hash(this.getClass());
 	}
 
 }

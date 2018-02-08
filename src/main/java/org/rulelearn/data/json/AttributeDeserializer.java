@@ -54,11 +54,10 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 	 * @see com.google.gson.JsonDeserializer#deserialize(com.google.gson.JsonElement, java.lang.reflect.Type, com.google.gson.JsonDeserializationContext)
 	 */
 	@Override
-	public Attribute deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-			throws JsonParseException {
-		String name = json.getAsJsonObject().get("name").getAsString();
+	public Attribute deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		// in case not provided set active
 		boolean active = true;
+		String name = null;
 		// in case not provided set condition type
 		AttributeType type = AttributeType.CONDITION;
 		// in case not provided set none
@@ -66,7 +65,16 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 		Field valueType = null;
 		UnknownSimpleField missingValueType = null;
 		
-		JsonElement element = json.getAsJsonObject().get("active");
+		JsonElement element = json.getAsJsonObject().get("name");
+		// check if name is not empty
+		if (element != null) {
+			name = element.getAsString();
+			if (name.trim().isEmpty())
+				throw new JsonParseException("Attribute name is not specified.");
+		}
+		else
+			throw new JsonParseException("Attribute name is not specified.");
+		element = json.getAsJsonObject().get("active");
 		if (element != null)
 			active = element.getAsBoolean();
 		String value = "";
@@ -81,10 +89,10 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 		element = json.getAsJsonObject().get("type");
 		if (element != null) {
 			value = element.getAsString().toLowerCase();
-			if (value.compareTo("condition") == 0)
-				type = AttributeType.CONDITION;
-			else if (value.compareTo("decision") == 0)
+			if (value.compareTo("decision") == 0)
 				type = AttributeType.DECISION;
+			else if (value.compareTo("description") == 0)
+				type = AttributeType.DESCRIPTION;
 		}
 		
 		boolean pair = false;
@@ -111,18 +119,19 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 			}
 			
 			// set valueType
-			// TODO Default values should be taken from a default configuration class
 			if (value.compareTo("integer") == 0) {
 				if (	pair)
-					valueType = new PairField<IntegerField>(IntegerFieldFactory.getInstance().create(0, preferenceType), IntegerFieldFactory.getInstance().create(0, preferenceType));
+					valueType = new PairField<IntegerField>(IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType), 
+															IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType));
 				else
 					valueType = IntegerFieldFactory.getInstance().create(0, preferenceType);
 			}
 			else if (value.compareTo("real") == 0) {
 				if (	pair)
-					valueType = new PairField<RealField>(RealFieldFactory.getInstance().create(0.0, preferenceType), RealFieldFactory.getInstance().create(0.0, preferenceType));
+					valueType = new PairField<RealField>(RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType), 
+														RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType));
 				else
-					valueType = RealFieldFactory.getInstance().create(0.0, preferenceType);
+					valueType = RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType);
 			}
 			else if (value.compareTo("enumeration") == 0) {
 				element = json.getAsJsonObject().get("domain");
@@ -147,10 +156,10 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 						}
 						
 						if (	pair)
-							valueType = new PairField<EnumerationField>(EnumerationFieldFactory.getInstance().create(domain, 0, preferenceType), 
-																		EnumerationFieldFactory.getInstance().create(domain, 0, preferenceType));
+							valueType = new PairField<EnumerationField>(EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, preferenceType), 
+																		EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, preferenceType));
 						else
-							valueType = EnumerationFieldFactory.getInstance().create(domain, 0, preferenceType);
+							valueType = EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, preferenceType);
 					}
 					else
 						throw new JsonParseException("Incorrect domain specified for enumeration type attribute.");

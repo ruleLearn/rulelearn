@@ -16,6 +16,8 @@
 
 package org.rulelearn.types;
 
+import java.util.Objects;
+
 /**
  * Field representing a real number value.
  * Should be instantiated using {@link RealFieldFactory#create(double, org.rulelearn.data.AttributePreferenceType)}.
@@ -25,11 +27,15 @@ package org.rulelearn.types;
  *
  */
 public abstract class RealField extends KnownSimpleField {
-
+	/** 
+	 * Default value for this type of a field.
+	 */
+	public final static double DEFAULT_VALUE = 0.0;
+	
 	/**
 	 * Value of this field.
 	 */
-	protected double value = 0;
+	protected double value = RealField.DEFAULT_VALUE;
 	
 	/**
 	 * Constructor preventing object creation.
@@ -77,6 +83,37 @@ public abstract class RealField extends KnownSimpleField {
 		} else {
 			return 0;
 		}
+	}
+	
+	/**
+	 * Tells if this field object is equal to the other object.
+	 * 
+	 * @param otherObject other object that this object should be compared with
+	 * @return {@code true} if this object is equal to the other object,
+	 *         {@code false} otherwise
+	 */
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject != this) {
+			if (otherObject != null && this.getClass().equals(otherObject.getClass())) {
+				final RealField other = (RealField) otherObject;
+				return (this.value == other.value);
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
+	
+	/**
+     * Gets hash code of this field.
+     *
+     * @return hash code of this field
+     */
+	@Override
+	public int hashCode () {
+		return Objects.hash(this.getClass(), value);
 	}
 	
 }

@@ -16,10 +16,13 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.ReadOnlyArrayReference;
+import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.core.TernaryLogicValue;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -32,6 +35,16 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
  *
  */
 public class ElementList {
+	/** 
+	 * Default element which must be returned by {@link ElementList#getElement(int)} to denote that the element list does not contain element at the specified index.
+	 */
+	public final static String DEFAULT_ELEMENT = null;
+	
+	/** 
+	 * Default index which must be returned by {@link ElementList#getIndex(String)} to denote that the element list does not contain specified element.
+	 */
+	public final static int DEFAULT_INDEX = -1;
+	
 	/**
 	 * Array of {@link String} elements of an enumeration.
 	 */
@@ -86,8 +99,7 @@ public class ElementList {
 				indices[i] = i;
 			}
 			this.map = new Object2IntOpenHashMap<String>(this.elements, indices);
-			// TODO set default value for the project
-			this.map.defaultReturnValue(Integer.MIN_VALUE);
+			this.map.defaultReturnValue(ElementList.DEFAULT_INDEX);
 			
 			// calculate hash code
 			this.algorithm = algorithm;
@@ -102,25 +114,22 @@ public class ElementList {
 	}
 	
 	/**
-	 * Gets element according to the index.
+	 * Gets element according to the index. In case the element list does not contain element at the specified index {@link ElementList#DEFAULT_ELEMENT} is returned.
 	 * 
 	 * @param index position of the element
-	 * @throws ArrayIndexOutOfBoundsException when index is incorrect
 	 * @return {@link String} element
 	 */
-	public String getElement (int index) throws ArrayIndexOutOfBoundsException {
+	public String getElement (int index)  {
 		if ((index >= 0) && (index < elements.length)) {
 			return elements[index];
 		}
-		// TODO exception? default value for the project
 		else {
-			//return null;
-			throw new ArrayIndexOutOfBoundsException(index);
+			return ElementList.DEFAULT_ELEMENT;
 		}
 	}
 	
 	/**
-	 * Gets index of element on the list according to its value. If element is not present in the list returns negative value. 
+	 * Gets index of element on the list according to its value. In the case element is not present at the element list returns {@link ElementList#DEFAULT_INDEX}. 
 	 * 
 	 * @param value value of the element
 	 * @return index (position) of the element
@@ -129,18 +138,17 @@ public class ElementList {
 		if (value != null) {
 			return map.getInt(value);
 		}
-		// TODO exception?
 		else {
-			return Integer.MIN_VALUE;
+			return ElementList.DEFAULT_INDEX;
 		}
 	}
 	
 	/**
 	 * Gets elements.
-	 * TODO - add javadoc comment concerning returning reference
 	 * 
 	 * @return array of {@link String} elements
 	 */
+	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT_AND_OUTPUT)
 	public String [] getElements () {
 		return elements;
 	}
@@ -162,6 +170,37 @@ public class ElementList {
 	 */
 	public String getAlgorithm() {
 		return algorithm;
+	}
+	
+	/**
+	 * Tells if this element list object is equal to the other object.
+	 * 
+	 * @param otherObject other object that this object should be compared with
+	 * @return {@code true} if this object is equal to the other object,
+	 *         {@code false} otherwise
+	 */
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject != this) {
+			if (otherObject != null && this.getClass().equals(otherObject.getClass())) {
+				final ElementList otherList = (ElementList) otherObject;
+				return ((this.hasEqualHash(otherList) == TernaryLogicValue.TRUE));
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
+	
+	/**
+     * Gets hash code of this element list.
+     *
+     * @return hash code of this field
+     */
+	@Override
+	public int hashCode () {
+		return Objects.hash(this.getClass(), this.elements);
 	}
 
 	/**

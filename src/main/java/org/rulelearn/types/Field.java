@@ -84,4 +84,22 @@ public abstract class Field implements ComparableExt<Field>, SelfCloneable<Field
 		}
 	}
 	
+	/**
+	 * Tells if this field object is equal to the other object.
+	 * 
+	 * @param otherObject other object that this object should be compared with
+	 * @return {@code true} if this object is equal to the other object,
+	 *         {@code false} otherwise
+	 */
+	@Override
+	public abstract boolean equals(Object otherObject);
+	
+	/**
+     * Gets hash code of this field.
+     *
+     * @return hash code of this field
+     */
+	@Override
+    public abstract int hashCode(); 
+	
 }

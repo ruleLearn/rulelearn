@@ -49,7 +49,7 @@ public class EnumerationFieldFactoryTest {
 	 * Tests creation of enumeration field without preference type.
 	 */
 	@Test
-	void testCreate01() {
+	public void testCreate01() {
 		setUp01();
 		
 		int index = 0;
@@ -62,7 +62,7 @@ public class EnumerationFieldFactoryTest {
 	 * Tests creation of enumeration field with gain preference type.
 	 */
 	@Test
-	void testCreate02() {
+	public void testCreate02() {
 		setUp01();
 		
 		int index = 1;
@@ -75,7 +75,7 @@ public class EnumerationFieldFactoryTest {
 	 * Tests creation of enumeration field with cost preference type.
 	 */
 	@Test
-	void testCreate03() {
+	public void testCreate03() {
 		setUp01();
 		
 		int index = 2;
@@ -89,7 +89,7 @@ public class EnumerationFieldFactoryTest {
 	 */
 	@Test
 	@SuppressWarnings("unused")
-	void testCreate04() {
+	public void testCreate04() {
 		
 		int index = 2;
 		try {
@@ -106,7 +106,7 @@ public class EnumerationFieldFactoryTest {
 	 */
 	@Test
 	@SuppressWarnings("unused")
-	void testCreate05() {
+	public void testCreate05() {
 		setUp01();
 		
 		int index = -1;
@@ -132,7 +132,7 @@ public class EnumerationFieldFactoryTest {
 	 * Tests cloning of enumeration field without preference type.
 	 */
 	@Test
-	void testClone01() {
+	public void testClone01() {
 		setUp01();
 		
 		int index = 3;
@@ -146,7 +146,7 @@ public class EnumerationFieldFactoryTest {
 	 * Tests cloning of enumeration field with gain preference type.
 	 */
 	@Test
-	void testClone02() {
+	public void testClone02() {
 		setUp01();
 		
 		int index = 2;
@@ -160,7 +160,7 @@ public class EnumerationFieldFactoryTest {
 	 * Tests cloning of enumeration field with cost preference type.
 	 */
 	@Test
-	void testClone03() {
+	public void testClone03() {
 		setUp01();
 		
 		int index = 1;

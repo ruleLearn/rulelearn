@@ -16,6 +16,8 @@
 
 package org.rulelearn.types;
 
+import java.util.Objects;
+
 import org.rulelearn.core.ComparableExt;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.SimpleField;
@@ -29,8 +31,8 @@ import org.rulelearn.types.SimpleField;
  * <ul>
  * <li>subject y dominates referent x iff for each condition criterion q, y is at least as good as x, i.e.,<br>
  * q(y) is not worse than q(x), or q(y)=*, or q(x)=*;</li>
- * <li>subject y is dominated by referent x iff for each condition criterion q, x is at least as good as y, i.e.,<br>
- * q(x) is not worse than q(y), or q(y)=*, or q(x)=*.</li>
+ * <li>subject y is dominated by referent x iff for each condition criterion q, y is at most as good as x, i.e.,<br>
+ * q(y) is not better than q(x), or q(y)=*, or q(x)=*.</li>
  * </ul>
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
@@ -125,6 +127,32 @@ public class UnknownSimpleFieldMV2 extends UnknownSimpleField {
 	@Override
 	public TernaryLogicValue reverseIsEqualTo(KnownSimpleField otherField) {
 		return this.canBeComparedWith(otherField);
+	}
+	
+	/**
+	 * Tells if this field object is equal to the other object.
+	 * 
+	 * @param otherObject other object that this object should be compared with
+	 * @return {@code true} if this object is equal to the other object,
+	 *         {@code false} otherwise
+	 */
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject != this) {
+			return ((otherObject != null) && (this.getClass().equals(otherObject.getClass())));
+		} else {
+			return true;
+		}
+	}
+	
+	/**
+     * Gets hash code of this field.
+     *
+     * @return hash code of this field
+     */
+	@Override
+	public int hashCode () {
+		return Objects.hash(this.getClass());
 	}
 
 }

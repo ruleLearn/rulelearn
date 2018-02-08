@@ -30,7 +30,7 @@ public class Index2IdMapper {
 	/**
 	 * Maps object's index to its id - objectIndex2Id[objectIndex] == objectId.
 	 */
-	protected int[] objectIndex2Id;
+	protected int[] objectIndex2Id = null;
 	
 	/**
 	 * Constructor of this mapper that memorizes mapping between object's index

@@ -16,6 +16,8 @@
 
 package org.rulelearn.data;
 
+import java.util.Objects;
+
 import org.rulelearn.types.Field;
 import org.rulelearn.types.UnknownSimpleField;
 
@@ -117,5 +119,63 @@ public class Attribute {
 	 */
 	public AttributePreferenceType getPreferenceType() {
 		return preferenceType;
+	}
+	
+	@Override
+	public String toString () {
+		StringBuilder builder = new StringBuilder ();
+		
+		builder.append(this.active ? "+ ": "- ");
+		builder.append(this.name).append(": ");
+		builder.append(this.type).append(", ");
+		builder.append(this.preferenceType).append(", ");
+		builder.append(this.valueType).append(", ");
+		builder.append(this.missingValueType);
+		
+		return builder.toString();
+	}
+	
+	/**
+	 * Tells if this attribute object is equal to the other object.
+	 * 
+	 * @param otherObject other object that this object should be compared with
+	 * @return {@code true} if this object is equal to the other object,
+	 *         {@code false} otherwise
+	 */
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject != this) {
+			if (otherObject != null && getClass().equals(otherObject.getClass())) {
+				final Attribute other = (Attribute) otherObject;
+				if (this.name.compareTo(other.name) == 0) {
+					if (this.preferenceType == other.preferenceType) {
+	    	  				if (this.type == other.type) {
+		    	  				if (this.active == other.active) {
+		    	  					if (this.valueType.equals(other.valueType)) {
+		    	  						return this.missingValueType.equals(other.missingValueType);
+		    	  					}
+		    	  					else return false;
+		    	  				}
+		    	  				else return false;
+	    	  				}
+	    	  				else return false;
+	    	  			}
+	    	  			else return false;
+	    	  		}
+				else return false;
+			}
+			else return false;
+		}
+		else return true;
+	} 
+	
+	/**
+     * Gets hash code of this attribute.
+     *
+     * @return hash code of this field
+     */
+	@Override
+	public int hashCode () {
+		return Objects.hash(name, active, type, valueType, missingValueType, preferenceType);
 	}
 }

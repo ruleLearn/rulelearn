@@ -16,12 +16,15 @@
 
 package org.rulelearn.types;
 
+import java.util.Objects;
+
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
 
 /**
- * Field composed of two simple fields of the same sub-type of {@link SimpleField}.
+ * Composite field composed of two simple fields. If both simple fields are known, then they should be instances of the same sub-type of {@link KnownSimpleField}.
+ * It is possible that one, or even two, of the two component simple fields are unknown.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -134,6 +137,38 @@ public class PairField<T extends SimpleField> extends CompositeField {
 		} else {
 			return TernaryLogicValue.UNCOMPARABLE;
 		}
+	}
+	
+	/**
+	 * Tells if this field object is equal to the other object.
+	 * 
+	 * @param otherObject other object that this object should be compared with
+	 * @return {@code true} if this object is equal to the other object,
+	 *         {@code false} otherwise
+	 */
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject != this) {
+			if (otherObject != null && this.getClass().equals(otherObject.getClass())) {
+				PairField<?> otherField = ((PairField<?>)otherObject);
+				return ((this.firstValue.equals(otherField.firstValue)) 
+						&& this.secondValue.equals(otherField.secondValue));
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
+	
+	/**
+     * Gets hash code of this field.
+     *
+     * @return hash code of this field
+     */
+	@Override
+	public int hashCode () {
+		return Objects.hash(firstValue.getClass(), firstValue, secondValue);
 	}
 
 	/** {@inheritDoc}
