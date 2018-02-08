@@ -223,9 +223,9 @@ public class Table {
 	}	
 	
 	/**
-	 * Gets mapper that maps indices of objects stored in this table to their unique ids.
+	 * Gets mapper that maps indices of objects stored in this table to their globally unique ids.
 	 * 
-	 * @return mapper that maps indices of objects stored in this table to their unique ids
+	 * @return mapper that maps indices of objects stored in this table to their globally unique ids
 	 */
 	public Index2IdMapper getIndex2IdMapper() {
 		return this.mapper;
