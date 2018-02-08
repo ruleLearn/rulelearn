@@ -17,6 +17,7 @@
 package org.rulelearn.types;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -198,13 +199,8 @@ public class ElementListTest {
 	public void testGetters02() {
 		this.setUp01();
 		
-		try {
-			list1.getElement(100);
-			fail("Getting element with index out of bound should result in fail.");
-		}
-		catch (ArrayIndexOutOfBoundsException ex) {
-			System.out.println(ex.getMessage());
-		}		
+		assertNull(list1.getElement(100));
+					
 	}
 	
 	/**

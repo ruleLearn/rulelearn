@@ -54,11 +54,10 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 	 * @see com.google.gson.JsonDeserializer#deserialize(com.google.gson.JsonElement, java.lang.reflect.Type, com.google.gson.JsonDeserializationContext)
 	 */
 	@Override
-	public Attribute deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-			throws JsonParseException {
-		String name = json.getAsJsonObject().get("name").getAsString();
+	public Attribute deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		// in case not provided set active
 		boolean active = true;
+		String name = null;
 		// in case not provided set condition type
 		AttributeType type = AttributeType.CONDITION;
 		// in case not provided set none
@@ -66,7 +65,16 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 		Field valueType = null;
 		UnknownSimpleField missingValueType = null;
 		
-		JsonElement element = json.getAsJsonObject().get("active");
+		JsonElement element = json.getAsJsonObject().get("name");
+		// check if name is not empty
+		if (element != null) {
+			name = element.getAsString();
+			if (name.trim().isEmpty())
+				throw new JsonParseException("Attribute name is not specified.");
+		}
+		else
+			throw new JsonParseException("Attribute name is not specified.");
+		element = json.getAsJsonObject().get("active");
 		if (element != null)
 			active = element.getAsBoolean();
 		String value = "";
