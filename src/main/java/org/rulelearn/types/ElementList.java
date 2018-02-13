@@ -148,7 +148,7 @@ public class ElementList {
 	 * 
 	 * @return array of {@link String} elements
 	 */
-	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT_AND_OUTPUT)
+	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
 	public String [] getElements () {
 		return elements;
 	}
