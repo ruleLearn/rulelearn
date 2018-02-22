@@ -113,6 +113,19 @@ public class InformationTableBuilder {
 	}
 	
 	/**
+	 * Constructor initializing this information table builder, setting attributes, and missing values strings (i.e., array of strings representing missing values).
+	 * 
+	 * @param attributes table with attributes
+	 * @param separator separator of object's evaluations
+	 * @param missingValuesStrings array of string representations of missing values
+	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
+	 */
+	public InformationTableBuilder(Attribute[] attributes, String separator, String [] missingValuesStrings) {
+		this(attributes, separator);
+		this.missingValueStrings = missingValuesStrings;
+	}
+	
+	/**
 	 * Constructor initializing this information table builder and setting attributes. It requires definition of attributes in JSON.
 	 * 
 	 * @param jsonAttributes JSON string encoding information about all attributes
@@ -147,6 +160,20 @@ public class InformationTableBuilder {
 	public InformationTableBuilder(String jsonAttributes, String separator) {
 		this(jsonAttributes);
 		this.separator = separator;
+	}
+	
+	/**
+	 * Constructor initializing this information table builder and setting attributes. It requires definition of attributes in JSON.
+	 * Missing values strings (i.e., array of strings representing missing values) are also set.
+	 * 
+	 * @param jsonAttributes JSON string encoding information about all attributes
+	 * @param separator separator of object's evaluations
+	 * @param missingValuesStrings array of string representations of missing values
+	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
+	 */
+	public InformationTableBuilder(String jsonAttributes, String separator, String [] missingValuesStrings) {
+		this(jsonAttributes, separator);
+		this.missingValueStrings = missingValuesStrings;
 	}
 	
 	/**
@@ -210,10 +237,12 @@ public class InformationTableBuilder {
 		// get rid of white spaces
 		evaluation = trimConversion.execute(evaluation);
 		// check whether it is a missing value
-		for (String missingValueString : this.missingValueStrings) {
-			if (missingValueString.equalsIgnoreCase(evaluation)) {
-				missingValue = true;
-				break;
+		if (missingValueStrings != null) {
+			for (String missingValueString : this.missingValueStrings) {
+				if ((missingValueString != null) && (missingValueString.equalsIgnoreCase(evaluation))) {
+					missingValue = true;
+					break;
+				}
 			}
 		}
 		
