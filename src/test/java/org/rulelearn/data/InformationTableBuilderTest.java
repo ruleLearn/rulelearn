@@ -24,6 +24,7 @@ import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.RealFieldFactory;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 
 /**
@@ -76,7 +77,7 @@ class InformationTableBuilderTest {
 	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#addObject(java.lang.String, java.lang.String)}.
 	 */
 	@Test
-	void testAddObject() {
+	void testAddObject01() {
 		InformationTableBuilder iTB = new InformationTableBuilder(jsonAttributes1, ",");
 		iTB.addObject("1, 1.0, a");
 		iTB.addObject("2, 2.0, b");
@@ -85,6 +86,20 @@ class InformationTableBuilderTest {
 		assertTrue(iT.getField(0, 1).isEqualTo(RealFieldFactory.getInstance().create(1.0, AttributePreferenceType.COST)) == TernaryLogicValue.TRUE);
 		assertTrue(iT.getField(1, 2).isEqualTo(EnumerationFieldFactory.getInstance().create(((EnumerationField)iT.getAttributes()[2].getValueType()).getElementList(), 
 												1, AttributePreferenceType.GAIN)) == TernaryLogicValue.TRUE);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#addObject(java.lang.String, java.lang.String)}.
+	 */
+	@Test
+	void testAddObject02() {
+		InformationTableBuilder iTB = new InformationTableBuilder(jsonAttributes1, ",", new String[] {"?", "*"})  ;
+		iTB.addObject("1, ?, a");
+		iTB.addObject("2, 2.0, *");
+		InformationTable iT = iTB.build();
+		assertTrue(iT.getField(0, 0).isEqualTo(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE)) == TernaryLogicValue.TRUE);
+		assertTrue(iT.getField(0, 1).isEqualTo(new UnknownSimpleFieldMV2()) == TernaryLogicValue.TRUE);
+		assertTrue(iT.getField(1, 2).isEqualTo(new UnknownSimpleFieldMV2()) == TernaryLogicValue.TRUE);
 	}
 
 }
