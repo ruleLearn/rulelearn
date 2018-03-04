@@ -45,7 +45,7 @@ public class Table {
 	/**
 	 * Constructs this table. It is assumed that the number of attributes is equal to the number of fields
 	 * for each object, and, moreover, that type of a field corresponding to i-th attribute
-	 * is the same as the type of field returned for that attribute by {@link Attribute#getValueType()}.
+	 * is the same as the type of field returned for that attribute by {@link EvaluationAttribute#getValueType()}.
 	 * 
 	 * @param attributes attributes corresponding to columns of this table
 	 * @param fields fields corresponding two rows of this table; fields[i] is the i-th row of this table
@@ -60,7 +60,7 @@ public class Table {
 	/**
 	 * Constructs this table. It is assumed that the number of attributes is equal to the number of fields
 	 * for each object, and, moreover, that type of a field corresponding to i-th attribute
-	 * is the same as the type of field returned for that attribute by {@link Attribute#getValueType()}.<br>
+	 * is the same as the type of field returned for that attribute by {@link EvaluationAttribute#getValueType()}.<br>
 	 * <br>
 	 * This constructor can be used in certain circumstances to accelerate object construction.
 	 * 

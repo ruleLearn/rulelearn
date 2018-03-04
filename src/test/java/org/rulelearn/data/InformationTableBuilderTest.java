@@ -84,7 +84,7 @@ class InformationTableBuilderTest {
 		InformationTable iT = iTB.build();
 		assertTrue(iT.getField(0, 0).isEqualTo(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE)) == TernaryLogicValue.TRUE);
 		assertTrue(iT.getField(0, 1).isEqualTo(RealFieldFactory.getInstance().create(1.0, AttributePreferenceType.COST)) == TernaryLogicValue.TRUE);
-		assertTrue(iT.getField(1, 2).isEqualTo(EnumerationFieldFactory.getInstance().create(((EnumerationField)iT.getAttributes()[2].getValueType()).getElementList(), 
+		assertTrue(iT.getField(1, 2).isEqualTo(EnumerationFieldFactory.getInstance().create(((EnumerationField) ((EvaluationAttribute)iT.getAttributes()[2]).getValueType()).getElementList(), 
 												1, AttributePreferenceType.GAIN)) == TernaryLogicValue.TRUE);
 	}
 	

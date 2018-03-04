@@ -27,7 +27,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.data.json.AttributeDeserializer;
-import org.rulelearn.data.json.AttributeSerializer;
+import org.rulelearn.data.json.EvaluationAttributeSerializer;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
@@ -52,7 +52,7 @@ import com.google.gson.stream.JsonReader;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
-public class AttributeTest {
+public class EvaluationAttributeTest {
 	
 	private Attribute [] attributes = null;
 	
@@ -72,7 +72,7 @@ public class AttributeTest {
 			for (boolean activity : activities ) 
 				for (AttributeType type: types)
 					for (AttributePreferenceType preferenceType: preferenceTypes) {
-						attributes[i++] = new Attribute("a"+i, activity, type, IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType), 
+						attributes[i++] = new EvaluationAttribute("a"+i, activity, type, IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType), 
 							unknownTypeField, preferenceType);
 					}
 	}
@@ -98,7 +98,7 @@ public class AttributeTest {
 		setI01();
 			
 		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		gsonBuilder.registerTypeAdapter(Attribute.class, new EvaluationAttributeSerializer());
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		String json = gson.toJson(attributes);
@@ -123,7 +123,7 @@ public class AttributeTest {
 			for (boolean activity : activities ) 
 				for (AttributeType type: types)
 					for (AttributePreferenceType preferenceType: preferenceTypes) {
-						attributes[i++] = new Attribute("a"+i, activity, type, RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType), 
+						attributes[i++] = new EvaluationAttribute("a"+i, activity, type, RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType), 
 							unknownTypeField, preferenceType);
 					}
 	}
@@ -149,7 +149,7 @@ public class AttributeTest {
 		setR01();
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		gsonBuilder.registerTypeAdapter(Attribute.class, new EvaluationAttributeSerializer());
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		String json = gson.toJson(attributes);
@@ -176,7 +176,7 @@ public class AttributeTest {
 				for (AttributeType type: types)
 					for (AttributePreferenceType preferenceType: preferenceTypes) {
 						try {
-							attributes[i++] = new Attribute("a"+i, activity, type, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 
+							attributes[i++] = new EvaluationAttribute("a"+i, activity, type, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 
 																EnumerationField.DEFAULT_VALUE, preferenceType), unknownTypeField, preferenceType);
 						}
 						catch (NoSuchAlgorithmException ex) {
@@ -206,7 +206,7 @@ public class AttributeTest {
 		setE01();
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		String json = gson.toJson(attributes);
@@ -231,7 +231,7 @@ public class AttributeTest {
 			for (boolean activity : activities ) 
 				for (AttributeType type: types)
 					for (AttributePreferenceType preferenceType: preferenceTypes) {
-						attributes[i++] = new Attribute("a"+i, activity, type, new PairField<IntegerField>(
+						attributes[i++] = new EvaluationAttribute("a"+i, activity, type, new PairField<IntegerField>(
 								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType), 
 								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType)),									
 								unknownTypeField, preferenceType);
@@ -254,7 +254,7 @@ public class AttributeTest {
 			for (boolean activity : activities ) 
 				for (AttributeType type: types)
 					for (AttributePreferenceType preferenceType: preferenceTypes) {
-						attributes[i++] = new Attribute("a"+i, activity, type, new PairField<RealField>(
+						attributes[i++] = new EvaluationAttribute("a"+i, activity, type, new PairField<RealField>(
 								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType), 
 								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType)),									
 								unknownTypeField, preferenceType);
@@ -279,7 +279,7 @@ public class AttributeTest {
 				for (AttributeType type: types)
 					for (AttributePreferenceType preferenceType: preferenceTypes) {
 						try {
-							attributes[i++] = new Attribute("a"+i, activity, type, new PairField<EnumerationField>(
+							attributes[i++] = new EvaluationAttribute("a"+i, activity, type, new PairField<EnumerationField>(
 									EnumerationFieldFactory.getInstance().create(new ElementList(labels), EnumerationField.DEFAULT_VALUE, preferenceType), 
 									EnumerationFieldFactory.getInstance().create(new ElementList(labels), EnumerationField.DEFAULT_VALUE, preferenceType)),
 									unknownTypeField, preferenceType);
@@ -322,7 +322,7 @@ public class AttributeTest {
 	public void testConstructionP01() {
 		setP01();
 		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		String json = gson.toJson(attributes);
@@ -331,7 +331,7 @@ public class AttributeTest {
 		
 		setP02();
 		gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		gson = gsonBuilder.setPrettyPrinting().create();
 		json = gson.toJson(attributes);
@@ -340,7 +340,7 @@ public class AttributeTest {
 		
 		setP03();
 		gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		gson = gsonBuilder.setPrettyPrinting().create();
 		json = gson.toJson(attributes);
@@ -355,13 +355,13 @@ public class AttributeTest {
 	public void testConstructionI02() {
 		Attribute [] attributes = new Attribute[3];
 		
-		Attribute attribute = new Attribute("a1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.NONE), 
+		Attribute attribute = new EvaluationAttribute("a1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.NONE), 
 				new UnknownSimpleFieldMV2(), AttributePreferenceType.NONE);
 		attributes[0] = attribute;
-		attribute = new Attribute("c1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.COST), 
+		attribute = new EvaluationAttribute("c1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.COST), 
 				new UnknownSimpleFieldMV2(), AttributePreferenceType.COST);
 		attributes[1] = attribute;
-		attribute = new Attribute("g1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN), 
+		attribute = new EvaluationAttribute("g1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN), 
 				new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
 		attributes[2] = attribute;
 	
@@ -394,7 +394,7 @@ public class AttributeTest {
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		
 		// compare result of deserialization to declaration 
@@ -415,13 +415,13 @@ public class AttributeTest {
 	public void testConstructionR02() {
 		Attribute [] attributes = new Attribute[3];
 		
-		Attribute attribute = new Attribute("a2", true, AttributeType.CONDITION, RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.NONE), 
+		Attribute attribute = new EvaluationAttribute("a2", true, AttributeType.CONDITION, RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.NONE), 
 				new UnknownSimpleFieldMV15(), AttributePreferenceType.NONE);
 		attributes[0] = attribute;
-		attribute = new Attribute("c2", false, AttributeType.CONDITION, RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.COST), 
+		attribute = new EvaluationAttribute("c2", false, AttributeType.CONDITION, RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.COST), 
 				new UnknownSimpleFieldMV15(), AttributePreferenceType.COST);
 		attributes[1] = attribute;
-		attribute = new Attribute("g2", true, AttributeType.CONDITION, RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN), 
+		attribute = new EvaluationAttribute("g2", true, AttributeType.CONDITION, RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN), 
 				new UnknownSimpleFieldMV15(), AttributePreferenceType.GAIN);
 		attributes[2] = attribute;
 	
@@ -454,7 +454,7 @@ public class AttributeTest {
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		
 		// compare result of deserialization to declaration 
@@ -478,13 +478,13 @@ public class AttributeTest {
 		
 		Attribute attribute;
 		try {	
-			attribute = new Attribute("a3", true, AttributeType.DESCRIPTION, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 
+			attribute = new EvaluationAttribute("a3", true, AttributeType.DESCRIPTION, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 
 					EnumerationField.DEFAULT_VALUE, AttributePreferenceType.NONE), new UnknownSimpleFieldMV15(), AttributePreferenceType.NONE);
 			attributes[0] = attribute;
-			attribute = new Attribute("c3", true, AttributeType.CONDITION, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 
+			attribute = new EvaluationAttribute("c3", true, AttributeType.CONDITION, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 
 					EnumerationField.DEFAULT_VALUE, AttributePreferenceType.COST), new UnknownSimpleFieldMV15(), AttributePreferenceType.COST);
 			attributes[1] = attribute;
-			attribute = new Attribute("g3", true, AttributeType.DECISION, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 
+			attribute = new EvaluationAttribute("g3", true, AttributeType.DECISION, EnumerationFieldFactory.getInstance().create(new ElementList(labels), 
 					EnumerationField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV15(), AttributePreferenceType.GAIN);
 			attributes[2] = attribute;
 		}
@@ -524,7 +524,7 @@ public class AttributeTest {
 
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		
 		// compare result of deserialization to declaration 
@@ -547,7 +547,7 @@ public class AttributeTest {
 		try {
 			String [] values = {"0", "1", "2"}; 
 			ElementList domain = new ElementList(values);
-			Attribute attribute = new Attribute("a4", true, AttributeType.CONDITION, 
+			Attribute attribute = new EvaluationAttribute("a4", true, AttributeType.CONDITION, 
 					new PairField<EnumerationField>(EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.NONE), 
 							EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.NONE)), 
 					new UnknownSimpleFieldMV2(), AttributePreferenceType.NONE);
@@ -556,11 +556,11 @@ public class AttributeTest {
 		catch (NoSuchAlgorithmException ex) {
 			System.out.println(ex);
 		}
-		Attribute attribute = new Attribute("c4", true, AttributeType.CONDITION, 
+		Attribute attribute = new EvaluationAttribute("c4", true, AttributeType.CONDITION, 
 				new PairField<IntegerField>(IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.COST), 
 						IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.COST)), new UnknownSimpleFieldMV2(), AttributePreferenceType.COST);
 		attributes[1] = attribute;
-		attribute = new Attribute("g4", false, AttributeType.CONDITION, 
+		attribute = new EvaluationAttribute("g4", false, AttributeType.CONDITION, 
 				new PairField<RealField>(RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN), 
 						RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN)), 
 				new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
@@ -596,7 +596,7 @@ public class AttributeTest {
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		
 		// compare result of deserialization to declaration 
@@ -620,7 +620,7 @@ public class AttributeTest {
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
+		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		
 		JsonReader jsonReader = null;

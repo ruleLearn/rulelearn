@@ -213,7 +213,12 @@ public class InformationTableBuilder {
 			throw new IndexOutOfBoundsException("Object has more evaluations than the number of attributes declared.");
 		
 		for (int i = 0; i < objectEvaluations.length; i++) {
-			object[i] = parseEvaluation(objectEvaluations[i], attributes[i]);
+			if (attributes[i] instanceof EvaluationAttribute)
+				object[i] = parseEvaluation(objectEvaluations[i], (EvaluationAttribute)attributes[i]);
+			else if (attributes[i] instanceof IdentificationAttribute) {
+				// TODO add identification code here
+			}
+				
 		}
 		
 		this.fields.add(object);
@@ -229,7 +234,7 @@ public class InformationTableBuilder {
 	 * @throws NumberFormatException if evaluation of an numeric attribute can't be parsed
 	 * @throws IndexOutOfBoundsException if evaluation of an enumeration attribute can't be parsed  
 	 */
-	protected Field parseEvaluation(String evaluation, Attribute attribute) throws NumberFormatException, IndexOutOfBoundsException {
+	protected Field parseEvaluation(String evaluation, EvaluationAttribute attribute) throws NumberFormatException, IndexOutOfBoundsException {
 		Field field = null;
 		boolean missingValue = false;
 	

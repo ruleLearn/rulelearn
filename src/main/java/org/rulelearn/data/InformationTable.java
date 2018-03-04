@@ -23,7 +23,7 @@ import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.types.Field;
 
 /**
- * Table storing data, i.e., fields corresponding to all considered objects and all specified attributes
+ * Table storing data, i.e., fields representing evaluations of all considered objects and all specified attributes
  * (condition, decision and description ones, both active and non-active).
  * Each field is identified by object's index and attribute's index.
  * An information table is allowed to have zero or exactly one active decision attribute.
@@ -385,7 +385,10 @@ public class InformationTable {
 	 * @return {@code true} if given attribute is condition and active, {@code false otherwise}
 	 */
 	private boolean isActiveConditionAttribute(Attribute attribute) {
-		return attribute.getType() == AttributeType.CONDITION && attribute.isActive();
+		if (attribute instanceof EvaluationAttribute)
+			return ((EvaluationAttribute)attribute).getType() == AttributeType.CONDITION && attribute.isActive();
+		else
+			return false;
 	}
 	
 	/**
@@ -395,7 +398,10 @@ public class InformationTable {
 	 * @return {@code true} if given attribute is decision and active, {@code false otherwise}
 	 */
 	private boolean isActiveDecisionAttribute(Attribute attribute) {
-		return attribute.getType() == AttributeType.DECISION && attribute.isActive();
+		if (attribute instanceof EvaluationAttribute)
+			return ((EvaluationAttribute)attribute).getType() == AttributeType.DECISION && attribute.isActive();
+		else
+			return false;
 	}
 	
 	/**

@@ -50,14 +50,14 @@ class InformationTableTest {
 	
 	private Attribute[] getAttributes() {
 		return new Attribute[] {
-			new Attribute("a0", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[0]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[0]),
-			new Attribute("a1", false, AttributeType.DESCRIPTION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[1]), new UnknownSimpleFieldMV15(), attributePreferenceTypes[1]),
-			new Attribute("a2", true, AttributeType.DESCRIPTION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[2]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[2]),
-			new Attribute("a3", false, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[3]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[3]),
-			new Attribute("a4", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[4]), new UnknownSimpleFieldMV15(), attributePreferenceTypes[4]),
-			new Attribute("a5", true, AttributeType.DECISION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[5]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[5]),
-			new Attribute("a6", false, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[6]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[6]),
-			new Attribute("a7", false, AttributeType.DECISION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[7]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[7])
+			new EvaluationAttribute("a0", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[0]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[0]),
+			new EvaluationAttribute("a1", false, AttributeType.DESCRIPTION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[1]), new UnknownSimpleFieldMV15(), attributePreferenceTypes[1]),
+			new EvaluationAttribute("a2", true, AttributeType.DESCRIPTION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[2]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[2]),
+			new EvaluationAttribute("a3", false, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[3]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[3]),
+			new EvaluationAttribute("a4", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[4]), new UnknownSimpleFieldMV15(), attributePreferenceTypes[4]),
+			new EvaluationAttribute("a5", true, AttributeType.DECISION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[5]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[5]),
+			new EvaluationAttribute("a6", false, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[6]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[6]),
+			new EvaluationAttribute("a7", false, AttributeType.DECISION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[7]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[7])
 		}; 
 	} //attributeMap: [1, -1, -2, -3, 2, 0, -4, -5]
 	

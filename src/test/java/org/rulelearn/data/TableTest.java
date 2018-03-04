@@ -42,9 +42,9 @@ class TableTest {
 	
 	private Attribute[] getAttributes() {
 		return new Attribute[] {
-			new Attribute("a0", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[0]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[0]),
-			new Attribute("a1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[1]), new UnknownSimpleFieldMV15(), attributePreferenceTypes[1]),
-			new Attribute("a2", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[2]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[2])
+			new EvaluationAttribute("a0", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[0]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[0]),
+			new EvaluationAttribute("a1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[1]), new UnknownSimpleFieldMV15(), attributePreferenceTypes[1]),
+			new EvaluationAttribute("a2", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[2]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[2])
 		}; 
 	}
 	

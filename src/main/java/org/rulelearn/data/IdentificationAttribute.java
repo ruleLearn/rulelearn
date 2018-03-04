@@ -19,44 +19,26 @@ package org.rulelearn.data;
 import java.util.Objects;
 
 /**
- * Top level class for an attribute.
+ * Attribute which is used to identify objects.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+ *
  */
-public abstract class Attribute {
-	/**
-	 * Name of an attribute.
-	 */
-	protected String name = "";
+public class IdentificationAttribute extends Attribute {
+
+	protected IdentificationValueType identifyingValueType = IdentificationValueType.TEXT;
 	
-	/**
-	 * State of an attribute indicating whether it is used in calculations. 
-	 */
-	protected boolean active = true;
-	
-	
-	public Attribute (String name, boolean active) {
-		this.name = name;
-		this.active = active;
+	public IdentificationAttribute (String name, boolean active, IdentificationValueType identifyingValueType) {
+		super(name, active);
+		this.identifyingValueType = identifyingValueType;
 	}
 
 	/**
-	 * Gets name of this attribute.
-	 * 
-	 * @return name of attribute
+	 * @return the identifyingValueType
 	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Gets active state of this attribute.
-	 * 
-	 * @return the attribute active state
-	 */
-	public boolean isActive() {
-		return active;
+	public IdentificationValueType getIdentifyingValueType() {
+		return identifyingValueType;
 	}
 	
 	@Override
@@ -64,7 +46,8 @@ public abstract class Attribute {
 		StringBuilder builder = new StringBuilder ();
 		
 		builder.append(this.active ? "+ ": "- ");
-		builder.append(this.name);
+		builder.append(this.name).append(": ");
+		builder.append(this.identifyingValueType);
 		
 		return builder.toString();
 	}
@@ -80,10 +63,13 @@ public abstract class Attribute {
 	public boolean equals(Object otherObject) {
 		if (otherObject != this) {
 			if (otherObject != null && getClass().equals(otherObject.getClass())) {
-				final Attribute other = (Attribute) otherObject;
+				final IdentificationAttribute other = (IdentificationAttribute) otherObject;
 				if (this.name.compareTo(other.name) == 0) {
 	    	  			if (this.active == other.active) {
-		    	  			return true;
+	    	  				if (this.identifyingValueType == other.identifyingValueType) {
+	    	  					return true;
+	    	  				}
+	    	  				else return false;
 		    	  		}
 		    	  		else return false;
 	    	  		}
@@ -101,6 +87,6 @@ public abstract class Attribute {
      */
 	@Override
 	public int hashCode () {
-		return Objects.hash(name, active);
+		return Objects.hash(name, active, identifyingValueType);
 	}
 }

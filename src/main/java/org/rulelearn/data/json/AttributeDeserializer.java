@@ -22,6 +22,9 @@ import java.security.NoSuchAlgorithmException;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
+import org.rulelearn.data.EvaluationAttribute;
+import org.rulelearn.data.IdentificationAttribute;
+import org.rulelearn.data.IdentificationValueType;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
@@ -58,15 +61,12 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 		// in case not provided set active
 		boolean active = true;
 		String name = null;
-		// in case not provided set condition type
-		AttributeType type = AttributeType.CONDITION;
-		// in case not provided set none
-		AttributePreferenceType preferenceType = AttributePreferenceType.NONE;
-		Field valueType = null;
-		UnknownSimpleField missingValueType = null;
+		JsonElement element = null;
 		
-		JsonElement element = json.getAsJsonObject().get("name");
-		// check if name is not empty
+		Attribute attribute = null;
+		
+		element = json.getAsJsonObject().get("name");
+		// check if name is not empty and set name
 		if (element != null) {
 			name = element.getAsString();
 			if (name.trim().isEmpty())
@@ -74,9 +74,67 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 		}
 		else
 			throw new JsonParseException("Attribute name is not specified.");
+		// set active
 		element = json.getAsJsonObject().get("active");
 		if (element != null)
 			active = element.getAsBoolean();
+		
+		//check type of attribute
+		element = json.getAsJsonObject().get("identifierType");
+		if (element != null) 
+			attribute = deserializeIdentificationAttribute(active, name, element);
+		else
+			attribute = deserializeEvaluationAttribute(active, name, json, typeOfT, context);
+		
+		return attribute;
+	}
+	
+	/**
+	 * Deserializes {@link IdentificationAttribute} from JSON.
+	 * 
+	 * @param active attribute activity state
+	 * @param name attribute name
+	 * @param element JSON element to be deserialized
+	 * @return deserialized (constructed) instance of {@link IdentificationAttribute} 
+	 * @throws JsonParseException in case identification type is not specified
+	 */
+	protected IdentificationAttribute deserializeIdentificationAttribute(boolean active, String name, JsonElement element) throws JsonParseException {
+		// in case not provided set text type
+		IdentificationValueType type = IdentificationValueType.TEXT;
+		String typeName = null;
+		
+		// set identification value type
+		if (element != null) {
+			typeName = element.getAsString().toLowerCase();
+			if (typeName.trim().isEmpty())
+				throw new JsonParseException("Identification type is not specified.");
+			if (typeName.compareTo("uuid") == 0)
+				type = IdentificationValueType.UUID;
+		}
+		
+		return new IdentificationAttribute(name, active, type);
+	}
+	
+	/**
+	 * Deserializes {@link EvaluationAttribute} from JSON.
+	 * 
+	 * @param active attribute activity state
+	 * @param name attribute name
+	 * @param json JSON with definition of properties specific for {@link EvaluationAttribute}
+	 * @param typeOfT see {@link java.lang.reflect.Type}
+	 * @param context see {@link com.google.gson.JsonDeserializationContext}
+	 * @return deserialized (constructed) instance of {@link EvaluationAttribute}
+	 * @throws JsonParseException
+	 */
+	protected EvaluationAttribute deserializeEvaluationAttribute (boolean active, String name, JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		// in case not provided set condition type
+		AttributeType type = AttributeType.CONDITION;
+		// in case not provided set none
+		AttributePreferenceType preferenceType = AttributePreferenceType.NONE;
+		Field valueType = null;
+		UnknownSimpleField missingValueType = null;				
+		JsonElement element = null;
+		
 		String value = "";
 		element = json.getAsJsonObject().get("preferenceType");
 		if (element != null) {
@@ -184,7 +242,7 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 		else // in case it is not provided set mv2
 			missingValueType = new UnknownSimpleFieldMV2();
 		
-		return new Attribute(name, active, type, valueType, missingValueType, preferenceType);
+		return new EvaluationAttribute(name, active, type, valueType, missingValueType, preferenceType);
 	}
 
 }
