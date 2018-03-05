@@ -21,8 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;
@@ -43,10 +41,9 @@ import org.rulelearn.types.UnknownSimpleFieldMV2;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-import com.google.gson.stream.JsonReader;
 
 /**
- * Test for {@link Attribute}
+ * Test for {@link EvaluationAttribute}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -608,39 +605,6 @@ public class EvaluationAttributeTest {
 		testAttributes = gson.fromJson(json, Attribute[].class);
 		
 		assertArrayEquals(attributes, testAttributes);
-	}
-	
-	/**
-	 * Tests loading JSON file and serialization/deserialization to/from JSON
-	 */
-	@Test
-	public void testLoading() {
-		Attribute [] attributes = null;
-		Attribute [] testAttributes = null;
-		
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
-		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
-		Gson gson = gsonBuilder.setPrettyPrinting().create();
-		
-		JsonReader jsonReader = null;
-		try {
-			jsonReader = new JsonReader(new FileReader("src/test/resources/data/csv/prioritisation.json"));
-		}
-		catch (FileNotFoundException ex) {
-			System.out.println(ex.toString());
-		}
-		
-		// compare result of loading to serialization/deserialization
-		if (jsonReader != null) {
-			attributes = gson.fromJson(jsonReader, Attribute[].class);
-			String json = gson.toJson(attributes);
-			testAttributes = gson.fromJson(json, Attribute[].class);
-			
-			assertArrayEquals(attributes, testAttributes);
-		}
-		else
-			fail("Unable to load JSON test file");
 	}
 	
 	/**

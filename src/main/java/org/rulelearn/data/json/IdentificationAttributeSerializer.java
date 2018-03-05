@@ -42,7 +42,7 @@ public class IdentificationAttributeSerializer implements JsonSerializer<Identif
 		
 		json.addProperty("name", src.getName());
 		json.addProperty("active", src.isActive());
-		switch (src.getIdentifyingValueType()) {
+		switch (src.getIdentificationValueType()) {
 			case TEXT : json.addProperty("identifierType", "text"); break;
 			case UUID : json.addProperty("identifierType", "uuid"); break;
 			default: json.addProperty("identifierType", "text");

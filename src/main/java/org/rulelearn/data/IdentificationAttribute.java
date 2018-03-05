@@ -27,18 +27,18 @@ import java.util.Objects;
  */
 public class IdentificationAttribute extends Attribute {
 
-	protected IdentificationValueType identifyingValueType = IdentificationValueType.TEXT;
+	protected IdentificationValueType identificationValueType = IdentificationValueType.TEXT;
 	
 	public IdentificationAttribute (String name, boolean active, IdentificationValueType identifyingValueType) {
 		super(name, active);
-		this.identifyingValueType = identifyingValueType;
+		this.identificationValueType = identifyingValueType;
 	}
 
 	/**
 	 * @return the identifyingValueType
 	 */
-	public IdentificationValueType getIdentifyingValueType() {
-		return identifyingValueType;
+	public IdentificationValueType getIdentificationValueType() {
+		return identificationValueType;
 	}
 	
 	@Override
@@ -47,7 +47,7 @@ public class IdentificationAttribute extends Attribute {
 		
 		builder.append(this.active ? "+ ": "- ");
 		builder.append(this.name).append(": ");
-		builder.append(this.identifyingValueType);
+		builder.append(this.identificationValueType);
 		
 		return builder.toString();
 	}
@@ -66,7 +66,7 @@ public class IdentificationAttribute extends Attribute {
 				final IdentificationAttribute other = (IdentificationAttribute) otherObject;
 				if (this.name.compareTo(other.name) == 0) {
 	    	  			if (this.active == other.active) {
-	    	  				if (this.identifyingValueType == other.identifyingValueType) {
+	    	  				if (this.identificationValueType == other.identificationValueType) {
 	    	  					return true;
 	    	  				}
 	    	  				else return false;
@@ -87,6 +87,6 @@ public class IdentificationAttribute extends Attribute {
      */
 	@Override
 	public int hashCode () {
-		return Objects.hash(name, active, identifyingValueType);
+		return Objects.hash(name, active, identificationValueType);
 	}
 }
