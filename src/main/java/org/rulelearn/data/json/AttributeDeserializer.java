@@ -80,11 +80,11 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 			active = element.getAsBoolean();
 		
 		//check type of attribute
-		element = json.getAsJsonObject().get("identifierType");
+		element = json.getAsJsonObject().get("valueType");
 		if (element != null) 
-			attribute = deserializeIdentificationAttribute(active, name, element);
-		else
 			attribute = deserializeEvaluationAttribute(active, name, json, typeOfT, context);
+		else
+			attribute = deserializeIdentificationAttribute(active, name, json, typeOfT, context);
 		
 		return attribute;
 	}
@@ -94,16 +94,20 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 	 * 
 	 * @param active attribute activity state
 	 * @param name attribute name
-	 * @param element JSON element to be deserialized
+	 * @param json JSON with definition of properties specific for {@link IdentificationAttribute}
+	 * @param typeOfT see {@link java.lang.reflect.Type}
+	 * @param context see {@link com.google.gson.JsonDeserializationContext}
 	 * @return deserialized (constructed) instance of {@link IdentificationAttribute} 
-	 * @throws JsonParseException in case identification type is not specified
+	 * @throws JsonParseException in case identification type is not specified 
 	 */
-	protected IdentificationAttribute deserializeIdentificationAttribute(boolean active, String name, JsonElement element) throws JsonParseException {
+	protected IdentificationAttribute deserializeIdentificationAttribute(boolean active, String name, JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		// in case not provided set text type
 		IdentificationValueType type = IdentificationValueType.TEXT;
 		String typeName = null;
+		JsonElement element = null;
 		
 		// set identification value type
+		element = json.getAsJsonObject().get("identifierType");
 		if (element != null) {
 			typeName = element.getAsString().toLowerCase();
 			if (typeName.trim().isEmpty())
@@ -111,6 +115,8 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 			if (typeName.compareTo("uuid") == 0)
 				type = IdentificationValueType.UUID;
 		}
+		else
+			throw new JsonParseException("Identification type is not specified.");
 		
 		return new IdentificationAttribute(name, active, type);
 	}
@@ -124,7 +130,7 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 	 * @param typeOfT see {@link java.lang.reflect.Type}
 	 * @param context see {@link com.google.gson.JsonDeserializationContext}
 	 * @return deserialized (constructed) instance of {@link EvaluationAttribute}
-	 * @throws JsonParseException
+	 * @throws JsonParseException in case definition of evaluation attribute is not correct (i.e., no value type specified, incorrect domain specification for enumeration attribute)
 	 */
 	protected EvaluationAttribute deserializeEvaluationAttribute (boolean active, String name, JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		// in case not provided set condition type
