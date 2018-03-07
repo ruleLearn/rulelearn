@@ -21,6 +21,7 @@ import org.rulelearn.data.json.AttributeDeserializer;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
@@ -62,7 +63,7 @@ public class InformationTableBuilder {
 	protected String [] missingValueStrings = null;
 	
 	/**
-	 * Separator of values in string representation of information.
+	 * Separator of values in string representation of an object of an information table.
 	 */
 	protected String separator = null;
 	
@@ -83,7 +84,7 @@ public class InformationTableBuilder {
 	 * Constructor initializing this information table builder and setting attributes.
 	 * 
 	 * @param attributes table with attributes
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
+	 * @throws NullPointerException if all or some of the attributes of the constructed information table have not been set
 	 */
 	public InformationTableBuilder(Attribute[] attributes) {
 		this();
@@ -92,12 +93,14 @@ public class InformationTableBuilder {
 		
 		// check attributes and initialize fields
 		if (attributes != null) {
-			for (Attribute attribute : attributes)
+			for (Attribute attribute : attributes) {
 				if (attribute == null) throw new NullPointerException("At least one attribute is not set");
+			}
 			this.fields = new ObjectArrayList<Field []>();
 		}
-		else
+		else {
 			throw new NullPointerException("Attributes are not set");
+		}
 	}
 	
 	/**
@@ -142,12 +145,14 @@ public class InformationTableBuilder {
 		
 		// check attributes and initialize fields
 		if (attributes != null) {
-			for (Attribute attribute : attributes)
+			for (Attribute attribute : attributes) {
 				if (attribute == null) throw new NullPointerException("At least one attribute is not set");
+			}
 			this.fields = new ObjectArrayList<Field []>();
 		}
-		else
+		else {
 			throw new NullPointerException("Attributes are not set");
+		}
 	}
 	
 	/**
@@ -171,16 +176,16 @@ public class InformationTableBuilder {
 	 * @param missingValuesStrings array of string representations of missing values
 	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
 	 */
-	public InformationTableBuilder(String jsonAttributes, String separator, String [] missingValuesStrings) {
+	public InformationTableBuilder(String jsonAttributes, String separator, String[] missingValuesStrings) {
 		this(jsonAttributes, separator);
 		this.missingValueStrings = missingValuesStrings;
 	}
 	
 	/**
 	 * Adds one object to this builder. 
-	 * Given string is considered to contain subsequent evaluations of a single object, separated by the {@link InformationTableBuilder#separator}.
+	 * Given string is considered to contain subsequent identifiers/evaluations of a single object, separated by the {@link InformationTableBuilder#separator}.
 	 * 
-	 * @param objectEvaluations string with object's evaluations, separated by the given separator
+	 * @param objectEvaluations string with object's identifiers/evaluations, separated by the given separator
 	 */
 	public void addObject(String objectEvaluations) {
 		if (this.separator != null)
@@ -189,21 +194,22 @@ public class InformationTableBuilder {
 	
 	/**
 	 * Adds one object to this builder. 
-	 * Given string is considered to contain subsequent evaluations of a single object, separated by the given separator.
+	 * Given string is considered to contain subsequent identifiers/evaluations of a single object, separated by the given separator.
 	 * 
-	 * @param objectEvaluations string with object's evaluations, separated by the given separator
+	 * @param objectEvaluations string with object's identifiers/evaluations, separated by the given separator
 	 * @param separator separator of object's evaluations
 	 */
 	public void addObject(String objectEvaluations, String separator) {
-		if (separator != null)
+		if (separator != null) {
 			addObject(objectEvaluations.split(separator));
+		}
 	}
 	
 	/**
 	 * Adds one object to this builder. 
-	 * Given array is considered to contain subsequent evaluations of a single object.
+	 * Given array is considered to contain subsequent identifiers/evaluations of a single object.
 	 * 
-	 * @param objectEvaluations single object's evaluations
+	 * @param objectEvaluations single object's identifiers/evaluations
 	 * 
 	 * @throws IndexOutOfBoundsException if given attribute index does not correspond to any attribute of the constructed information table
 	 */
@@ -213,12 +219,12 @@ public class InformationTableBuilder {
 			throw new IndexOutOfBoundsException("Object has more evaluations than the number of attributes declared.");
 		
 		for (int i = 0; i < objectEvaluations.length; i++) {
-			if (attributes[i] instanceof EvaluationAttribute)
+			if (attributes[i] instanceof EvaluationAttribute) {
 				object[i] = parseEvaluation(objectEvaluations[i], (EvaluationAttribute)attributes[i]);
+			}
 			else if (attributes[i] instanceof IdentificationAttribute) {
 				// TODO add identification code here
 			}
-				
 		}
 		
 		this.fields.add(object);
@@ -231,11 +237,11 @@ public class InformationTableBuilder {
 	 * @param attribute whose value should be parsed
 	 * 
 	 * @return constructed field
-	 * @throws NumberFormatException if evaluation of an numeric attribute can't be parsed
+	 * @throws NumberFormatException if evaluation of a numeric attribute can't be parsed
 	 * @throws IndexOutOfBoundsException if evaluation of an enumeration attribute can't be parsed  
 	 */
-	protected Field parseEvaluation(String evaluation, EvaluationAttribute attribute) throws NumberFormatException, IndexOutOfBoundsException {
-		Field field = null;
+	protected EvaluationField parseEvaluation(String evaluation, EvaluationAttribute attribute) throws NumberFormatException, IndexOutOfBoundsException {
+		EvaluationField field = null;
 		boolean missingValue = false;
 	
 		
@@ -252,7 +258,7 @@ public class InformationTableBuilder {
 		}
 		
 		if (!missingValue) {
-			Field valueType = attribute.getValueType(); 
+			EvaluationField valueType = attribute.getValueType(); 
 			if (valueType instanceof IntegerField) {
 				try {
 					field = IntegerFieldFactory.getInstance().create(Integer.parseInt(evaluation), attribute.preferenceType);
@@ -276,8 +282,9 @@ public class InformationTableBuilder {
 			else if (valueType instanceof EnumerationField) {
 				// TODO some optimization is needed here (e.g., construction of a table with element lists)
 				int index = ((EnumerationField)valueType).getElementList().getIndex(evaluation);
-				if (index != ElementList.DEFAULT_INDEX)
+				if (index != ElementList.DEFAULT_INDEX) {
 					field = EnumerationFieldFactory.getInstance().create(((EnumerationField)valueType).getElementList(), index, attribute.preferenceType);
+				}
 				else {
 					field = attribute.getMissingValueType();
 					throw new IndexOutOfBoundsException(new String("Incorrect value of enumeration: ").concat(evaluation));
@@ -307,6 +314,8 @@ public class InformationTableBuilder {
 	}
 
 	/**
+	 * Gets missing value strings.
+	 * 
 	 * @return the missingValueStrings
 	 */
 	public String[] getMissingValueStrings() {
@@ -314,6 +323,8 @@ public class InformationTableBuilder {
 	}
 
 	/**
+	 * Sets missing value strings.
+	 * 
 	 * @param missingValueStrings the missingValueStrings to set
 	 */
 	public void setMissingValueStrings(String[] missingValueStrings) {

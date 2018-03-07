@@ -24,16 +24,18 @@ import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.IdentificationAttribute;
-import org.rulelearn.data.IdentificationValueType;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
-import org.rulelearn.types.Field;
+import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.IdentificationField;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.PairField;
 import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
+import org.rulelearn.types.TextIdentificationField;
+import org.rulelearn.types.UUIDIdentificationField;
 import org.rulelearn.types.UnknownSimpleField;
 import org.rulelearn.types.UnknownSimpleFieldMV15;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
@@ -102,7 +104,7 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 	 */
 	protected IdentificationAttribute deserializeIdentificationAttribute(boolean active, String name, JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		// in case not provided set text type
-		IdentificationValueType type = IdentificationValueType.TEXT;
+		IdentificationField valueType;
 		String typeName = null;
 		JsonElement element = null;
 		
@@ -112,13 +114,19 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 			typeName = element.getAsString().toLowerCase();
 			if (typeName.trim().isEmpty())
 				throw new JsonParseException("Identification type is not specified.");
-			if (typeName.compareTo("uuid") == 0)
-				type = IdentificationValueType.UUID;
+			
+			if (typeName.compareTo("uuid") == 0) {
+				valueType = new UUIDIdentificationField(UUIDIdentificationField.DEFAULT_VALUE);
+			} else {
+				valueType = new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE);
+			}
+				
 		}
-		else
+		else {
 			throw new JsonParseException("Identification type is not specified.");
+		}
 		
-		return new IdentificationAttribute(name, active, type);
+		return new IdentificationAttribute(name, active, valueType);
 	}
 	
 	/**
@@ -137,7 +145,7 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 		AttributeType type = AttributeType.CONDITION;
 		// in case not provided set none
 		AttributePreferenceType preferenceType = AttributePreferenceType.NONE;
-		Field valueType = null;
+		EvaluationField valueType = null;
 		UnknownSimpleField missingValueType = null;				
 		JsonElement element = null;
 		

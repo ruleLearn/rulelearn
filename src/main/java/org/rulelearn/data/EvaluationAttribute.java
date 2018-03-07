@@ -18,7 +18,7 @@ package org.rulelearn.data;
 
 import java.util.Objects;
 
-import org.rulelearn.types.Field;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.UnknownSimpleField;
 
 /**
@@ -26,18 +26,17 @@ import org.rulelearn.types.UnknownSimpleField;
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
 public class EvaluationAttribute extends Attribute {
 	/**
-	 * Type {@link AttributeType} of an attribute. 
+	 * Type {@link AttributeType} of an attribute.
 	 */
 	protected AttributeType type;
 	
 	/**
-	 * Type of value {@link Field} of an attribute. 
+	 * Type of value {@link EvaluationField} of an attribute.
 	 */
-	protected Field valueType;
+	protected EvaluationField valueType;
 	
 	/**
 	 * Type of missing value {@link UnknownSimpleField} of an attribute. 
@@ -49,7 +48,7 @@ public class EvaluationAttribute extends Attribute {
 	 */
 	protected AttributePreferenceType preferenceType;
 	
-	public EvaluationAttribute (String name, boolean active, AttributeType type, Field valueType, UnknownSimpleField missingValueType, AttributePreferenceType preferenceType) {
+	public EvaluationAttribute (String name, boolean active, AttributeType type, EvaluationField valueType, UnknownSimpleField missingValueType, AttributePreferenceType preferenceType) {
 		super(name, active);
 		this.type = type;
 		this.valueType = valueType;
@@ -67,11 +66,11 @@ public class EvaluationAttribute extends Attribute {
 	}
 	
 	/**
-	 * Gets value type {@link Field} of this attribute.
+	 * Gets value type of this attribute.
 	 * 
 	 * @return the attribute value type
 	 */
-	public Field getValueType() {
+	public EvaluationField getValueType() {
 		return valueType;
 	}
 

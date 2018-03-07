@@ -16,8 +16,6 @@
 
 package org.rulelearn.types;
 
-import org.rulelearn.core.ComparableExt;
-import org.rulelearn.core.SelfCloneable;
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
@@ -26,34 +24,10 @@ import org.rulelearn.core.TernaryLogicValue;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class Field implements ComparableExt<Field>, SelfCloneable<Field> {
+public abstract class Field {
 	
 	/**
-	 * Tells if this field is at least as good as the given field. Both this field and the other field can represent a missing value.
-	 * 
-	 * @param otherField other field that this field is being compared to
-	 * @return {@link TernaryLogicValue#TRUE} if this field is at least as good as the other field,<br>
-	 *         {@link TernaryLogicValue#FALSE} if this field is not at least as good as the other field,<br>
-	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other field prevents comparison
-	 *         of this field and the other field.
-	 * @throws NullPointerException if the other field is {@code null}
-	 */
-	abstract public TernaryLogicValue isAtLeastAsGoodAs(Field otherField);
-	
-	/**
-	 * Tells if this field is at most as good as the given field. Both this field and the other field can represent a missing value.
-	 * 
-	 * @param otherField other field that this field is being compared to
-	 * @return {@link TernaryLogicValue#TRUE} if this field is at least as good as the other field,<br>
-	 *         {@link TernaryLogicValue#FALSE} if this field is not at least as good as the other field,<br>
-	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other field prevents comparison
-	 *         of this field and the other field.
-	 * @throws NullPointerException if the other field is {@code null}
-	 */
-	abstract public TernaryLogicValue isAtMostAsGoodAs(Field otherField);
-	
-	/**
-	 * Tells if this field is equal to the given field (has the same value). Both this field and the other field can represent a missing value.
+	 * Tells if this field is equal to the given field (has the same or equivalent value). Both this field and the other field can represent a missing value.
 	 * 
 	 * @param otherField other field that this field is being compared to
 	 * @return {@link TernaryLogicValue#TRUE} if this field is equal to the other field,<br>

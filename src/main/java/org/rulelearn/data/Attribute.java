@@ -17,6 +17,7 @@
 package org.rulelearn.data;
 
 import java.util.Objects;
+import org.rulelearn.types.Field;
 
 /**
  * Top level class for an attribute.
@@ -103,4 +104,11 @@ public abstract class Attribute {
 	public int hashCode () {
 		return Objects.hash(name, active);
 	}
+	
+	/**
+	 * Gets value type {@link Field} of this attribute.
+	 * 
+	 * @return the attribute value type
+	 */
+	public abstract Field getValueType();
 }

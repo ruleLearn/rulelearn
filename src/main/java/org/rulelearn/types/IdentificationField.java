@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-package org.rulelearn.data;
+package org.rulelearn.types;
 
 /**
- * Type of identifying value.
+ * Field of an information table used to store an identifier assigned to an object.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
-public enum IdentificationValueType {
-	/**
-	 * Text (String) identifier.
-	 */
-	TEXT,
-	/**
-	 * Universally unique identifier (UUID). Standard Java implementation may be used {@link java.util.UUID}
-	 */
-	UUID,
+public abstract class IdentificationField extends Field {
+
 }

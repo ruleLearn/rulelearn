@@ -66,7 +66,7 @@ public class UnknownSimpleFieldMV2 extends UnknownSimpleField {
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	@Override
-	public int compareToEx(Field otherField) {
+	public int compareToEx(EvaluationField otherField) {
 		if (otherField == null) {
 			throw new NullPointerException("Other field is null.");
 		} else if (otherField instanceof SimpleField) {
@@ -95,7 +95,7 @@ public class UnknownSimpleFieldMV2 extends UnknownSimpleField {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <S extends Field> S selfClone() {
+	public <S extends EvaluationField> S selfClone() {
 		return (S)new UnknownSimpleFieldMV2();
 	}
 

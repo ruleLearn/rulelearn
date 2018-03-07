@@ -17,28 +17,30 @@
 package org.rulelearn.data;
 
 import java.util.Objects;
+import org.rulelearn.types.IdentificationField;
 
 /**
  * Attribute which is used to identify objects.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
 public class IdentificationAttribute extends Attribute {
 
-	protected IdentificationValueType identificationValueType = IdentificationValueType.TEXT;
+	protected IdentificationField valueType;
 	
-	public IdentificationAttribute (String name, boolean active, IdentificationValueType identifyingValueType) {
+	public IdentificationAttribute (String name, boolean active, IdentificationField identificationValueType) {
 		super(name, active);
-		this.identificationValueType = identifyingValueType;
+		this.valueType = identificationValueType;
 	}
 
 	/**
-	 * @return the identifyingValueType
+	 * Gets value type of this attribute.
+	 * 
+	 * @return the attribute value type
 	 */
-	public IdentificationValueType getIdentificationValueType() {
-		return identificationValueType;
+	public IdentificationField getValueType() {
+		return this.valueType;
 	}
 	
 	@Override
@@ -47,7 +49,7 @@ public class IdentificationAttribute extends Attribute {
 		
 		builder.append(this.active ? "+ ": "- ");
 		builder.append(this.name).append(": ");
-		builder.append(this.identificationValueType);
+		builder.append(this.valueType);
 		
 		return builder.toString();
 	}
@@ -65,19 +67,29 @@ public class IdentificationAttribute extends Attribute {
 			if (otherObject != null && getClass().equals(otherObject.getClass())) {
 				final IdentificationAttribute other = (IdentificationAttribute) otherObject;
 				if (this.name.compareTo(other.name) == 0) {
-	    	  			if (this.active == other.active) {
-	    	  				if (this.identificationValueType == other.identificationValueType) {
-	    	  					return true;
-	    	  				}
-	    	  				else return false;
-		    	  		}
-		    	  		else return false;
-	    	  		}
-				else return false;
+	    	  		if (this.active == other.active) {
+	    	  			if (this.valueType.equals(other.valueType)) {
+	    	  				return true;
+	    	  			}
+	    	  			else {
+	    	  				return false;
+	    	  			}
+		    	  	}
+		    	  	else {
+		    	  		return false;
+		    	  	}
+	    	  	}
+				else {
+					return false;
+				}
 			}
-			else return false;
+			else {
+				return false;
+			}
 		}
-		else return true;
+		else {
+			return true;
+		}
 	} 
 	
 	/**
@@ -87,6 +99,6 @@ public class IdentificationAttribute extends Attribute {
      */
 	@Override
 	public int hashCode () {
-		return Objects.hash(name, active, identificationValueType);
+		return Objects.hash(name, active, valueType);
 	}
 }

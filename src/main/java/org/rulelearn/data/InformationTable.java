@@ -20,11 +20,13 @@ import java.util.List;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
+import org.rulelearn.types.IdentificationField;
 
 /**
- * Table storing data, i.e., fields representing evaluations of all considered objects and all specified attributes
- * (condition, decision and description ones, both active and non-active).
+ * Table storing data, i.e., fields representing identifiers/evaluations of all considered objects and all specified attributes
+ * (1) identification attributes and 2) evaluation attributes: condition, decision and description ones, both active and non-active).
  * Each field is identified by object's index and attribute's index.
  * An information table is allowed to have zero or exactly one active decision attribute.
  * An object's evaluations on this attribute may, e.g., indicate decision class to which this object is assigned.
@@ -55,14 +57,14 @@ public class InformationTable {
 	 * mainly for the on-screen presentation of data and their write-back to file.
 	 * Equals to {@code null} if there are no such supplementary attributes.
 	 */
-	protected Table notActiveOrDescriptionEvaluations = null;
+	protected Table notActiveOrDescriptionEvaluations = null; //TODO
 	
 	/**
 	 * Array of decisions concerning subsequent objects; i-th entry stores decision concerning i-th object.
 	 * This array stores evaluations of objects on the only active decision attribute.
 	 * Can be {@code null}, e.g., if this information table stores evaluations of test objects (for which decisions are unknown).
 	 */
-	protected Field[] activeDecisionAttributeFields = null;
+	protected EvaluationField[] activeDecisionAttributeFields = null;
 	
 	/**
 	 * Index of the only active decision attribute used in calculations. If there is no such attribute, equals to -1.
@@ -74,7 +76,7 @@ public class InformationTable {
 	 * This array stores identifiers of objects on the only active identification attribute.
 	 * Can be {@code null}, if there is no such attribute.
 	 */
-	protected Field[] activeIdentificationAttributeFields = null;
+	protected IdentificationField[] activeIdentificationAttributeFields = null;
 	
 	/**
 	 * Index of the only active identification attribute used to identify objects. If there is no such attribute, equals to -1.
@@ -106,7 +108,7 @@ public class InformationTable {
 	 * @param mapper translator of object's index, which is meaningful in this information table only,
 	 *        to unique object's id, which is meaningful in general
 	 * @param activeConditionEvaluations sub-table corresponding to active condition attributes
-	 * @param notActiveOrDescriptionEvaluations sub-table corresponding to non-active/description attributes
+	 * @param notActiveOrDescriptionEvaluations sub-table corresponding to non-active/description attributes //TODO
 	 * @param activeDecisionAttributeFields list of decisions concerning subsequent objects
 	 * @param activeDecisionAttributeIndex index of the only active decision attribute used in calculations
 	 * @param attributeMap see {@link #attributeMap}
@@ -115,7 +117,7 @@ public class InformationTable {
 	 *        to modify that arrays (and thus, this object does not need to clone the arrays for internal use)
 	 */
 	protected InformationTable(Attribute[] attributes, Index2IdMapper mapper, Table activeConditionEvaluations, Table notActiveOrDescriptionEvaluations,
-			Field[] activeDecisionAttributeFields, int activeDecisionAttributeIndex, int[] attributeMap, boolean accelerateByReadOnlyParams) {
+			EvaluationField[] activeDecisionAttributeFields, int activeDecisionAttributeIndex, int[] attributeMap, boolean accelerateByReadOnlyParams) {
 		this.attributes = accelerateByReadOnlyParams ? attributes : attributes.clone();
 		this.mapper = mapper;
 		this.activeConditionEvaluations = activeConditionEvaluations;
@@ -146,7 +148,7 @@ public class InformationTable {
 	 * This constructor can be used in certain circumstances to accelerate information table construction (by not cloning arrays).
 	 * 
 	 * @param attributes all attributes of an information table (condition, decision, and description ones, both active and non-active)
-	 * @param fields list of fields of subsequent objects; each array contains subsequent fields of a single object (row) in this information table;
+	 * @param listOfFields list of fields of subsequent objects; each array contains subsequent fields of a single object (row) in this information table;
 	 *        it is assumed that each array is of the same length (i.e., the number of fields of each object is the same)
 	 * @param accelerateByReadOnlyParams tells if construction of this object should be accelerated by assuming that the given reference
 	 *        to an array of attributes and references to arrays of fields present at the given list are not going to be used outside this class
@@ -158,8 +160,8 @@ public class InformationTable {
 	 * @throws InvalidValueException if there is more than one active decision attribute
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT)
-	public InformationTable(Attribute[] attributes, List<Field[]> fields, boolean accelerateByReadOnlyParams) {
-		if (fields.size() > 0 && attributes.length != fields.get(0).length) {
+	public InformationTable(Attribute[] attributes, List<Field[]> listOfFields, boolean accelerateByReadOnlyParams) {
+		if (listOfFields.size() > 0 && attributes.length != listOfFields.get(0).length) {
 			throw new InvalidValueException("The number of attributes and the number of objects' fields in an information table do not match.");
 		}
 		
@@ -207,20 +209,21 @@ public class InformationTable {
 			}
 		}
 		
-		Field[][] activeConditionFieldsArray = hasActiveConditionAttributes ? new Field[fields.size()][] : null;
-		Field[] activeDecisionAttributeFields = hasActiveDecisionAttribute ? new Field[fields.size()] : null;
-		Field[][] notActiveOrDescriptionFieldsArray = hasNotActiveOrDescriptionAttributes ? new Field[fields.size()][] : null;
+		EvaluationField[][] activeConditionFieldsArray = hasActiveConditionAttributes ? new EvaluationField[listOfFields.size()][] : null;
+		EvaluationField[] activeDecisionAttributeFields = hasActiveDecisionAttribute ? new EvaluationField[listOfFields.size()] : null;
+		Field[][] notActiveOrDescriptionFieldsArray = hasNotActiveOrDescriptionAttributes ? new Field[listOfFields.size()][] : null;
+		//TODO
 		
-		Field[] activeConditionFields = null;
-		Field activeDecisionField = null;
+		EvaluationField[] activeConditionFields = null;
+		EvaluationField activeDecisionField = null;
 		Field[] notActiveOrDescriptionFields = null;
 		
 		int rowIndex = 0;
 		
 		//split fields into two tables + collect decisions (if any)
-		for (Field[] evaluations : fields) { //choose row (single object)
+		for (Field[] fields : listOfFields) { //choose a row (single object)
 			if (hasActiveConditionAttributes) {
-				activeConditionFields = new Field[numberOfActiveConditionAttributes];
+				activeConditionFields = new EvaluationField[numberOfActiveConditionAttributes];
 				activeConditionAttributeIndex = 0;
 			}
 			if (hasNotActiveOrDescriptionAttributes) {
@@ -230,11 +233,11 @@ public class InformationTable {
 			
 			for (int i = 0; i < attributes.length; i++) { //choose column (single attribute)
 				if (isActiveConditionAttribute(attributes[i])) {
-					activeConditionFields[activeConditionAttributeIndex++] = evaluations[i];
+					activeConditionFields[activeConditionAttributeIndex++] = (EvaluationField)fields[i];
 				} else if (isActiveDecisionAttribute(attributes[i])) { //should be true at most once per row
-					activeDecisionField = evaluations[i];
+					activeDecisionField = (EvaluationField)fields[i];
 				} else { //not active or description attribute
-					notActiveOrDescriptionFields[notActiveOrDescriptionAttributeIndex++] = evaluations[i];
+					notActiveOrDescriptionFields[notActiveOrDescriptionAttributeIndex++] = fields[i];
 				} 
 			}
 			
@@ -253,7 +256,7 @@ public class InformationTable {
 		
 		this.attributes = accelerateByReadOnlyParams ? attributes : attributes.clone(); //remember all attributes
 		//map each object (row of this information table) to a unique id, and remember that mapping
-		this.mapper = new Index2IdMapper(UniqueIdGenerator.getInstance().getUniqueIds(fields.size()), true);
+		this.mapper = new Index2IdMapper(UniqueIdGenerator.getInstance().getUniqueIds(listOfFields.size()), true);
 		
 		this.activeConditionEvaluations = hasActiveConditionAttributes ? new Table(activeConditionAttributes, activeConditionFieldsArray, this.mapper, true) : null;
 		this.activeDecisionAttributeFields = hasActiveDecisionAttribute ? activeDecisionAttributeFields : null;
@@ -287,7 +290,7 @@ public class InformationTable {
 	 * 
 	 * @return array of decisions concerning subsequent objects of this information table
 	 */
-	public Field[] getDecisions() {
+	public EvaluationField[] getDecisions() {
 		return this.getDecisions(false);
 	}
 	
@@ -302,7 +305,7 @@ public class InformationTable {
 	 * @return array of decisions concerning subsequent objects of this information table
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
-	public Field[] getDecisions(boolean accelerateByReadOnlyResult) {
+	public EvaluationField[] getDecisions(boolean accelerateByReadOnlyResult) {
 		return accelerateByReadOnlyResult ? this.activeDecisionAttributeFields : this.activeDecisionAttributeFields.clone();
 	}
 	
@@ -313,7 +316,7 @@ public class InformationTable {
 	 * @return decision available for an object with given index, or {@code null} if there is no such decision
 	 * @throws IndexOutOfBoundsException if given object index does not correspond to any object for which this table stores fields
 	 */
-	public Field getDecision(int objectIndex) {
+	public EvaluationField getDecision(int objectIndex) {
 		if (this.activeDecisionAttributeFields != null) {
 			return this.activeDecisionAttributeFields[objectIndex];
 		} else {
@@ -365,6 +368,7 @@ public class InformationTable {
 	 * @throws IndexOutOfBoundsException if given attribute index does not correspond to any attribute for which this table stores fields
 	 */
 	public Field getField(int objectIndex, int attributeIndex) {
+		//TODO
 		if (this.attributeMap[attributeIndex] > 0) { //active condition attribute
 			return this.activeConditionEvaluations.getField(objectIndex, this.decodeActiveConditionAttributeIndex(this.attributeMap[attributeIndex]));
 		} else if (this.attributeMap[attributeIndex] == 0) { //decision attribute
@@ -397,10 +401,12 @@ public class InformationTable {
 	 * @return {@code true} if given attribute is condition and active, {@code false otherwise}
 	 */
 	private boolean isActiveConditionAttribute(Attribute attribute) {
-		if (attribute instanceof EvaluationAttribute)
+		if (attribute instanceof EvaluationAttribute) {
 			return ((EvaluationAttribute)attribute).getType() == AttributeType.CONDITION && attribute.isActive();
-		else
+		}
+		else {
 			return false;
+		}
 	}
 	
 	/**
@@ -410,10 +416,12 @@ public class InformationTable {
 	 * @return {@code true} if given attribute is decision and active, {@code false otherwise}
 	 */
 	private boolean isActiveDecisionAttribute(Attribute attribute) {
-		if (attribute instanceof EvaluationAttribute)
+		if (attribute instanceof EvaluationAttribute) {
 			return ((EvaluationAttribute)attribute).getType() == AttributeType.DECISION && attribute.isActive();
-		else
+		}
+		else {
 			return false;
+		}
 	}
 	
 	/**
@@ -460,9 +468,9 @@ public class InformationTable {
 			}
 		}
 		
-		Field[] newActiveDecisionAttributeFields = null;
+		EvaluationField[] newActiveDecisionAttributeFields = null;
 		if (this.activeDecisionAttributeFields != null) {
-			newActiveDecisionAttributeFields = new Field[objectIndices.length];
+			newActiveDecisionAttributeFields = new EvaluationField[objectIndices.length];
 			for (int i = 0; i < objectIndices.length; i++) {
 				newActiveDecisionAttributeFields[i] = this.activeDecisionAttributeFields[objectIndices[i]];
 			}

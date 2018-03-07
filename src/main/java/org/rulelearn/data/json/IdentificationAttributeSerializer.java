@@ -19,6 +19,10 @@ package org.rulelearn.data.json;
 import java.lang.reflect.Type;
 
 import org.rulelearn.data.IdentificationAttribute;
+import org.rulelearn.types.Field;
+import org.rulelearn.types.TextIdentificationField;
+import org.rulelearn.types.UUIDIdentificationField;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
@@ -42,10 +46,15 @@ public class IdentificationAttributeSerializer implements JsonSerializer<Identif
 		
 		json.addProperty("name", src.getName());
 		json.addProperty("active", src.isActive());
-		switch (src.getIdentificationValueType()) {
-			case TEXT : json.addProperty("identifierType", "text"); break;
-			case UUID : json.addProperty("identifierType", "uuid"); break;
-			default: json.addProperty("identifierType", "text");
+		
+		Field valueType = src.getValueType();
+		
+		if (valueType instanceof TextIdentificationField) {
+			json.addProperty("identifierType", "text");
+		} else if (valueType instanceof UUIDIdentificationField) {
+			json.addProperty("identifierType", "uuid");
+		} else {
+			json.addProperty("identifierType", "text"); //default
 		}
 		
 		return json;

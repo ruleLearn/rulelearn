@@ -96,7 +96,7 @@ public class EnumerationFieldFactory {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public <S extends Field> S selfClone() {
+		public <S extends EvaluationField> S selfClone() {
 			return (S)new NoneEnumerationField(this.list, this.value);
 		}
 		
@@ -166,7 +166,7 @@ public class EnumerationFieldFactory {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public <S extends Field> S selfClone() {
+		public <S extends EvaluationField> S selfClone() {
 			return (S)new GainEnumerationField(this.list, this.value);
 		}
 		/**
@@ -246,7 +246,7 @@ public class EnumerationFieldFactory {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public <S extends Field> S selfClone() {
+		public <S extends EvaluationField> S selfClone() {
 			return (S)new CostEnumerationField(this.list, this.value);
 		}
 		

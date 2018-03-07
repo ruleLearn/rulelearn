@@ -68,7 +68,7 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	}
 
 	@Override
-	public int compareToEx(Field otherField) throws UncomparableException {
+	public int compareToEx(EvaluationField otherField) throws UncomparableException {
 		if (otherField instanceof PairField<?>) {
 			int firstCompareExResult;
 			int secondCompareExResult;
@@ -177,7 +177,7 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <S extends Field> S selfClone() {
+	public <S extends EvaluationField> S selfClone() {
 		return (S)new PairField<T>(firstValue, secondValue);
 	}
 

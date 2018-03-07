@@ -45,7 +45,7 @@ public class Table {
 	/**
 	 * Constructs this table. It is assumed that the number of attributes is equal to the number of fields
 	 * for each object, and, moreover, that type of a field corresponding to i-th attribute
-	 * is the same as the type of field returned for that attribute by {@link EvaluationAttribute#getValueType()}.
+	 * is the same as the type of field returned for that attribute by {@link Attribute#getValueType()}.
 	 * 
 	 * @param attributes attributes corresponding to columns of this table
 	 * @param fields fields corresponding two rows of this table; fields[i] is the i-th row of this table
@@ -60,7 +60,7 @@ public class Table {
 	/**
 	 * Constructs this table. It is assumed that the number of attributes is equal to the number of fields
 	 * for each object, and, moreover, that type of a field corresponding to i-th attribute
-	 * is the same as the type of field returned for that attribute by {@link EvaluationAttribute#getValueType()}.<br>
+	 * is the same as the type of field returned for that attribute by {@link Attribute#getValueType()}.<br>
 	 * <br>
 	 * This constructor can be used in certain circumstances to accelerate object construction.
 	 * 
@@ -128,7 +128,9 @@ public class Table {
 	}
 	
 	/**
-	 * Gets fields of this table for the object identified by the given index
+	 * Gets fields of this table for the object identified by the given index.<br>
+	 * <br>
+	 * This method can be used in certain circumstances to accelerate field access (by not cloning internally stored array).
 	 * 
 	 * @param objectIndex index of an object (row of the table)
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
