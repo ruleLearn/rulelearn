@@ -70,6 +70,18 @@ public class InformationTable {
 	protected int activeDecisionAttributeIndex = -1;
 	
 	/**
+	 * Array of identifiers concerning subsequent objects; i-th entry stores identifier of i-th object.
+	 * This array stores identifiers of objects on the only active identification attribute.
+	 * Can be {@code null}, if there is no such attribute.
+	 */
+	protected Field[] activeIdentificationAttributeFields = null;
+	
+	/**
+	 * Index of the only active identification attribute used to identify objects. If there is no such attribute, equals to -1.
+	 */
+	protected int activeIdentificationAttributeIndex = -1;
+	
+	/**
 	 * Maps global index of an attribute of this information table to encoded local index of: an active condition attribute, the only active decision attribute,
 	 * or a non-active/description attribute.
 	 * Local index concerns one of the above three groups of attributes (e.g., if 3-rd global attribute is the first active condition attribute,
