@@ -275,7 +275,7 @@ public class InformationTableBuilder {
 					field = EnumerationFieldFactory.getInstance().create(((EnumerationField)valueType).getElementList(), index, attribute.preferenceType);
 				else {
 					field = attribute.getMissingValueType();
-					throw new IndexOutOfBoundsException(new String("Incorrect value of enumeration: ").concat(evaluation));
+					throw new IndexOutOfBoundsException(new StringBuilder("Incorrect value of enumeration: ").append(evaluation).append(" was replaced by a missing value.").toString());
 				}
 					
 			}
