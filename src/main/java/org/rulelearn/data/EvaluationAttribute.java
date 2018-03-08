@@ -17,7 +17,6 @@
 package org.rulelearn.data;
 
 import java.util.Objects;
-
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.UnknownSimpleField;
 

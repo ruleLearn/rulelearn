@@ -198,21 +198,21 @@ class InformationTableTest {
 	}
 	
 	/**
-	 * Test for {@link InformationTable#getActiveConditionEvaluations()} method}.
+	 * Test for {@link InformationTable#getActiveConditionFields()} method}.
 	 */
 	@Test
-	public void testGetActiveConditionEvaluations() {
+	public void testGetActiveConditionFields() {
 		InformationTable informationTable = getInformationTable(true);
-		assertEquals(informationTable.getActiveConditionEvaluations().getNumberOfAttributes(), 2);
+		assertEquals(informationTable.getActiveConditionFields().getNumberOfAttributes(), 2);
 	}
 	
 	/**
-	 * Test for {@link InformationTable#getNotActiveOrDescriptionEvaluations} method}.
+	 * Test for {@link InformationTable#getNotActiveOrDescriptionFields} method}.
 	 */
 	@Test
-	public void testGetNotActiveOrDescriptionEvaluations() {
+	public void testgetNotActiveOrDescriptionFields() {
 		InformationTable informationTable = getInformationTable(false);
-		assertEquals(informationTable.getNotActiveOrDescriptionEvaluations().getNumberOfAttributes(), 5);
+		assertEquals(informationTable.getNotActiveOrDescriptionFields().getNumberOfAttributes(), 5);
 	}
 	
 	/**
