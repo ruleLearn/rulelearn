@@ -116,9 +116,9 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 				throw new JsonParseException("Identification type is not specified.");
 			
 			if (typeName.compareTo("uuid") == 0) {
-				valueType = new UUIDIdentificationField(UUIDIdentificationField.getRandomId());
+				valueType = new UUIDIdentificationField(UUIDIdentificationField.DEFAULT_VALUE);
 			} else {
-				valueType = new TextIdentificationField(TextIdentificationField.getRandomId(8));
+				valueType = new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE);
 			}
 				
 		}
@@ -192,14 +192,14 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 			
 			// set valueType
 			if (value.compareTo("integer") == 0) {
-				if (	pair)
+				if (pair)
 					valueType = new PairField<IntegerField>(IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType), 
 															IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType));
 				else
 					valueType = IntegerFieldFactory.getInstance().create(0, preferenceType);
 			}
 			else if (value.compareTo("real") == 0) {
-				if (	pair)
+				if (pair)
 					valueType = new PairField<RealField>(RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType), 
 														RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType));
 				else
@@ -227,7 +227,7 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 							throw new JsonParseException("Incorrect domain hashing algorithm specified enumeration type attribute.");
 						}
 						
-						if (	pair)
+						if (pair)
 							valueType = new PairField<EnumerationField>(EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, preferenceType), 
 																		EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, preferenceType));
 						else

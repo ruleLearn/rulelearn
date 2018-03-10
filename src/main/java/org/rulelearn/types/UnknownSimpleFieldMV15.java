@@ -95,7 +95,7 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <S extends EvaluationField> S selfClone() {
+	public <S extends Field> S selfClone() {
 		return (S)new UnknownSimpleFieldMV15();
 	}
 

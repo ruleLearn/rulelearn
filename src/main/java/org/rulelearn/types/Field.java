@@ -16,6 +16,7 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.SelfCloneable;
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
@@ -24,7 +25,7 @@ import org.rulelearn.core.TernaryLogicValue;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class Field {
+public abstract class Field implements SelfCloneable<Field> {
 	
 	/**
 	 * Tells if this field is equal to the given field (has the same or equivalent value). Both this field and the other field can represent a missing value.

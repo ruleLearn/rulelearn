@@ -99,7 +99,7 @@ public class IntegerFieldFactory {
 //		public NoneIntegerField selfClone() {
 //			return new NoneIntegerField(this.value);
 //		}
-		public <S extends EvaluationField> S selfClone() {
+		public <S extends Field> S selfClone() {
 			return (S)new NoneIntegerField(this.value);
 		}
 		
@@ -169,7 +169,7 @@ public class IntegerFieldFactory {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public <S extends EvaluationField> S selfClone() {
+		public <S extends Field> S selfClone() {
 			return (S)new GainIntegerField(this.value);
 		}
 		
@@ -238,7 +238,7 @@ public class IntegerFieldFactory {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-		public <S extends EvaluationField> S selfClone() {
+		public <S extends Field> S selfClone() {
 			return (S)new CostIntegerField(this.value);
 		}
 		

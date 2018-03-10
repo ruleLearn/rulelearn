@@ -17,15 +17,11 @@
 package org.rulelearn.data;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
 import org.rulelearn.data.json.AttributeDeserializer;
 import org.rulelearn.data.json.IdentificationAttributeSerializer;
 import org.rulelearn.types.TextIdentificationField;
 import org.rulelearn.types.UUIDIdentificationField;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -45,8 +41,8 @@ class IdentificationAttributeTest {
 	 */
 	private void set01() {
 		attributes = new Attribute[2];
-		attributes[0] = new IdentificationAttribute("i1", true, new TextIdentificationField("5sd3j5gf"));
-		attributes[1] = new IdentificationAttribute("i2", true, new UUIDIdentificationField(UUID.randomUUID()));
+		attributes[0] = new IdentificationAttribute("i1", true, new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE));
+		attributes[1] = new IdentificationAttribute("i2", true, new UUIDIdentificationField(UUIDIdentificationField.DEFAULT_VALUE));
 	}
 	
 	/**
@@ -74,7 +70,7 @@ class IdentificationAttributeTest {
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		String json = gson.toJson(attributes);
-		Attribute [] testAttributes= gson.fromJson(json, Attribute[].class);
+		Attribute [] testAttributes = gson.fromJson(json, Attribute[].class);
 		
 		assertArrayEquals(attributes, testAttributes);
 	}

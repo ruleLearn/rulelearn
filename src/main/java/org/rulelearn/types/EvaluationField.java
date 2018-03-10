@@ -26,7 +26,7 @@ import org.rulelearn.core.TernaryLogicValue;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class EvaluationField extends Field implements ComparableExt<EvaluationField>, SelfCloneable<EvaluationField>  {
+public abstract class EvaluationField extends Field implements ComparableExt<EvaluationField> {
 	
 	/**
 	 * Tells if this field is at least as good as the given field. Both this field and the other field can represent a missing value.

@@ -41,26 +41,97 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 public class InformationTableTestConfiguration {
 	protected Attribute[] attributes;
-	protected int activeDecisionAttributeIndex;
-	protected String[][] fieldsAsText;
+	protected int activeDecisionAttributeIndex = -1;
+	protected List<Field[]> listOfFields;
+	protected int[] allObjectIndices = null;
 	
 	/**
-	 * Constructs this test configuration.
+	 * Parses a textual-form value (field) concerning an evaluation attribute.
 	 * 
-	 * @param attributes attributes of an information table
-	 * @param fieldsAsText fields of an information table, in text form
-	 * 
-	 * @throws InvalidValueException if more than one active decision attribute is detected
-	 * @throws NullPointerException if attributes are {@code null}
+	 * @param attribute attribute whose value should be parsed
+	 * @param fieldAsText textual-form of attribute's value (field)
+	 * @return parsed value (field)
+	 * @throws NumberFormatException if given text should be parsed into an int/double value, but does not represent a valid number
+	 * @throws InvalidTypeException if value type of given attribute is none of {@link IntegerField}, {@link RealField}, {@link EnumerationField}
 	 */
-	public InformationTableTestConfiguration(Attribute[] attributes, String[][] fieldsAsText) {
-		this.attributes = attributes.clone();
+	protected Field parseEvaluationAttributeField(EvaluationAttribute attribute, String fieldAsText) {
+		EvaluationField valueType = attribute.getValueType();
 		
+		if (valueType instanceof IntegerField) {
+			return IntegerFieldFactory.getInstance().create(Integer.parseInt(fieldAsText), attribute.getPreferenceType());
+		} else if (valueType instanceof RealField) {
+			return RealFieldFactory.getInstance().create(Double.parseDouble(fieldAsText), attribute.getPreferenceType());
+		} else if (valueType instanceof EnumerationField) {
+			return EnumerationFieldFactory.getInstance().create(((EnumerationField)valueType).getElementList(), ((EnumerationField)valueType).getElementList().getIndex(fieldAsText), attribute.getPreferenceType());
+		} else {
+			throw new InvalidTypeException("Encountered unsupported type of evaluation field.");
+		}
+	}
+	
+	/**
+	 * Parses a textual-form value (field) concerning an identification attribute.
+	 * 
+	 * @param attribute attribute whose value should be parsed
+	 * @param fieldAsText textual-form of attribute's value (field)
+	 * @return parsed value (field)
+	 * @throws InvalidTypeException if value type of given attribute is none of {@link TextIdentificationField}, {@link UUIDIdentificationField}
+	 */
+	protected Field parseIdentificationAttributeField(IdentificationAttribute attribute, String fieldAsText) {
+		IdentificationField idType = attribute.getValueType();
+		
+		if (idType instanceof TextIdentificationField) {
+			return new TextIdentificationField(fieldAsText);
+		} else if (idType instanceof UUIDIdentificationField) {
+			return new UUIDIdentificationField(UUID.fromString(fieldAsText));
+		} else {
+			throw new InvalidTypeException("Encountered unsupported type of identification field.");
+		}
+	}
+	
+	/**
+	 * Converts (parses) given matrix of fields to a list of fields of subsequent objects.
+	 * 
+	 * @param attributes attributes of the objects
+	 * @param matrixOfFieldsAsText matrix of fields in textual form
+	 * @return list of fields of subsequent objects
+	 * 
+	 * @throws InvalidTypeException when type of some attribute is none of {@link EvaluationAttribute}, {@link IdentificationAttribute}
+	 */
+	protected List<Field[]> convertFields(Attribute[] attributes, String[][] matrixOfFieldsAsText) {
+		List<Field[]> listOfFields = new ObjectArrayList<Field[]>();
+		Field[] fields;
+		
+		for (int i = 0; i < matrixOfFieldsAsText.length; i++) {
+			fields = new Field[matrixOfFieldsAsText[i].length];
+			
+			for (int j = 0; j < matrixOfFieldsAsText[i].length; j++) {
+				if (attributes[j] instanceof EvaluationAttribute) {
+					fields[j] = this.parseEvaluationAttributeField((EvaluationAttribute)attributes[j], matrixOfFieldsAsText[i][j]);
+				} else if (attributes[j] instanceof IdentificationAttribute) {
+					fields[j] = this.parseIdentificationAttributeField((IdentificationAttribute)attributes[j], matrixOfFieldsAsText[i][j]);
+				} else {
+					throw new InvalidTypeException("Encountered unsupported type of attribute.");
+				}
+			}
+			
+			listOfFields.add(fields);
+		}
+		
+		return listOfFields;
+	}
+	
+	/**
+	 * Sets index of the only active decision attribute or throws {@link InvalidValueException} if there is more than one such attribute.
+	 * Assumes that {{@link #attributes} have been already set.
+	 * 
+	 * @throws InvalidValueException if there is more than one active decision attribute
+	 */
+	protected void setDecisionAttributeIndex() {
 		//calculate index of the active decision attribute, and verify there is only one such attribute
 		this.activeDecisionAttributeIndex = -1;
-		for (int i = 0; i < attributes.length; i++) {
-			if (attributes[i] instanceof EvaluationAttribute) {
-				if (attributes[i].isActive() && ((EvaluationAttribute)attributes[i]).getType() == AttributeType.DECISION) {
+		for (int i = 0; i < this.attributes.length; i++) {
+			if (this.attributes[i] instanceof EvaluationAttribute) {
+				if (this.attributes[i].isActive() && ((EvaluationAttribute)this.attributes[i]).getType() == AttributeType.DECISION) {
 					if (this.activeDecisionAttributeIndex >= 0) {
 						throw new InvalidValueException("More than 1 active decision attribute detected.");
 					} else {
@@ -69,18 +140,47 @@ public class InformationTableTestConfiguration {
 				}
 			}
 		}
-		
-		this.fieldsAsText = fieldsAsText;
 	}
 	
 	/**
-	 * Gets the attributes. Each time a new array with clones of the attributes stored in this configuration is returned.
+	 * Constructs this test configuration.
+	 * 
+	 * @param attributes attributes of an information table
+	 * @param fieldsAsText fields of an information table, in textual form
+	 * 
+	 * @throws NullPointerException if attributes are {@code null}
+	 * @throws InvalidValueException if more than one active decision attribute is detected
+	 */
+	public InformationTableTestConfiguration(Attribute[] attributes, String[][] fieldsAsText) {
+		this.attributes = attributes.clone();
+		this.setDecisionAttributeIndex();
+		this.listOfFields = convertFields(attributes, fieldsAsText);
+	}
+	
+	/**
+	 * Gets list with indices of all objects considered in this configuration.
+	 * 
+	 * @return list with indices of all objects considered in this configuration
+	 */
+	protected int[] getAllObjectIndices() {
+		if (this.allObjectIndices == null) {
+			this.allObjectIndices = new int[this.getNumberOfObjects()];
+			for (int i = 0; i < this.allObjectIndices.length; i++) {
+				this.allObjectIndices[i] = i;
+			}
+		}
+		return this.allObjectIndices;
+	}
+	
+	/**
+	 * Gets the attributes. On each method call, a new array with clones of the attributes stored in this configuration is returned.
 	 * 
 	 * @return the attributes of this configuration (new array with clones of the attributes stored in this configuration)
 	 * @throws InvalidTypeException if some of the attributes in neither {@link EvaluationAttribute} nor {@link IdentificationAttribute}
 	 */
 	public Attribute[] getAttributes() {
-		Attribute[] freshAttributes = new Attribute[this.attributes.length];
+		Attribute[] clonedAttributes = new Attribute[this.attributes.length];
+		
 		EvaluationAttribute evalAttribute;
 		IdentificationAttribute idAttribute;
 		
@@ -88,13 +188,13 @@ public class InformationTableTestConfiguration {
 		for (int i = 0; i < this.attributes.length; i++) {
 			if (this.attributes[i] instanceof EvaluationAttribute) {
 				evalAttribute = (EvaluationAttribute)this.attributes[i];
-				freshAttributes[i] = new EvaluationAttribute (
+				clonedAttributes[i] = new EvaluationAttribute (
 						evalAttribute.getName(), evalAttribute.isActive(),
 						evalAttribute.getType(), evalAttribute.getValueType(), evalAttribute.getMissingValueType(), evalAttribute.getPreferenceType()
 				);
 			} else if (this.attributes[i] instanceof IdentificationAttribute) {
 				idAttribute = (IdentificationAttribute)this.attributes[i];
-				freshAttributes[i] = new IdentificationAttribute (
+				clonedAttributes[i] = new IdentificationAttribute (
 						idAttribute.getName(), idAttribute.isActive(),
 						idAttribute.getValueType()
 				);
@@ -103,110 +203,75 @@ public class InformationTableTestConfiguration {
 			}
 		}
 		
-		return freshAttributes;
+		return clonedAttributes;
 	}
 	
 	/**
 	 * Gets a list of all rows, each corresponding to fields of a single object.
-	 * Each time a new list composed of new arrays composed of new fields is returned.
+	 * On each method call, a new list composed of new arrays composed of new fields is returned.<br>
+	 * <br>
 	 * Wraps {@link #getListOfFields(int[])} by first calculating array with ordered indices of all objects (rows),
 	 * and then invoking wrapped method using this array as an input parameter.
 	 * 
 	 * @return see {@link #getListOfFields(int[])}
 	 * 
 	 * @throws InvalidTypeException see {@link #getListOfFields(int[])}
-	 * @throws InvalidTypeException see {@link #getListOfFields(int[])}
-	 * @throws InvalidTypeException see {@link #getListOfFields(int[])}
 	 */
 	public List<Field[]> getListOfFields() {
-		int[] objectIndices = new int[this.getNumberOfObjects()];
-		
-		for (int i = 0; i < objectIndices.length; i++) {
-			objectIndices[i] = i; //indicate that all objects (rows) should be selected to the constructed information table
-		}
-		
-		return this.getListOfFields(objectIndices);
+		return this.getListOfFields(this.getAllObjectIndices());
 	}
 	
 	/**
 	 * Gets a list of rows, each corresponding to fields of a single object.
-	 * Each time a new list composed of new arrays composed of new fields is returned.
+	 * On each method call, a new list composed of new arrays composed of new fields is returned.
 	 * 
 	 * @param objectIndices list of indices of selected rows (only fields from these rows should be returned)
 	 * @return the list of rows, each corresponding to fields of a single object
 	 * 
 	 * @throws InvalidTypeException if unsupported sub-type of {@link Attribute} is encountered
 	 * @throws InvalidTypeException if unsupported sub-type of {@link EvaluationField} is encountered
-	 * @throws InvalidTypeException if unsupported sub-type of {@link IdentificationField} is encountered
-	 * 
+	 * @throws InvalidTypeException if unsupported sub-type of {@link IdentificationField} is encountered 
 	 * @throws NullPointerException if objects' indices are {@code null}
+	 * @throws IndexOutOfBoundsException if any of the given object indices is not in the interval [0, {@code this#getNumberOfObjects()})
 	 */
 	public List<Field[]> getListOfFields(int[] objectIndices) {
 		if (objectIndices == null) {
 			throw new NullPointerException("Objects' indices are null.");
 		}
 		
-		List<Field[]> listOfFields = new ObjectArrayList<Field[]>();
+		List<Field[]> clonedListOfFields = new ObjectArrayList<Field[]>();
 		Field[] selectedRow;
-		EvaluationAttribute evalAttribute;
-		EvaluationField valueType;
-		IdentificationAttribute idAttribute;
-		IdentificationField idType;
+		Field[] clonedSelectedRow;
 		
-		for (int i = 0; i < objectIndices.length; i++) {
-			selectedRow = new Field[this.fieldsAsText[objectIndices[i]].length];
+		for (int i = 0; i < objectIndices.length; i++) { //go through selected objects (rows)
+			selectedRow = this.listOfFields.get(objectIndices[i]);
+			clonedSelectedRow = new Field[selectedRow.length];
 			
-			for (int j = 0; j < this.fieldsAsText[objectIndices[i]].length; j++) {
-				if (this.attributes[j] instanceof EvaluationAttribute) {
-					evalAttribute = (EvaluationAttribute)this.attributes[j];
-					valueType = evalAttribute.getValueType();
-					
-					if (valueType instanceof IntegerField) {
-						selectedRow[j] = IntegerFieldFactory.getInstance().create(Integer.parseInt(this.fieldsAsText[objectIndices[i]][j]), evalAttribute.getPreferenceType());
-					} else if (valueType instanceof RealField) {
-						selectedRow[j] = RealFieldFactory.getInstance().create(Double.parseDouble(this.fieldsAsText[objectIndices[i]][j]), evalAttribute.getPreferenceType());
-					} else if (valueType instanceof EnumerationField) {
-						selectedRow[j] = EnumerationFieldFactory.getInstance().create(((EnumerationField)valueType).getElementList(), Integer.parseInt(this.fieldsAsText[objectIndices[i]][j]), evalAttribute.getPreferenceType());
-					} else {
-						throw new InvalidTypeException("Encountered unsupported type of evaluation field.");
-					}
-				} else if (this.attributes[j] instanceof IdentificationAttribute) {
-					idAttribute = (IdentificationAttribute)this.attributes[j];
-					idType = idAttribute.getValueType();
-					
-					if (idType instanceof TextIdentificationField) {
-						selectedRow[j] = new TextIdentificationField(this.fieldsAsText[objectIndices[i]][j]);
-					} else if (idType instanceof UUIDIdentificationField) {
-						selectedRow[j] = new UUIDIdentificationField(UUID.fromString(this.fieldsAsText[objectIndices[i]][j]));
-					} else {
-						throw new InvalidTypeException("Encountered unsupported type of identification field.");
-					}
-				} else {
-					throw new InvalidTypeException("Encountered unsupported type of attribute.");
-				}
+			for (int j = 0; j < selectedRow.length; j++) {
+				clonedSelectedRow[j] = selectedRow[j].selfClone();
 			}
 			
-			listOfFields.add(selectedRow);
+			clonedListOfFields.add(clonedSelectedRow);
 		}
 		
-		return listOfFields;
+		return clonedListOfFields;
 	}
 	
 	/**
-	 * Gets decisions (active decision attribute values) of objects (rows) with given indices.
+	 * Gets decisions (active decision attribute values) of objects (rows) with given indices.<br>
+	 * <br>
 	 * Wraps {@link #getDecisions(int[])} by first calculating array with ordered indices of all objects (rows),
 	 * and then invoking wrapped method using this array as an input parameter.
 	 * 
 	 * @return see {@link #getDecisions(int[])}
+	 * 
+	 * @throws NullPointerException see {@link #getDecisions(int[])}
 	 * @throws InvalidTypeException see {@link #getDecisions(int[])}
+	 * @throws InvalidValueException see {@link #getDecisions(int[])}
+	 * @throws IndexOutOfBoundsException see {@link #getDecisions(int[])}
 	 */
 	public EvaluationField[] getDecisions() {
-		int[] objectIndices = new int[this.getNumberOfObjects()];
-		for (int i = 0; i < objectIndices.length; i++) {
-			objectIndices[i] = i; //indicate that decisions for all objects (rows) should be returned
-		}
-		
-		return this.getDecisions(objectIndices);
+		return this.getDecisions(this.getAllObjectIndices());
 	}
 	
 	/**
@@ -217,32 +282,21 @@ public class InformationTableTestConfiguration {
 	 * 
 	 * @throws NullPointerException if objects' indices are {@code null}
 	 * @throws InvalidTypeException if unsupported sub-type of {@link EvaluationField} is encountered in the decision column
+	 * @throws InvalidValueException if there is no active decision attribute in this configuration
+	 * @throws IndexOutOfBoundsException if any of the given object indices is not in the interval [0, {@code this#getNumberOfObjects()})
 	 */
 	public EvaluationField[] getDecisions(int[] objectIndices) {
 		if (objectIndices == null) {
 			throw new NullPointerException("Objects' indices are null.");
 		}
+		if (this.activeDecisionAttributeIndex < 0) {
+			throw new InvalidValueException("There is no active decision attribute.");
+		}
 		
 		EvaluationField[] decisions = new EvaluationField[objectIndices.length];
 		
-		EvaluationAttribute evalAttribute = (EvaluationAttribute)this.attributes[this.activeDecisionAttributeIndex];
-		EvaluationField valueType = evalAttribute.getValueType();
-		
 		for (int i = 0; i < objectIndices.length; i++) {
-			if (valueType instanceof IntegerField) {
-				decisions[i] = IntegerFieldFactory.getInstance().create(
-						Integer.parseInt(this.fieldsAsText[objectIndices[i]][this.activeDecisionAttributeIndex]), evalAttribute.getPreferenceType());
-			} else if (valueType instanceof RealField) {
-				decisions[i] = RealFieldFactory.getInstance().create(
-						Double.parseDouble(this.fieldsAsText[objectIndices[i]][this.activeDecisionAttributeIndex]), evalAttribute.getPreferenceType());
-			} else if (valueType instanceof EnumerationField) {
-				decisions[i] = EnumerationFieldFactory.getInstance().create(
-						((EnumerationField)valueType).getElementList(),
-						Integer.parseInt(this.fieldsAsText[objectIndices[i]][this.activeDecisionAttributeIndex]),
-						evalAttribute.getPreferenceType());
-			} else {
-				throw new InvalidTypeException("Encountered unsupported type of evaluation field.");
-			}
+			decisions[i] = this.listOfFields.get(objectIndices[i])[this.activeDecisionAttributeIndex].selfClone();
 		}
 		
 		return decisions;
@@ -263,43 +317,44 @@ public class InformationTableTestConfiguration {
 	 * @return number of objects
 	 */
 	public int getNumberOfObjects() {
-		return this.fieldsAsText.length;
+		return this.listOfFields.size();
 	}
 	
 	/**
 	 * Gets index of the only active decision attribute.
 	 * 
-	 * @return index of the only active decision attribute
+	 * @return index of the only active decision attribute or -1 if there is no such attribute
 	 */
 	public int getActiveDecisionAttributeIndex() {
 		return this.activeDecisionAttributeIndex;
 	}
 	
 	/**
-	 * Gets information table constructed from this configuration.
+	 * Gets information table constructed from this configuration.<br>
+	 * <br>
 	 * Wraps {@link #getInformationTable(int[], boolean)} by first calculating array with ordered indices of all objects (rows),
 	 * and then invoking wrapped method using this array as an input parameter.
 	 * 
 	 * @param accelerateByReadOnlyParams parameter passed to {@link InformationTable#InformationTable(Attribute[], List, boolean)}
 	 * @return information table constructed from this configuration.
+	 * 
+	 * @throws InvalidTypeException see {@link #getInformationTable(int[], boolean)}
 	 */
 	public InformationTable getInformationTable(boolean accelerateByReadOnlyParams) {
-		int[] objectIndices = new int[this.getNumberOfObjects()];
-		for (int i = 0; i < objectIndices.length; i++) {
-			objectIndices[i] = i; //indicate that all objects (rows) should be selected to the constructed information table
-		}
-		
-		return this.getInformationTable(objectIndices, accelerateByReadOnlyParams);
+		return this.getInformationTable(this.getAllObjectIndices(), accelerateByReadOnlyParams);
 	}
 	
 	/**
 	 * Gets information table constructed from this configuration.
 	 * 
 	 * @param objectIndices indices of objects selected to the constructed information table
-	 *        if {@code null} then all objects are selected (i.e., no object is skipped)
 	 * @param accelerateByReadOnlyParams parameter passed to {@link InformationTable#InformationTable(Attribute[], List, boolean)}
 	 * @return information table constructed from this configuration.
+	 * 
 	 * @throws NullPointerException if objects' indices are {@code null}
+	 * @throws InvalidTypeException see {@link #getAttributes()}
+	 * @throws InvalidTypeException see {@link #getListOfFields(int[])}
+	 * @throws IndexOutOfBoundsException see {@link #getListOfFields(int[])}
 	 */
 	public InformationTable getInformationTable(int[] objectIndices, boolean accelerateByReadOnlyParams) {
 		if (objectIndices == null) {

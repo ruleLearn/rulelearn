@@ -99,7 +99,7 @@ public class RealFieldFactory {
 //		public NoneRealField selfClone() {
 //			return new NoneRealField(this.value);
 //		}
-		public <S extends EvaluationField> S selfClone() {
+		public <S extends Field> S selfClone() {
 			return (S)new NoneRealField(this.value);
 		}
 		
@@ -172,7 +172,7 @@ public class RealFieldFactory {
 //		public GainRealField selfClone() {
 //			return new GainRealField(this.value);
 //		}
-		public <S extends EvaluationField> S selfClone() {
+		public <S extends Field> S selfClone() {
 			return (S)new GainRealField(this.value);
 		}
 		
@@ -244,7 +244,7 @@ public class RealFieldFactory {
 //		public CostRealField selfClone() {
 //			return new CostRealField(this.value);
 //		}
-		public <S extends EvaluationField> S selfClone() {
+		public <S extends Field> S selfClone() {
 			return (S)new CostRealField(this.value);
 		}
 		

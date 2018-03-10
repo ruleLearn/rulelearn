@@ -18,6 +18,7 @@ package org.rulelearn.types;
 
 import java.util.Objects;
 import java.util.Random;
+
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
@@ -27,6 +28,11 @@ import org.rulelearn.core.TernaryLogicValue;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class TextIdentificationField extends IdentificationField {
+	
+	/** 
+	 * Default value for this type of a field.
+	 */
+	public static final String DEFAULT_VALUE = "--------";
 	
 	/**
 	 * Value of this field.
@@ -48,18 +54,18 @@ public class TextIdentificationField extends IdentificationField {
 	 * @param idLength requested length of the generated text identifier
 	 * @return random name having the requested length
 	 */
-	public static String getRandomId(int idLength) {
+	public static String getRandomValue(int idLength) {
 		Random r = new Random();
-		char[] name = new char[idLength];
+		char[] idChars = new char[idLength];
 	    String alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
 	    
 	    for (int i = 0; i < idLength; i++) {
-	    	name[i] = alphabet.charAt(r.nextInt(alphabet.length()));
+	    	idChars[i] = alphabet.charAt(r.nextInt(alphabet.length()));
 	    } // takes idLength random characters from alphabet
 	    
 	    StringBuilder sB = new StringBuilder();
 	    
-	    return sB.append(name).toString();
+	    return sB.append(idChars).toString();
 	}
 
 	@Override
@@ -87,6 +93,12 @@ public class TextIdentificationField extends IdentificationField {
 	@Override
 	public int hashCode () {
 		return Objects.hash(this.getClass(), this.value);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <S extends Field> S selfClone() {
+		return (S)new TextIdentificationField(this.value);
 	}
 
 }

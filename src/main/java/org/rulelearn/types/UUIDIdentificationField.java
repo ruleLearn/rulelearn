@@ -18,7 +18,6 @@ package org.rulelearn.types;
 
 import java.util.Objects;
 import java.util.UUID;
-
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
@@ -28,6 +27,11 @@ import org.rulelearn.core.TernaryLogicValue;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class UUIDIdentificationField extends IdentificationField {
+	
+	/** 
+	 * Default value for this type of a field.
+	 */
+	public static final UUID DEFAULT_VALUE = UUID.fromString("00000000-0000-0000-0000-000000000000");
 	
 	/**
 	 * Value of this field.
@@ -48,7 +52,7 @@ public class UUIDIdentificationField extends IdentificationField {
 	 * 
 	 * @return random UUID
 	 */
-	public static UUID getRandomId() {
+	public static UUID getRandomValue() {
 		return UUID.randomUUID();
 	}
 
@@ -77,6 +81,12 @@ public class UUIDIdentificationField extends IdentificationField {
 	@Override
 	public int hashCode () {
 		return Objects.hash(this.getClass(), this.value);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public <S extends Field> S selfClone() {
+		return (S)new UUIDIdentificationField(this.value);
 	}
 
 }

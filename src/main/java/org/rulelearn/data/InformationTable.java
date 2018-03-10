@@ -23,6 +23,8 @@ import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
 import org.rulelearn.types.IdentificationField;
+import org.rulelearn.types.TextIdentificationField;
+import org.rulelearn.types.UUIDIdentificationField;
 
 
 /**
@@ -97,16 +99,16 @@ public class InformationTable {
 	 * If attributeMap[i]==0, then the global attribute having global index i is an AD-attribute or an AI-attribute
 	 * (one can verify which of the two cases is true by comparing i with {@link #activeDecisionAttributeIndex} and {@link #activeIdentificationAttributeIndex}).<br>
 	 * <br>
-	 * Suppose there are eight attributes:<br>
-	 * - attr1: active {@link EvaluationAttribute} of type {@link AttributeType#CONDITION},<br>
-	 * - attr2: active {@link EvaluationAttribute} of type {@link AttributeType#DESCRIPTION},<br>
-	 * - attr3: non-active {@link EvaluationAttribute} of type {@link AttributeType#CONDITION},<br>
-	 * - attr4: active {@link EvaluationAttribute} of type {@link AttributeType#CONDITION},<br>
-	 * - attr5: active {@link EvaluationAttribute} of type {@link AttributeType#DECISION},<br>
-	 * - attr6: non-active {@link EvaluationAttribute} of type {@link AttributeType#DECISION},<br>
-	 * - attr7: non-active {@link EvaluationAttribute} of type {@link AttributeType#DESCRIPTION},<br>
-	 * - attr8: active {@link IdentificationAttribute},<br>
-	 * - attr9: non-active {@link IdentificationAttribute}.<br>
+	 * Suppose there are nine attributes:<br>
+	 * - attr0: active {@link EvaluationAttribute} of type {@link AttributeType#CONDITION},<br>
+	 * - attr1: active {@link EvaluationAttribute} of type {@link AttributeType#DESCRIPTION},<br>
+	 * - attr2: non-active {@link EvaluationAttribute} of type {@link AttributeType#CONDITION},<br>
+	 * - attr3: active {@link EvaluationAttribute} of type {@link AttributeType#CONDITION},<br>
+	 * - attr4: active {@link EvaluationAttribute} of type {@link AttributeType#DECISION},<br>
+	 * - attr5: non-active {@link EvaluationAttribute} of type {@link AttributeType#DECISION},<br>
+	 * - attr6: non-active {@link EvaluationAttribute} of type {@link AttributeType#DESCRIPTION},<br>
+	 * - attr7: active {@link IdentificationAttribute} with value type {@link TextIdentificationField},<br>
+	 * - attr8: non-active {@link IdentificationAttribute} with value type {@link UUIDIdentificationField}.<br>
 	 * <br>
 	 * Then, the map should be the following:<br>
 	 * attributeMap = [1, -1, -2, 2, 0, -3, -4, 0, -5].
