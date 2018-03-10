@@ -29,11 +29,6 @@ import org.rulelearn.core.TernaryLogicValue;
  */
 public class UUIDIdentificationField extends IdentificationField {
 	
-	/** 
-	 * Default value for this type of a field.
-	 */
-	public final static UUID DEFAULT_VALUE = UUID.randomUUID(); //TODO: is this correct?
-	
 	/**
 	 * Value of this field.
 	 */
@@ -46,6 +41,15 @@ public class UUIDIdentificationField extends IdentificationField {
 	 */
 	public UUIDIdentificationField(UUID value) {
 		this.value = value;
+	}
+	
+	/**
+	 * Gets random UUID. See {@link UUID#randomUUID()}.
+	 * 
+	 * @return random UUID
+	 */
+	public static UUID getRandomId() {
+		return UUID.randomUUID();
 	}
 
 	@Override

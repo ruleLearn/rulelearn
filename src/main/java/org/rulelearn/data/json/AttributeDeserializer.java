@@ -116,9 +116,9 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 				throw new JsonParseException("Identification type is not specified.");
 			
 			if (typeName.compareTo("uuid") == 0) {
-				valueType = new UUIDIdentificationField(UUIDIdentificationField.DEFAULT_VALUE);
+				valueType = new UUIDIdentificationField(UUIDIdentificationField.getRandomId());
 			} else {
-				valueType = new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE);
+				valueType = new TextIdentificationField(TextIdentificationField.getRandomId(8));
 			}
 				
 		}

@@ -27,17 +27,20 @@ import org.rulelearn.types.IdentificationField;
  */
 public class IdentificationAttribute extends Attribute {
 
+	/**
+	 * Identification value type.
+	 */
 	protected IdentificationField valueType;
 	
-	public IdentificationAttribute (String name, boolean active, IdentificationField identificationValueType) {
+	public IdentificationAttribute (String name, boolean active, IdentificationField valueType) {
 		super(name, active);
-		this.valueType = identificationValueType;
+		this.valueType = valueType;
 	}
 
 	/**
-	 * Gets value type of this attribute.
+	 * Gets identification value type of this attribute.
 	 * 
-	 * @return the attribute value type
+	 * @return the identification value type of this attribute
 	 */
 	public IdentificationField getValueType() {
 		return this.valueType;

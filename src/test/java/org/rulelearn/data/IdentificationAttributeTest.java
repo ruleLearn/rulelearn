@@ -18,6 +18,8 @@ package org.rulelearn.data;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.rulelearn.data.json.AttributeDeserializer;
 import org.rulelearn.data.json.IdentificationAttributeSerializer;
@@ -43,8 +45,8 @@ class IdentificationAttributeTest {
 	 */
 	private void set01() {
 		attributes = new Attribute[2];
-		attributes[0] = new IdentificationAttribute("i1", true, new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE));
-		attributes[1] = new IdentificationAttribute("i2", true, new UUIDIdentificationField(UUIDIdentificationField.DEFAULT_VALUE));
+		attributes[0] = new IdentificationAttribute("i1", true, new TextIdentificationField("5sd3j5gf"));
+		attributes[1] = new IdentificationAttribute("i2", true, new UUIDIdentificationField(UUID.randomUUID()));
 	}
 	
 	/**

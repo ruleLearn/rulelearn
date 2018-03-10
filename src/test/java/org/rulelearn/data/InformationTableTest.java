@@ -17,7 +17,6 @@
 package org.rulelearn.data;
 
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.rulelearn.types.Field;
@@ -34,65 +33,47 @@ import org.rulelearn.types.UnknownSimpleFieldMV2;
  */
 class InformationTableTest {
 	
-	private int[][] fieldValues = {
-			{ 3,  0,   1, 15,  32,  35,   28, 4},
-			{ 2, -5,  -3, 20, -64, -72, -122, 3},
-			{ 4,  7, -15,  5,  12,  19,  256, 2},
-			{-1,  6,  14, -7, -23,  34,  -15, 1},
-			{ 0, -6, -14, 77, 433, -25,  233, 0}
-	};
-	
-	private AttributePreferenceType[] attributePreferenceTypes = {
+	//<CONFIGURATION 1>
+	private final AttributePreferenceType[] attributePreferenceTypes1 = {
 			AttributePreferenceType.GAIN, AttributePreferenceType.COST, AttributePreferenceType.GAIN, AttributePreferenceType.NONE,
-			AttributePreferenceType.NONE, AttributePreferenceType.COST, AttributePreferenceType.GAIN, AttributePreferenceType.GAIN};
+			AttributePreferenceType.NONE, AttributePreferenceType.COST, AttributePreferenceType.GAIN, AttributePreferenceType.GAIN}; //supplementary variable
+	private InformationTableTestConfiguration configuration1 = new InformationTableTestConfiguration (
+			new Attribute[] {
+					new EvaluationAttribute("a0", true, AttributeType.CONDITION,
+							IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes1[0]), new UnknownSimpleFieldMV2(), attributePreferenceTypes1[0]),
+					new EvaluationAttribute("a1", false, AttributeType.DESCRIPTION,
+							IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes1[1]), new UnknownSimpleFieldMV15(), attributePreferenceTypes1[1]),
+					new EvaluationAttribute("a2", true, AttributeType.DESCRIPTION,
+							IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes1[2]), new UnknownSimpleFieldMV2(), attributePreferenceTypes1[2]),
+					new EvaluationAttribute("a3", false, AttributeType.CONDITION,
+							IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes1[3]), new UnknownSimpleFieldMV2(), attributePreferenceTypes1[3]),
+					new EvaluationAttribute("a4", true, AttributeType.CONDITION,
+							IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes1[4]), new UnknownSimpleFieldMV15(), attributePreferenceTypes1[4]),
+					new EvaluationAttribute("a5", true, AttributeType.DECISION,
+							IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes1[5]), new UnknownSimpleFieldMV2(), attributePreferenceTypes1[5]),
+					new EvaluationAttribute("a6", false, AttributeType.CONDITION,
+							IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes1[6]), new UnknownSimpleFieldMV2(), attributePreferenceTypes1[6]),
+					new EvaluationAttribute("a7", false, AttributeType.DECISION,
+							IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes1[7]), new UnknownSimpleFieldMV2(), attributePreferenceTypes1[7])
+				}, //attributeMap: [1, -1, -2, -3, 2, 0, -4, -5]
+			new String[][] {
+					{ "3",  "0",   "1", "15",  "32",  "35",   "28", "4"},
+					{ "2", "-5",  "-3", "20", "-64", "-72", "-122", "3"},
+					{ "4",  "7", "-15",  "5",  "12",  "19",  "256", "2"},
+					{"-1",  "6",  "14", "-7", "-23",  "34",  "-15", "1"},
+					{ "0", "-6", "-14", "77", "433", "-25",  "233", "0"}
+			});
+	//</CONFIGURATION 1>
 	
-	private int ActiveDecisionAttributeIndex = 5;
-	
-	private Attribute[] getAttributes() {
-		return new Attribute[] {
-			new EvaluationAttribute("a0", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[0]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[0]),
-			new EvaluationAttribute("a1", false, AttributeType.DESCRIPTION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[1]), new UnknownSimpleFieldMV15(), attributePreferenceTypes[1]),
-			new EvaluationAttribute("a2", true, AttributeType.DESCRIPTION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[2]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[2]),
-			new EvaluationAttribute("a3", false, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[3]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[3]),
-			new EvaluationAttribute("a4", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[4]), new UnknownSimpleFieldMV15(), attributePreferenceTypes[4]),
-			new EvaluationAttribute("a5", true, AttributeType.DECISION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[5]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[5]),
-			new EvaluationAttribute("a6", false, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[6]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[6]),
-			new EvaluationAttribute("a7", false, AttributeType.DECISION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[7]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[7])
-		}; 
-	} //attributeMap: [1, -1, -2, -3, 2, 0, -4, -5]
-	
-	private List<Field[]> getFields(int[] objectIndices, int[] attributeIndices) {
-		List<Field[]> fields = new ArrayList<Field[]>();
-		Field[] row;
-		
-		for (int i = 0; i < objectIndices.length; i++) {
-			row = new Field[attributeIndices.length];
-			for (int j = 0; j < attributeIndices.length; j++) {
-				row[j] = IntegerFieldFactory.getInstance().create(fieldValues[objectIndices[i]][attributeIndices[j]], attributePreferenceTypes[attributeIndices[j]]);
-			}
-			fields.add(row);
-		}
-		
-		return fields;
-	}
-	
-	private InformationTable getInformationTable(boolean accelerateByReadOnlyParams) {
-		return new InformationTable(
-				this.getAttributes(),
-				this.getFields(new int[]{0, 1, 2, 3, 4}, new int[] {0, 1, 2, 3, 4, 5, 6, 7}), //all objects, all attributes
-				accelerateByReadOnlyParams
-		);
-	}
-
 	/**
 	 * Test for {@link InformationTable#getAttributes(boolean)} method.
 	 */
 	@Test
 	public void testGetAttributesBoolean() {
-		InformationTable informationTable = getInformationTable(false);
+		InformationTable informationTable = configuration1.getInformationTable(false);
 		
-		Attribute[] expectedAttributes = this.getAttributes();
-		Attribute[] attributes = informationTable.getAttributes(false);
+		Attribute[] expectedAttributes = configuration1.getAttributes();
+		Attribute[] attributes = informationTable.getAttributes(false); //get a fresh table with attributes
 		
 		assertEquals(attributes.length, expectedAttributes.length);
 		
@@ -106,7 +87,7 @@ class InformationTableTest {
 	 */
 	@Test
 	public void testGetIndex2IdMapper() {
-		InformationTable informationTable = getInformationTable(true);
+		InformationTable informationTable = configuration1.getInformationTable(true);
 		
 		Index2IdMapper mapper = informationTable.getIndex2IdMapper();
 		
@@ -121,11 +102,13 @@ class InformationTableTest {
 	 */
 	@Test
 	public void testGetField() {
-		InformationTable informationTable = getInformationTable(true);
+		InformationTable informationTable = configuration1.getInformationTable(true);
 		
-		for (int i = 0; i < fieldValues.length; i++) {
-			for (int j = 0; j < fieldValues[i].length; j++) {
-				assertEquals(((IntegerField)informationTable.getField(i, j)).getValue(), fieldValues[i][j]);
+		List<Field[]> listOfFields = configuration1.getListOfFields();
+		
+		for (int i = 0; i < listOfFields.size(); i++) {
+			for (int j = 0; j < listOfFields.get(i).length; j++) {
+				assertEquals(informationTable.getField(i, j), listOfFields.get(i)[j]);
 			}
 		}
 	}
@@ -135,7 +118,7 @@ class InformationTableTest {
 	 */
 	@Test
 	public void testSelectIntArrayBoolean() {
-		InformationTable informationTable = getInformationTable(false);
+		InformationTable informationTable = configuration1.getInformationTable(false);
 		
 		int[] objectIndices = new int[] {1, 2, 4};
 		InformationTable newInformationTable = informationTable.select(objectIndices, true);
@@ -144,8 +127,7 @@ class InformationTableTest {
 		assertEquals(newInformationTable.getNumberOfAttributes(), informationTable.getNumberOfAttributes());
 		
 		//check fields of the new table
-		int[] attributeIndices = new int[] {0, 1, 2, 3, 4, 5, 6, 7};
-		List<Field[]> expectedFields = this.getFields(objectIndices, attributeIndices);
+		List<Field[]> expectedFields = configuration1.getListOfFields(objectIndices);
 		for (int i = 0; i < expectedFields.size(); i++) {
 			for (int j = 0; j < expectedFields.get(i).length; j++) {
 				assertEquals(expectedFields.get(i)[j], newInformationTable.getField(i, j));
@@ -153,7 +135,7 @@ class InformationTableTest {
 		}
 		
 		//check attributes of the new table
-		Attribute[] expectedAttributes = this.getAttributes();
+		Attribute[] expectedAttributes = configuration1.getAttributes();
 		Attribute[] attributes = newInformationTable.getAttributes();
 		assertEquals(attributes.length, expectedAttributes.length);
 		for (int i = 0; i < attributes.length; i++) {
@@ -167,16 +149,16 @@ class InformationTableTest {
 		}
 		
 		//check decisions of the new table
-		List<Field[]> expectedDecisions = this.getFields(objectIndices, new int[] {this.ActiveDecisionAttributeIndex}); //get a list of 1-element arrays
+		Field[] expectedDecisions = configuration1.getDecisions(objectIndices);
 		Field[] decisions = newInformationTable.getDecisions(true);
 		int numberOfObjects = newInformationTable.getNumberOfObjects();
 		
 		for (int i = 0; i < numberOfObjects; i++) {
-			assertEquals(decisions[i], expectedDecisions.get(i)[0]);
+			assertEquals(decisions[i], expectedDecisions[i]);
 		}
 		
 		//check decision attribute index of the new table
-		assertEquals(newInformationTable.getActiveDecisionAttributeIndex(), this.ActiveDecisionAttributeIndex);
+		assertEquals(newInformationTable.getActiveDecisionAttributeIndex(), configuration1.getActiveDecisionAttributeIndex());
 	}
 	
 	/**
@@ -184,8 +166,8 @@ class InformationTableTest {
 	 */
 	@Test
 	public void testGetNumberOfObjects() {
-		InformationTable informationTable = getInformationTable(true);
-		assertEquals(informationTable.getNumberOfObjects(), fieldValues.length);
+		InformationTable informationTable = configuration1.getInformationTable(true);
+		assertEquals(informationTable.getNumberOfObjects(), configuration1.getNumberOfObjects());
 	}
 
 	/**
@@ -193,8 +175,8 @@ class InformationTableTest {
 	 */
 	@Test
 	public void testGetNumberOfAttributes() {
-		InformationTable informationTable = getInformationTable(true);
-		assertEquals(informationTable.getNumberOfAttributes(), attributePreferenceTypes.length);
+		InformationTable informationTable = configuration1.getInformationTable(true);
+		assertEquals(informationTable.getNumberOfAttributes(), configuration1.getNumberOfAttributes());
 	}
 	
 	/**
@@ -202,7 +184,7 @@ class InformationTableTest {
 	 */
 	@Test
 	public void testGetActiveConditionFields() {
-		InformationTable informationTable = getInformationTable(true);
+		InformationTable informationTable = configuration1.getInformationTable(true);
 		assertEquals(informationTable.getActiveConditionFields().getNumberOfAttributes(), 2);
 	}
 	
@@ -210,8 +192,8 @@ class InformationTableTest {
 	 * Test for {@link InformationTable#getNotActiveOrDescriptionFields} method}.
 	 */
 	@Test
-	public void testgetNotActiveOrDescriptionFields() {
-		InformationTable informationTable = getInformationTable(false);
+	public void testGetNotActiveOrDescriptionFields() {
+		InformationTable informationTable = configuration1.getInformationTable(false);
 		assertEquals(informationTable.getNotActiveOrDescriptionFields().getNumberOfAttributes(), 5);
 	}
 	
@@ -220,8 +202,8 @@ class InformationTableTest {
 	 */
 	@Test
 	public void testGetActiveDecisionAttributeIndex() {
-		InformationTable informationTable = getInformationTable(false);
-		assertEquals(informationTable.getActiveDecisionAttributeIndex(), this.ActiveDecisionAttributeIndex);
+		InformationTable informationTable = configuration1.getInformationTable(false);
+		assertEquals(informationTable.getActiveDecisionAttributeIndex(), configuration1.getActiveDecisionAttributeIndex());
 	}
 	
 	/**
@@ -229,12 +211,12 @@ class InformationTableTest {
 	 */
 	@Test
 	public void testGetDecision() {
-		InformationTable informationTable = getInformationTable(true);
-		List<Field[]> expectedDecisions = this.getFields(new int[] {0, 1, 2, 3, 4}, new int[] {this.ActiveDecisionAttributeIndex}); //get a list of 1-element arrays
+		InformationTable informationTable = configuration1.getInformationTable(true);
+		Field[] expectedDecisions = configuration1.getDecisions();
 		int numberOfObjects = informationTable.getNumberOfObjects();
 		
 		for (int i = 0; i < numberOfObjects; i++) {
-			assertEquals(informationTable.getDecision(i), expectedDecisions.get(i)[0]);
+			assertEquals(informationTable.getDecision(i), expectedDecisions[i]);
 		}
 	}
 	
@@ -243,13 +225,13 @@ class InformationTableTest {
 	 */
 	@Test
 	public void testGetDecisions() {
-		InformationTable informationTable = getInformationTable(false);
-		List<Field[]> expectedDecisions = this.getFields(new int[] {0, 1, 2, 3, 4}, new int[] {this.ActiveDecisionAttributeIndex}); //get a list of 1-element arrays
+		InformationTable informationTable = configuration1.getInformationTable(false);
+		Field[] expectedDecisions = configuration1.getDecisions();
 		Field[] decisions = informationTable.getDecisions(false);
 		int numberOfObjects = informationTable.getNumberOfObjects();
 		
 		for (int i = 0; i < numberOfObjects; i++) {
-			assertEquals(decisions[i], expectedDecisions.get(i)[0]);
+			assertEquals(decisions[i], expectedDecisions[i]);
 		}
 	}
 
