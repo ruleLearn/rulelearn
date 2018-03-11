@@ -389,7 +389,7 @@ public class InformationTableTestConfiguration {
 	 * 
 	 * @return index of the only active identification attribute or -1 if there is no such attribute
 	 */
-	public int getActivIdentificationAttributeIndex() {
+	public int getActiveIdentificationAttributeIndex() {
 		return this.activeIdentificationAttributeIndex;
 	}
 	

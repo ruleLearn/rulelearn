@@ -256,10 +256,11 @@ class InformationTableTest {
 			assertEquals(newMapper.getId(i), informationTable.getIndex2IdMapper().getId(objectIndices[i]));
 		}
 		
+		int numberOfObjects = newInformationTable.getNumberOfObjects();
+		
 		//check decisions of the new table
 		Field[] expectedDecisions = configuration01.getDecisions(objectIndices);
 		Field[] decisions = newInformationTable.getDecisions(true);
-		int numberOfObjects = newInformationTable.getNumberOfObjects();
 		
 		for (int i = 0; i < numberOfObjects; i++) {
 			assertEquals(decisions[i], expectedDecisions[i]);
@@ -267,6 +268,17 @@ class InformationTableTest {
 		
 		//check decision attribute index of the new table
 		assertEquals(newInformationTable.getActiveDecisionAttributeIndex(), configuration01.getActiveDecisionAttributeIndex());
+		
+		//check identifiers of the new table
+		Field[] expectedIdentifiers = configuration01.getIdentifiers(objectIndices);
+		Field[] identifiers = newInformationTable.getIdentifiers(false);
+		
+		assertEquals(expectedIdentifiers, null);
+		assertEquals(identifiers, null);
+		
+		//check identification attribute index of the new table
+		assertEquals(newInformationTable.getActiveIdentificationAttributeIndex(), -1);
+		assertEquals(configuration01.getActiveIdentificationAttributeIndex(), -1);
 	}
 	
 	/**
@@ -304,10 +316,11 @@ class InformationTableTest {
 			assertEquals(newMapper.getId(i), informationTable.getIndex2IdMapper().getId(objectIndices[i]));
 		}
 		
+		int numberOfObjects = newInformationTable.getNumberOfObjects();
+		
 		//check decisions of the new table
 		Field[] expectedDecisions = configuration02.getDecisions(objectIndices);
 		Field[] decisions = newInformationTable.getDecisions(true);
-		int numberOfObjects = newInformationTable.getNumberOfObjects();
 		
 		for (int i = 0; i < numberOfObjects; i++) {
 			assertEquals(decisions[i], expectedDecisions[i]);
@@ -315,6 +328,17 @@ class InformationTableTest {
 		
 		//check decision attribute index of the new table
 		assertEquals(newInformationTable.getActiveDecisionAttributeIndex(), configuration02.getActiveDecisionAttributeIndex());
+		
+		//check identifiers of the new table
+		Field[] expectedIdentifiers = configuration02.getIdentifiers(objectIndices);
+		Field[] identifiers = newInformationTable.getIdentifiers(false);
+		
+		for (int i = 0; i < numberOfObjects; i++) {
+			assertEquals(expectedIdentifiers[i], identifiers[i]);
+		}
+		
+		//check identification attribute index of the new table
+		assertEquals(newInformationTable.getActiveIdentificationAttributeIndex(), configuration02.getActiveIdentificationAttributeIndex());
 	}
 	
 	/**
