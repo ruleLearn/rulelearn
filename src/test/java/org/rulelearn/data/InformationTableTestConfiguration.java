@@ -42,6 +42,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 public class InformationTableTestConfiguration {
 	protected Attribute[] attributes;
 	protected int activeDecisionAttributeIndex = -1;
+	protected int activeIdentificationAttributeIndex = -1;
 	protected List<Field[]> listOfFields;
 	protected int[] allObjectIndices = null;
 	
@@ -121,13 +122,13 @@ public class InformationTableTestConfiguration {
 	}
 	
 	/**
-	 * Sets index of the only active decision attribute or throws {@link InvalidValueException} if there is more than one such attribute.
-	 * Assumes that {{@link #attributes} have been already set.
+	 * Sets index of the only active decision attribute (if there is such attribute). Throws {@link InvalidValueException} if there is more than one such attribute.
+	 * Assumes that {@link #attributes} have been already set.
 	 * 
 	 * @throws InvalidValueException if there is more than one active decision attribute
 	 */
 	protected void setDecisionAttributeIndex() {
-		//calculate index of the active decision attribute, and verify there is only one such attribute
+		//calculate index of the active decision attribute, and verify if there is only one such attribute
 		this.activeDecisionAttributeIndex = -1;
 		for (int i = 0; i < this.attributes.length; i++) {
 			if (this.attributes[i] instanceof EvaluationAttribute) {
@@ -136,6 +137,28 @@ public class InformationTableTestConfiguration {
 						throw new InvalidValueException("More than 1 active decision attribute detected.");
 					} else {
 						this.activeDecisionAttributeIndex = i;
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Sets index of the only active identification attribute (if there is such attribute). Throws {@link InvalidValueException} if there is more than one such attribute.
+	 * Assumes that {@link #attributes} have been already set.
+	 * 
+	 * @throws InvalidValueException if there is more than one active identification attribute
+	 */
+	protected void setIdentificationAttributeIndex() {
+		//calculate index of the active identification attribute, and verify if there is only one such attribute
+		this.activeIdentificationAttributeIndex = -1;
+		for (int i = 0; i < this.attributes.length; i++) {
+			if (this.attributes[i] instanceof IdentificationAttribute) {
+				if (this.attributes[i].isActive()) {
+					if (this.activeIdentificationAttributeIndex >= 0) {
+						throw new InvalidValueException("More than 1 active identification attribute detected.");
+					} else {
+						this.activeIdentificationAttributeIndex = i;
 					}
 				}
 			}
@@ -154,6 +177,7 @@ public class InformationTableTestConfiguration {
 	public InformationTableTestConfiguration(Attribute[] attributes, String[][] fieldsAsText) {
 		this.attributes = attributes.clone();
 		this.setDecisionAttributeIndex();
+		this.setIdentificationAttributeIndex();
 		this.listOfFields = convertFields(attributes, fieldsAsText);
 	}
 	
@@ -264,11 +288,6 @@ public class InformationTableTestConfiguration {
 	 * and then invoking wrapped method using this array as an input parameter.
 	 * 
 	 * @return see {@link #getDecisions(int[])}
-	 * 
-	 * @throws NullPointerException see {@link #getDecisions(int[])}
-	 * @throws InvalidTypeException see {@link #getDecisions(int[])}
-	 * @throws InvalidValueException see {@link #getDecisions(int[])}
-	 * @throws IndexOutOfBoundsException see {@link #getDecisions(int[])}
 	 */
 	public EvaluationField[] getDecisions() {
 		return this.getDecisions(this.getAllObjectIndices());
@@ -278,11 +297,9 @@ public class InformationTableTestConfiguration {
 	 * Gets decisions (active decision attribute values) of objects (rows) with given indices.
 	 * 
 	 * @param objectIndices list of indices of selected rows (only decisions concerning these objects (rows) should be returned)
-	 * @return decisions concerning objects (rows) with given indices
+	 * @return decisions concerning objects (rows) with given indices or {@code null} if there is no active decision attribute
 	 * 
 	 * @throws NullPointerException if objects' indices are {@code null}
-	 * @throws InvalidTypeException if unsupported sub-type of {@link EvaluationField} is encountered in the decision column
-	 * @throws InvalidValueException if there is no active decision attribute in this configuration
 	 * @throws IndexOutOfBoundsException if any of the given object indices is not in the interval [0, {@code this#getNumberOfObjects()})
 	 */
 	public EvaluationField[] getDecisions(int[] objectIndices) {
@@ -290,7 +307,7 @@ public class InformationTableTestConfiguration {
 			throw new NullPointerException("Objects' indices are null.");
 		}
 		if (this.activeDecisionAttributeIndex < 0) {
-			throw new InvalidValueException("There is no active decision attribute.");
+			return null;
 		}
 		
 		EvaluationField[] decisions = new EvaluationField[objectIndices.length];
@@ -300,6 +317,44 @@ public class InformationTableTestConfiguration {
 		}
 		
 		return decisions;
+	}
+	
+	/**
+	 * Gets identifiers (active identification attribute values) of objects (rows) with given indices.<br>
+	 * <br>
+	 * Wraps {@link #getIdentifiers(int[])} by first calculating array with ordered indices of all objects (rows),
+	 * and then invoking wrapped method using this array as an input parameter.
+	 * 
+	 * @return see {@link #getIdentifiers(int[])}
+	 */
+	public IdentificationField[] getIdentifiers() {
+		return this.getIdentifiers(this.getAllObjectIndices());
+	}
+	
+	/**
+	 * Gets identifiers (active identification attribute values) of objects (rows) with given indices.
+	 * 
+	 * @param objectIndices list of indices of selected rows (only identifiers concerning these objects (rows) should be returned)
+	 * @return identifiers of objects (rows) with given indices or {@code null} if there is no active identification attribute
+	 * 
+	 * @throws NullPointerException if objects' indices are {@code null}
+	 * @throws IndexOutOfBoundsException if any of the given object indices is not in the interval [0, {@code this#getNumberOfObjects()})
+	 */
+	public IdentificationField[] getIdentifiers(int[] objectIndices) {
+		if (objectIndices == null) {
+			throw new NullPointerException("Objects' indices are null.");
+		}
+		if (this.activeIdentificationAttributeIndex < 0) {
+			return null;
+		}
+		
+		IdentificationField[] identifiers = new IdentificationField[objectIndices.length];
+		
+		for (int i = 0; i < objectIndices.length; i++) {
+			identifiers[i] = this.listOfFields.get(objectIndices[i])[this.activeIdentificationAttributeIndex].selfClone();
+		}
+		
+		return identifiers;
 	}
 	
 	/**
@@ -327,6 +382,15 @@ public class InformationTableTestConfiguration {
 	 */
 	public int getActiveDecisionAttributeIndex() {
 		return this.activeDecisionAttributeIndex;
+	}
+	
+	/**
+	 * Gets index of the only active identification attribute.
+	 * 
+	 * @return index of the only active identification attribute or -1 if there is no such attribute
+	 */
+	public int getActivIdentificationAttributeIndex() {
+		return this.activeIdentificationAttributeIndex;
 	}
 	
 	/**

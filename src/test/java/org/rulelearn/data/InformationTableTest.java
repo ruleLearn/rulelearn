@@ -436,6 +436,29 @@ class InformationTableTest {
 	}
 	
 	/**
+	 * Test for {@link InformationTable#getIdentifier(int)} method}.
+	 */
+	@Test
+	public void testGetIdentifier01() {
+		InformationTable informationTable = configuration01.getInformationTable(true);
+		assertTrue(informationTable.getIdentifier(0) == null);
+	}
+	
+	/**
+	 * Test for {@link InformationTable#getIdentifier(int)} method}.
+	 */
+	@Test
+	public void testGetIdentifier02() {
+		InformationTable informationTable = configuration02.getInformationTable(true);
+		Field[] expectedIdentifiers = configuration02.getIdentifiers();
+		int numberOfObjects = informationTable.getNumberOfObjects();
+		
+		for (int i = 0; i < numberOfObjects; i++) {
+			assertEquals(informationTable.getIdentifier(i), expectedIdentifiers[i]);
+		}
+	}
+	
+	/**
 	 * Test for {@link InformationTable#getDecisions(boolean)} method}.
 	 */
 	@Test
@@ -462,6 +485,30 @@ class InformationTableTest {
 		
 		for (int i = 0; i < numberOfObjects; i++) {
 			assertEquals(decisions[i], expectedDecisions[i]);
+		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#getIdentifiers(boolean)} method}.
+	 */
+	@Test
+	public void testGetIdentifiers01() {
+		InformationTable informationTable = configuration01.getInformationTable(false);
+		assertTrue(informationTable.getIdentifiers(false) == null);
+	}
+	
+	/**
+	 * Test for {@link InformationTable#getIdentifiers(boolean)} method}.
+	 */
+	@Test
+	public void testGetIdentifiers02() {
+		InformationTable informationTable = configuration02.getInformationTable(false);
+		Field[] expectedIdentifiers = configuration02.getIdentifiers();
+		Field[] identifiers = informationTable.getIdentifiers(false);
+		int numberOfObjects = informationTable.getNumberOfObjects();
+		
+		for (int i = 0; i < numberOfObjects; i++) {
+			assertEquals(identifiers[i], expectedIdentifiers[i]);
 		}
 	}
 

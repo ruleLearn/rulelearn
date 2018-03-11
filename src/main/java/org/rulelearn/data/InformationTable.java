@@ -348,7 +348,8 @@ public class InformationTable {
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
 	public EvaluationField[] getDecisions(boolean accelerateByReadOnlyResult) {
-		return accelerateByReadOnlyResult ? this.activeDecisionAttributeFields : this.activeDecisionAttributeFields.clone();
+		return accelerateByReadOnlyResult ? this.activeDecisionAttributeFields : 
+			(this.activeDecisionAttributeFields != null ? this.activeDecisionAttributeFields.clone() : null);
 	}
 	
 	/**
@@ -387,7 +388,8 @@ public class InformationTable {
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
 	public IdentificationField[] getIdentifiers(boolean accelerateByReadOnlyResult) {
-		return accelerateByReadOnlyResult ? this.activeIdentificationAttributeFields : this.activeIdentificationAttributeFields.clone();
+		return accelerateByReadOnlyResult ? this.activeIdentificationAttributeFields :
+			(this.activeIdentificationAttributeFields != null ? this.activeIdentificationAttributeFields.clone() : null);
 	}
 	
 	/**
