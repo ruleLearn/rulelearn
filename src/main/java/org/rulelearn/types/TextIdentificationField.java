@@ -32,7 +32,7 @@ public class TextIdentificationField extends IdentificationField {
 	/** 
 	 * Default value for this type of a field.
 	 */
-	public static final String DEFAULT_VALUE = "--------";
+	public static final String DEFAULT_VALUE = "rLId-0000";
 	
 	/**
 	 * Value of this field.
@@ -65,7 +65,7 @@ public class TextIdentificationField extends IdentificationField {
 	    
 	    StringBuilder sB = new StringBuilder();
 	    
-	    return sB.append(idChars).toString();
+	    return sB.append("rLId-").append(idChars).toString();
 	}
 
 	@Override
