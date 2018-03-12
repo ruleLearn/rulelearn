@@ -17,15 +17,20 @@
 package org.rulelearn.data;
 
 import java.util.List;
+import java.util.UUID;
+
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
+import org.rulelearn.types.IdentificationField;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
+import org.rulelearn.types.TextIdentificationField;
+import org.rulelearn.types.UUIDIdentificationField;
 
 import com.univocity.parsers.conversions.TrimConversion;
 
@@ -129,23 +134,23 @@ public class InformationTableBuilder {
 	 * Adds one object to this builder. 
 	 * Given string is considered to contain subsequent identifiers/evaluations of a single object, separated by the {@link InformationTableBuilder#separator}.
 	 * 
-	 * @param objectEvaluations string with object's identifiers/evaluations, separated by the given separator
+	 * @param objectDescriptions string with object's identifiers/evaluations, separated by the given separator
 	 */
-	public void addObject(String objectEvaluations) {
+	public void addObject(String objectDescriptions) {
 		if (this.separator != null)
-			addObject(objectEvaluations.split(this.separator));
+			addObject(objectDescriptions.split(this.separator));
 	}
 	
 	/**
 	 * Adds one object to this builder. 
 	 * Given string is considered to contain subsequent identifiers/evaluations of a single object, separated by the given separator.
 	 * 
-	 * @param objectEvaluations string with object's identifiers/evaluations, separated by the given separator
+	 * @param objectDescriptions string with object's identifiers/evaluations, separated by the given separator
 	 * @param separator separator of object's evaluations
 	 */
-	public void addObject(String objectEvaluations, String separator) {
+	public void addObject(String objectDescriptions, String separator) {
 		if (separator != null) {
-			addObject(objectEvaluations.split(separator));
+			addObject(objectDescriptions.split(separator));
 		}
 	}
 	
@@ -153,21 +158,21 @@ public class InformationTableBuilder {
 	 * Adds one object to this builder. 
 	 * Given array is considered to contain subsequent identifiers/evaluations of a single object.
 	 * 
-	 * @param objectEvaluations single object's identifiers/evaluations
+	 * @param objectDescriptions single object's identifiers/evaluations
 	 * 
 	 * @throws IndexOutOfBoundsException if given attribute index does not correspond to any attribute of the constructed information table
 	 */
-	public void addObject(String[] objectEvaluations) {
-		Field[] object = new Field[objectEvaluations.length];
-		if (objectEvaluations.length > attributes.length)
+	public void addObject(String[] objectDescriptions) {
+		Field[] object = new Field[objectDescriptions.length];
+		if (objectDescriptions.length > attributes.length)
 			throw new IndexOutOfBoundsException("Object has more evaluations than the number of attributes declared.");
 		
-		for (int i = 0; i < objectEvaluations.length; i++) {
+		for (int i = 0; i < objectDescriptions.length; i++) {
 			if (attributes[i] instanceof EvaluationAttribute) {
-				object[i] = parseEvaluation(objectEvaluations[i], (EvaluationAttribute)attributes[i]);
+				object[i] = parseEvaluation(objectDescriptions[i], (EvaluationAttribute)attributes[i]);
 			}
 			else if (attributes[i] instanceof IdentificationAttribute) {
-				// TODO add identification code here
+				object[i] = parseIdentification(objectDescriptions[i], (IdentificationAttribute)attributes[i]);
 			}
 		}
 		
@@ -175,7 +180,7 @@ public class InformationTableBuilder {
 	}
 	
 	/**
-	 * Parses one object's evaluation and transforms it into a field {@link Field}.
+	 * Parses one object's evaluation and transforms it into a field {@link EvaluationField}.
 	 * 
 	 * @param evaluation text-encoded object's evaluation
 	 * @param attribute whose value should be parsed
@@ -243,6 +248,44 @@ public class InformationTableBuilder {
 		else {
 			// just assign a reference (no new copy of missing value field is made) 
 			field = attribute.getMissingValueType();
+		}
+		
+		return field;
+	}
+	
+	/**
+	 * Parses one object's identification and transforms it into a field {@link IdentificationField}.
+	 * 
+	 * @param identification text-encoded object's identification
+	 * @param attribute whose value should be parsed
+	 * 
+	 * @return constructed field
+	 */
+	protected IdentificationField parseIdentification(String identification, IdentificationAttribute attribute) {
+		IdentificationField field = null;
+		boolean missingValue = false;
+	
+		
+		// get rid of white spaces
+		identification = trimConversion.execute(identification);
+		// check whether it is a missing value
+		if (missingValueStrings != null) {
+			for (String missingValueString : this.missingValueStrings) {
+				if ((missingValueString != null) && (missingValueString.equalsIgnoreCase(identification))) {
+					missingValue = true;
+					break;
+				}
+			}
+		}
+		
+		// assign according to value type
+		if (attribute.getValueType() instanceof UUIDIdentificationField) {
+			field = (missingValue ?
+				new UUIDIdentificationField(UUIDIdentificationField.DEFAULT_VALUE) : new UUIDIdentificationField(UUID.fromString(identification))); 			
+		}
+		else {
+			field = (missingValue ?
+					new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE) : new TextIdentificationField(identification));
 		}
 		
 		return field;

@@ -18,9 +18,14 @@ package org.rulelearn.data;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.json.AttributeDeserializer;
+import org.rulelearn.data.json.ObjectBuilder;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
 import org.rulelearn.types.IntegerFieldFactory;
@@ -29,6 +34,9 @@ import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 
 
 /**
@@ -82,7 +90,7 @@ class InformationTableBuilderTest {
 	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#setAttributesFromJSON(java.lang.String)}.
 	 */
 	@Test
-	void testConstructionOfInformationTableBuilder() {
+	void testConstructionOfInformationTableBuilder01() {
 		setUp01();
 		InformationTableBuilder iTB = new InformationTableBuilder(attributes1);
 		assertTrue(iTB != null);
@@ -117,6 +125,63 @@ class InformationTableBuilderTest {
 		assertTrue(iT.getField(0, 0).isEqualTo(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE)) == TernaryLogicValue.TRUE);
 		assertTrue(iT.getField(0, 1).isEqualTo(new UnknownSimpleFieldMV2()) == TernaryLogicValue.TRUE);
 		assertTrue(iT.getField(1, 2).isEqualTo(new UnknownSimpleFieldMV2()) == TernaryLogicValue.TRUE);
+	}
+	
+	/**
+	 * Test method for {@link ObjectBuilder} and {@link InformationTableBuilder}.
+	 */
+	@Test
+	void testConstructionOfInformationTableBuilder02() {
+		Attribute [] attributes = null;
+		
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		
+		JsonReader jsonReader = null;
+		try {
+			jsonReader = new JsonReader(new FileReader("src/test/resources/data/csv/prioritisation.json"));
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		if (jsonReader != null) {
+			attributes = gson.fromJson(jsonReader, Attribute[].class);
+		}
+		else {
+			fail("Unable to load JSON test file with definition of attributes");
+		}
+		
+		JsonElement json = null;
+		try {
+			jsonReader = new JsonReader(new FileReader("src/test/resources/data/json/examples.json"));
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		if (jsonReader != null) {
+			JsonParser jsonParser = new JsonParser();
+			json = jsonParser.parse(jsonReader);
+		}
+		else {
+			fail("Unable to load JSON test file with definition of objects");
+		}
+		
+		ObjectBuilder ob = new ObjectBuilder(attributes);
+		List<String []> objects = null;
+		objects = ob.getObjects(json);
+		assertTrue(objects != null);
+		assertEquals(objects.size(), 2);
+		
+		InformationTableBuilder iTB = new InformationTableBuilder(attributes, ",", new String[] {"?"});
+		for (int i = 0; i < objects.size(); i++) {
+			iTB.addObject(objects.get(i));
+		}		
+		
+		InformationTable iT = iTB.build();
+		assertTrue(iT != null);
+		assertEquals(iT.getNumberOfObjects(), 2);
+		
 	}
 
 }
