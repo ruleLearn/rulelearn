@@ -16,6 +16,7 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.Field;
 
 /**
@@ -38,6 +39,18 @@ public abstract class Condition {
      * @return {@code true} if given evaluation fulfills this condition, {@code false} otherwise
      */
     public abstract boolean fulfilledBy(Field evaluation);
+    
+    /**
+     * Checks if an object from the information table, defined by its index, fulfills this condition.
+     * 
+     * @param objectIndex index of an object in the given information table
+     * @param informationTable information table containing the object to check (and possibly also other objects)
+     * 
+     * @return {@code true} if considered object fulfills this condition, {@code false} otherwise
+     */
+    public boolean fulfilledBy(int objectIndex, InformationTable informationTable) {
+    	return this.fulfilledBy(informationTable.getField(objectIndex, this.attributeInformation.getAttributeIndex()));
+    }
     
 	/**
 	 * Gets textual form of this condition

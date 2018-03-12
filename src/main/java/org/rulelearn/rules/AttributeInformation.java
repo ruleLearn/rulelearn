@@ -28,10 +28,39 @@ public class AttributeInformation {
 	/**
 	 * Number (index) of the attribute in the array of all attributes.
 	 */
-	protected int attributeNumber;
+	protected int attributeIndex;
 
 	/**
 	 * Reference to the attribute.
 	 */
 	protected Attribute attribute;
+	
+	/**
+	 * Constructor initializing all fields.
+	 * 
+	 * @param attribute attribute of an information table for which this object is created
+	 * @param attributeIndex index of the attribute in the array of all attributes of an information table
+	 */
+	public AttributeInformation(Attribute attribute, int attributeIndex) {
+		this.attribute = attribute;
+		this.attributeIndex = attributeIndex;
+	}
+	
+	/**
+	 * Gets number (index) of the attribute.
+	 * 
+	 * @return number (index) of the attribute
+	 */
+	public int getAttributeIndex() {
+		return this.attributeIndex;
+	}
+	
+	/**
+	 * Gets name of the attribute.
+	 * 
+	 * @return name of the attribute
+	 */
+	public String getAttributeName() {
+		return this.attribute.getName();
+	}
 }
