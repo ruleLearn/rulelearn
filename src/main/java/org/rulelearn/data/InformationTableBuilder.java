@@ -287,7 +287,7 @@ public class InformationTableBuilder {
 				}
 				else {
 					field = attribute.getMissingValueType();
-					throw new IndexOutOfBoundsException(new String("Incorrect value of enumeration: ").concat(evaluation));
+					throw new IndexOutOfBoundsException(new StringBuilder("Incorrect value of enumeration: ").append(evaluation).append(" was replaced by a missing value.").toString());
 				}
 					
 			}
