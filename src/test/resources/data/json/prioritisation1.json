@@ -1,0 +1,24 @@
+[
+  {
+  "TargetAssetCriticality": "critical",
+  "SourceAssetCriticality": "low",
+  "TimeToDueDate": -100896.193,
+  "TimeFromDetectTime": 187296.193,
+  "MAQuality": 0.7,
+  "AttackSourceReputationScore": 0.5,
+  "SeverityForAttackCategory": "critical",
+  "MaxCVE": 0,
+  "ID": "1"
+  },
+  {
+  "TargetAssetCriticality": "critical",
+  "SourceAssetCriticality": "NA",
+  "TimeToDueDate": -10641696.193,
+  "TimeFromDetectTime": 10728096.193,
+  "MAQuality": 0.7,
+  "AttackSourceReputationScore": 0.5,
+  "SeverityForAttackCategory": "low",
+  "MaxCVE": 1,
+  "ID": "2"
+  }
+]
