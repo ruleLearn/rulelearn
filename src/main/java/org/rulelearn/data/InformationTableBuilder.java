@@ -129,59 +129,6 @@ public class InformationTableBuilder {
 	}
 	
 	/**
-	 * Constructor initializing this information table builder and setting attributes. It requires definition of attributes in JSON.
-	 * 
-	 * @param jsonAttributes JSON string encoding information about all attributes
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
-	 */
-	public InformationTableBuilder(String jsonAttributes) {
-		this();
-		
-		// parse attributes
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
-		Gson gson = gsonBuilder.create();
-		this.attributes = gson.fromJson(jsonAttributes, Attribute[].class);
-		
-		// check attributes and initialize fields
-		if (attributes != null) {
-			for (Attribute attribute : attributes) {
-				if (attribute == null) throw new NullPointerException("At least one attribute is not set");
-			}
-			this.fields = new ObjectArrayList<Field []>();
-		}
-		else {
-			throw new NullPointerException("Attributes are not set");
-		}
-	}
-	
-	/**
-	 * Constructor initializing this information table builder and setting attributes. It requires definition of attributes in JSON.
-	 * 
-	 * @param jsonAttributes JSON string encoding information about all attributes
-	 * @param separator separator of object's evaluations
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
-	 */
-	public InformationTableBuilder(String jsonAttributes, String separator) {
-		this(jsonAttributes);
-		this.separator = separator;
-	}
-	
-	/**
-	 * Constructor initializing this information table builder and setting attributes. It requires definition of attributes in JSON.
-	 * Missing values strings (i.e., array of strings representing missing values) are also set.
-	 * 
-	 * @param jsonAttributes JSON string encoding information about all attributes
-	 * @param separator separator of object's evaluations
-	 * @param missingValuesStrings array of string representations of missing values
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
-	 */
-	public InformationTableBuilder(String jsonAttributes, String separator, String[] missingValuesStrings) {
-		this(jsonAttributes, separator);
-		this.missingValueStrings = missingValuesStrings;
-	}
-	
-	/**
 	 * Adds one object to this builder. 
 	 * Given string is considered to contain subsequent identifiers/evaluations of a single object, separated by the {@link InformationTableBuilder#separator}.
 	 * 

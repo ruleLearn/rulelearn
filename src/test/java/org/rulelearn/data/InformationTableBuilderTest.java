@@ -20,11 +20,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.core.TernaryLogicValue;
+import org.rulelearn.data.json.AttributeDeserializer;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 
 /**
@@ -64,12 +68,23 @@ class InformationTableBuilderTest {
 			  "}" +
 		"]";
 	
+	private Attribute [] attributes1 = null;
+	
+	private void setUp01() {
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		
+		attributes1 = gson.fromJson(jsonAttributes1, Attribute[].class);
+	}
+	
 	/**
 	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#setAttributesFromJSON(java.lang.String)}.
 	 */
 	@Test
-	void testConstructionOfInformationTableBuilder() {		 
-		InformationTableBuilder iTB = new InformationTableBuilder(jsonAttributes1);
+	void testConstructionOfInformationTableBuilder() {
+		setUp01();
+		InformationTableBuilder iTB = new InformationTableBuilder(attributes1);
 		assertTrue(iTB != null);
 	}
 
@@ -78,7 +93,8 @@ class InformationTableBuilderTest {
 	 */
 	@Test
 	void testAddObject01() {
-		InformationTableBuilder iTB = new InformationTableBuilder(jsonAttributes1, ",");
+		setUp01();
+		InformationTableBuilder iTB = new InformationTableBuilder(attributes1, ",");
 		iTB.addObject("1, 1.0, a");
 		iTB.addObject("2, 2.0, b");
 		InformationTable iT = iTB.build();
@@ -93,7 +109,8 @@ class InformationTableBuilderTest {
 	 */
 	@Test
 	void testAddObject02() {
-		InformationTableBuilder iTB = new InformationTableBuilder(jsonAttributes1, ",", new String[] {"?", "*"})  ;
+		setUp01();
+		InformationTableBuilder iTB = new InformationTableBuilder(attributes1, ",", new String[] {"?", "*"})  ;
 		iTB.addObject("1, ?, a");
 		iTB.addObject("2, 2.0, *");
 		InformationTable iT = iTB.build();
