@@ -17,7 +17,6 @@
 package org.rulelearn.data;
 
 import java.util.List;
-import org.rulelearn.data.json.AttributeDeserializer;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
@@ -28,8 +27,6 @@ import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.univocity.parsers.conversions.TrimConversion;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
