@@ -17,7 +17,6 @@
 package org.rulelearn.types;
 
 import org.rulelearn.core.ComparableExt;
-import org.rulelearn.core.SelfCloneable;
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
