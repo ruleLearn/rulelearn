@@ -17,11 +17,11 @@
 package org.rulelearn.types;
 
 /**
- * Top level class for all (known and unknown) simple evaluations in an information table.
- * 
+ * Field of an information table used to store an identifier assigned to an object.
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class SimpleField extends EvaluationField {
-	
+public abstract class IdentificationField extends Field {
+
 }

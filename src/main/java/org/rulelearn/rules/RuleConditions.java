@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package org.rulelearn.types;
+package org.rulelearn.rules;
+
+import java.util.List;
 
 /**
- * Top level class for all (known and unknown) simple evaluations in an information table.
- * 
+ * Set of elementary conditions on the LHS of a decision rule.
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class SimpleField extends EvaluationField {
-	
+public class RuleConditions {
+
+	/**
+	 * Elementary conditions, in order of their addition to rule's LHS. 
+	 */
+	protected List<Condition> conditions;
 }

@@ -1,4 +1,4 @@
-ID,SourceAssetCriticality,TargetAssetCriticality,TimeToDueDate,TimeFromDetectTime,SeverityForAttackCategory,TrustToDataSource,AttackSourceReputationScore,HighestVulnerabilitySeverityScore,Rank,Priority
+ID,SourceAssetCriticality,TargetAssetCriticality,TimeToDueDate,TimeFromDetectTime,SeverityForAttackCategory,MAQuality,AttackSourceReputationScore,MaxCVE,Rank,Priority
 1,NA,NA,44.58,86.71,NA,0.21,0.34,1.1,579,5
 2,NA,NA,40.24,55.89,NA,0.69,0.95,7,578,5
 3,NA,NA,33.2,152.27,NA,0.76,0.88,3.9,577,5

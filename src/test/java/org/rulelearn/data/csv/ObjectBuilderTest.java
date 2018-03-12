@@ -14,14 +14,43 @@
  * limitations under the License.
  */
 
-package org.rulelearn.types;
+package org.rulelearn.data.csv;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 
 /**
- * Top level class for all (known and unknown) simple evaluations in an information table.
- * 
+ * Test for {@link ObjectBuilder}.
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+ *
  */
-public abstract class SimpleField extends EvaluationField {
-	
+class ObjectBuilderTest {
+
+	/**
+	 * Test method for {@link ObjectBuilder#getObjects(String)}.
+	 */
+	@Test
+	void testConstructionOfInformationTableBuilder() {		 
+		ObjectBuilder ob = new ObjectBuilder(true);
+		List<String []> objects = null;
+		try {
+			 objects = ob.getObjects("src/test/resources/data/csv/prioritisation1.csv");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (UnsupportedEncodingException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(objects != null);
+		assertEquals(objects.size(), 579);
+	}
+
 }

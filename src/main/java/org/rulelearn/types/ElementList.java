@@ -77,7 +77,7 @@ public class ElementList {
 	 * @throws NullPointerException when elements is null
 	 * @throws NoSuchAlgorithmException when algorithm {@link DEFAULT_HASH_ALGORITHM} is not on the list of algorithms provided in {@link MessageDigest}.
 	 */
-	public ElementList (String [] elements) throws NullPointerException, NoSuchAlgorithmException {
+	public ElementList (String [] elements) throws NoSuchAlgorithmException {
 		this(elements, DEFAULT_HASH_ALGORITHM);
 	}
 	
@@ -89,7 +89,7 @@ public class ElementList {
 	 * @throws NullPointerException when elements is null
 	 * @throws NoSuchAlgorithmException when algorithm is not on the list of algorithms provided in {@link MessageDigest}.
 	 */
-	public ElementList (String [] elements, String algorithm) throws NullPointerException, NoSuchAlgorithmException {
+	public ElementList (String [] elements, String algorithm) throws NoSuchAlgorithmException {
 		if (elements != null) {
 			int size = elements.length;
 			this.elements = new String [size];
@@ -148,7 +148,7 @@ public class ElementList {
 	 * 
 	 * @return array of {@link String} elements
 	 */
-	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT_AND_OUTPUT)
+	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
 	public String [] getElements () {
 		return elements;
 	}

@@ -128,7 +128,9 @@ public class Table {
 	}
 	
 	/**
-	 * Gets fields of this table for the object identified by the given index
+	 * Gets fields of this table for the object identified by the given index.<br>
+	 * <br>
+	 * This method can be used in certain circumstances to accelerate field access (by not cloning internally stored array).
 	 * 
 	 * @param objectIndex index of an object (row of the table)
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,

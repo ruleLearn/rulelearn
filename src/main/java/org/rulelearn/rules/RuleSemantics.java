@@ -14,14 +14,30 @@
  * limitations under the License.
  */
 
-package org.rulelearn.types;
+package org.rulelearn.rules;
 
 /**
- * Top level class for all (known and unknown) simple evaluations in an information table.
- * 
+ * Semantics a decision rule, reflecting the type of conditions and decision present in this rule.
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+ *
  */
-public abstract class SimpleField extends EvaluationField {
+public enum RuleSemantics {
 	
+	/**
+	 * Semantics of a rule describing minimal conditions (lower profile) that need to be satisfied by a decision object to conclude that this object belongs to the set determined by rule's decision part.
+	 */
+	AT_LEAST,
+	
+	/**
+	 * Semantics of a rule describing maximal conditions (upper profile) that must not be exceeded by a decision object to conclude that this object belongs to the set determined by rule's decision part.
+	 */
+	AT_MOST,
+	
+	/**
+	 * Semantics of a rule describing exact conditions (profile) that need to be satisfied by a decision object to conclude that this object belongs to the set determined by rule's decision part.
+	 */
+	EQUAL
+
 }

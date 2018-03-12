@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
-package org.rulelearn.types;
+package org.rulelearn.rules;
 
 /**
- * Top level class for all (known and unknown) simple evaluations in an information table.
- * 
+ * Type of a decision rule, reflecting the way of construction of this rule.
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class SimpleField extends EvaluationField {
-	
+public enum RuleType {
+
+	/**
+	 * Type of a certain rule. Certain rule is constructed based on objects belonging to a lower approximation.
+	 */
+	CERTAIN,
+	/**
+	 * Type of a possible rule. Possible rule is constructed based on objects belonging to an upper approximation.
+	 */
+	POSSIBLE,
+	/**
+	 * Type of an approximate rule. Approximate rule is constructed based on objects belonging to a boundary.
+	 */
+	APPROXIMATE
 }

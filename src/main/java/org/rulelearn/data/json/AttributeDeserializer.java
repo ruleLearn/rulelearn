@@ -22,15 +22,20 @@ import java.security.NoSuchAlgorithmException;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
+import org.rulelearn.data.EvaluationAttribute;
+import org.rulelearn.data.IdentificationAttribute;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
-import org.rulelearn.types.Field;
+import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.IdentificationField;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.PairField;
 import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
+import org.rulelearn.types.TextIdentificationField;
+import org.rulelearn.types.UUIDIdentificationField;
 import org.rulelearn.types.UnknownSimpleField;
 import org.rulelearn.types.UnknownSimpleFieldMV15;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
@@ -58,15 +63,12 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 		// in case not provided set active
 		boolean active = true;
 		String name = null;
-		// in case not provided set condition type
-		AttributeType type = AttributeType.CONDITION;
-		// in case not provided set none
-		AttributePreferenceType preferenceType = AttributePreferenceType.NONE;
-		Field valueType = null;
-		UnknownSimpleField missingValueType = null;
+		JsonElement element = null;
 		
-		JsonElement element = json.getAsJsonObject().get("name");
-		// check if name is not empty
+		Attribute attribute = null;
+		
+		element = json.getAsJsonObject().get("name");
+		// check if name is not empty and set name
 		if (element != null) {
 			name = element.getAsString();
 			if (name.trim().isEmpty())
@@ -74,9 +76,79 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 		}
 		else
 			throw new JsonParseException("Attribute name is not specified.");
+		// set active
 		element = json.getAsJsonObject().get("active");
 		if (element != null)
 			active = element.getAsBoolean();
+		
+		//check type of attribute
+		element = json.getAsJsonObject().get("valueType");
+		if (element != null) 
+			attribute = deserializeEvaluationAttribute(active, name, json, typeOfT, context);
+		else
+			attribute = deserializeIdentificationAttribute(active, name, json, typeOfT, context);
+		
+		return attribute;
+	}
+	
+	/**
+	 * Deserializes {@link IdentificationAttribute} from JSON.
+	 * 
+	 * @param active attribute activity state
+	 * @param name attribute name
+	 * @param json JSON with definition of properties specific for {@link IdentificationAttribute}
+	 * @param typeOfT see {@link java.lang.reflect.Type}
+	 * @param context see {@link com.google.gson.JsonDeserializationContext}
+	 * @return deserialized (constructed) instance of {@link IdentificationAttribute} 
+	 * @throws JsonParseException in case identification type is not specified 
+	 */
+	protected IdentificationAttribute deserializeIdentificationAttribute(boolean active, String name, JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		// in case not provided set text type
+		IdentificationField valueType;
+		String typeName = null;
+		JsonElement element = null;
+		
+		// set identification value type
+		element = json.getAsJsonObject().get("identifierType");
+		if (element != null) {
+			typeName = element.getAsString().toLowerCase();
+			if (typeName.trim().isEmpty())
+				throw new JsonParseException("Identification type is not specified.");
+			
+			if (typeName.compareTo("uuid") == 0) {
+				valueType = new UUIDIdentificationField(UUIDIdentificationField.DEFAULT_VALUE);
+			} else {
+				valueType = new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE);
+			}
+				
+		}
+		else {
+			throw new JsonParseException("Identification type is not specified.");
+		}
+		
+		return new IdentificationAttribute(name, active, valueType);
+	}
+	
+	/**
+	 * Deserializes {@link EvaluationAttribute} from JSON.
+	 * 
+	 * @param active attribute activity state
+	 * @param name attribute name
+	 * @param json JSON with definition of properties specific for {@link EvaluationAttribute}
+	 * @param typeOfT see {@link java.lang.reflect.Type}
+	 * @param context see {@link com.google.gson.JsonDeserializationContext}
+	 * @return deserialized (constructed) instance of {@link EvaluationAttribute}
+	 * @throws JsonParseException in case definition of evaluation attribute is not correct (i.e., no value type specified, incorrect domain specification for enumeration attribute)
+	 */
+	protected EvaluationAttribute deserializeEvaluationAttribute (boolean active, String name, JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		// in case not provided set condition type
+		AttributeType type = AttributeType.CONDITION;
+		// in case not provided set none
+		AttributePreferenceType preferenceType = AttributePreferenceType.NONE;
+		EvaluationField valueType = null;
+		UnknownSimpleField missingValueType = null;				
+		JsonElement element = null;
+		
 		String value = "";
 		element = json.getAsJsonObject().get("preferenceType");
 		if (element != null) {
@@ -120,14 +192,14 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 			
 			// set valueType
 			if (value.compareTo("integer") == 0) {
-				if (	pair)
+				if (pair)
 					valueType = new PairField<IntegerField>(IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType), 
 															IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType));
 				else
 					valueType = IntegerFieldFactory.getInstance().create(0, preferenceType);
 			}
 			else if (value.compareTo("real") == 0) {
-				if (	pair)
+				if (pair)
 					valueType = new PairField<RealField>(RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType), 
 														RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType));
 				else
@@ -155,7 +227,7 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 							throw new JsonParseException("Incorrect domain hashing algorithm specified enumeration type attribute.");
 						}
 						
-						if (	pair)
+						if (pair)
 							valueType = new PairField<EnumerationField>(EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, preferenceType), 
 																		EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, preferenceType));
 						else
@@ -184,7 +256,7 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 		else // in case it is not provided set mv2
 			missingValueType = new UnknownSimpleFieldMV2();
 		
-		return new Attribute(name, active, type, valueType, missingValueType, preferenceType);
+		return new EvaluationAttribute(name, active, type, valueType, missingValueType, preferenceType);
 	}
 
 }

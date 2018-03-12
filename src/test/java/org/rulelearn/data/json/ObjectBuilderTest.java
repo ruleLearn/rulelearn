@@ -14,43 +14,41 @@
  * limitations under the License.
  */
 
-package org.rulelearn.data;
+package org.rulelearn.data.json;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.rulelearn.data.json.AttributeDeserializer;
-import org.rulelearn.data.json.EvaluationAttributeSerializer;
-import org.rulelearn.data.json.IdentificationAttributeSerializer;
+import org.rulelearn.data.Attribute;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
 /**
- * Test for {@link IdentificationAttribute} and {@link EvaluationAttribute}.
+ * Test for {@link ObjectBuilder}
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
-class AttributeTest {
+class ObjectBuilderTest {
 
 	/**
-	 * Tests loading JSON file and serialization/deserialization to/from JSON
+	 * Test method for {@link ObjectBuilder#getObjects(String)}.
 	 */
 	@Test
-	public void testLoading() {
+	void testConstructionOfInformationTableBuilder() {
 		Attribute [] attributes = null;
-		Attribute [] testAttributes = null;
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
-		gsonBuilder.registerTypeAdapter(IdentificationAttribute.class, new IdentificationAttributeSerializer());
-		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		
 		JsonReader jsonReader = null;
@@ -60,18 +58,34 @@ class AttributeTest {
 		catch (FileNotFoundException ex) {
 			System.out.println(ex.toString());
 		}
-		
-		// compare result of loading to serialization/deserialization
 		if (jsonReader != null) {
 			attributes = gson.fromJson(jsonReader, Attribute[].class);
-			String json = gson.toJson(attributes);
-			// System.out.println(json);
-			testAttributes = gson.fromJson(json, Attribute[].class);
-			
-			assertArrayEquals(attributes, testAttributes);
 		}
-		else
-			fail("Unable to load JSON test file");
+		else {
+			fail("Unable to load JSON test file with definition of attributes");
+		}
+		
+		JsonElement json = null;
+		try {
+			jsonReader = new JsonReader(new FileReader("src/test/resources/data/json/prioritisation1.json"));
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		if (jsonReader != null) {
+			JsonParser jsonParser = new JsonParser();
+			json = jsonParser.parse(jsonReader);
+		}
+		else {
+			fail("Unable to load JSON test file with definition of objects");
+		}
+		
+		ObjectBuilder ob = new ObjectBuilder(attributes);
+		List<String []> objects = null;
+		objects = ob.getObjects(json);
+	
+		assertTrue(objects != null);
+		assertEquals(objects.size(), 2);
 	}
 
 }

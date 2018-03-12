@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-package org.rulelearn.types;
+package org.rulelearn.rules;
+
+import org.rulelearn.data.Attribute;
 
 /**
- * Top level class for all (known and unknown) simple evaluations in an information table.
- * 
+ * Information about an attribute.
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class SimpleField extends EvaluationField {
-	
+public class AttributeInformation {
+	/**
+	 * Number (index) of the attribute in the array of all attributes.
+	 */
+	protected int attributeNumber;
+
+	/**
+	 * Reference to the attribute.
+	 */
+	protected Attribute attribute;
 }
