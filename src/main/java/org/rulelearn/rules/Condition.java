@@ -53,9 +53,9 @@ public abstract class Condition {
     }
     
 	/**
-	 * Gets textual form of this condition
+	 * Gets text representation of this condition
 	 * 
-	 * @return textual form of this condition
+	 * @return text representation of this condition
 	 */
 	public abstract String toString();
 
@@ -67,10 +67,20 @@ public abstract class Condition {
 	public abstract Condition duplicate();
 	
 	/**
-	 * Checks if given object is a condition equal to this condition
+	 * Tells if this condition is equal to the other object.
 	 * 
-	 * @param object object that should be compared with this condition
-	 * @return {@code true} if given object is a condition equal to this condition, {@code false} otherwise
+	 * @param otherObject other object that this object should be compared with
+	 * @return {@code true} if this object is equal to the other object,
+	 *         {@code false} otherwise
 	 */
-	public abstract boolean equals(Object object);
+	@Override
+	public abstract boolean equals(Object otherObject);
+	
+	/**
+     * Gets hash code of this condition.
+     *
+     * @return hash code of this condition
+     */
+	@Override
+    public abstract int hashCode(); 
 }

@@ -17,9 +17,12 @@
 package org.rulelearn.rules;
 
 import java.util.List;
+import org.rulelearn.data.InformationTable;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
- * Set of elementary conditions on the LHS of a decision rule.
+ * Complex (list) of elementary conditions on the LHS of a decision rule.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -30,4 +33,70 @@ public class RuleConditions {
 	 * Elementary conditions, in order of their addition to rule's LHS. 
 	 */
 	protected List<Condition> conditions;
+	
+	/**
+	 * Indices of objects from learning information (decision) table that are considered to be positive objects for this complex of rule conditions.
+	 * In case of inducing a certain decision rule, one should assume that positive objects are those belonging to the lower approximation of an approximated set,
+	 * or that positive objects are those belonging to the approximated set.
+	 * In case of inducing a possible decision rule, positive objects are those belonging to the upper approximation of the approximated set.
+	 * The meaning of the notion "positive object" is such, that this complex of rule conditions should be appreciated for covering "positive objects" and/or for not covering the other objects ("non-positive" ones).
+	 */
+	protected IntSet indicesOfPositiveObjects; //e.g., IntOpenHashSet
+	
+	/**
+	 * Learning information (decision) table in context of which this complex of elementary conditions is evaluated.
+	 */
+	protected InformationTable learningInformationTable = null;
+	
+	/**
+	 * Constructor setting learning information table and the set of indices of positive objects from this table.
+	 * 
+	 * @param learningInformationTable information table containing positive and negative objects
+	 * @param indicesOfPositiveObjects set of indices of positive objects from the given information table
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 */
+	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects) {
+		if (learningInformationTable == null) {
+			throw new NullPointerException("Information table is null.");
+		}
+		this.learningInformationTable = learningInformationTable;
+		
+		if (indicesOfPositiveObjects == null) {
+			throw new NullPointerException("Set of indices of positive objects is null.");
+		}
+		this.indicesOfPositiveObjects = indicesOfPositiveObjects;
+		
+		this.conditions = new ObjectArrayList<Condition>();
+	}
+	
+	/**
+	 * Tells if object with given index is positive for this set of rule conditions.
+	 * 
+	 * @param objectIndex index of an object in learning information table
+	 * @return {@code true} if object with given index is positive for this set of rule conditions
+	 *         {@code false} otherwise
+	 */
+	public boolean objectIsPositive(int objectIndex) {
+		return this.indicesOfPositiveObjects.contains(objectIndex);
+	}
+	
+	/**
+	 * Adds given condition to this complex of rule's conditions
+	 * 
+	 * @param condition new condition to add
+	 */
+	public void addCondition(Condition condition) {
+		this.conditions.add(condition);
+	}
+	
+	/**
+	 * Gets list of elementary conditions building this complex of elementary conditions.
+	 * 
+	 * @return list of elementary conditions building this complex of elementary conditions
+	 */
+	public List<Condition> getConditions() {
+		return this.conditions;
+	}
+	
 }

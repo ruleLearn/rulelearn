@@ -16,10 +16,11 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.data.Attribute;
 
 /**
- * Information about an attribute.
+ * Information about a single attribute.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -42,6 +43,13 @@ public class AttributeInformation {
 	 * @param attributeIndex index of the attribute in the array of all attributes of an information table
 	 */
 	public AttributeInformation(Attribute attribute, int attributeIndex) {
+		if (attribute == null) {
+			throw new NullPointerException("Attribute for which information should be stored is null.");
+		}
+		if (attributeIndex < 0) {
+			throw new InvalidValueException("Index of an attribute for which information should be stored is negative.");
+		}
+		
 		this.attribute = attribute;
 		this.attributeIndex = attributeIndex;
 	}
