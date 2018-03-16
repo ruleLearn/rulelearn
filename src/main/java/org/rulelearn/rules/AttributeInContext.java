@@ -16,11 +16,11 @@
 
 package org.rulelearn.rules;
 
-import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.Precondition;
 import org.rulelearn.data.Attribute;
 
 /**
- * Information about a single attribute.
+ * Structure embracing an attribute and its contextual information (like attribute's index in the set of all attributes).
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -41,17 +41,13 @@ public class AttributeInContext {
 	 * 
 	 * @param attribute attribute of an information table for which this object is created
 	 * @param attributeIndex index of the attribute in the array of all attributes of an information table
+	 * 
+	 * @throws NullPointerException if attribute does not conform to {@link Precondition#notNull(Object)}
+	 * @throws InvalidValueException if attribute's index does not conform to {@link Precondition#isNonNegative(int)}
 	 */
 	public AttributeInContext(Attribute attribute, int attributeIndex) {
-		if (attribute == null) {
-			throw new NullPointerException("Attribute for which information should be stored is null.");
-		}
-		if (attributeIndex < 0) {
-			throw new InvalidValueException("Index of an attribute for which information should be stored is negative.");
-		}
-		
-		this.attribute = attribute;
-		this.attributeIndex = attributeIndex;
+		this.attribute = Precondition.notNull(attribute, "Attribute to be stored in context is null.");
+		this.attributeIndex = Precondition.isNonNegative(attributeIndex, "Index of an attribute to be stored in context is negative.");
 	}
 	
 	/**

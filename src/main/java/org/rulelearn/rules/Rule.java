@@ -18,6 +18,7 @@ package org.rulelearn.rules;
 
 import java.util.List;
 
+import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.types.Field;
@@ -70,19 +71,14 @@ public abstract class Rule {
      * @param conditions list with conditions building condition (LHS) part of this rule
      * @param decisions list with decisions building decision (RHS) part of this rule
      * 
-     * @throws NullPointerException if {@code inherentDecision}, {@code conditions} or {@code decisions} are {@code null}
+     * @throws NullPointerException if any of the parameters is {@code null}
      */
     public Rule(RuleType type, RuleSemantics semantics, Field inherentDecision, List<Condition> conditions, List<Condition> decisions) {
-    	if (inherentDecision == null) {
-    		throw new NullPointerException("Rule's inherent decision is null.");
-    	}
-    	
-    	this.type = type;
-    	this.semantics = semantics;
-    	
-    	this.inherentDecision = inherentDecision;
-    	this.conditions = conditions.toArray(new Condition[0]);
-    	this.decisions = decisions.toArray(new Condition[0]);
+    	this.type = Precondition.notNull(type, "Rule's type is null.");
+    	this.semantics = Precondition.notNull(semantics, "Rule's semantics is null.");
+    	this.inherentDecision = Precondition.notNull(inherentDecision, "Rule's inherent decision is null.");
+    	this.conditions = Precondition.notNull(conditions, "Rule's conditions are null.").toArray(new Condition[0]);
+    	this.decisions = Precondition.notNull(decisions, "Rule's decisions are null.").toArray(new Condition[0]);
     }
 
 	/**

@@ -17,6 +17,8 @@
 package org.rulelearn.rules;
 
 import java.util.List;
+
+import org.rulelearn.core.Precondition;
 import org.rulelearn.data.InformationTable;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -41,7 +43,7 @@ public class RuleConditions {
 	 * In case of inducing a possible decision rule, positive objects are those belonging to the upper approximation of the approximated set.
 	 * The meaning of the notion "positive object" is such, that this complex of rule conditions should be appreciated for covering "positive objects" and/or for not covering the other objects ("non-positive" ones).
 	 */
-	protected IntSet indicesOfPositiveObjects; //e.g., IntOpenHashSet
+	protected IntSet indicesOfPositiveObjects; //e.g., IntOpenHashSet from fastutil library
 	
 	/**
 	 * Learning information (decision) table in context of which this complex of elementary conditions is evaluated.
@@ -57,15 +59,8 @@ public class RuleConditions {
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects) {
-		if (learningInformationTable == null) {
-			throw new NullPointerException("Information table is null.");
-		}
-		this.learningInformationTable = learningInformationTable;
-		
-		if (indicesOfPositiveObjects == null) {
-			throw new NullPointerException("Set of indices of positive objects is null.");
-		}
-		this.indicesOfPositiveObjects = indicesOfPositiveObjects;
+		this.learningInformationTable = Precondition.notNull(learningInformationTable, "Information table is null.");
+		this.indicesOfPositiveObjects = Precondition.notNull(indicesOfPositiveObjects, "Set of indices of positive objects is null.");
 		
 		this.conditions = new ObjectArrayList<Condition>();
 	}
@@ -85,9 +80,20 @@ public class RuleConditions {
 	 * Adds given condition to this complex of rule's conditions
 	 * 
 	 * @param condition new condition to add
+	 * @throws NullPointerException if condition does not conform to {@link Precondition#notNull(Object)}
 	 */
 	public void addCondition(Condition condition) {
-		this.conditions.add(condition);
+		this.conditions.add(Precondition.notNull(condition, "Condition is null."));
+	}
+	
+	/**
+	 * Removes condition with given index.
+	 * 
+	 * @param index index of a condition to remove from this set of conditions
+	 * @throws IndexOutOfBoundsException if given index does not refer to any stored condition
+	 */
+	public void removeCondition(int index) {
+		this.conditions.remove(index);
 	}
 	
 	/**
