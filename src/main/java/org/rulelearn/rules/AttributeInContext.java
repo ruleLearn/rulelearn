@@ -25,7 +25,7 @@ import org.rulelearn.data.Attribute;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class AttributeInformation {
+public class AttributeInContext {
 	/**
 	 * Number (index) of the attribute in the array of all attributes.
 	 */
@@ -42,7 +42,7 @@ public class AttributeInformation {
 	 * @param attribute attribute of an information table for which this object is created
 	 * @param attributeIndex index of the attribute in the array of all attributes of an information table
 	 */
-	public AttributeInformation(Attribute attribute, int attributeIndex) {
+	public AttributeInContext(Attribute attribute, int attributeIndex) {
 		if (attribute == null) {
 			throw new NullPointerException("Attribute for which information should be stored is null.");
 		}

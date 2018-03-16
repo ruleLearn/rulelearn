@@ -30,7 +30,7 @@ public abstract class Condition {
 	/**
 	 * Information about an attribute for which this condition has been created.
 	 */
-	protected AttributeInformation attributeInformation;
+	protected AttributeInContext attributeInformation;
 
 	/**
      * Checks if given evaluation fulfills this condition.
