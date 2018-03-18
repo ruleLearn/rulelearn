@@ -17,11 +17,10 @@
 package org.rulelearn.rules;
 
 import java.util.List;
-
-import org.rulelearn.core.Precondition;
 import org.rulelearn.data.InformationTable;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import static org.rulelearn.core.Precondition.notNull;
 
 /**
  * Complex (list) of elementary conditions on the LHS of a decision rule.
@@ -59,8 +58,8 @@ public class RuleConditions {
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects) {
-		this.learningInformationTable = Precondition.notNull(learningInformationTable, "Information table is null.");
-		this.indicesOfPositiveObjects = Precondition.notNull(indicesOfPositiveObjects, "Set of indices of positive objects is null.");
+		this.learningInformationTable = notNull(learningInformationTable, "Information table is null.");
+		this.indicesOfPositiveObjects = notNull(indicesOfPositiveObjects, "Set of indices of positive objects is null.");
 		
 		this.conditions = new ObjectArrayList<Condition>();
 	}
@@ -80,10 +79,10 @@ public class RuleConditions {
 	 * Adds given condition to this complex of rule's conditions
 	 * 
 	 * @param condition new condition to add
-	 * @throws NullPointerException if condition does not conform to {@link Precondition#notNull(Object)}
+	 * @throws NullPointerException if condition does not conform to {@link org.rulelearn.core.Precondition#notNull(Object, String)}
 	 */
 	public void addCondition(Condition condition) {
-		this.conditions.add(Precondition.notNull(condition, "Condition is null."));
+		this.conditions.add(notNull(condition, "Condition is null."));
 	}
 	
 	/**

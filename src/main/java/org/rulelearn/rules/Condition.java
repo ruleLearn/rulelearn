@@ -16,7 +16,6 @@
 
 package org.rulelearn.rules;
 
-import org.rulelearn.core.Precondition;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.Field;
 
@@ -31,7 +30,7 @@ public abstract class Condition {
 	/**
 	 * Information about an attribute for which this condition has been created.
 	 */
-	protected AttributeInContext attributeInContext;
+	protected AttributeWithContext attributeInContext;
 
 	/**
      * Checks if given evaluation fulfills this condition.
@@ -39,7 +38,7 @@ public abstract class Condition {
      * @param evaluation evaluation (field) to check
      * @return {@code true} if given evaluation fulfills this condition, {@code false} otherwise
      * 
-     * @throws NullPointerException if given field does not conform to {@link Precondition#notNull(Object)}
+     * @throws NullPointerException if given field does not conform to {@link org.rulelearn.core.Precondition#notNull(Object, String)}
      */
     public abstract boolean fulfilledBy(Field evaluation);
     
@@ -52,10 +51,10 @@ public abstract class Condition {
      * @return {@code true} if considered object fulfills this condition, {@code false} otherwise
      * 
      * @throws IndexOutOfBoundsException if given object index does not correspond to any object in the given information table
-     * @throws NullPointerException if given information table does not conform to {@link Precondition#notNull(Object)}
+     * @throws NullPointerException if given information table is {@code null}
      */
     public boolean fulfilledBy(int objectIndex, InformationTable informationTable) {
-    	return this.fulfilledBy(Precondition.notNull(informationTable, "Information table is null.").getField(objectIndex, this.attributeInContext.getAttributeIndex()));
+    	return this.fulfilledBy(informationTable.getField(objectIndex, this.attributeInContext.getAttributeIndex()));
     }
     
 	/**
@@ -67,11 +66,11 @@ public abstract class Condition {
 	
 	/**
 	 * Gets a "meta" object storing attribute for which this condition is defined + context of that attribute.
-	 * See {@link AttributeInContext}.
+	 * See {@link AttributeWithContext}.
 	 * 
 	 * @return Gets a "meta" object storing attribute for which this condition is defined + context of that attribute.
 	 */
-	public AttributeInContext getAttributeInContext() {
+	public AttributeWithContext getAttributeInContext() {
 		return this.attributeInContext;
 	}
 

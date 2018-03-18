@@ -16,16 +16,17 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.data.Attribute;
 
 /**
- * Structure embracing an attribute and its contextual information (like attribute's index in the set of all attributes).
+ * Structure embracing an attribute and its contextual information (like attribute's index in the array of all attributes).
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class AttributeInContext {
+public class AttributeWithContext {
 	/**
 	 * Number (index) of the attribute in the array of all attributes.
 	 */
@@ -42,12 +43,12 @@ public class AttributeInContext {
 	 * @param attribute attribute of an information table for which this object is created
 	 * @param attributeIndex index of the attribute in the array of all attributes of an information table
 	 * 
-	 * @throws NullPointerException if attribute does not conform to {@link Precondition#notNull(Object)}
-	 * @throws InvalidValueException if attribute's index does not conform to {@link Precondition#isNonNegative(int)}
+	 * @throws NullPointerException if attribute does not conform to {@link Precondition#notNull(Object, String)}
+	 * @throws InvalidValueException if attribute's index does not conform to {@link Precondition#nonNegative(int, String)}
 	 */
-	public AttributeInContext(Attribute attribute, int attributeIndex) {
+	public AttributeWithContext(Attribute attribute, int attributeIndex) {
 		this.attribute = Precondition.notNull(attribute, "Attribute to be stored in context is null.");
-		this.attributeIndex = Precondition.isNonNegative(attributeIndex, "Index of an attribute to be stored in context is negative.");
+		this.attributeIndex = Precondition.nonNegative(attributeIndex, "Index of an attribute to be stored in context is negative.");
 	}
 	
 	/**

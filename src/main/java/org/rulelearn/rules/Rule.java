@@ -17,14 +17,17 @@
 package org.rulelearn.rules;
 
 import java.util.List;
-
-import org.rulelearn.core.Precondition;
+import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.Field;
+import static org.rulelearn.core.Precondition.notNull;
+import static org.rulelearn.core.Precondition.nonEmpty;
 
 /**
  * Decision rule composed of elementary conditions on the LHS, connected by "and", and decisions on the RHS, connected by "or".
+ * The rule is immutable, i.e., it has all conditions and decisions fixed in constructor.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -63,6 +66,30 @@ public abstract class Rule {
     protected Condition[] decisions = null;
     
     /**
+     * Value appended to the beginning of a rule while transforming the rule to text form.
+     * May be changed to another value (for example "if").
+     */
+    public static String ruleStarter = "";
+    
+    /**
+     * Conjunction used when concatenating rule's conditions while transforming the rule to text form.
+     * May be changed to another value (for example "and").
+     */
+    public static String andConjunction = "&";
+    
+    /**
+     * Conjunction used when concatenating rule's decisions while transforming the rule to text form.
+     * May be changed to another value (for example "or").
+     */
+    public static String orConjunction = "OR";
+    
+    /**
+     * Delimiter inserted between condition and decision parts of the rule while transforming rule to text form.
+     * May be changed to another value (for example "then").
+     */
+    public static String conditionsAndDecisionsDelimiter = "=>";
+    
+    /**
      * Constructor initializing all fields. Each argument should be set (not {@code null}).
      * 
      * @param type type of constructed rule; see {@link RuleType}
@@ -72,13 +99,14 @@ public abstract class Rule {
      * @param decisions list with decisions building decision (RHS) part of this rule
      * 
      * @throws NullPointerException if any of the parameters is {@code null}
+     * @throws InvalidSizeException if the list with decisions is empty
      */
     public Rule(RuleType type, RuleSemantics semantics, Field inherentDecision, List<Condition> conditions, List<Condition> decisions) {
-    	this.type = Precondition.notNull(type, "Rule's type is null.");
-    	this.semantics = Precondition.notNull(semantics, "Rule's semantics is null.");
-    	this.inherentDecision = Precondition.notNull(inherentDecision, "Rule's inherent decision is null.");
-    	this.conditions = Precondition.notNull(conditions, "Rule's conditions are null.").toArray(new Condition[0]);
-    	this.decisions = Precondition.notNull(decisions, "Rule's decisions are null.").toArray(new Condition[0]);
+    	this.type = notNull(type, "Rule's type is null.");
+    	this.semantics = notNull(semantics, "Rule's semantics is null.");
+    	this.inherentDecision = notNull(inherentDecision, "Rule's inherent decision is null.");
+    	this.conditions = notNull(conditions, "Rule's conditions are null.").toArray(new Condition[0]);
+    	this.decisions = nonEmpty(notNull(decisions, "Rule's decisions are null."), "Rule decisions are empty.").toArray(new Condition[0]);
     }
 
 	/**
@@ -168,7 +196,91 @@ public abstract class Rule {
 	 * @return text representation of this rule
 	 */
 	public String toString() {
-		return "TODO"; //TODO: return rule as text
+		StringBuilder sB = new StringBuilder();
+		
+		//start rule
+		if (ruleStarter != null && !ruleStarter.equals("")) {
+			sB.append(ruleStarter).append(" ");
+		}
+
+		//append conditions
+		for (int i = 0; i < this.conditions.length; i++) {
+			sB.append(this.conditions[i].toString());
+			
+			if (i < this.conditions.length - 1) { //not last condition
+				sB.append(" ").append(andConjunction).append(" ");
+			}
+		}
+		
+		//insert delimiter between conditions and decisions
+		sB.append(" ").append(conditionsAndDecisionsDelimiter).append(" "); //TODO: append (c) or (p) after the delimiter?
+		
+		//append decisions
+		for (int i = 0; i < this.decisions.length; i++) {
+			sB.append(this.decisions[i].toString());
+
+			if (i < this.decisions.length - 1) { // not last decision
+				sB.append(" ").append(orConjunction).append(" ");
+			}
+		}
+		
+		return sB.toString();
+	}
+
+	/**
+	 * Verifies if this rule covers an object in an information table.
+	 *  
+	 * @param objectIndex index of an object in the given information table
+	 * @param informationTable information table containing object with given index
+	 * @return {@code true} if this rule covers considered object,
+	 *         {@code false} otherwise
+	 * 
+	 * @throws IndexOutOfBoundsException see {@link Condition#fulfilledBy(int, InformationTable)}
+	 * @throws NullPointerException see {@link Condition#fulfilledBy(int, InformationTable)}
+	 */
+	public boolean covers(int objectIndex, InformationTable informationTable) {
+		for (int i = 0; i < this.conditions.length; i++) {
+			if (!this.conditions[i].fulfilledBy(objectIndex, informationTable)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Verifies if (at least one) decision of this rule is verified by an object in an information table.
+	 * 
+	 * @param objectIndex index of an object in the given information table
+	 * @param informationTable information table containing object with given index
+	 * @return {@code true} if at least one decision of this rule is verified by the considered object,
+	 *         {@code false} otherwise
+	 * 
+	 * @throws IndexOutOfBoundsException see {@link Condition#fulfilledBy(int, InformationTable)}
+	 * @throws NullPointerException see {@link Condition#fulfilledBy(int, InformationTable)}
+	 */
+	public boolean decisionsMatchedBy(int objectIndex, InformationTable informationTable) {
+		//check if at least one rule's decision is verified by the considered object
+		for (int i = 0; i < this.decisions.length; i++) {
+			if (this.decisions[i].fulfilledBy(objectIndex, informationTable)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
+	/**
+	 * Verifies if this rule is supported by an object from an information table.
+	 * 
+	 * @param objectIndex index of an object in the given information table
+	 * @param informationTable information table containing object with given index
+	 * @return {@code true} if this rule covers considered object and the object also matches decisions of this rule,
+	 *         {@code false} otherwise
+	 * 
+	 * @throws IndexOutOfBoundsException see {@link #covers(int, InformationTable)}
+	 * @throws NullPointerException see {@link #covers(int, InformationTable)}
+	 */
+	public boolean supportedBy(int objectIndex, InformationTable informationTable) {
+		return this.covers(objectIndex, informationTable) && this.decisionsMatchedBy(objectIndex, informationTable);
+	}
+
 }
