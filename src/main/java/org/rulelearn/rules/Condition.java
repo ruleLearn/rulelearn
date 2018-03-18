@@ -16,6 +16,7 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.data.AttributeWithContext;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.Field;
 
@@ -30,7 +31,7 @@ public abstract class Condition {
 	/**
 	 * Information about an attribute for which this condition has been created.
 	 */
-	protected AttributeWithContext attributeInContext;
+	protected AttributeWithContext attributeWithContext;
 
 	/**
      * Checks if given evaluation fulfills this condition.
@@ -54,7 +55,7 @@ public abstract class Condition {
      * @throws NullPointerException if given information table is {@code null}
      */
     public boolean fulfilledBy(int objectIndex, InformationTable informationTable) {
-    	return this.fulfilledBy(informationTable.getField(objectIndex, this.attributeInContext.getAttributeIndex()));
+    	return this.fulfilledBy(informationTable.getField(objectIndex, this.attributeWithContext.getAttributeIndex()));
     }
     
 	/**
@@ -70,8 +71,8 @@ public abstract class Condition {
 	 * 
 	 * @return Gets a "meta" object storing attribute for which this condition is defined + context of that attribute.
 	 */
-	public AttributeWithContext getAttributeInContext() {
-		return this.attributeInContext;
+	public AttributeWithContext getAttributeWithContext() {
+		return this.attributeWithContext;
 	}
 
 	/**

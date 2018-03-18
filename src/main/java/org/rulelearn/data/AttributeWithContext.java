@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package org.rulelearn.rules;
+package org.rulelearn.data;
 
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
-import org.rulelearn.data.Attribute;
 
 /**
  * Structure embracing an attribute and its contextual information (like attribute's index in the array of all attributes).
