@@ -16,12 +16,46 @@
 
 package org.rulelearn.types;
 
+import org.junit.jupiter.api.Test;
+
 /**
- * Top level class for all (known and unknown) simple evaluations in an information table.
- * 
+ * Tests for [@link TextIdentificationField}.
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class SimpleField extends EvaluationField {
-	
+class TextIdentificationFieldTest {
+
+	/**
+	 * Test method for {@link org.rulelearn.types.TextIdentificationField#hashCode()}.
+	 */
+	@Test
+	void testHashCode() {
+		//TODO
+	}
+
+	/**
+	 * Test method for {@link org.rulelearn.types.TextIdentificationField#isEqualTo(org.rulelearn.types.Field)}.
+	 */
+	@Test
+	void testIsEqualTo() {
+		//TODO
+	}
+
+	/**
+	 * Test method for {@link org.rulelearn.types.TextIdentificationField#equals(java.lang.Object)}.
+	 */
+	@Test
+	void testEqualsObject() {
+		//TODO
+	}
+
+	/**
+	 * Test method for {@link org.rulelearn.types.TextIdentificationField#getRandomValue(int)}.
+	 */
+	@Test
+	void testGetRandomValue() {
+		//TODO
+	}
+
 }

@@ -66,7 +66,7 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	@Override
-	public int compareToEx(Field otherField) {
+	public int compareToEx(EvaluationField otherField) {
 		if (this.canBeComparedWith(otherField)) {
 			return 0;
 		} else {
