@@ -337,7 +337,7 @@ public class RuleCharacteristics {
 	/**
 	 * Gets value of rule confirmation measure $f$ calculated for a decision rule in the context of an information table.
 	 * 
-	 * @return value of rule confirmation measure $f$ calculated for a decision rule in the context of an information table.
+	 * @return value of rule confirmation measure $f$ calculated for a decision rule in the context of an information table
 	 * @throws UnknownValueException if value of rule confirmation measure $f$ is unknown (not stored in these characteristics)
 	 */
 	public double getFConfirmation() {
@@ -357,7 +357,7 @@ public class RuleCharacteristics {
 	/**
 	 * Gets value of rule confirmation measure $a$ calculated for a decision rule in the context of an information table.
 	 * 
-	 * @return value of rule confirmation measure $a$ calculated for a decision rule in the context of an information table.
+	 * @return value of rule confirmation measure $a$ calculated for a decision rule in the context of an information table
 	 * @throws UnknownValueException if value of rule confirmation measure $a$ is unknown (not stored in these characteristics)
 	 */
 	public double getAConfirmation() {
@@ -381,7 +381,7 @@ public class RuleCharacteristics {
 	/**
 	 * Gets value of rule confirmation measure $z$ calculated for a decision rule in the context of an information table.
 	 * 
-	 * @return value of rule confirmation measure $z$ calculated for a decision rule in the context of an information table.
+	 * @return value of rule confirmation measure $z$ calculated for a decision rule in the context of an information table
 	 * @throws UnknownValueException if value of rule confirmation measure $z$ is unknown (not stored in these characteristics)
 	 */
 	public double getZConfirmation() {
@@ -405,7 +405,7 @@ public class RuleCharacteristics {
 	/**
 	 * Gets value of rule confirmation measure $l$ calculated for a decision rule in the context of an information table.
 	 * 
-	 * @return value of rule confirmation measure $l$ calculated for a decision rule in the context of an information table.
+	 * @return value of rule confirmation measure $l$ calculated for a decision rule in the context of an information table
 	 * @throws UnknownValueException if value of rule confirmation measure $l$ is unknown (not stored in these characteristics)
 	 */
 	public double getLConfirmation() {
@@ -425,7 +425,7 @@ public class RuleCharacteristics {
 	/**
 	 * Gets value of rule confirmation measure $c_1$ calculated for a decision rule in the context of an information table.
 	 * 
-	 * @return value of rule confirmation measure $c_1$ calculated for a decision rule in the context of an information table.
+	 * @return value of rule confirmation measure $c_1$ calculated for a decision rule in the context of an information table
 	 * @throws UnknownValueException if value of rule confirmation measure $c_1$ is unknown (not stored in these characteristics)
 	 */
 	public double getC1Confirmation() {
@@ -436,7 +436,7 @@ public class RuleCharacteristics {
 	 * Sets value of rule confirmation measure $c_1$ calculated for a decision rule in the context of an information table.
 	 * In order to forget stored value of this rule confirmation measure, one can invoke this method with {@link #UNKNOWN_DOUBLE_VALUE}.
 	 * 
-	 * @param c1Confirmation value of rule confirmation measure $c_1$ calculated for a decision rule in the context of an information table.
+	 * @param c1Confirmation value of rule confirmation measure $c_1$ calculated for a decision rule in the context of an information table
 	 */
 	public void setC1Confirmation(double c1Confirmation) {
 		this.c1Confirmation = c1Confirmation; //TODO: analyze if any checking is necessary here
