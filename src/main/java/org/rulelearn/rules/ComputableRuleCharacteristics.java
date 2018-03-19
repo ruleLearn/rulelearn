@@ -253,4 +253,17 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 		return c1Confirmation;
 	}
 	
+	/**
+	 * Gets value of rule confirmation measure $s$ calculated for the decision rule in the context of the information table.
+	 * 
+	 * @return value of rule confirmation measure $s$ calculated for the decision rule in the context of the information table
+	 */
+	@Override
+	public double getSConfirmation() {
+		if (sConfirmation == UNKNOWN_DOUBLE_VALUE) {
+			//TODO: calculate measure
+		}
+		return sConfirmation;
+	}
+	
 }
