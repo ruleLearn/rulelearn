@@ -37,12 +37,12 @@ public abstract class Rule {
 	/**
 	 * Type of this rule. See {@link RuleType}.
 	 */
-	protected RuleType type;
+	protected RuleType type; //TODO: is this information stored at the single rule level or at the rule set level?
 	
 	/**
 	 * Semantics of this rule. See {@link RuleSemantics}.
 	 */
-	protected RuleSemantics semantics;
+	protected RuleSemantics semantics; //TODO: is this information stored at the single rule level or at the rule set level?
 	
 	/**
 	 * Value of decision attribute inherent for this rule.

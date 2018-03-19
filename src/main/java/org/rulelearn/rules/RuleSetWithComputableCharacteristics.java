@@ -19,7 +19,6 @@ package org.rulelearn.rules;
 import static org.rulelearn.core.Precondition.notNull;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
-import org.rulelearn.core.RuleSetWithCharacteristics;
 import org.rulelearn.data.InformationTable;
 
 /**

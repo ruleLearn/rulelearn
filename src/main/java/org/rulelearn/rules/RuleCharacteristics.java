@@ -98,6 +98,10 @@ public class RuleCharacteristics {
 	 * Value of rule confirmation measure $c_1$ calculated for a decision rule in the context of an information table.
 	 */
 	protected double c1Confirmation = UNKNOWN_DOUBLE_VALUE;
+	/**
+	 * Value of rule confirmation measure $s$ calculated for a decision rule in the context of an information table.
+	 */
+	protected double sConfirmation = UNKNOWN_DOUBLE_VALUE;
 	
 	/**
 	 * Sole constructor.
@@ -106,21 +110,12 @@ public class RuleCharacteristics {
 	
 	/**
 	 * Gets support of a decision rule in the context of an information table.
-	 * If support is not stored in these characteristics, an attempt is made to compute it as a difference between coverage and negative coverage.
 	 * 
 	 * @return support of a decision rule in the context of an information table
-	 * @throws UnknownValueException if support is unknown (not stored in these characteristics) and cannot be computed
-	 *         as either coverage or negative coverage is also unknown
+	 * @throws UnknownValueException if support is unknown (not stored in these characteristics)
 	 */
 	public int getSupport() {
-		if (support == UNKNOWN_INT_VALUE) {
-			try {
-				support = getCoverage() - getNegativeCoverage();
-			} catch (UnknownValueException exception) {
-				throw new UnknownValueException("Rule's support is unknown and cannot be computed.");
-			}
-		}
-		return support;
+		return known(support, UNKNOWN_INT_VALUE, "Rule's support is unknown.");
 	}
 
 	/**
@@ -220,21 +215,12 @@ public class RuleCharacteristics {
 
 	/**
 	 * Gets coverage of a decision rule (number of objects covered by the rule) in the context of an information table.
-	 * If coverage is not stored in these characteristics, an attempt is made to compute it as a sum of support and negative coverage.
 	 * 
 	 * @return coverage of a decision rule (number of objects covered by the rule) in the context of an information table
-	 * @throws UnknownValueException if coverage is unknown (not stored in these characteristics) and cannot be computed
-	 *         as either support or negative coverage is also unknown
+	 * @throws UnknownValueException if coverage is unknown (not stored in these characteristics)
 	 */
 	public int getCoverage() {
-		if (coverage == UNKNOWN_INT_VALUE) {
-			try {
-				coverage = getSupport() + getNegativeCoverage();
-			} catch (UnknownValueException exception) {
-				throw new UnknownValueException("Rule's coverage is unknown and cannot be computed.");
-			}
-		}
-		return coverage;
+		return known(coverage, UNKNOWN_INT_VALUE, "Rule's coverage is unknown.");
 	}
 
 	/**
@@ -441,4 +427,29 @@ public class RuleCharacteristics {
 	public void setC1Confirmation(double c1Confirmation) {
 		this.c1Confirmation = c1Confirmation; //TODO: analyze if any checking is necessary here
 	}
+	
+	/**
+	 * Gets value of rule confirmation measure $s$ calculated for a decision rule in the context of an information table.
+	 * 
+	 * @return value of rule confirmation measure $s$ calculated for a decision rule in the context of an information table
+	 * @throws UnknownValueException if value of rule confirmation measure $s$ is unknown (not stored in these characteristics)
+	 */
+	public double getSConfirmation() {
+		return known(sConfirmation, UNKNOWN_DOUBLE_VALUE, "Value of rule confirmation measure 's' is unknown.");
+	}
+	
+	/**
+	 * Sets value of rule confirmation measure $s$ calculated for a decision rule in the context of an information table.
+	 * In order to forget stored value of this rule confirmation measure, one can invoke this method with {@link #UNKNOWN_DOUBLE_VALUE}.
+	 * 
+	 * @param sConfirmation value of rule confirmation measure $s$ calculated for a decision rule in the context of an information table
+	 * @throws InvalidValueException if given value of rule confirmation measure 's' is outside interval [-1,1]
+	 */
+	public void setSConfirmation(double sConfirmation) {
+		if (sConfirmation != UNKNOWN_DOUBLE_VALUE) { //do validation
+			withinMinus1Plus1Interval(sConfirmation, "Value of rule confirmation measure 's' has to be within interval [-1,1].");
+		}
+		this.sConfirmation = sConfirmation;
+	}
+	
 }

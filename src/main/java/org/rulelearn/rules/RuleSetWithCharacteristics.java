@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.rulelearn.core;
+package org.rulelearn.rules;
 
-import org.rulelearn.rules.Rule;
-import org.rulelearn.rules.RuleCharacteristics;
-import org.rulelearn.rules.RuleSet;
 import static org.rulelearn.core.Precondition.notNull;
+
+import org.rulelearn.core.InvalidSizeException;
+import org.rulelearn.core.ReadOnlyArrayReference;
+import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 
 /**
  * Set of decision rules and their characteristics, each identified by rule's index.
