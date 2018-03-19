@@ -130,7 +130,7 @@ public class InformationTable {
 	 * @param attributeMap see {@link #attributeMap}
 	 * @param accelerateByReadOnlyParams tells if construction of this information table should be accelerated by assuming that the given references
 	 *        to arrays are not going to be used outside this class
-	 *        to modify that arrays (and thus, this object does not need to clone the arrays for internal use)
+	 *        to modify that arrays (and thus, this object does not need to clone the arrays for internal read-only use)
 	 */
 	protected InformationTable(Attribute[] attributes, Index2IdMapper mapper, Table activeConditionEvaluations, Table notActiveOrDescriptionEvaluations,
 			EvaluationField[] activeDecisionAttributeFields, int activeDecisionAttributeIndex,
@@ -176,7 +176,7 @@ public class InformationTable {
 	 *        it is assumed that each array is of the same length (i.e., the number of fields of each object is the same)
 	 * @param accelerateByReadOnlyParams tells if construction of this object should be accelerated by assuming that the given reference
 	 *        to an array of attributes and references to arrays of fields present at the given list are not going to be used outside this class
-	 *        to modify that arrays (and thus, this object does not need to clone the arrays for internal use)
+	 *        to modify that arrays (and thus, this object does not need to clone the arrays for internal read-only use)
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidValueException if the number of attributes and the number of fields corresponding to one object
