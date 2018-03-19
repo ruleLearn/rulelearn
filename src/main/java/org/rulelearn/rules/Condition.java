@@ -18,20 +18,51 @@ package org.rulelearn.rules;
 
 import org.rulelearn.data.AttributeWithContext;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.types.Field;
+import org.rulelearn.types.EvaluationField;
+import static org.rulelearn.core.Precondition.notNull;
 
 /**
  * Condition of a decision rule. May be present both in the condition part and in the decision part of the rule.
+ * 
+ * @param <T> type of limiting evaluation of this condition and type of evaluations against which this condition is going to be checked
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class Condition {
+public abstract class Condition<T extends EvaluationField> {
 	
 	/**
 	 * Information about an attribute for which this condition has been created.
 	 */
 	protected AttributeWithContext attributeWithContext;
+	
+	/**
+	 * Limiting evaluation with respect to which this condition is defined. E.g., in case of condition 'price &gt;= 5', limiting evaluation is equal to 5.
+	 */
+	protected T limitingEvaluation;
+	
+	/**
+	 * Gets the limiting evaluation of this condition.
+	 * E.g., in case of condition 'price &gt;= 5', limiting evaluation is equal to 5.
+	 * 
+	 * @return the limiting evaluation of this condition
+	 */
+	public T getLimitingEvaluation() {
+		return limitingEvaluation;
+	}
+
+	/**
+	 * Constructs this condition. Used by subclass constructors.
+	 * 
+	 * @param attributeWithContext structure embracing an attribute for which this condition is constructed and its contextual information; see {@link AttributeWithContext}
+	 * @param limitingEvaluation limiting evaluation of the constructed condition; see {@link #getLimitingEvaluation()}
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 */
+	protected Condition(AttributeWithContext attributeWithContext, T limitingEvaluation) {
+		this.attributeWithContext = notNull(attributeWithContext, "Attribute with context of constructed condition is null.");
+		this.limitingEvaluation = notNull(limitingEvaluation, "Limiting evaluation of constructed condition is null.");
+	}
 
 	/**
      * Checks if given evaluation fulfills this condition.
@@ -39,9 +70,9 @@ public abstract class Condition {
      * @param evaluation evaluation (field) to check
      * @return {@code true} if given evaluation fulfills this condition, {@code false} otherwise
      * 
-     * @throws NullPointerException if given field does not conform to {@link org.rulelearn.core.Precondition#notNull(Object, String)}
+     * @throws NullPointerException if given evaluation does not conform to {@link org.rulelearn.core.Precondition#notNull(Object, String)}
      */
-    public abstract boolean fulfilledBy(Field evaluation);
+    public abstract boolean satisfiedBy(T evaluation);
     
     /**
      * Checks if an object from the information table, defined by its index, fulfills this condition.
@@ -53,9 +84,11 @@ public abstract class Condition {
      * 
      * @throws IndexOutOfBoundsException if given object index does not correspond to any object in the given information table
      * @throws NullPointerException if given information table is {@code null}
+     * @throws ClassCastException if the field against which this condition should be checked is not of type {@link T}
      */
-    public boolean fulfilledBy(int objectIndex, InformationTable informationTable) {
-    	return this.fulfilledBy(informationTable.getField(objectIndex, this.attributeWithContext.getAttributeIndex()));
+    @SuppressWarnings("unchecked")
+    public boolean satisfiedBy(int objectIndex, InformationTable informationTable) {
+    	return this.satisfiedBy((T)informationTable.getField(objectIndex, this.attributeWithContext.getAttributeIndex()));
     }
     
 	/**
@@ -80,7 +113,7 @@ public abstract class Condition {
 	 * 
 	 * @return duplicate of this condition
 	 */
-	public abstract Condition duplicate();
+	public abstract Condition<T> duplicate();
 	
 	/**
 	 * Tells if this condition is equal to the other object.

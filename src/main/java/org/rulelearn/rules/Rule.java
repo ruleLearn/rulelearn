@@ -235,12 +235,12 @@ public abstract class Rule {
 	 * @return {@code true} if this rule covers considered object,
 	 *         {@code false} otherwise
 	 * 
-	 * @throws IndexOutOfBoundsException see {@link Condition#fulfilledBy(int, InformationTable)}
-	 * @throws NullPointerException see {@link Condition#fulfilledBy(int, InformationTable)}
+	 * @throws IndexOutOfBoundsException see {@link Condition#satisfiedBy(int, InformationTable)}
+	 * @throws NullPointerException see {@link Condition#satisfiedBy(int, InformationTable)}
 	 */
 	public boolean covers(int objectIndex, InformationTable informationTable) {
 		for (int i = 0; i < this.conditions.length; i++) {
-			if (!this.conditions[i].fulfilledBy(objectIndex, informationTable)) {
+			if (!this.conditions[i].satisfiedBy(objectIndex, informationTable)) {
 				return false;
 			}
 		}
@@ -255,13 +255,13 @@ public abstract class Rule {
 	 * @return {@code true} if at least one decision of this rule is verified by the considered object,
 	 *         {@code false} otherwise
 	 * 
-	 * @throws IndexOutOfBoundsException see {@link Condition#fulfilledBy(int, InformationTable)}
-	 * @throws NullPointerException see {@link Condition#fulfilledBy(int, InformationTable)}
+	 * @throws IndexOutOfBoundsException see {@link Condition#satisfiedBy(int, InformationTable)}
+	 * @throws NullPointerException see {@link Condition#satisfiedBy(int, InformationTable)}
 	 */
 	public boolean decisionsMatchedBy(int objectIndex, InformationTable informationTable) {
 		//check if at least one rule's decision is verified by the considered object
 		for (int i = 0; i < this.decisions.length; i++) {
-			if (this.decisions[i].fulfilledBy(objectIndex, informationTable)) {
+			if (this.decisions[i].satisfiedBy(objectIndex, informationTable)) {
 				return true;
 			}
 		}

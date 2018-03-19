@@ -18,7 +18,7 @@ package org.rulelearn.core;
 
 /**
  * Exception thrown when semantically uncomparable objects of the same type are requested to be compared.
- * Such situation may occur, e.g., when comparing two fields of type {@link org.rulelearn.types.CompositeField} in an information table.
+ * Such situation may occur, e.g., when comparing two fields of type {@link org.rulelearn.types.PairField} in an information table.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
