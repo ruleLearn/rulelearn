@@ -85,6 +85,7 @@ public abstract class Condition<T extends EvaluationField> {
      * @throws IndexOutOfBoundsException if given object index does not correspond to any object in the given information table
      * @throws NullPointerException if given information table is {@code null}
      * @throws ClassCastException if the field against which this condition should be checked is not of type {@link T}
+     * @throws IndexOutOfBoundsException if attribute index of this condition does not correspond to any attribute for which given information table stores fields
      */
     @SuppressWarnings("unchecked")
     public boolean satisfiedBy(int objectIndex, InformationTable informationTable) {

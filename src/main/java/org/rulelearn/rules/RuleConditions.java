@@ -33,7 +33,7 @@ public class RuleConditions {
 	/**
 	 * Elementary conditions, in order of their addition to rule's LHS. 
 	 */
-	protected List<Condition> conditions;
+	protected List<Condition<?>> conditions;
 	
 	/**
 	 * Indices of objects from learning information (decision) table that are considered to be positive objects for this complex of rule conditions.
@@ -61,7 +61,7 @@ public class RuleConditions {
 		this.learningInformationTable = notNull(learningInformationTable, "Information table is null.");
 		this.indicesOfPositiveObjects = notNull(indicesOfPositiveObjects, "Set of indices of positive objects is null.");
 		
-		this.conditions = new ObjectArrayList<Condition>();
+		this.conditions = new ObjectArrayList<Condition<?>>();
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class RuleConditions {
 	 * @param condition new condition to add
 	 * @throws NullPointerException if condition does not conform to {@link org.rulelearn.core.Precondition#notNull(Object, String)}
 	 */
-	public void addCondition(Condition condition) {
+	public void addCondition(Condition<?> condition) {
 		this.conditions.add(notNull(condition, "Condition is null."));
 	}
 	
@@ -100,7 +100,7 @@ public class RuleConditions {
 	 * 
 	 * @return list of elementary conditions building this complex of elementary conditions
 	 */
-	public List<Condition> getConditions() {
+	public List<Condition<?>> getConditions() {
 		return this.conditions;
 	}
 	
