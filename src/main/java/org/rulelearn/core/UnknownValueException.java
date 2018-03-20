@@ -17,26 +17,24 @@
 package org.rulelearn.core;
 
 /**
- * Exception thrown when semantically uncomparable objects of the same type are requested to be compared.
- * Such situation may occur, e.g., when comparing two fields of type {@link org.rulelearn.types.PairField} in an information table.
+ * Exception thrown when requested value is unknown and cannot be calculated.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class UncomparableException extends Exception {
+public class UnknownValueException extends RuntimeException {
 
 	/**
-	 * Generated serial version UID
+	 * Generated serial version UID.
 	 */
-	private static final long serialVersionUID = -5460524209459293416L;
+	private static final long serialVersionUID = 4606477289631516950L;
 
 	/**
 	 * Constructs an exception with message of failure reason.
 	 * 
 	 * @param message message of this exception
 	 */
-	public UncomparableException(String message) {
+	public UnknownValueException(String message) {
 		super(message);
 	}
-
 }
