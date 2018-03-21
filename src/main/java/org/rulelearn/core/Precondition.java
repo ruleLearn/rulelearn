@@ -78,22 +78,23 @@ public final class Precondition {
 		}
 	}
 	
-//	/**
-//	 * Verifies if length of the given array is grater than zero.
-//	 * 
-//	 * @param array array to verify
-//	 * @param errorMsg error message of the thrown {@link InvalidValueException}, used when given array is empty
-//	 * @return {@code array}, if it is not empty
-//	 * 
-//	 * @throws InvalidValueException if given array is empty (has length 0)
-//	 */
-//	public static <T extends Object> T[] nonEmpty(T[] array, String errorMsg) {
-//		if (array.length > 0) {
-//			return array;
-//		} else {
-//			throw new InvalidValueException(errorMsg);
-//		}
-//	}
+	/**
+	 * Verifies if length of the given array is grater than zero.
+	 * 
+	 * @param array array to verify
+	 * @param errorMsg error message of the thrown {@link InvalidValueException}, used when given array is empty
+	 * @param <T> type of the object to verify
+	 * @return {@code array}, if it is not empty
+	 * 
+	 * @throws InvalidValueException if given array is empty (has length 0)
+	 */
+	public static <T extends Object> T[] nonEmpty(T[] array, String errorMsg) {
+		if (array.length > 0) {
+			return array;
+		} else {
+			throw new InvalidValueException(errorMsg);
+		}
+	}
 	
 	/**
 	 * Verifies if given collection is not empty (i.e., it contains at least one element).

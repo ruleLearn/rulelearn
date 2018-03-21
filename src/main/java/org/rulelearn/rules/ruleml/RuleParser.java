@@ -16,6 +16,47 @@
 
 package org.rulelearn.rules.ruleml;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.rulelearn.data.Attribute;
+import org.rulelearn.data.AttributeWithContext;
+import org.rulelearn.data.EvaluationAttribute;
+import org.rulelearn.rules.Condition;
+import org.rulelearn.rules.Rule;
+import org.rulelearn.rules.RuleSet;
+import org.rulelearn.rules.SimpleConditionAtLeast;
+import org.rulelearn.rules.SimpleConditionAtMost;
+import org.rulelearn.rules.SimpleConditionEqual;
+import org.rulelearn.types.ElementList;
+import org.rulelearn.types.EnumerationField;
+import org.rulelearn.types.EnumerationFieldFactory;
+import org.rulelearn.types.Field;
+import org.rulelearn.types.IntegerField;
+import org.rulelearn.types.IntegerFieldFactory;
+import org.rulelearn.types.RealField;
+import org.rulelearn.types.RealFieldFactory;
+import org.rulelearn.types.SimpleField;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+import static org.rulelearn.core.Precondition.nonEmpty;
+import static org.rulelearn.core.Precondition.notNull;
+
 /**
  * Parser of decision rules stored in RuleML format. 
  *
@@ -25,6 +66,320 @@ package org.rulelearn.rules.ruleml;
  */
 public class RuleParser {
 
+	/** 
+	 * Default value for this type of a field.
+	 */
+	public final static String DEFAULT_ENCODING = "UTF-8";
+	
+	/** 
+	 * Default index which must be returned to denote that a collection does not contain specified element.
+	 */
+	protected final static Integer DEFAULT_INDEX = -1;
+	
+	/**
+	 * All attributes which may be present in conditions, which are forming decision rules.
+	 */
+	protected Attribute [] attributes = null;
+	
+	/**
+	 * Encoding of text data in RuleML.
+	 */
+	protected String encoding = RuleParser.DEFAULT_ENCODING;	
+	
+	/**
+	 * Attributes with context {@link AttributeWithContext} which are used to construct conditions. 
+	 */
+	protected AttributeWithContext [] attributesWithContext = null;
+	
+	/**
+	 * Map used to access attributes by name.
+	 */
+	protected Object2IntMap<String> attributeNamesMap = null;
 	
 	
+	public RuleParser (Attribute [] attributes) {
+		this.attributes = attributes;
+		this.initializeParser();
+	}
+	
+	public RuleParser (Attribute [] attributes, String encoding) {
+		this.attributes = attributes;
+		this.encoding = encoding;
+		this.initializeParser();
+	}
+	
+	protected void initializeParser () {
+		notNull(this.attributes, "Null set of attributes was passed to RuleML parser.");
+		nonEmpty(this.attributes, "Empty set of attributes was passed to RuleML parser.");
+		
+		int size = attributes.length;
+		this.attributesWithContext = new AttributeWithContext[size];
+		this.attributeNamesMap = new Object2IntOpenHashMap<String> ();
+		this.attributeNamesMap.defaultReturnValue(RuleParser.DEFAULT_INDEX);
+		for (int i=0; i < size; i++) {
+			this.attributesWithContext[i] = new AttributeWithContext(this.attributes[i], i);
+			this.attributeNamesMap.put(this.attributes[i].getName(), i);
+		}		
+	}
+	
+	protected Document getRuleMLDocument (InputStream inputStream)  {
+		Document document = null;
+		
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		try {
+			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+			document = documentBuilder.parse(inputStream);
+		} catch (ParserConfigurationException ex) {
+			System.out.println("Error in configuration of RuleML parser. " + ex.toString());
+		}
+		catch (SAXException ex) {
+			System.out.println("Incorrect structure of RuleML. " + ex.toString());
+		}
+		catch (IOException ex) {
+			System.out.println("Error while reading RuleML. " + ex.toString());
+		}
+		
+		return document;
+	}
+	
+	public Map<Integer, RuleSet> parseRules (InputStream inputStream)  {
+		Map<Integer, RuleSet> ruleSets = null;
+		
+		notNull(this.attributesWithContext, "Attributes were not specified in RuleML parser.");
+		notNull(this.attributeNamesMap, "Attributes were not specified in RuleML parser.");
+		Document ruleMLDocument =  getRuleMLDocument(inputStream);
+		// RuleML has been parsed
+		if (ruleMLDocument != null) {
+			Element root = ruleMLDocument.getDocumentElement();
+            int lowestAvailableIndex = 0;
+            ruleSets = new Object2ObjectRBTreeMap<Integer, RuleSet> ();
+            // iterate through sets of rules
+            for (Node act : new NodeListWrapper(root.getElementsByTagName("act"))) {
+                if (act.getNodeType() == Node.ELEMENT_NODE) {
+                    int index;
+                    try {
+                        index = Integer.parseInt(act.getAttributes().getNamedItem("index").getNodeValue());
+                    } catch (NumberFormatException ex) {
+                        index = lowestAvailableIndex;
+                    }
+                    if (index >= lowestAvailableIndex)
+                        lowestAvailableIndex = index + 1;
+                    //parse set of rules
+                    List<Rule> rules = new ObjectArrayList<Rule> ();
+                    for (Node actChild = ((Element)act).getFirstChild(); actChild != null; actChild = actChild.getNextSibling()) {
+                        if (actChild.getNodeType() == Node.ELEMENT_NODE && "assert".equals(actChild.getNodeName())) {
+                        		try {
+                        			rules.add(parseRule((Element) actChild));
+                        		}
+                        		catch (RuleParseException ex) {
+								System.out.println("Incorrect structure of RuleML." + ex.toString());
+							}
+                        }
+                    }
+                    //add parsed set of rules to the map
+                    ruleSets.put(index, new RuleSet(rules.toArray(new Rule[rules.size()])));
+                }
+            }
+		}
+		return ruleSets;
+	}
+	
+	protected Rule parseRule (Element assertElement) throws RuleParseException {
+		Rule rule = null;
+		List<Condition<SimpleField>> conditions = null;
+		List<Condition<SimpleField>> decisions = null;
+		
+		for (Node assertClause = assertElement.getFirstChild(); assertClause != null; assertClause = assertClause.getNextSibling()) {
+			if (assertClause.getNodeType() == Node.ELEMENT_NODE && "implies".equals(assertClause.getNodeName())) {
+				for (Node impliesClause = assertClause.getFirstChild(); impliesClause != null; impliesClause = impliesClause.getNextSibling()) {
+					if (impliesClause.getNodeType() == Node.ELEMENT_NODE) {
+                        if ("if".equals(impliesClause.getNodeName())) {
+                            if (conditions == null) {
+                                conditions = parseRuleConditionPart((Element) impliesClause);
+                            } else {
+                                throw new RuleParseException("More than one 'if' node inside an 'implies' node detected in RuleML.");
+                            }
+                        }
+                        if ("then".equals(impliesClause.getNodeName())) {
+                            if (decisions == null) {
+                            	decisions = parseRuleDecisionPart((Element) impliesClause);
+                            } else {
+                                throw new RuleParseException("More than one 'then' node in an 'implies' node detected in RuleML.");
+                            }
+                        }
+                        if ("evaluations".equals(impliesClause.getNodeName())) {
+                        		// TODO parse evaluations
+                            /*if (evaluations == null) {
+                         
+                            } else {
+                                throw new RuleParserException("More than one 'evaluations' node detected in RuleML.");
+                            }*/
+                        }
+	                }
+	             }
+	         }
+	    }
+		
+		notNull(conditions, "No condition part specified for a rule in RuleML.");
+		notNull(decisions, "No decision part specified for a rule in RuleML.");
+		if (decisions.size() > 0) {
+			if (decisions.get(0) instanceof SimpleConditionAtMost) {
+				//rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, decisions.get(0).getLimitingEvaluation(), conditions, decisions);
+			}
+		}
+		return rule;
+	}
+	
+	protected List<Condition<SimpleField>> parseRuleConditionPart (Element ifElement) throws RuleParseException {
+		List<Condition<SimpleField>> conditions = new ObjectArrayList<Condition<SimpleField>> ();
+		for (Node ifClause = ifElement.getFirstChild(); ifClause != null; ifClause = ifClause.getNextSibling()) {
+            if (ifClause.getNodeType() == Node.ELEMENT_NODE) {
+                if ("and".equals(ifClause.getNodeName())) {
+                    if (conditions.size() > 0) {
+                        throw new RuleParseException("More than one 'and' node inside an 'if' node detected in RuleML.");
+                    }
+                    for (Node atomElement = ifClause.getFirstChild(); atomElement != null; atomElement = ifClause.getNextSibling()) {
+                           if (atomElement.getNodeType() == Node.ELEMENT_NODE) {
+                               if ("atom".equals(atomElement.getNodeName())) {
+                                   conditions.add(parseRuleCondition((Element) atomElement));
+                               }
+                               else {throw new RuleParseException("Node other than 'atom' detected inside 'and' node in RuleML.");}
+                           }
+                           else {throw new RuleParseException("Node other than 'atom' detected inside 'and' node in RuleML.");}
+                       }
+                } else if ("atom".equals(ifClause.getNodeName())) {
+                    if (conditions.size() > 0) {
+                        throw new RuleParseException("More than one condition node without conjunction operation inside an 'if' node detected in RuleML.");
+                    }
+                    conditions.add(parseRuleCondition((Element) ifClause));
+                } else {
+                    throw new RuleParseException("Node other than 'and' and 'atom' detected inside an 'if' node in RuleML.");
+                }
+            }
+        }
+		return conditions;
+	}
+	
+	protected List<Condition<SimpleField>> parseRuleDecisionPart (Element thenElement) throws RuleParseException {
+		List<Condition<SimpleField>> decisions = new ObjectArrayList<Condition<SimpleField>> ();
+		for (Node thenClause = thenElement.getFirstChild(); thenClause != null; thenClause = thenClause.getNextSibling()) {
+            if (thenClause.getNodeType() == Node.ELEMENT_NODE) {
+                if ("or".equals(thenClause.getNodeName())) {
+                    if (decisions.size() > 0) {
+                        throw new RuleParseException("More than one 'or' node inside a 'then' node detected in RuleML");
+                    }
+                    for (Node atomElement = thenClause.getFirstChild(); atomElement != null; atomElement = thenClause.getNextSibling()) {
+                           if (atomElement.getNodeType() == Node.ELEMENT_NODE) {
+                               if ("atom".equals(atomElement.getNodeName())) {
+                            	   decisions.add(parseRuleCondition((Element) atomElement));
+                               }
+                               else {throw new RuleParseException("Node other than 'atom' detected inside 'or' node in RuleML.");}
+                           }
+                           else {throw new RuleParseException("Node other than 'atom' detected inside 'or' node in RuleML.");}
+                       }
+                } else if ("atom".equals(thenClause.getNodeName())) {
+                    if (decisions.size() > 0) {
+                        throw new RuleParseException("More than one condition node without disjunction operation inside a 'then' node detected in RuleML.");
+                    }
+                    decisions.add(parseRuleCondition((Element) thenClause));
+                } else {
+                    throw new RuleParseException("Node other than 'or' and 'atom' detected inside a 'than' node in RuleML.");
+                }
+            }
+        }
+		return decisions;
+	}
+	
+	protected Condition<SimpleField> parseRuleCondition (Element atomElement) throws RuleParseException {
+		Condition<SimpleField> condition = null;
+        NodeList relationList = atomElement.getElementsByTagName("rel");
+        if (relationList.getLength() > 1) {
+            throw new RuleParseException("More than one relation ('rel' node) inside an 'atom' node detected in RuleML.");
+        }
+        if (relationList.getLength() < 1) {
+            throw new RuleParseException("No 'rel' node was detected inside an 'atom' node in RuleML.");
+        }
+        String relation = relationList.item(0).getTextContent();
+        NodeList attributeList = atomElement.getElementsByTagName("var");
+        if (attributeList.getLength() > 1) {
+            throw new RuleParseException("More than one attribute name ('var' node) was detected inside an 'atom' node in RuleML.");
+        }
+        if (attributeList.getLength() < 1) {
+            throw new RuleParseException("No 'var' node was detected inside an 'atom' node in RuleML.");
+        }
+        String attributeName = attributeList.item(0).getTextContent();
+        NodeList valueList = atomElement.getElementsByTagName("ind");
+        if (valueList.getLength() > 1) {
+            throw new RuleParseException("More than one value ('ind' node) was detected inside an 'atom' node in RuleML.");
+        }
+        if (valueList.getLength() < 1) {
+            throw new RuleParseException("No 'ind' node was detected inside an 'atom' node in RuleML.");
+        }
+        String value = valueList.item(0).getTextContent();
+        
+        int attributeIndex = this.attributeNamesMap.getInt(attributeName);
+        if (attributeIndex != RuleParser.DEFAULT_INDEX) {
+        		if (this.attributes[attributeIndex] instanceof EvaluationAttribute) { 
+		        	if ("le".equals(relation.toLowerCase())) {
+		        		condition = new SimpleConditionAtMost(this.attributesWithContext[attributeIndex], parseEvaluation(value, (EvaluationAttribute)this.attributes[attributeIndex]));
+		        	}
+		        	else if ("ge".equals(relation.toLowerCase())) {
+		        		condition = new SimpleConditionAtLeast(this.attributesWithContext[attributeIndex], parseEvaluation(value, (EvaluationAttribute)this.attributes[attributeIndex]));
+		        	}
+		        	else {
+		        		condition = new SimpleConditionEqual(this.attributesWithContext[attributeIndex], parseEvaluation(value, (EvaluationAttribute)this.attributes[attributeIndex]));
+		        }
+        		}
+		    else {
+		    		throw new RuleParseException("Attribute used in a RuleML decision rule is not an evaluation attribute.");
+		    }
+        }
+        else {
+        	    throw new RuleParseException("Attribute name ('var' node) in RuleML is not expected by RuleML parser.");
+        }
+	    return condition;
+    }
+
+	// TODO should be propagated somewhere else and used also in InformationTableBuilder
+	protected SimpleField parseEvaluation (String evaluation, EvaluationAttribute attribute) {
+		SimpleField field = null;
+		if (attribute.getValueType() instanceof SimpleField) {
+			Field valueType = attribute.getValueType();
+			if (valueType instanceof IntegerField) {
+				try {
+					field = IntegerFieldFactory.getInstance().create(Integer.parseInt(evaluation), attribute.getPreferenceType());
+				}
+				catch (NumberFormatException ex) {
+					// just assign a reference (no new copy of missing value field is made)
+					field = attribute.getMissingValueType();
+					throw new NumberFormatException(ex.getMessage());
+				}
+			}
+			else if (valueType instanceof RealField) {
+				try {
+					field = RealFieldFactory.getInstance().create(Double.parseDouble(evaluation), attribute.getPreferenceType());
+				}
+				catch (NumberFormatException ex) {
+					// just assign a reference (no new copy of missing value field is made)
+					field = attribute.getMissingValueType();
+					throw new NumberFormatException(ex.getMessage());
+				}
+			}
+			else if (valueType instanceof EnumerationField) {
+				// TODO some optimization is needed here (e.g., construction of a table with element lists)
+				int index = ((EnumerationField)valueType).getElementList().getIndex(evaluation);
+				if (index != ElementList.DEFAULT_INDEX) {
+					field = EnumerationFieldFactory.getInstance().create(((EnumerationField)valueType).getElementList(), index, attribute.getPreferenceType());
+				}
+				else {
+					field = attribute.getMissingValueType();
+					throw new IndexOutOfBoundsException(new StringBuilder("Incorrect value of enumeration: ").append(evaluation).append(" was replaced by a missing value.").toString());
+				}
+			}
+			else {
+				field = attribute.getMissingValueType();
+			}
+		}
+		return field;
+	}
 }

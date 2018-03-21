@@ -32,7 +32,7 @@ import static org.rulelearn.core.Precondition.nonEmpty;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class Rule {
+public class Rule {
 	
 	/**
 	 * Type of this rule. See {@link RuleType}.
