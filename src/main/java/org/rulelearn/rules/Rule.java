@@ -57,13 +57,13 @@ public class Rule {
      * Array with conditions building condition part of this rule, stored in order in which they were added to this rule.
      * If there is more than one condition, they are treated as connected by the AND operator.
      */
-    protected Condition[] conditions = null;
+    protected Condition<?>[] conditions = null;
 	
 	/**
      * Array with conditions building decision part of this rule.
      * If there is more than one decision, they are treated as connected by the OR operator.
      */
-    protected Condition[] decisions = null;
+    protected Condition<?>[] decisions = null;
     
     /**
      * Value appended to the beginning of a rule while transforming the rule to text form.
@@ -101,12 +101,12 @@ public class Rule {
      * @throws NullPointerException if any of the parameters is {@code null}
      * @throws InvalidSizeException if the list with decisions is empty
      */
-    public Rule(RuleType type, RuleSemantics semantics, Field inherentDecision, List<Condition> conditions, List<Condition> decisions) {
+    public Rule(RuleType type, RuleSemantics semantics, Field inherentDecision, List<Condition<?>> conditions, List<Condition<?>> decisions) {
     	this.type = notNull(type, "Rule's type is null.");
     	this.semantics = notNull(semantics, "Rule's semantics is null.");
     	this.inherentDecision = notNull(inherentDecision, "Rule's inherent decision is null.");
-    	this.conditions = notNull(conditions, "Rule's conditions are null.").toArray(new Condition[0]);
-    	this.decisions = nonEmpty(notNull(decisions, "Rule's decisions are null."), "Rule decisions are empty.").toArray(new Condition[0]);
+    	this.conditions = notNull(conditions, "Rule's conditions are null.").toArray(new Condition<?>[0]);
+    	this.decisions = nonEmpty(notNull(decisions, "Rule's decisions are null."), "Rule decisions are empty.").toArray(new Condition<?>[0]);
     }
 
 	/**
@@ -117,7 +117,7 @@ public class Rule {
 	public RuleType getType() {
 		return type;
 	}
-
+	
 	/**
 	 * Gets semantics of this rule. See {@link RuleSemantics}.
 	 * 
@@ -141,7 +141,7 @@ public class Rule {
 	 * 
 	 * @return the conditions array with conditions of this rule (in order in which they were added to this rule).
 	 */
-	public Condition[] getConditions() {
+	public Condition<?>[] getConditions() {
 		return this.getConditions(false);
 	}
 	
@@ -155,7 +155,7 @@ public class Rule {
 	 * 
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
-	public Condition[] getConditions(boolean accelerateByReadOnlyResult) {
+	public Condition<?>[] getConditions(boolean accelerateByReadOnlyResult) {
 		return accelerateByReadOnlyResult ? conditions : conditions.clone();
 	}	
 
@@ -164,7 +164,7 @@ public class Rule {
 	 * 
 	 * @return array with decisions of this rule
 	 */
-	public Condition[] getDecisions() {
+	public Condition<?>[] getDecisions() {
 		return this.getDecisions(false);
 	}
 	
@@ -177,7 +177,7 @@ public class Rule {
 	 * @return array with decisions of this rule
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
-	public Condition[] getDecisions(boolean accelerateByReadOnlyResult) {
+	public Condition<?>[] getDecisions(boolean accelerateByReadOnlyResult) {
 		return accelerateByReadOnlyResult ? decisions : decisions.clone();
 	}
 	
@@ -186,7 +186,7 @@ public class Rule {
 	 * 
 	 * @return the first (and possibly the only) decision suggested by this rule
 	 */
-	public Condition getDecision() {
+	public Condition<?> getDecision() {
 		return this.decisions[0];
 	}
 	
