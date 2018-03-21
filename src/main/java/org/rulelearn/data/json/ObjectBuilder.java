@@ -49,7 +49,7 @@ public class ObjectBuilder {
 	protected Attribute [] attributes = null;
 	
 	/**
-	 * Encoding of text data in CSV file.
+	 * Encoding of text data in JSON file.
 	 */
 	protected String encoding = ObjectBuilder.DEFAULT_ENCODING; 
 					
