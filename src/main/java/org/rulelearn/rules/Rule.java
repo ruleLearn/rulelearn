@@ -142,7 +142,7 @@ public class Rule {
 	 * 
 	 * @return the conditions array with conditions of this rule (in order in which they were added to this rule).
 	 */
-	public Condition<?>[] getConditions() {
+	public Condition<? extends EvaluationField>[] getConditions() {
 		return this.getConditions(false);
 	}
 	
@@ -156,7 +156,7 @@ public class Rule {
 	 * 
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
-	public Condition<?>[] getConditions(boolean accelerateByReadOnlyResult) {
+	public Condition<? extends EvaluationField>[] getConditions(boolean accelerateByReadOnlyResult) {
 		return accelerateByReadOnlyResult ? conditions : conditions.clone();
 	}	
 
@@ -165,7 +165,7 @@ public class Rule {
 	 * 
 	 * @return array with decisions of this rule
 	 */
-	public Condition<?>[] getDecisions() {
+	public Condition<? extends EvaluationField>[] getDecisions() {
 		return this.getDecisions(false);
 	}
 	
@@ -178,7 +178,7 @@ public class Rule {
 	 * @return array with decisions of this rule
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
-	public Condition<?>[] getDecisions(boolean accelerateByReadOnlyResult) {
+	public Condition<? extends EvaluationField>[] getDecisions(boolean accelerateByReadOnlyResult) {
 		return accelerateByReadOnlyResult ? decisions : decisions.clone();
 	}
 	
@@ -187,7 +187,7 @@ public class Rule {
 	 * 
 	 * @return the first (and possibly the only) decision suggested by this rule
 	 */
-	public Condition<?> getDecision() {
+	public Condition<? extends EvaluationField> getDecision() {
 		return this.decisions[0];
 	}
 	
