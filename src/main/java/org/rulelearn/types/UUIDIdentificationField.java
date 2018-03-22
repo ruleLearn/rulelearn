@@ -39,6 +39,15 @@ public class UUIDIdentificationField extends IdentificationField {
 	protected UUID value;
 	
 	/**
+	 * Gets the value of this field.
+	 * 
+	 * @return the value of this field
+	 */
+	public UUID getValue() {
+		return value;
+	}
+
+	/**
 	 * Constructor setting UUID value of this identification field.
 	 * 
 	 * @param value UUID value to set

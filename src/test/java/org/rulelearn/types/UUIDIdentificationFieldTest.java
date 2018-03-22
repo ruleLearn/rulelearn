@@ -16,7 +16,11 @@
 
 package org.rulelearn.types;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.rulelearn.core.TernaryLogicValue;
 
 /**
  * Tests for [@link UUIDIdentificationField}.
@@ -31,7 +35,13 @@ class UUIDIdentificationFieldTest {
 	 */
 	@Test
 	void testHashCode() {
-		//TODO
+		UUID value = UUID.randomUUID();
+		UUIDIdentificationField field1 = new UUIDIdentificationField(value);
+		UUIDIdentificationField field2 = new UUIDIdentificationField(value);
+		assertEquals(field1.hashCode(), field2.hashCode());
+		
+		UUIDIdentificationField field3 = new UUIDIdentificationField(UUID.randomUUID());
+		assertNotEquals(field1.hashCode(), field3.hashCode());
 	}
 
 	/**
@@ -39,15 +49,27 @@ class UUIDIdentificationFieldTest {
 	 */
 	@Test
 	void testIsEqualTo() {
-		//TODO
+		UUID value = UUID.randomUUID();
+		UUIDIdentificationField field1 = new UUIDIdentificationField(value);
+		UUIDIdentificationField field2 = new UUIDIdentificationField(value);
+		assertEquals(field1.isEqualTo(field2), TernaryLogicValue.TRUE);
+		
+		UUIDIdentificationField field3 = new UUIDIdentificationField(UUID.randomUUID());
+		assertEquals(field1.isEqualTo(field3), TernaryLogicValue.FALSE); //should be different
 	}
 
 	/**
-	 * Test method for {@link org.rulelearn.types.UUIDIdentificationField#equals(java.lang.Object)}.
+	 * Test method for {@link org.rulelearn.types.UUIDIdentificationField#equals(Object)}.
 	 */
 	@Test
 	void testEqualsObject() {
-		//TODO
+		UUID value = UUID.randomUUID();
+		UUIDIdentificationField field1 = new UUIDIdentificationField(value);
+		UUIDIdentificationField field2 = new UUIDIdentificationField(value);
+		assertEquals(field1, field2);
+		
+		UUIDIdentificationField field3 = new UUIDIdentificationField(UUID.randomUUID());
+		assertNotEquals(field1, field3); //should be different
 	}
 
 	/**
@@ -55,7 +77,29 @@ class UUIDIdentificationFieldTest {
 	 */
 	@Test
 	void testGetRandomValue() {
-		//TODO
+		UUID randomValue = UUIDIdentificationField.getRandomValue();
+		assertNotEquals(UUIDIdentificationField.getRandomValue(), randomValue);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.types.UUIDIdentificationField#getValue()}.
+	 */
+	@Test
+	void testGetValue() {
+		UUID value = UUID.randomUUID();
+		UUIDIdentificationField field = new UUIDIdentificationField(value);
+		assertEquals(field.getValue(), value);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.types.UUIDIdentificationField#selfClone()}.
+	 */
+	@Test
+	void testSelfClone() {
+		UUID value = UUID.randomUUID();
+		UUIDIdentificationField field = new UUIDIdentificationField(value);
+		UUIDIdentificationField clonedField = field.selfClone();
+		assertEquals(field, clonedField);
 	}
 
 }
