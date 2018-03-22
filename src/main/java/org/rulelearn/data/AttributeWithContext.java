@@ -25,7 +25,7 @@ import org.rulelearn.core.Precondition;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class AttributeWithContext {
+public class AttributeWithContext <T extends Attribute> {
 	/**
 	 * Number (index) of the attribute in the array of all attributes.
 	 */
@@ -34,7 +34,7 @@ public class AttributeWithContext {
 	/**
 	 * Reference to the attribute.
 	 */
-	protected Attribute attribute;
+	protected T attribute;
 	
 	/**
 	 * Constructor initializing all fields.
@@ -45,7 +45,7 @@ public class AttributeWithContext {
 	 * @throws NullPointerException if attribute does not conform to {@link Precondition#notNull(Object, String)}
 	 * @throws InvalidValueException if attribute's index does not conform to {@link Precondition#nonNegative(int, String)}
 	 */
-	public AttributeWithContext(Attribute attribute, int attributeIndex) {
+	public AttributeWithContext(T attribute, int attributeIndex) {
 		this.attribute = Precondition.notNull(attribute, "Attribute to be stored in context is null.");
 		this.attributeIndex = Precondition.nonNegative(attributeIndex, "Index of an attribute to be stored in context is negative.");
 	}

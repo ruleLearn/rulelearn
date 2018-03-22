@@ -26,17 +26,22 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.rulelearn.data.Attribute;
+import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeWithContext;
 import org.rulelearn.data.EvaluationAttribute;
+import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.Rule;
+import org.rulelearn.rules.RuleSemantics;
 import org.rulelearn.rules.RuleSet;
+import org.rulelearn.rules.RuleType;
 import org.rulelearn.rules.SimpleConditionAtLeast;
 import org.rulelearn.rules.SimpleConditionAtMost;
 import org.rulelearn.rules.SimpleConditionEqual;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
@@ -89,7 +94,7 @@ public class RuleParser {
 	/**
 	 * Attributes with context {@link AttributeWithContext} which are used to construct conditions. 
 	 */
-	protected AttributeWithContext [] attributesWithContext = null;
+	protected AttributeWithContext<? extends Attribute> [] attributesWithContext = null;
 	
 	/**
 	 * Map used to access attributes by name.
@@ -113,15 +118,24 @@ public class RuleParser {
 		nonEmpty(this.attributes, "Empty set of attributes was passed to RuleML parser.");
 		
 		int size = attributes.length;
-		this.attributesWithContext = new AttributeWithContext[size];
+		this.attributesWithContext = new AttributeWithContext<?>[size];
 		this.attributeNamesMap = new Object2IntOpenHashMap<String> ();
 		this.attributeNamesMap.defaultReturnValue(RuleParser.DEFAULT_INDEX);
 		for (int i=0; i < size; i++) {
-			this.attributesWithContext[i] = new AttributeWithContext(this.attributes[i], i);
+			if (this.attributes[i] instanceof EvaluationAttribute) {
+				this.attributesWithContext[i] = new EvaluationAttributeWithContext((EvaluationAttribute)this.attributes[i], i);
+			}
+			this.attributesWithContext[i] = new AttributeWithContext<Attribute>(this.attributes[i], i);
 			this.attributeNamesMap.put(this.attributes[i].getName(), i);
 		}		
 	}
 	
+	/**
+	 * Gets DOM interface which represent RuleML document. 
+	 * 
+	 * @param inputStream stream with RuleML
+	 * @return interface representing RuleML document
+	 */
 	protected Document getRuleMLDocument (InputStream inputStream)  {
 		Document document = null;
 		
@@ -142,6 +156,12 @@ public class RuleParser {
 		return document;
 	}
 	
+	/**
+	 * Parses all rules from RuleML source and returns a map {@link Object2ObjectRBTreeMap} with each rule sets from RuleML placed on different index. 
+	 * 
+	 * @param inputStream stream with RuleML
+	 * @return map {@link Object2ObjectRBTreeMap} with each rule sets from RuleML placed on different index
+	 */
 	public Map<Integer, RuleSet> parseRules (InputStream inputStream)  {
 		Map<Integer, RuleSet> ruleSets = null;
 		
@@ -184,10 +204,17 @@ public class RuleParser {
 		return ruleSets;
 	}
 	
+	/** 
+	 * Parses a single rule from RuleML.
+	 * 
+	 * @param assertElement RuleML element representing a single rule
+	 * @return a rule {@link Rule}
+	 * @throws RuleParseException if any of the rules can't be parsed
+	 */
 	protected Rule parseRule (Element assertElement) throws RuleParseException {
 		Rule rule = null;
-		List<Condition<SimpleField>> conditions = null;
-		List<Condition<SimpleField>> decisions = null;
+		List<Condition<? extends EvaluationField>> conditions = null;
+		List<Condition<? extends EvaluationField>> decisions = null;
 		
 		for (Node assertClause = assertElement.getFirstChild(); assertClause != null; assertClause = assertClause.getNextSibling()) {
 			if (assertClause.getNodeType() == Node.ELEMENT_NODE && "implies".equals(assertClause.getNodeName())) {
@@ -223,15 +250,40 @@ public class RuleParser {
 		notNull(conditions, "No condition part specified for a rule in RuleML.");
 		notNull(decisions, "No decision part specified for a rule in RuleML.");
 		if (decisions.size() > 0) {
-			if (decisions.get(0) instanceof SimpleConditionAtMost) {
-				//rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, decisions.get(0).getLimitingEvaluation(), conditions, decisions);
+			Condition<? extends EvaluationField> decision = decisions.get(0);
+			// TODO check correctness
+			if (decision.getAttributeWithContext().getAttributePreferenceType() == AttributePreferenceType.NONE) {
+				rule = new Rule(RuleType.CERTAIN, RuleSemantics.EQUAL, ((Field)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
+			}
+			else if (decision.getAttributeWithContext().getAttributePreferenceType() == AttributePreferenceType.GAIN) {
+				if (decision instanceof SimpleConditionAtLeast) {
+					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, ((Field)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
+				}
+				else {
+					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, ((Field)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
+				}
+			}
+			else {
+				if (decision instanceof SimpleConditionAtLeast) {
+					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, ((Field)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
+				}
+				else {
+					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, ((Field)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
+				}
 			}
 		}
 		return rule;
 	}
 	
-	protected List<Condition<SimpleField>> parseRuleConditionPart (Element ifElement) throws RuleParseException {
-		List<Condition<SimpleField>> conditions = new ObjectArrayList<Condition<SimpleField>> ();
+	/**
+	 * Parses the condition part of a rule from RuleML.
+	 * 
+	 * @param ifElement RuleML element representing the condition part of a rule
+	 * @return a list {@link ObjectArrayList} of conditions {@link Condition}
+	 * @throws RuleParseException if any of the rules can't be parsed
+	 */
+	protected List<Condition<? extends EvaluationField>> parseRuleConditionPart (Element ifElement) throws RuleParseException {
+		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<Condition<? extends EvaluationField>> ();
 		for (Node ifClause = ifElement.getFirstChild(); ifClause != null; ifClause = ifClause.getNextSibling()) {
             if (ifClause.getNodeType() == Node.ELEMENT_NODE) {
                 if ("and".equals(ifClause.getNodeName())) {
@@ -260,8 +312,15 @@ public class RuleParser {
 		return conditions;
 	}
 	
-	protected List<Condition<SimpleField>> parseRuleDecisionPart (Element thenElement) throws RuleParseException {
-		List<Condition<SimpleField>> decisions = new ObjectArrayList<Condition<SimpleField>> ();
+	/**
+	 * Parses the decision part of a rule from RuleML.
+	 * 
+	 * @param thenElement RuleML element representing the decision part of a rule
+	 * @return a list {@link ObjectArrayList} of conditions {@link Condition}
+	 * @throws RuleParseException if any of the rules can't be parsed 
+	 */
+	protected List<Condition<? extends EvaluationField>> parseRuleDecisionPart (Element thenElement) throws RuleParseException {
+		List<Condition<? extends EvaluationField>> decisions = new ObjectArrayList<Condition<? extends EvaluationField>> ();
 		for (Node thenClause = thenElement.getFirstChild(); thenClause != null; thenClause = thenClause.getNextSibling()) {
             if (thenClause.getNodeType() == Node.ELEMENT_NODE) {
                 if ("or".equals(thenClause.getNodeName())) {
@@ -290,8 +349,15 @@ public class RuleParser {
 		return decisions;
 	}
 	
-	protected Condition<SimpleField> parseRuleCondition (Element atomElement) throws RuleParseException {
-		Condition<SimpleField> condition = null;
+	/**
+	 * Parses a single condition of a rule from RuleML.
+	 * 
+	 * @param atomElement RuleML element representing a single condition
+	 * @return a condition {@link Condition}
+	 * @throws RuleParseException if any of the rules can't be parsed
+	 */
+	protected Condition<? extends EvaluationField> parseRuleCondition (Element atomElement) throws RuleParseException {
+		Condition<? extends EvaluationField> condition = null;
         NodeList relationList = atomElement.getElementsByTagName("rel");
         if (relationList.getLength() > 1) {
             throw new RuleParseException("More than one relation ('rel' node) inside an 'atom' node detected in RuleML.");
@@ -321,13 +387,16 @@ public class RuleParser {
         if (attributeIndex != RuleParser.DEFAULT_INDEX) {
         		if (this.attributes[attributeIndex] instanceof EvaluationAttribute) { 
 		        	if ("le".equals(relation.toLowerCase())) {
-		        		condition = new SimpleConditionAtMost(this.attributesWithContext[attributeIndex], parseEvaluation(value, (EvaluationAttribute)this.attributes[attributeIndex]));
+		        		condition = new SimpleConditionAtMost((EvaluationAttributeWithContext)this.attributesWithContext[attributeIndex], 
+		        						((SimpleField)parseEvaluation(value, (EvaluationAttribute)this.attributes[attributeIndex])));
 		        	}
 		        	else if ("ge".equals(relation.toLowerCase())) {
-		        		condition = new SimpleConditionAtLeast(this.attributesWithContext[attributeIndex], parseEvaluation(value, (EvaluationAttribute)this.attributes[attributeIndex]));
+		        		condition = new SimpleConditionAtLeast((EvaluationAttributeWithContext)this.attributesWithContext[attributeIndex], 
+		        						((SimpleField)parseEvaluation(value, (EvaluationAttribute)this.attributes[attributeIndex])));
 		        	}
 		        	else {
-		        		condition = new SimpleConditionEqual(this.attributesWithContext[attributeIndex], parseEvaluation(value, (EvaluationAttribute)this.attributes[attributeIndex]));
+		        		condition = new SimpleConditionEqual((EvaluationAttributeWithContext)this.attributesWithContext[attributeIndex], 
+		        						((SimpleField)parseEvaluation(value, (EvaluationAttribute)this.attributes[attributeIndex])));
 		        }
         		}
 		    else {
@@ -340,9 +409,16 @@ public class RuleParser {
 	    return condition;
     }
 
+	/**
+	 * Parses a string {@link String} representation of evaluation to evaluation field {@link EvaluationField}.
+	 * 
+	 * @param evaluation string representation of evaluation
+	 * @param attribute attribute, which evaluation is parsed
+	 * @return evaluation field {@link EvaluationField}
+	 */
 	// TODO should be propagated somewhere else and used also in InformationTableBuilder
-	protected SimpleField parseEvaluation (String evaluation, EvaluationAttribute attribute) {
-		SimpleField field = null;
+	protected EvaluationField parseEvaluation (String evaluation, EvaluationAttribute attribute) {
+		EvaluationField field = null;
 		if (attribute.getValueType() instanceof SimpleField) {
 			Field valueType = attribute.getValueType();
 			if (valueType instanceof IntegerField) {

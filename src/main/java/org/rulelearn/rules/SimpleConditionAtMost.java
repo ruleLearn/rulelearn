@@ -17,7 +17,7 @@
 package org.rulelearn.rules;
 
 import org.rulelearn.core.ComparisonResult;
-import org.rulelearn.data.AttributeWithContext;
+import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.types.SimpleField;
 import static org.rulelearn.core.Precondition.notNull;
 
@@ -38,12 +38,12 @@ public class SimpleConditionAtMost extends SimpleCondition {
 	/**
 	 * Constructs this condition.
 	 * 
-	 * @param attributeWithContext structure embracing an attribute for which this condition is constructed and its contextual information; see {@link AttributeWithContext}
+	 * @param attributeWithContext structure embracing an attribute for which this condition is constructed and its contextual information; see {@link EvaluationAttributeWithContext}
 	 * @param limitingEvaluation limiting evaluation of the constructed condition; see {@link #getLimitingEvaluation()}
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public SimpleConditionAtMost(AttributeWithContext attributeWithContext, SimpleField limitingEvaluation) {
+	public SimpleConditionAtMost(EvaluationAttributeWithContext attributeWithContext, SimpleField limitingEvaluation) {
 		super(attributeWithContext, limitingEvaluation);
 	}
 

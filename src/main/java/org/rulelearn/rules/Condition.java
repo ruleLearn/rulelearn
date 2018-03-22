@@ -17,6 +17,7 @@
 package org.rulelearn.rules;
 
 import org.rulelearn.data.AttributeWithContext;
+import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.EvaluationField;
 import static org.rulelearn.core.Precondition.notNull;
@@ -34,7 +35,7 @@ public abstract class Condition<T extends EvaluationField> {
 	/**
 	 * Information about an attribute for which this condition has been created.
 	 */
-	protected AttributeWithContext attributeWithContext;
+	protected EvaluationAttributeWithContext attributeWithContext;
 	
 	/**
 	 * Limiting evaluation with respect to which this condition is defined. E.g., in case of condition 'price &gt;= 5', limiting evaluation is equal to 5.
@@ -59,7 +60,7 @@ public abstract class Condition<T extends EvaluationField> {
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	protected Condition(AttributeWithContext attributeWithContext, T limitingEvaluation) {
+	protected Condition(EvaluationAttributeWithContext attributeWithContext, T limitingEvaluation) {
 		this.attributeWithContext = notNull(attributeWithContext, "Attribute with context of constructed condition is null.");
 		this.limitingEvaluation = notNull(limitingEvaluation, "Limiting evaluation of constructed condition is null.");
 	}
@@ -105,7 +106,7 @@ public abstract class Condition<T extends EvaluationField> {
 	 * 
 	 * @return Gets a "meta" object storing attribute for which this condition is defined + context of that attribute.
 	 */
-	public AttributeWithContext getAttributeWithContext() {
+	public EvaluationAttributeWithContext getAttributeWithContext() {
 		return this.attributeWithContext;
 	}
 

@@ -21,6 +21,7 @@ import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
 import static org.rulelearn.core.Precondition.notNull;
 import static org.rulelearn.core.Precondition.nonEmpty;
@@ -57,13 +58,13 @@ public class Rule {
      * Array with conditions building condition part of this rule, stored in order in which they were added to this rule.
      * If there is more than one condition, they are treated as connected by the AND operator.
      */
-    protected Condition<?>[] conditions = null;
+    protected Condition<? extends EvaluationField>[] conditions = null;
 	
 	/**
      * Array with conditions building decision part of this rule.
      * If there is more than one decision, they are treated as connected by the OR operator.
      */
-    protected Condition<?>[] decisions = null;
+    protected Condition<? extends EvaluationField>[] decisions = null;
     
     /**
      * Value appended to the beginning of a rule while transforming the rule to text form.
@@ -101,7 +102,7 @@ public class Rule {
      * @throws NullPointerException if any of the parameters is {@code null}
      * @throws InvalidSizeException if the list with decisions is empty
      */
-    public Rule(RuleType type, RuleSemantics semantics, Field inherentDecision, List<Condition<?>> conditions, List<Condition<?>> decisions) {
+    public Rule(RuleType type, RuleSemantics semantics, Field inherentDecision, List<Condition<? extends EvaluationField>> conditions, List<Condition<? extends EvaluationField>> decisions) {
     	this.type = notNull(type, "Rule's type is null.");
     	this.semantics = notNull(semantics, "Rule's semantics is null.");
     	this.inherentDecision = notNull(inherentDecision, "Rule's inherent decision is null.");
