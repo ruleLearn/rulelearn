@@ -67,4 +67,14 @@ public class AttributeWithContext <T extends Attribute> {
 	public String getAttributeName() {
 		return this.attribute.getName();
 	}
+	
+	/**
+	 * Gets the attribute.
+	 * 
+	 * @return the attribute
+	 */
+	public T getAttribute() {
+		return this.attribute;
+	}
+	
 }
