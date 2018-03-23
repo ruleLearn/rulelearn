@@ -22,6 +22,8 @@ import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.EvaluationField;
 import static org.rulelearn.core.Precondition.notNull;
 
+import org.rulelearn.core.InvalidValueException;
+
 /**
  * Condition of a decision rule. May be present both in the condition part and in the decision part of the rule.
  * 
@@ -134,4 +136,12 @@ public abstract class Condition<T extends EvaluationField> {
      */
 	@Override
     public abstract int hashCode(); 
+	
+	/**
+	 * Gets semantics of a decision rule having this condition on the RHS, as the only condition.
+	 * 
+	 * @return semantics of a decision rule having this condition on the RHS, as the only condition
+	 * @throws InvalidValueException if the type of the attribute for which this condition is defined is not decision one
+	 */
+	public abstract RuleSemantics getRuleSemantics();
 }

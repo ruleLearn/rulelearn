@@ -252,23 +252,24 @@ public class RuleParser {
 		if (decisions.size() > 0) {
 			Condition<? extends EvaluationField> decision = decisions.get(0);
 			// TODO check correctness
+			// TODO (MSz): should rule semantics depend on attribute's preference type, not on the type of decision condition?
 			if (decision.getAttributeWithContext().getAttributePreferenceType() == AttributePreferenceType.NONE) {
-				rule = new Rule(RuleType.CERTAIN, RuleSemantics.EQUAL, ((Field)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
+				rule = new Rule(RuleType.CERTAIN, RuleSemantics.EQUAL, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
 			}
 			else if (decision.getAttributeWithContext().getAttributePreferenceType() == AttributePreferenceType.GAIN) {
 				if (decision instanceof SimpleConditionAtLeast) {
-					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, ((Field)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
+					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
 				}
 				else {
-					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, ((Field)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
+					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
 				}
 			}
 			else {
 				if (decision instanceof SimpleConditionAtLeast) {
-					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, ((Field)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
+					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
 				}
 				else {
-					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, ((Field)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
+					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
 				}
 			}
 		}
