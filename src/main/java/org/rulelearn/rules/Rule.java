@@ -21,6 +21,7 @@ import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
 import static org.rulelearn.core.Precondition.notNull;
 import static org.rulelearn.core.Precondition.nonEmpty;
@@ -32,7 +33,7 @@ import static org.rulelearn.core.Precondition.nonEmpty;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class Rule {
+public class Rule {
 	
 	/**
 	 * Type of this rule. See {@link RuleType}.
@@ -57,13 +58,13 @@ public abstract class Rule {
      * Array with conditions building condition part of this rule, stored in order in which they were added to this rule.
      * If there is more than one condition, they are treated as connected by the AND operator.
      */
-    protected Condition<?>[] conditions = null;
+    protected Condition<? extends EvaluationField>[] conditions = null;
 	
 	/**
      * Array with conditions building decision part of this rule.
      * If there is more than one decision, they are treated as connected by the OR operator.
      */
-    protected Condition<?>[] decisions = null;
+    protected Condition<? extends EvaluationField>[] decisions = null;
     
     /**
      * Value appended to the beginning of a rule while transforming the rule to text form.
@@ -101,7 +102,7 @@ public abstract class Rule {
      * @throws NullPointerException if any of the parameters is {@code null}
      * @throws InvalidSizeException if the list with decisions is empty
      */
-    public Rule(RuleType type, RuleSemantics semantics, Field inherentDecision, List<Condition<?>> conditions, List<Condition<?>> decisions) {
+    public Rule(RuleType type, RuleSemantics semantics, Field inherentDecision, List<Condition<? extends EvaluationField>> conditions, List<Condition<? extends EvaluationField>> decisions) {
     	this.type = notNull(type, "Rule's type is null.");
     	this.semantics = notNull(semantics, "Rule's semantics is null.");
     	this.inherentDecision = notNull(inherentDecision, "Rule's inherent decision is null.");
@@ -141,7 +142,7 @@ public abstract class Rule {
 	 * 
 	 * @return the conditions array with conditions of this rule (in order in which they were added to this rule).
 	 */
-	public Condition<?>[] getConditions() {
+	public Condition<? extends EvaluationField>[] getConditions() {
 		return this.getConditions(false);
 	}
 	
@@ -155,7 +156,7 @@ public abstract class Rule {
 	 * 
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
-	public Condition<?>[] getConditions(boolean accelerateByReadOnlyResult) {
+	public Condition<? extends EvaluationField>[] getConditions(boolean accelerateByReadOnlyResult) {
 		return accelerateByReadOnlyResult ? conditions : conditions.clone();
 	}	
 
@@ -164,7 +165,7 @@ public abstract class Rule {
 	 * 
 	 * @return array with decisions of this rule
 	 */
-	public Condition<?>[] getDecisions() {
+	public Condition<? extends EvaluationField>[] getDecisions() {
 		return this.getDecisions(false);
 	}
 	
@@ -177,7 +178,7 @@ public abstract class Rule {
 	 * @return array with decisions of this rule
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
-	public Condition<?>[] getDecisions(boolean accelerateByReadOnlyResult) {
+	public Condition<? extends EvaluationField>[] getDecisions(boolean accelerateByReadOnlyResult) {
 		return accelerateByReadOnlyResult ? decisions : decisions.clone();
 	}
 	
@@ -186,7 +187,7 @@ public abstract class Rule {
 	 * 
 	 * @return the first (and possibly the only) decision suggested by this rule
 	 */
-	public Condition<?> getDecision() {
+	public Condition<? extends EvaluationField> getDecision() {
 		return this.decisions[0];
 	}
 	

@@ -18,7 +18,7 @@ package org.rulelearn.rules;
 
 import java.util.Objects;
 
-import org.rulelearn.data.AttributeWithContext;
+import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.types.SimpleField;
 
 /**
@@ -32,12 +32,12 @@ public abstract class SimpleCondition extends Condition<SimpleField> {
 	/**
 	 * Constructs this condition.
 	 * 
-	 * @param attributeWithContext structure embracing an attribute for which this condition is constructed and its contextual information; see {@link AttributeWithContext}
+	 * @param attributeWithContext structure embracing an attribute for which this condition is constructed and its contextual information; see {@link EvaluationAttributeWithContext}
 	 * @param limitingEvaluation limiting evaluation of the constructed condition; see {@link #getLimitingEvaluation()}
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	protected SimpleCondition(AttributeWithContext attributeWithContext, SimpleField limitingEvaluation) {
+	protected SimpleCondition(EvaluationAttributeWithContext attributeWithContext, SimpleField limitingEvaluation) {
 		super(attributeWithContext, limitingEvaluation);
 	}
 	
