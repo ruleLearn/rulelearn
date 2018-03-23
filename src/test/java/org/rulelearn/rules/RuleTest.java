@@ -43,6 +43,11 @@ class RuleTest {
 	
 	private Rule getTestRule1() {
 		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
+		List<Condition<? extends EvaluationField>> decisions = new ObjectArrayList<>();
+		
+		//create conditions
+		
+		AttributePreferenceType preferenceType1 = AttributePreferenceType.GAIN;
 		Condition<? extends EvaluationField> condition1 = 		
 				new SimpleConditionAtLeast(
 						new EvaluationAttributeWithContext(
@@ -50,11 +55,14 @@ class RuleTest {
 										"attr1",
 										true,
 										AttributeType.CONDITION,
-										IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN),
+										IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType1),
 										new UnknownSimpleFieldMV2(),
-										AttributePreferenceType.GAIN),
+										preferenceType1),
 								1),
-						IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN));
+						IntegerFieldFactory.getInstance().create(3, preferenceType1));
+		conditions.add(condition1);
+		
+		AttributePreferenceType preferenceType2 = AttributePreferenceType.COST;
 		Condition<? extends EvaluationField> condition2 = 
 				new SimpleConditionAtMost(
 						new EvaluationAttributeWithContext(
@@ -62,19 +70,33 @@ class RuleTest {
 										"attr3",
 										true,
 										AttributeType.CONDITION,
-										RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.COST),
+										RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType2),
 										new UnknownSimpleFieldMV15(),
-										AttributePreferenceType.COST),
+										preferenceType2),
 								3),
-						RealFieldFactory.getInstance().create(-2, AttributePreferenceType.COST));
-		conditions.add(condition1);
+						RealFieldFactory.getInstance().create(-2, preferenceType2));
 		conditions.add(condition2);
 		
-		SimpleConditionAtLeast decision = null;
-		List<Condition<? extends EvaluationField>> decisions = new ObjectArrayList<>();
+		//create decisions
+		
+		AttributePreferenceType preferenceTypeDec = AttributePreferenceType.GAIN;
+		SimpleConditionAtLeast decision =
+				new SimpleConditionAtLeast(
+						new EvaluationAttributeWithContext(
+								new EvaluationAttribute(
+										"dec",
+										true,
+										AttributeType.DECISION,
+										IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceTypeDec),
+										new UnknownSimpleFieldMV2(),
+										preferenceTypeDec),
+								7),
+						IntegerFieldFactory.getInstance().create(5, preferenceTypeDec));
 		decisions.add(decision);
 		
-		Rule rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), conditions, decisions);
+		//create and return rule
+		
+		Rule rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, IntegerFieldFactory.getInstance().create(0, preferenceTypeDec), conditions, decisions);
 		return rule;
 	}
 
@@ -133,7 +155,7 @@ class RuleTest {
 	@Test
 	void testGetConditions() {
 		Rule rule = getTestRule1();
-		assertEquals(rule.getSemantics(), RuleSemantics.AT_LEAST);
+		assertEquals(rule.getConditions().length, 2);
 	}
 
 	/**
@@ -141,7 +163,8 @@ class RuleTest {
 	 */
 	@Test
 	void testGetConditionsBoolean() {
-		fail("Not yet implemented");
+		Rule rule = getTestRule1();
+		assertEquals(rule.getConditions(true).length, 2);
 	}
 
 	/**
@@ -149,7 +172,8 @@ class RuleTest {
 	 */
 	@Test
 	void testGetDecisions() {
-		fail("Not yet implemented");
+		Rule rule = getTestRule1();
+		assertEquals(rule.getDecisions().length, 1);
 	}
 
 	/**
@@ -157,7 +181,8 @@ class RuleTest {
 	 */
 	@Test
 	void testGetDecisionsBoolean() {
-		fail("Not yet implemented");
+		Rule rule = getTestRule1();
+		assertEquals(rule.getDecisions(true).length, 1);
 	}
 
 	/**
