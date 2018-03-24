@@ -14,24 +14,28 @@
  * limitations under the License.
  */
 
-package org.rulelearn.rules;
-
-import org.rulelearn.data.Attribute;
+package org.rulelearn.core;
 
 /**
- * Information about an attribute.
+ * Exception thrown when the size of an object (array, collection) is different than expected (e.g., the size is 0, while it should be &gt; 0)
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class AttributeInformation {
+public class InvalidSizeException extends RuntimeException {
+	
 	/**
-	 * Number (index) of the attribute in the array of all attributes.
+	 * Generated serial version UID.
 	 */
-	protected int attributeNumber;
+	private static final long serialVersionUID = 3696346784761301885L;
 
 	/**
-	 * Reference to the attribute.
+	 * Constructs an exception with message of failure reason.
+	 * 
+	 * @param message message of this exception
 	 */
-	protected Attribute attribute;
+	public InvalidSizeException(String message) {
+		super(message);
+	}
+	
 }

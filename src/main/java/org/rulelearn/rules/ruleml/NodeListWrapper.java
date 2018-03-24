@@ -14,29 +14,42 @@
  * limitations under the License.
  */
 
-package org.rulelearn.core;
+package org.rulelearn.rules.ruleml;
+
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.util.AbstractList;
+import java.util.RandomAccess;
 
 /**
- * Exception thrown when semantically uncomparable objects of the same type are requested to be compared.
- * Such situation may occur, e.g., when comparing two fields of type {@link org.rulelearn.types.PairField} in an information table.
+ * Wrapper of {@link NodeList}, which makes it iterable.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+ * 
  */
-public class UncomparableException extends Exception {
-
+public class NodeListWrapper extends AbstractList<Node> implements RandomAccess {
 	/**
-	 * Generated serial version UID
+	 * Wrapped list {@link NodeList}
 	 */
-	private static final long serialVersionUID = -5460524209459293416L;
+    private final NodeList list;
 
-	/**
-	 * Constructs an exception with message of failure reason.
-	 * 
-	 * @param message message of this exception
-	 */
-	public UncomparableException(String message) {
-		super(message);
-	}
+    /**
+     * Creates a wrapper based on the given {@link NodeList}
+     * @param list list to wrap
+     */
+    public NodeListWrapper(NodeList list) {
+        this.list = list;
+    }
 
+    @Override
+    public Node get(int index) {
+        return list.item(index);
+    }
+
+    @Override
+    public int size() {
+        return list.getLength();
+    }
 }
