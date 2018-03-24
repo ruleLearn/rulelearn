@@ -18,11 +18,11 @@ package org.rulelearn.rules;
 
 import java.util.List;
 import org.rulelearn.core.InvalidSizeException;
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.EvaluationField;
-import org.rulelearn.types.Field;
 import static org.rulelearn.core.Precondition.notNull;
 import static org.rulelearn.core.Precondition.nonEmpty;
 
@@ -52,7 +52,7 @@ public class Rule {
      * - positive examples for which this rule was induced come from lower/upper approximation or boundary of a set of objects x such that d(x) is at least as good as v,<br>
      * - positive examples for which this rule was induced come from lower/upper approximation or boundary of a set of objects x such that d(x) is at most as good as v.
 	 */
-	protected Field inherentDecision;
+	protected EvaluationField inherentDecision;
 	
 	/**
      * Array with conditions building condition part of this rule, stored in order in which they were added to this rule.
@@ -102,13 +102,37 @@ public class Rule {
      * @throws NullPointerException if any of the parameters is {@code null}
      * @throws InvalidSizeException if the list with decisions is empty
      */
-    public Rule(RuleType type, RuleSemantics semantics, Field inherentDecision, List<Condition<? extends EvaluationField>> conditions, List<Condition<? extends EvaluationField>> decisions) {
+    public Rule(RuleType type, RuleSemantics semantics, EvaluationField inherentDecision, List<Condition<? extends EvaluationField>> conditions, List<Condition<? extends EvaluationField>> decisions) {
     	this.type = notNull(type, "Rule's type is null.");
     	this.semantics = notNull(semantics, "Rule's semantics is null.");
     	this.inherentDecision = notNull(inherentDecision, "Rule's inherent decision is null.");
     	this.conditions = notNull(conditions, "Rule's conditions are null.").toArray(new Condition<?>[0]);
     	this.decisions = nonEmpty(notNull(decisions, "Rule's decisions are null."), "Rule decisions are empty.").toArray(new Condition<?>[0]);
     }
+    
+    /**
+     * Constructor initializing all fields (directly, using given parameters, or indirectly, by calculating correct values based on the given parameters).
+     * Each argument should be set (not {@code null}).
+     * 
+     * @param type type of constructed rule; see {@link RuleType}
+     * @param conditions list with conditions building condition (LHS) part of this rule
+     * @param decision for the decision (RHS) part of this rule
+     * 
+     * @throws NullPointerException if any of the parameters is {@code null}
+     * @throws InvalidValueException if semantics of this rule cannot be established using the given decision - see {@link Condition#getRuleSemantics()}
+     */
+    public Rule(RuleType type, List<Condition<? extends EvaluationField>> conditions, SimpleCondition decision) {
+    	this.type = notNull(type, "Rule's type is null.");
+    	
+    	notNull(decision, "Rule's decision is null."); //validate decision
+    	
+    	this.semantics = decision.getRuleSemantics(); //may throw exception
+    	this.inherentDecision = decision.getLimitingEvaluation();
+    	this.conditions = notNull(conditions, "Rule's conditions are null.").toArray(new Condition<?>[0]);
+    	this.decisions = new SimpleCondition[1];
+    	this.decisions[0] = notNull(decision, "Rule's decision is null.");
+    }
+
 
 	/**
 	 * Gets type of this rule. See {@link RuleType}.
@@ -133,7 +157,7 @@ public class Rule {
 	 * 
 	 * @return rule's inherent decision
 	 */
-	public Field getInherentDecision() {
+	public EvaluationField getInherentDecision() {
 		return inherentDecision;
 	}
 

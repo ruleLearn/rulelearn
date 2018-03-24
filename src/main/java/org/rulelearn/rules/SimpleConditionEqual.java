@@ -17,6 +17,9 @@
 package org.rulelearn.rules;
 
 import org.rulelearn.core.ComparisonResult;
+import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.types.SimpleField;
 import static org.rulelearn.core.Precondition.notNull;
@@ -89,6 +92,26 @@ public class SimpleConditionEqual extends SimpleCondition {
 	@Override
 	public String getRelationSymbol() {
 		return this.relationSymbol;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @throws InvalidValueException {@inheritDoc}
+	 * @throws InvalidValueException if the preference type of the decision attribute is not {@link AttributePreferenceType#NONE}
+	 */
+	@Override
+	public RuleSemantics getRuleSemantics() {
+		if (this.attributeWithContext.getAttribute().getType() != AttributeType.DECISION) {
+			throw new InvalidValueException("Cannot establish rule semantics given a simple 'equal' condition not defined on a decision attribute.");
+		}
+		
+		if (this.attributeWithContext.getAttributePreferenceType() == AttributePreferenceType.NONE) {
+			return RuleSemantics.EQUAL;
+		} else {
+			throw new InvalidValueException("Cannot establish rule semantics given a simple 'equal' condition w.r.t. a decision attribute having preference type.");
+			//TODO: do something else?
+		}
 	}
 
 }

@@ -16,15 +16,25 @@
 
 package org.rulelearn.data;
 
+import org.rulelearn.core.InvalidValueException;
+
 /**
  * Structure embracing an attribute representing evaluations {@link EvaluationAttribute} and its contextual information (like attribute's index in the array of all attributes).
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
 public class EvaluationAttributeWithContext extends AttributeWithContext<EvaluationAttribute> {
 
+	/**
+	 * Constructor initializing all fields.
+	 * 
+	 * @param attribute evaluation attribute of an information table for which this object is created
+	 * @param attributeIndex index of the attribute in the array of all attributes of an information table
+	 * 
+	 * @throws NullPointerException see {@link AttributeWithContext#AttributeWithContext(Attribute, int)}
+	 * @throws InvalidValueException see {@link AttributeWithContext#AttributeWithContext(Attribute, int)}
+	 */
 	public EvaluationAttributeWithContext(EvaluationAttribute attribute, int attributeIndex) {
 		super(attribute, attributeIndex);
 	}
@@ -32,7 +42,7 @@ public class EvaluationAttributeWithContext extends AttributeWithContext<Evaluat
 	/**
 	 * Gets preference type {@link AttributePreferenceType} of the attribute.
 	 * 
-	 * @return preference type of the attribute
+	 * @return preference type of the evaluation attribute
 	 */
 	public AttributePreferenceType getAttributePreferenceType() {
 		return ((EvaluationAttribute)this.attribute).getPreferenceType();
