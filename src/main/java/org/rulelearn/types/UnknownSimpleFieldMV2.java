@@ -154,5 +154,15 @@ public class UnknownSimpleFieldMV2 extends UnknownSimpleField {
 	public int hashCode () {
 		return Objects.hash(this.getClass());
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return "?";
+	}
 
 }
