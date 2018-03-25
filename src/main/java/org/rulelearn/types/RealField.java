@@ -116,4 +116,13 @@ public abstract class RealField extends KnownSimpleField {
 		return Objects.hash(this.getClass(), value);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	public String toString() {
+		return String.valueOf(this.value);
+	}
+	
 }
