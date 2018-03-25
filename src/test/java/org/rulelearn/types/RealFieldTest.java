@@ -339,4 +339,12 @@ public class RealFieldTest {
 		assertFalse(fieldG2.hashCode() == fieldG3.hashCode());
 	}
 	
+	/**
+	 * Tests {@link RealField#toString()} method.
+	 */
+	@Test
+	public void testToString() {
+		assertEquals(RealFieldFactory.getInstance().create(1.2, AttributePreferenceType.GAIN).toString(), "1.2");
+	}
+	
 }

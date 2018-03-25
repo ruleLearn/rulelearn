@@ -622,5 +622,16 @@ class PairFieldTest {
 		assertTrue(field1.hashCode() == field2.hashCode());
 		assertFalse(field1.hashCode() == field3.hashCode());
 	}
+	
+	/**
+	 * Tests {@link PairField#toString()} method.
+	 */
+	@Test
+	public void testToString() {
+		IntegerField firstField1 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		IntegerField secondField1 = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN);
+		PairField<IntegerField> pairField = new PairField<IntegerField>(firstField1, secondField1);
+		assertEquals(pairField.toString(), "(1,2)");		
+	}
 
 }

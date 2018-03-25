@@ -34,7 +34,7 @@ class UUIDIdentificationFieldTest {
 	 * Test method for {@link org.rulelearn.types.UUIDIdentificationField#hashCode()}.
 	 */
 	@Test
-	void testHashCode() {
+	public void testHashCode() {
 		UUID value = UUID.randomUUID();
 		UUIDIdentificationField field1 = new UUIDIdentificationField(value);
 		UUIDIdentificationField field2 = new UUIDIdentificationField(value);
@@ -48,7 +48,7 @@ class UUIDIdentificationFieldTest {
 	 * Test method for {@link org.rulelearn.types.UUIDIdentificationField#isEqualTo(org.rulelearn.types.Field)}.
 	 */
 	@Test
-	void testIsEqualTo() {
+	public void testIsEqualTo() {
 		UUID value = UUID.randomUUID();
 		UUIDIdentificationField field1 = new UUIDIdentificationField(value);
 		UUIDIdentificationField field2 = new UUIDIdentificationField(value);
@@ -62,7 +62,7 @@ class UUIDIdentificationFieldTest {
 	 * Test method for {@link org.rulelearn.types.UUIDIdentificationField#equals(Object)}.
 	 */
 	@Test
-	void testEqualsObject() {
+	public void testEqualsObject() {
 		UUID value = UUID.randomUUID();
 		UUIDIdentificationField field1 = new UUIDIdentificationField(value);
 		UUIDIdentificationField field2 = new UUIDIdentificationField(value);
@@ -76,7 +76,7 @@ class UUIDIdentificationFieldTest {
 	 * Test method for {@link org.rulelearn.types.UUIDIdentificationField#getRandomValue()}.
 	 */
 	@Test
-	void testGetRandomValue() {
+	public void testGetRandomValue() {
 		UUID randomValue = UUIDIdentificationField.getRandomValue();
 		assertNotEquals(UUIDIdentificationField.getRandomValue(), randomValue);
 	}
@@ -85,7 +85,7 @@ class UUIDIdentificationFieldTest {
 	 * Test method for {@link org.rulelearn.types.UUIDIdentificationField#getValue()}.
 	 */
 	@Test
-	void testGetValue() {
+	public void testGetValue() {
 		UUID value = UUID.randomUUID();
 		UUIDIdentificationField field = new UUIDIdentificationField(value);
 		assertEquals(field.getValue(), value);
@@ -95,11 +95,22 @@ class UUIDIdentificationFieldTest {
 	 * Test method for {@link org.rulelearn.types.UUIDIdentificationField#selfClone()}.
 	 */
 	@Test
-	void testSelfClone() {
+	public void testSelfClone() {
 		UUID value = UUID.randomUUID();
 		UUIDIdentificationField field = new UUIDIdentificationField(value);
 		UUIDIdentificationField clonedField = field.selfClone();
 		assertEquals(field, clonedField);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.types.UUIDIdentificationField#toString()}.
+	 */
+	@Test
+	public void testToString() {
+		String uuidText = "12345678-1234-5678-1234-000000000000";
+		UUID value = UUID.fromString(uuidText);
+		UUIDIdentificationField field = new UUIDIdentificationField(value);
+		assertEquals(field.toString(), uuidText);
 	}
 
 }

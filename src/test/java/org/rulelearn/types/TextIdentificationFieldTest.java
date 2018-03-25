@@ -33,7 +33,7 @@ class TextIdentificationFieldTest {
 	 * Test method for {@link org.rulelearn.types.TextIdentificationField#hashCode()}.
 	 */
 	@Test
-	void testHashCode() {
+	public void testHashCode() {
 		String value = "rLId-1234";
 		TextIdentificationField field1 = new TextIdentificationField(value);
 		TextIdentificationField field2 = new TextIdentificationField(value);
@@ -47,7 +47,7 @@ class TextIdentificationFieldTest {
 	 * Test method for {@link org.rulelearn.types.TextIdentificationField#isEqualTo(org.rulelearn.types.Field)}.
 	 */
 	@Test
-	void testIsEqualTo() {
+	public void testIsEqualTo() {
 		String value = "rLId-1234";
 		TextIdentificationField field1 = new TextIdentificationField(value);
 		TextIdentificationField field2 = new TextIdentificationField(value);
@@ -61,7 +61,7 @@ class TextIdentificationFieldTest {
 	 * Test method for {@link org.rulelearn.types.TextIdentificationField#equals(Object)}.
 	 */
 	@Test
-	void testEqualsObject() {
+	public void testEqualsObject() {
 		String value = "rLId-1234";
 		TextIdentificationField field1 = new TextIdentificationField(value);
 		TextIdentificationField field2 = new TextIdentificationField(value);
@@ -75,7 +75,7 @@ class TextIdentificationFieldTest {
 	 * Test method for {@link org.rulelearn.types.TextIdentificationField#getRandomValue(int)}.
 	 */
 	@Test
-	void testGetRandomValue() {
+	public void testGetRandomValue() {
 		String randomValue = TextIdentificationField.getRandomValue(16);
 		assertNotEquals(TextIdentificationField.getRandomValue(16), randomValue);
 	}
@@ -84,7 +84,7 @@ class TextIdentificationFieldTest {
 	 * Test method for {@link org.rulelearn.types.TextIdentificationField#getValue()}.
 	 */
 	@Test
-	void testGetValue() {
+	public void testGetValue() {
 		String value = "rLId-1234";
 		TextIdentificationField field = new TextIdentificationField(value);
 		assertEquals(field.getValue(), value);
@@ -94,11 +94,21 @@ class TextIdentificationFieldTest {
 	 * Test method for {@link org.rulelearn.types.TextIdentificationField#selfClone()}.
 	 */
 	@Test
-	void testSelfClone() {
+	public void testSelfClone() {
 		String value =  "rLId-1234";
 		TextIdentificationField field = new TextIdentificationField(value);
 		TextIdentificationField clonedField = field.selfClone();
 		assertEquals(field, clonedField);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.types.TextIdentificationField#toString()}.
+	 */
+	@Test
+	public void testToString() {
+		String value =  "rLId-1234";
+		TextIdentificationField field = new TextIdentificationField(value);
+		assertEquals(field.toString(), value);
 	}
 
 }

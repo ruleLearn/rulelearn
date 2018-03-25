@@ -41,62 +41,64 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 class RuleTest {
 	
+	private Condition<? extends EvaluationField> getCondition1() {
+		AttributePreferenceType preferenceType1 = AttributePreferenceType.GAIN;
+		return new SimpleConditionAtLeast(
+				new EvaluationAttributeWithContext(
+						new EvaluationAttribute(
+								"attr1",
+								true,
+								AttributeType.CONDITION,
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType1),
+								new UnknownSimpleFieldMV2(),
+								preferenceType1),
+						1),
+				IntegerFieldFactory.getInstance().create(3, preferenceType1));
+	}
+	
+	private Condition<? extends EvaluationField> getCondition2() {
+		AttributePreferenceType preferenceType2 = AttributePreferenceType.COST;
+		return new SimpleConditionAtMost(
+				new EvaluationAttributeWithContext(
+						new EvaluationAttribute(
+								"attr3",
+								true,
+								AttributeType.CONDITION,
+								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType2),
+								new UnknownSimpleFieldMV15(),
+								preferenceType2),
+						3),
+				RealFieldFactory.getInstance().create(-2.1, preferenceType2));
+	}
+	
+	private Condition<? extends EvaluationField> getDecision() {
+		AttributePreferenceType preferenceTypeDec = AttributePreferenceType.GAIN;
+		return new SimpleConditionAtLeast(
+				new EvaluationAttributeWithContext(
+						new EvaluationAttribute(
+								"dec",
+								true,
+								AttributeType.DECISION,
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceTypeDec),
+								new UnknownSimpleFieldMV2(),
+								preferenceTypeDec),
+						7),
+				IntegerFieldFactory.getInstance().create(5, preferenceTypeDec));
+	}
+	
 	private Rule getTestRule1() {
 		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
 		List<Condition<? extends EvaluationField>> decisions = new ObjectArrayList<>();
 		
 		//create conditions
-		
-		AttributePreferenceType preferenceType1 = AttributePreferenceType.GAIN;
-		Condition<? extends EvaluationField> condition1 = 		
-				new SimpleConditionAtLeast(
-						new EvaluationAttributeWithContext(
-								new EvaluationAttribute(
-										"attr1",
-										true,
-										AttributeType.CONDITION,
-										IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceType1),
-										new UnknownSimpleFieldMV2(),
-										preferenceType1),
-								1),
-						IntegerFieldFactory.getInstance().create(3, preferenceType1));
-		conditions.add(condition1);
-		
-		AttributePreferenceType preferenceType2 = AttributePreferenceType.COST;
-		Condition<? extends EvaluationField> condition2 = 
-				new SimpleConditionAtMost(
-						new EvaluationAttributeWithContext(
-								new EvaluationAttribute(
-										"attr3",
-										true,
-										AttributeType.CONDITION,
-										RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, preferenceType2),
-										new UnknownSimpleFieldMV15(),
-										preferenceType2),
-								3),
-						RealFieldFactory.getInstance().create(-2, preferenceType2));
-		conditions.add(condition2);
+		conditions.add(getCondition1());
+		conditions.add(getCondition2());
 		
 		//create decisions
-		
-		AttributePreferenceType preferenceTypeDec = AttributePreferenceType.GAIN;
-		SimpleConditionAtLeast decision =
-				new SimpleConditionAtLeast(
-						new EvaluationAttributeWithContext(
-								new EvaluationAttribute(
-										"dec",
-										true,
-										AttributeType.DECISION,
-										IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceTypeDec),
-										new UnknownSimpleFieldMV2(),
-										preferenceTypeDec),
-								7),
-						IntegerFieldFactory.getInstance().create(5, preferenceTypeDec));
-		decisions.add(decision);
+		decisions.add(getDecision());
 		
 		//create and return rule
-		
-		Rule rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, IntegerFieldFactory.getInstance().create(0, preferenceTypeDec), conditions, decisions);
+		Rule rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), conditions, decisions);
 		return rule;
 	}
 
@@ -155,7 +157,10 @@ class RuleTest {
 	@Test
 	void testGetConditions() {
 		Rule rule = getTestRule1();
-		assertEquals(rule.getConditions().length, 2);
+		Condition<? extends EvaluationField>[] conditions = rule.getConditions();
+		assertEquals(conditions.length, 2);
+		assertEquals(conditions[0], getCondition1());
+		assertEquals(conditions[1], getCondition2());
 	}
 
 	/**
@@ -164,7 +169,10 @@ class RuleTest {
 	@Test
 	void testGetConditionsBoolean() {
 		Rule rule = getTestRule1();
-		assertEquals(rule.getConditions(true).length, 2);
+		Condition<? extends EvaluationField>[] conditions = rule.getConditions(true);
+		assertEquals(conditions.length, 2);
+		assertEquals(conditions[0], getCondition1());
+		assertEquals(conditions[1], getCondition2());
 	}
 
 	/**
@@ -173,7 +181,9 @@ class RuleTest {
 	@Test
 	void testGetDecisions() {
 		Rule rule = getTestRule1();
-		assertEquals(rule.getDecisions().length, 1);
+		Condition<? extends EvaluationField>[] decisions = rule.getDecisions();
+		assertEquals(decisions.length, 1);
+		assertEquals(decisions[0], getDecision());
 	}
 
 	/**
@@ -182,7 +192,10 @@ class RuleTest {
 	@Test
 	void testGetDecisionsBoolean() {
 		Rule rule = getTestRule1();
-		assertEquals(rule.getDecisions(true).length, 1);
+		Condition<? extends EvaluationField>[] decisions = rule.getDecisions(true);
+		assertEquals(decisions.length, 1);
+		assertEquals(decisions.length, 1);
+		assertEquals(decisions[0], getDecision());
 	}
 
 	/**
@@ -190,7 +203,9 @@ class RuleTest {
 	 */
 	@Test
 	void testGetDecision() {
-		fail("Not yet implemented");
+		Rule rule = getTestRule1();
+		Condition<? extends EvaluationField> decision = rule.getDecision();
+		assertEquals(decision, getDecision());
 	}
 
 	/**
@@ -198,7 +213,9 @@ class RuleTest {
 	 */
 	@Test
 	void testToString() {
-		fail("Not yet implemented");
+		Rule rule = getTestRule1();
+		System.out.println(rule);
+		assertEquals(rule.toString(), "(attr1 >= 3) & (attr3 <= -2.1) =>[c] (dec >= 5)");
 	}
 
 	/**
