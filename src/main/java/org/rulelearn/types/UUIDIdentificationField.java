@@ -98,4 +98,14 @@ public class UUIDIdentificationField extends IdentificationField {
 		return (S)new UUIDIdentificationField(this.value);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return this.value.toString();
+	}
+
 }

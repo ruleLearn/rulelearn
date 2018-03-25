@@ -115,4 +115,13 @@ public abstract class IntegerField extends KnownSimpleField {
 		return Objects.hash(this.getClass(), value);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	public String toString() {
+		return String.valueOf(this.value);
+	}
+	
 }

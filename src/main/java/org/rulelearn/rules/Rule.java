@@ -230,19 +230,28 @@ public class Rule {
 
 		//append conditions
 		for (int i = 0; i < this.conditions.length; i++) {
-			sB.append(this.conditions[i].toString());
+			sB.append("(").append(this.conditions[i].toString()).append(")");
 			
 			if (i < this.conditions.length - 1) { //not last condition
 				sB.append(" ").append(andConjunction).append(" ");
 			}
 		}
 		
+		String ruleTypeIndicator;
+		if (this.type == RuleType.CERTAIN) {
+			ruleTypeIndicator = "[c]";
+		} else if (this.type == RuleType.POSSIBLE) {
+			ruleTypeIndicator = "[p]";
+		} else {
+			ruleTypeIndicator = "";
+		}
+		
 		//insert delimiter between conditions and decisions
-		sB.append(" ").append(conditionsAndDecisionsDelimiter).append(" "); //TODO: append (c) or (p) after the delimiter?
+		sB.append(" ").append(conditionsAndDecisionsDelimiter).append(ruleTypeIndicator).append(" ");
 		
 		//append decisions
 		for (int i = 0; i < this.decisions.length; i++) {
-			sB.append(this.decisions[i].toString());
+			sB.append("(").append(this.decisions[i].toString()).append(")");
 
 			if (i < this.decisions.length - 1) { // not last decision
 				sB.append(" ").append(orConjunction).append(" ");
