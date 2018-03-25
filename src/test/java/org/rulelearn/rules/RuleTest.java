@@ -23,6 +23,7 @@ import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.EvaluationAttributeWithContext;
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
@@ -30,8 +31,8 @@ import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.UnknownSimpleFieldMV15;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
-
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for [@link Rule}.
@@ -86,6 +87,7 @@ class RuleTest {
 				IntegerFieldFactory.getInstance().create(5, preferenceTypeDec));
 	}
 	
+	//constructs rule using longer constructor
 	private Rule getTestRule1() {
 		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
 		List<Condition<? extends EvaluationField>> decisions = new ObjectArrayList<>();
@@ -99,6 +101,19 @@ class RuleTest {
 		
 		//create and return rule
 		Rule rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), conditions, decisions);
+		return rule;
+	}
+	
+	//constructs rule using shorter constructor
+	private Rule getTestRule1B() {
+		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
+		
+		//create conditions
+		conditions.add(getCondition1());
+		conditions.add(getCondition2());
+		
+		//create and return rule
+		Rule rule = new Rule(RuleType.CERTAIN, conditions, (SimpleCondition)getDecision());
 		return rule;
 	}
 
@@ -207,6 +222,17 @@ class RuleTest {
 		Condition<? extends EvaluationField> decision = rule.getDecision();
 		assertEquals(decision, getDecision());
 	}
+	
+	/**
+	 * Test method for shorter constructor {@link org.rulelearn.rules.Rule#Rule(RuleType, List, SimpleCondition)}.
+	 */
+	@Test
+	void testRule() {
+		Rule rule = getTestRule1B();
+		assertEquals(rule.getSemantics(), RuleSemantics.AT_LEAST);
+		assertEquals(rule.getInherentDecision(), IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.GAIN));
+		assertEquals(rule.getDecision(), getDecision());
+	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.Rule#toString()}.
@@ -222,24 +248,131 @@ class RuleTest {
 	 * Test method for {@link org.rulelearn.rules.Rule#covers(int, org.rulelearn.data.InformationTable)}.
 	 */
 	@Test
-	void testCovers() {
-		fail("Not yet implemented");
+	void testCovers_01() {
+		Rule rule = getTestRule1();
+		int objectIndex = 0;
+		InformationTable informationTable = mock(InformationTable.class);
+		when(informationTable.getField(objectIndex, 1)).thenReturn(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN));
+		when(informationTable.getField(objectIndex, 3)).thenReturn(RealFieldFactory.getInstance().create(-2.1, AttributePreferenceType.COST));
+		assertTrue(rule.covers(objectIndex, informationTable));
 	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Rule#covers(int, org.rulelearn.data.InformationTable)}.
+	 */
+	@Test
+	void testCovers_02() {
+		Rule rule = getTestRule1();
+		int objectIndex = 1;
+		InformationTable informationTable = mock(InformationTable.class);
+		when(informationTable.getField(objectIndex, 1)).thenReturn(IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.GAIN));
+		when(informationTable.getField(objectIndex, 3)).thenReturn(RealFieldFactory.getInstance().create(-3, AttributePreferenceType.COST));
+		assertTrue(rule.covers(objectIndex, informationTable));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Rule#covers(int, org.rulelearn.data.InformationTable)}.
+	 */
+	@Test
+	void testCovers_03() {
+		Rule rule = getTestRule1();
+		int objectIndex = 2;
+		InformationTable informationTable = mock(InformationTable.class);
+		when(informationTable.getField(objectIndex, 1)).thenReturn(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN));
+		when(informationTable.getField(objectIndex, 3)).thenReturn(RealFieldFactory.getInstance().create(-2.0, AttributePreferenceType.COST));
+		assertFalse(rule.covers(objectIndex, informationTable));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Rule#covers(int, org.rulelearn.data.InformationTable)}.
+	 */
+	@Test
+	void testCovers_04() {
+		Rule rule = getTestRule1();
+		int objectIndex = 3;
+		InformationTable informationTable = mock(InformationTable.class);
+		when(informationTable.getField(objectIndex, 1)).thenReturn(IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN));
+		when(informationTable.getField(objectIndex, 3)).thenReturn(RealFieldFactory.getInstance().create(-2.1, AttributePreferenceType.COST));
+		assertFalse(rule.covers(objectIndex, informationTable));
+	}
+
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.Rule#decisionsMatchedBy(int, org.rulelearn.data.InformationTable)}.
 	 */
 	@Test
-	void testDecisionsMatchedBy() {
-		fail("Not yet implemented");
+	void testDecisionsMatchedBy_01() {
+		Rule rule = getTestRule1();
+		int objectIndex = 0;
+		InformationTable informationTable = mock(InformationTable.class);
+		when(informationTable.getField(objectIndex, 7)).thenReturn(IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.GAIN));
+		assertTrue(rule.decisionsMatchedBy(objectIndex, informationTable));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Rule#decisionsMatchedBy(int, org.rulelearn.data.InformationTable)}.
+	 */
+	@Test
+	void testDecisionsMatchedBy_02() {
+		Rule rule = getTestRule1();
+		int objectIndex = 0;
+		InformationTable informationTable = mock(InformationTable.class);
+		when(informationTable.getField(objectIndex, 7)).thenReturn(IntegerFieldFactory.getInstance().create(6, AttributePreferenceType.GAIN));
+		assertTrue(rule.decisionsMatchedBy(objectIndex, informationTable));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Rule#decisionsMatchedBy(int, org.rulelearn.data.InformationTable)}.
+	 */
+	@Test
+	void testDecisionsMatchedBy_03() {
+		Rule rule = getTestRule1();
+		int objectIndex = 0;
+		InformationTable informationTable = mock(InformationTable.class);
+		when(informationTable.getField(objectIndex, 7)).thenReturn(IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.GAIN));
+		assertFalse(rule.decisionsMatchedBy(objectIndex, informationTable));
 	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.Rule#supportedBy(int, org.rulelearn.data.InformationTable)}.
 	 */
 	@Test
-	void testSupportedBy() {
-		fail("Not yet implemented");
+	void testSupportedBy_01() {
+		Rule rule = getTestRule1();
+		int objectIndex = 0;
+		InformationTable informationTable = mock(InformationTable.class);
+		when(informationTable.getField(objectIndex, 1)).thenReturn(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN));
+		when(informationTable.getField(objectIndex, 3)).thenReturn(RealFieldFactory.getInstance().create(-2.1, AttributePreferenceType.COST));
+		when(informationTable.getField(objectIndex, 7)).thenReturn(IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.GAIN));
+		assertTrue(rule.supportedBy(objectIndex, informationTable));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Rule#supportedBy(int, org.rulelearn.data.InformationTable)}.
+	 */
+	@Test
+	void testSupportedBy_02() {
+		Rule rule = getTestRule1();
+		int objectIndex = 0;
+		InformationTable informationTable = mock(InformationTable.class);
+		when(informationTable.getField(objectIndex, 1)).thenReturn(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN));
+		when(informationTable.getField(objectIndex, 3)).thenReturn(RealFieldFactory.getInstance().create(-2.1, AttributePreferenceType.COST));
+		when(informationTable.getField(objectIndex, 7)).thenReturn(IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.GAIN));
+		assertFalse(rule.supportedBy(objectIndex, informationTable));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Rule#supportedBy(int, org.rulelearn.data.InformationTable)}.
+	 */
+	@Test
+	void testSupportedBy_03() {
+		Rule rule = getTestRule1();
+		int objectIndex = 0;
+		InformationTable informationTable = mock(InformationTable.class);
+		when(informationTable.getField(objectIndex, 1)).thenReturn(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN));
+		when(informationTable.getField(objectIndex, 3)).thenReturn(RealFieldFactory.getInstance().create(-2.0, AttributePreferenceType.COST));
+		when(informationTable.getField(objectIndex, 7)).thenReturn(IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.GAIN));
+		assertFalse(rule.supportedBy(objectIndex, informationTable));
 	}
 
 }
