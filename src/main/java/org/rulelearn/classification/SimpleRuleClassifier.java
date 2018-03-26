@@ -70,7 +70,7 @@ public class SimpleRuleClassifier extends RuleClassifier {
 						upLimit = decision.getLimitingEvaluation();
 					}
 					else {
-						if (decision.getLimitingEvaluation().isAtLeastAsGoodAs(upLimit) == TernaryLogicValue.TRUE) {
+						if (decision.getLimitingEvaluation().isAtMostAsGoodAs(upLimit) == TernaryLogicValue.TRUE) {
 							upLimit = decision.getLimitingEvaluation();
 						}
 					}
@@ -80,7 +80,7 @@ public class SimpleRuleClassifier extends RuleClassifier {
 						downLimit = decision.getLimitingEvaluation();
 					}
 					else {
-						if (decision.getLimitingEvaluation().isAtMostAsGoodAs(downLimit) == TernaryLogicValue.TRUE) {
+						if (decision.getLimitingEvaluation().isAtLeastAsGoodAs(downLimit) == TernaryLogicValue.TRUE) {
 							downLimit = decision.getLimitingEvaluation();
 						}
 					}
