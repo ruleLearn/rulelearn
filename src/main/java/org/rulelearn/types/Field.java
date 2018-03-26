@@ -77,4 +77,11 @@ public abstract class Field implements SelfCloneable<Field> {
 	@Override
     public abstract int hashCode(); 
 	
+	/**
+	 * Gets text representation of this field.
+	 * 
+	 * @return text representation of this field
+	 */
+	public abstract String toString();
+	
 }

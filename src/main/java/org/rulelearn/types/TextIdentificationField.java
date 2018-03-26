@@ -101,4 +101,14 @@ public class TextIdentificationField extends IdentificationField {
 		return (S)new TextIdentificationField(this.value);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return this.value;
+	}
+
 }
