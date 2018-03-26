@@ -251,10 +251,10 @@ class RuleTest {
 	void testCovers_01() {
 		Rule rule = getTestRule1();
 		int objectIndex = 0;
-		InformationTable informationTable = mock(InformationTable.class);
-		when(informationTable.getField(objectIndex, 1)).thenReturn(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN));
-		when(informationTable.getField(objectIndex, 3)).thenReturn(RealFieldFactory.getInstance().create(-2.1, AttributePreferenceType.COST));
-		assertTrue(rule.covers(objectIndex, informationTable));
+		InformationTable informationTableMock = mock(InformationTable.class);
+		when(informationTableMock.getField(objectIndex, 1)).thenReturn(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN));
+		when(informationTableMock.getField(objectIndex, 3)).thenReturn(RealFieldFactory.getInstance().create(-2.1, AttributePreferenceType.COST));
+		assertTrue(rule.covers(objectIndex, informationTableMock));
 	}
 	
 	/**
