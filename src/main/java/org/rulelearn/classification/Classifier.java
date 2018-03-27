@@ -35,8 +35,8 @@ public abstract class Classifier {
 	/**
 	 * Classifies an object from an information table.
 	 * 
-	 * @param objectIndex index of an object in the given information table
-	 * @param informationTable information table containing object of interest
+	 * @param objectIndex index of an object from the given information table
+	 * @param informationTable information table containing the object of interest
 	 * @return classification result for the considered object
 	 * 
 	 * @throws NullPointerException if given information table is {@code null}
