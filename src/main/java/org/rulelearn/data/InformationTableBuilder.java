@@ -17,18 +17,21 @@
 package org.rulelearn.data;
 
 import java.util.List;
-import org.rulelearn.data.json.AttributeDeserializer;
+import java.util.UUID;
+
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
+import org.rulelearn.types.IdentificationField;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
+import org.rulelearn.types.TextIdentificationField;
+import org.rulelearn.types.UUIDIdentificationField;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.univocity.parsers.conversions.TrimConversion;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -62,7 +65,7 @@ public class InformationTableBuilder {
 	protected String [] missingValueStrings = null;
 	
 	/**
-	 * Separator of values in string representation of information.
+	 * Separator of values in string representation of an object of an information table.
 	 */
 	protected String separator = null;
 	
@@ -83,7 +86,7 @@ public class InformationTableBuilder {
 	 * Constructor initializing this information table builder and setting attributes.
 	 * 
 	 * @param attributes table with attributes
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
+	 * @throws NullPointerException if all or some of the attributes of the constructed information table have not been set
 	 */
 	public InformationTableBuilder(Attribute[] attributes) {
 		this();
@@ -92,12 +95,14 @@ public class InformationTableBuilder {
 		
 		// check attributes and initialize fields
 		if (attributes != null) {
-			for (Attribute attribute : attributes)
+			for (Attribute attribute : attributes) {
 				if (attribute == null) throw new NullPointerException("At least one attribute is not set");
+			}
 			this.fields = new ObjectArrayList<Field []>();
 		}
-		else
+		else {
 			throw new NullPointerException("Attributes are not set");
+		}
 	}
 	
 	/**
@@ -126,111 +131,66 @@ public class InformationTableBuilder {
 	}
 	
 	/**
-	 * Constructor initializing this information table builder and setting attributes. It requires definition of attributes in JSON.
-	 * 
-	 * @param jsonAttributes JSON string encoding information about all attributes
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
-	 */
-	public InformationTableBuilder(String jsonAttributes) {
-		this();
-		
-		// parse attributes
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
-		Gson gson = gsonBuilder.create();
-		this.attributes = gson.fromJson(jsonAttributes, Attribute[].class);
-		
-		// check attributes and initialize fields
-		if (attributes != null) {
-			for (Attribute attribute : attributes)
-				if (attribute == null) throw new NullPointerException("At least one attribute is not set");
-			this.fields = new ObjectArrayList<Field []>();
-		}
-		else
-			throw new NullPointerException("Attributes are not set");
-	}
-	
-	/**
-	 * Constructor initializing this information table builder and setting attributes. It requires definition of attributes in JSON.
-	 * 
-	 * @param jsonAttributes JSON string encoding information about all attributes
-	 * @param separator separator of object's evaluations
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
-	 */
-	public InformationTableBuilder(String jsonAttributes, String separator) {
-		this(jsonAttributes);
-		this.separator = separator;
-	}
-	
-	/**
-	 * Constructor initializing this information table builder and setting attributes. It requires definition of attributes in JSON.
-	 * Missing values strings (i.e., array of strings representing missing values) are also set.
-	 * 
-	 * @param jsonAttributes JSON string encoding information about all attributes
-	 * @param separator separator of object's evaluations
-	 * @param missingValuesStrings array of string representations of missing values
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
-	 */
-	public InformationTableBuilder(String jsonAttributes, String separator, String [] missingValuesStrings) {
-		this(jsonAttributes, separator);
-		this.missingValueStrings = missingValuesStrings;
-	}
-	
-	/**
 	 * Adds one object to this builder. 
-	 * Given string is considered to contain subsequent evaluations of a single object, separated by the {@link InformationTableBuilder#separator}.
+	 * Given string is considered to contain subsequent identifiers/evaluations of a single object, separated by the {@link InformationTableBuilder#separator}.
 	 * 
-	 * @param objectEvaluations string with object's evaluations, separated by the given separator
+	 * @param objectDescriptions string with object's identifiers/evaluations, separated by the given separator
 	 */
-	public void addObject(String objectEvaluations) {
+	public void addObject(String objectDescriptions) {
 		if (this.separator != null)
-			addObject(objectEvaluations.split(this.separator));
+			addObject(objectDescriptions.split(this.separator));
 	}
 	
 	/**
 	 * Adds one object to this builder. 
-	 * Given string is considered to contain subsequent evaluations of a single object, separated by the given separator.
+	 * Given string is considered to contain subsequent identifiers/evaluations of a single object, separated by the given separator.
 	 * 
-	 * @param objectEvaluations string with object's evaluations, separated by the given separator
+	 * @param objectDescriptions string with object's identifiers/evaluations, separated by the given separator
 	 * @param separator separator of object's evaluations
 	 */
-	public void addObject(String objectEvaluations, String separator) {
-		if (separator != null)
-			addObject(objectEvaluations.split(separator));
+	public void addObject(String objectDescriptions, String separator) {
+		if (separator != null) {
+			addObject(objectDescriptions.split(separator));
+		}
 	}
 	
 	/**
 	 * Adds one object to this builder. 
-	 * Given array is considered to contain subsequent evaluations of a single object.
+	 * Given array is considered to contain subsequent identifiers/evaluations of a single object.
 	 * 
-	 * @param objectEvaluations single object's evaluations
+	 * @param objectDescriptions single object's identifiers/evaluations
 	 * 
 	 * @throws IndexOutOfBoundsException if given attribute index does not correspond to any attribute of the constructed information table
 	 */
-	public void addObject(String[] objectEvaluations) {
-		Field[] object = new Field[objectEvaluations.length];
-		if (objectEvaluations.length > attributes.length)
+	public void addObject(String[] objectDescriptions) {
+		Field[] object = new Field[objectDescriptions.length];
+		if (objectDescriptions.length > attributes.length)
 			throw new IndexOutOfBoundsException("Object has more evaluations than the number of attributes declared.");
 		
-		for (int i = 0; i < objectEvaluations.length; i++) {
-			object[i] = parseEvaluation(objectEvaluations[i], attributes[i]);
+		for (int i = 0; i < objectDescriptions.length; i++) {
+			if (attributes[i] instanceof EvaluationAttribute) {
+				object[i] = parseEvaluation(objectDescriptions[i], (EvaluationAttribute)attributes[i]);
+			}
+			else if (attributes[i] instanceof IdentificationAttribute) {
+				object[i] = parseIdentification(objectDescriptions[i], (IdentificationAttribute)attributes[i]);
+			}
 		}
 		
 		this.fields.add(object);
 	}
 	
 	/**
-	 * Parses one object's evaluation and transforms it into a field {@link Field}.
+	 * Parses one object's evaluation and transforms it into a field {@link EvaluationField}.
 	 * 
 	 * @param evaluation text-encoded object's evaluation
 	 * @param attribute whose value should be parsed
 	 * 
 	 * @return constructed field
-	 * @throws NumberFormatException if evaluation of an numeric attribute can't be parsed
+	 * @throws NumberFormatException if evaluation of a numeric attribute can't be parsed
 	 * @throws IndexOutOfBoundsException if evaluation of an enumeration attribute can't be parsed  
 	 */
-	protected Field parseEvaluation(String evaluation, Attribute attribute) throws NumberFormatException, IndexOutOfBoundsException {
-		Field field = null;
+	protected EvaluationField parseEvaluation(String evaluation, EvaluationAttribute attribute) throws NumberFormatException, IndexOutOfBoundsException {
+		EvaluationField field = null;
 		boolean missingValue = false;
 	
 		
@@ -247,7 +207,7 @@ public class InformationTableBuilder {
 		}
 		
 		if (!missingValue) {
-			Field valueType = attribute.getValueType(); 
+			EvaluationField valueType = attribute.getValueType(); 
 			if (valueType instanceof IntegerField) {
 				try {
 					field = IntegerFieldFactory.getInstance().create(Integer.parseInt(evaluation), attribute.preferenceType);
@@ -271,8 +231,9 @@ public class InformationTableBuilder {
 			else if (valueType instanceof EnumerationField) {
 				// TODO some optimization is needed here (e.g., construction of a table with element lists)
 				int index = ((EnumerationField)valueType).getElementList().getIndex(evaluation);
-				if (index != ElementList.DEFAULT_INDEX)
+				if (index != ElementList.DEFAULT_INDEX) {
 					field = EnumerationFieldFactory.getInstance().create(((EnumerationField)valueType).getElementList(), index, attribute.preferenceType);
+				}
 				else {
 					field = attribute.getMissingValueType();
 					throw new IndexOutOfBoundsException(new StringBuilder("Incorrect value of enumeration: ").append(evaluation).append(" was replaced by a missing value.").toString());
@@ -291,6 +252,44 @@ public class InformationTableBuilder {
 		
 		return field;
 	}
+	
+	/**
+	 * Parses one object's identification and transforms it into a field {@link IdentificationField}.
+	 * 
+	 * @param identification text-encoded object's identification
+	 * @param attribute whose value should be parsed
+	 * 
+	 * @return constructed field
+	 */
+	protected IdentificationField parseIdentification(String identification, IdentificationAttribute attribute) {
+		IdentificationField field = null;
+		boolean missingValue = false;
+	
+		
+		// get rid of white spaces
+		identification = trimConversion.execute(identification);
+		// check whether it is a missing value
+		if (missingValueStrings != null) {
+			for (String missingValueString : this.missingValueStrings) {
+				if ((missingValueString != null) && (missingValueString.equalsIgnoreCase(identification))) {
+					missingValue = true;
+					break;
+				}
+			}
+		}
+		
+		// assign according to value type
+		if (attribute.getValueType() instanceof UUIDIdentificationField) {
+			field = (missingValue ?
+				new UUIDIdentificationField(UUIDIdentificationField.DEFAULT_VALUE) : new UUIDIdentificationField(UUID.fromString(identification))); 			
+		}
+		else {
+			field = (missingValue ?
+					new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE) : new TextIdentificationField(identification));
+		}
+		
+		return field;
+	}
 		
 	/**
 	 * Builds information table.
@@ -302,6 +301,8 @@ public class InformationTableBuilder {
 	}
 
 	/**
+	 * Gets missing value strings.
+	 * 
 	 * @return the missingValueStrings
 	 */
 	public String[] getMissingValueStrings() {
@@ -309,6 +310,8 @@ public class InformationTableBuilder {
 	}
 
 	/**
+	 * Sets missing value strings.
+	 * 
 	 * @param missingValueStrings the missingValueStrings to set
 	 */
 	public void setMissingValueStrings(String[] missingValueStrings) {

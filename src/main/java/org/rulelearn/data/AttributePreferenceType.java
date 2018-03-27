@@ -16,7 +16,7 @@
 package org.rulelearn.data;
 
 /**
- * Preference type of an attribute in information table.
+ * Preference type of an evaluation attribute in an information table.
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

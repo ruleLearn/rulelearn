@@ -169,4 +169,13 @@ public abstract class EnumerationField extends KnownSimpleField {
 	public String getElement() {
 		return list.getElement(value);
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	public String toString() {
+		return String.valueOf(this.list.getElement(this.value));
+	}
 }

@@ -17,9 +17,7 @@
 package org.rulelearn.data;
 
 import java.util.Objects;
-
 import org.rulelearn.types.Field;
-import org.rulelearn.types.UnknownSimpleField;
 
 /**
  * Top level class for an attribute.
@@ -27,7 +25,7 @@ import org.rulelearn.types.UnknownSimpleField;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class Attribute {
+public abstract class Attribute {
 	/**
 	 * Name of an attribute.
 	 */
@@ -38,33 +36,10 @@ public class Attribute {
 	 */
 	protected boolean active = true;
 	
-	/**
-	 * Type {@link AttributeType} of an attribute. 
-	 */
-	protected AttributeType type;
 	
-	/**
-	 * Type of value {@link Field} of an attribute. 
-	 */
-	protected Field valueType;
-	
-	/**
-	 * Type of missing value {@link UnknownSimpleField} of an attribute. 
-	 */
-	protected UnknownSimpleField missingValueType;
-	
-	/**
-	 * Preference type {@link AttributePreferenceType} of an attribute. 
-	 */
-	protected AttributePreferenceType preferenceType;
-	
-	public Attribute (String name, boolean active, AttributeType type, Field valueType, UnknownSimpleField missingValueType, AttributePreferenceType preferenceType) {
+	public Attribute (String name, boolean active) {
 		this.name = name;
 		this.active = active;
-		this.type = type;
-		this.valueType = valueType;
-		this.missingValueType = missingValueType;
-		this.preferenceType = preferenceType;
 	}
 
 	/**
@@ -84,53 +59,13 @@ public class Attribute {
 	public boolean isActive() {
 		return active;
 	}
-
-	/**
-	 * Gets type {@link AttributeType} of this attribute.
-	 * 
-	 * @return the attribute type
-	 */
-	public AttributeType getType() {
-		return type;
-	}
-
-	/**
-	 * Gets value type {@link Field} of this attribute.
-	 * 
-	 * @return the attribute value type
-	 */
-	public Field getValueType() {
-		return valueType;
-	}
-
-	/**
-	 * Gets missing value type {@link UnknownSimpleField} of this attribute.
-	 * 
-	 * @return the attribute missing value type
-	 */
-	public UnknownSimpleField getMissingValueType() {
-		return missingValueType;
-	}
-
-	/**
-	 * Gets preference type {@link AttributePreferenceType} of this attribute.
-	 * 
-	 * @return the attribute preference type
-	 */
-	public AttributePreferenceType getPreferenceType() {
-		return preferenceType;
-	}
 	
 	@Override
 	public String toString () {
 		StringBuilder builder = new StringBuilder ();
 		
 		builder.append(this.active ? "+ ": "- ");
-		builder.append(this.name).append(": ");
-		builder.append(this.type).append(", ");
-		builder.append(this.preferenceType).append(", ");
-		builder.append(this.valueType).append(", ");
-		builder.append(this.missingValueType);
+		builder.append(this.name);
 		
 		return builder.toString();
 	}
@@ -148,19 +83,10 @@ public class Attribute {
 			if (otherObject != null && getClass().equals(otherObject.getClass())) {
 				final Attribute other = (Attribute) otherObject;
 				if (this.name.compareTo(other.name) == 0) {
-					if (this.preferenceType == other.preferenceType) {
-	    	  				if (this.type == other.type) {
-		    	  				if (this.active == other.active) {
-		    	  					if (this.valueType.equals(other.valueType)) {
-		    	  						return this.missingValueType.equals(other.missingValueType);
-		    	  					}
-		    	  					else return false;
-		    	  				}
-		    	  				else return false;
-	    	  				}
-	    	  				else return false;
-	    	  			}
-	    	  			else return false;
+	    	  			if (this.active == other.active) {
+		    	  			return true;
+		    	  		}
+		    	  		else return false;
 	    	  		}
 				else return false;
 			}
@@ -176,6 +102,13 @@ public class Attribute {
      */
 	@Override
 	public int hashCode () {
-		return Objects.hash(name, active, type, valueType, missingValueType, preferenceType);
+		return Objects.hash(name, active);
 	}
+	
+	/**
+	 * Gets value type {@link Field} of this attribute.
+	 * 
+	 * @return the attribute value type
+	 */
+	public abstract Field getValueType();
 }

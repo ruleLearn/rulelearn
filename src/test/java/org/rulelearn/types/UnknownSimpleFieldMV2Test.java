@@ -210,7 +210,7 @@ class UnknownSimpleFieldMV2Test {
 	@Test
 	public void testCompareToEx_01() throws UncomparableException {
 		UnknownSimpleField mvField = new UnknownSimpleFieldMV2();
-		Field otherField = new UnknownSimpleFieldMV2();
+		EvaluationField otherField = new UnknownSimpleFieldMV2();
 		assertEquals(mvField.compareToEx(otherField), 0);
 	}
 

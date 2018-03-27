@@ -52,7 +52,7 @@ public class Index2IdMapper {
 	 * @param objectIndex2Id array mapping object's index to unique object's id - {@code objectIndex2Id[objectIndex] == objectId}
 	 * @param accelerateByReadOnlyParam tells if construction of this object should be accelerated by assuming that the given reference
 	 *        to an array of unique identifiers is not going to be used outside this class to modify that array
-	 *        (and thus, this object does not need to clone the array for internal use)
+	 *        (and thus, this object does not need to clone the array for internal read-only use)
 	 * @throws NullPointerException if given array is {@code null}
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT)

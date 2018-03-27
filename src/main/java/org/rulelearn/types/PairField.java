@@ -68,7 +68,7 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	}
 
 	@Override
-	public int compareToEx(Field otherField) throws UncomparableException {
+	public int compareToEx(EvaluationField otherField) throws UncomparableException {
 		if (otherField instanceof PairField<?>) {
 			int firstCompareExResult;
 			int secondCompareExResult;
@@ -197,6 +197,16 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	 */
 	public T getSecondValue() {
 		return secondValue;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return new StringBuilder().append("(").append(this.firstValue.toString()).append(",").append(this.secondValue.toString()).append(")").toString();
 	}
 
 }

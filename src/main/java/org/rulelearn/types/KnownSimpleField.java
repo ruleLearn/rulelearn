@@ -42,7 +42,7 @@ public abstract class KnownSimpleField extends SimpleField implements Comparable
 	 *         and value of this known field cannot be compared with that unknown value
 	 */
 	@Override
-	public int compareToEx(Field otherField) throws UncomparableException {
+	public int compareToEx(EvaluationField otherField) throws UncomparableException {
 		if (otherField instanceof UnknownSimpleField) {
 			return ((UnknownSimpleField)otherField).reverseCompareToEx(this);
 		} else {
