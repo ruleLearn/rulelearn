@@ -341,4 +341,12 @@ public class IntegerFieldTest {
 		assertFalse(fieldG2.hashCode() == fieldG3.hashCode());
 	}
 	
+	/**
+	 * Tests {@link IntegerField#toString()} method.
+	 */
+	@Test
+	public void testToString() {
+		assertEquals(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN).toString(), "3");
+	}
+	
 }

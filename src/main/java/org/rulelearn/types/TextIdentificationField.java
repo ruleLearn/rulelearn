@@ -49,6 +49,15 @@ public class TextIdentificationField extends IdentificationField {
 	}
 	
 	/**
+	 * Gets the value of this field.
+	 * 
+	 * @return the value of this field
+	 */
+	public String getValue() {
+		return value;
+	}
+
+	/**
 	 * Gets random text identifier (name).
 	 * 
 	 * @param idLength requested length of the generated text identifier
