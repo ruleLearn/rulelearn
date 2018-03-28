@@ -125,7 +125,9 @@ public class RuleParser {
 			if (this.attributes[i] instanceof EvaluationAttribute) {
 				this.attributesWithContext[i] = new EvaluationAttributeWithContext((EvaluationAttribute)this.attributes[i], i);
 			}
-			this.attributesWithContext[i] = new AttributeWithContext<Attribute>(this.attributes[i], i);
+			else {
+				this.attributesWithContext[i] = new AttributeWithContext<Attribute>(this.attributes[i], i);
+			}
 			this.attributeNamesMap.put(this.attributes[i].getName(), i);
 		}		
 	}
@@ -192,7 +194,7 @@ public class RuleParser {
                         			rules.add(parseRule((Element) actChild));
                         		}
                         		catch (RuleParseException ex) {
-								System.out.println("Incorrect structure of RuleML." + ex.toString());
+								System.out.println("Error while parsing RuleML. " + ex.toString());
 							}
                         }
                     }
@@ -249,9 +251,15 @@ public class RuleParser {
 		
 		notNull(conditions, "No condition part specified for a rule in RuleML.");
 		notNull(decisions, "No decision part specified for a rule in RuleML.");
-		if (decisions.size() > 0) {
+		if (decisions.size() == 1) {
+			Condition<? extends EvaluationField> decision = decisions.get(0);
+			// TODO include types of rules in RuleML
+			rule = new Rule(RuleType.CERTAIN, conditions, decision);
+		}
+		else if (decisions.size() > 1) {
 			Condition<? extends EvaluationField> decision = decisions.get(0);
 			// TODO check correctness
+			// TODO include types of rules in RuleML
 			// TODO (MSz): should rule semantics depend on attribute's preference type, not on the type of decision condition?
 			if (decision.getAttributeWithContext().getAttributePreferenceType() == AttributePreferenceType.NONE) {
 				rule = new Rule(RuleType.CERTAIN, RuleSemantics.EQUAL, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
@@ -291,15 +299,16 @@ public class RuleParser {
                     if (conditions.size() > 0) {
                         throw new RuleParseException("More than one 'and' node inside an 'if' node detected in RuleML.");
                     }
-                    for (Node atomElement = ifClause.getFirstChild(); atomElement != null; atomElement = ifClause.getNextSibling()) {
-                           if (atomElement.getNodeType() == Node.ELEMENT_NODE) {
-                               if ("atom".equals(atomElement.getNodeName())) {
-                                   conditions.add(parseRuleCondition((Element) atomElement));
-                               }
-                               else {throw new RuleParseException("Node other than 'atom' detected inside 'and' node in RuleML.");}
-                           }
-                           else {throw new RuleParseException("Node other than 'atom' detected inside 'and' node in RuleML.");}
-                       }
+                    else {
+	                    for (Node andElement = ifClause.getFirstChild(); andElement != null; andElement = andElement.getNextSibling()) {
+	                        if (andElement.getNodeType() == Node.ELEMENT_NODE) {
+	                        		if ("atom".equals(andElement.getNodeName())) {
+	                                   conditions.add(parseRuleCondition((Element) andElement));
+	                            }
+	                        		else {throw new RuleParseException("Node other than 'atom' detected inside 'and' node in RuleML.");}
+	                        }
+	                    }
+                    }
                 } else if ("atom".equals(ifClause.getNodeName())) {
                     if (conditions.size() > 0) {
                         throw new RuleParseException("More than one condition node without conjunction operation inside an 'if' node detected in RuleML.");
@@ -328,15 +337,14 @@ public class RuleParser {
                     if (decisions.size() > 0) {
                         throw new RuleParseException("More than one 'or' node inside a 'then' node detected in RuleML");
                     }
-                    for (Node atomElement = thenClause.getFirstChild(); atomElement != null; atomElement = thenClause.getNextSibling()) {
-                           if (atomElement.getNodeType() == Node.ELEMENT_NODE) {
-                               if ("atom".equals(atomElement.getNodeName())) {
-                            	   decisions.add(parseRuleCondition((Element) atomElement));
-                               }
-                               else {throw new RuleParseException("Node other than 'atom' detected inside 'or' node in RuleML.");}
+                    for (Node orElement = thenClause.getFirstChild(); orElement != null; orElement = orElement.getNextSibling()) {
+                       if (orElement.getNodeType() == Node.ELEMENT_NODE) {
+                           if ("atom".equals(orElement.getNodeName())) {
+                        	   		decisions.add(parseRuleCondition((Element) orElement));
                            }
                            else {throw new RuleParseException("Node other than 'atom' detected inside 'or' node in RuleML.");}
                        }
+                    }
                 } else if ("atom".equals(thenClause.getNodeName())) {
                     if (decisions.size() > 0) {
                         throw new RuleParseException("More than one condition node without disjunction operation inside a 'then' node detected in RuleML.");
@@ -386,7 +394,7 @@ public class RuleParser {
         
         int attributeIndex = this.attributeNamesMap.getInt(attributeName);
         if (attributeIndex != RuleParser.DEFAULT_INDEX) {
-        		if (this.attributes[attributeIndex] instanceof EvaluationAttribute) { 
+        		if ((this.attributes[attributeIndex] instanceof EvaluationAttribute) && (this.attributesWithContext[attributeIndex] instanceof EvaluationAttributeWithContext)) { 
 		        	if ("le".equals(relation.toLowerCase())) {
 		        		condition = new SimpleConditionAtMost((EvaluationAttributeWithContext)this.attributesWithContext[attributeIndex], 
 		        						((SimpleField)parseEvaluation(value, (EvaluationAttribute)this.attributes[attributeIndex])));
