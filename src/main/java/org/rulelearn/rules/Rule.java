@@ -121,7 +121,7 @@ public class Rule {
      * @throws NullPointerException if any of the parameters is {@code null}
      * @throws InvalidValueException if semantics of this rule cannot be established using the given decision - see {@link Condition#getRuleSemantics()}
      */
-    public Rule(RuleType type, List<Condition<? extends EvaluationField>> conditions, SimpleCondition decision) {
+    public Rule(RuleType type, List<Condition<? extends EvaluationField>> conditions, Condition<? extends EvaluationField> decision) {
     	this.type = notNull(type, "Rule's type is null.");
     	
     	notNull(decision, "Rule's decision is null."); //validate decision

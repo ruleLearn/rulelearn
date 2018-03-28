@@ -23,7 +23,7 @@ import org.rulelearn.types.UnknownSimpleField;
 import static org.rulelearn.core.Precondition.notNull;
 
 /**
- * Simple result of classification of an object from an information table.
+ * Simple result of classification of an object from an information table, reflecting its classification to exactly one decision class.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

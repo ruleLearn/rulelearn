@@ -30,7 +30,7 @@ import org.rulelearn.types.SimpleField;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class SimpleRuleClassifier extends RuleClassifier {
+public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassifier {
 
 	/**
 	 * Constructs this classifier.
@@ -70,7 +70,7 @@ public class SimpleRuleClassifier extends RuleClassifier {
 						upLimit = decision.getLimitingEvaluation();
 					}
 					else {
-						if (decision.getLimitingEvaluation().isAtLeastAsGoodAs(upLimit) == TernaryLogicValue.TRUE) {
+						if (decision.getLimitingEvaluation().isAtMostAsGoodAs(upLimit) == TernaryLogicValue.TRUE) {
 							upLimit = decision.getLimitingEvaluation();
 						}
 					}
@@ -80,7 +80,7 @@ public class SimpleRuleClassifier extends RuleClassifier {
 						downLimit = decision.getLimitingEvaluation();
 					}
 					else {
-						if (decision.getLimitingEvaluation().isAtMostAsGoodAs(downLimit) == TernaryLogicValue.TRUE) {
+						if (decision.getLimitingEvaluation().isAtLeastAsGoodAs(downLimit) == TernaryLogicValue.TRUE) {
 							downLimit = decision.getLimitingEvaluation();
 						}
 					}
