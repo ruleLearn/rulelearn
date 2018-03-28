@@ -284,4 +284,12 @@ class UnknownSimpleFieldMV2Test {
 		assertTrue(mvField1.hashCode() == mvField2.hashCode());	
 	}
 	
+	/**
+	 * Tests {@link UnknownSimpleFieldMV2#toString()} method.
+	 */
+	@Test
+	public void testToString() {
+		assertEquals(new UnknownSimpleFieldMV2().toString(), "?");
+	}
+	
 }

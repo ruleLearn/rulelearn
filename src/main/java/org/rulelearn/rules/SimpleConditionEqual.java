@@ -102,7 +102,7 @@ public class SimpleConditionEqual extends SimpleCondition {
 	 */
 	@Override
 	public RuleSemantics getRuleSemantics() {
-		if (this.attributeWithContext.getAttribute().getType() != AttributeType.DECISION) {
+		if (this.attributeWithContext.getAttributeType() != AttributeType.DECISION) {
 			throw new InvalidValueException("Cannot establish rule semantics given a simple 'equal' condition not defined on a decision attribute.");
 		}
 		

@@ -199,4 +199,14 @@ public class PairField<T extends SimpleField> extends CompositeField {
 		return secondValue;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return new StringBuilder().append("(").append(this.firstValue.toString()).append(",").append(this.secondValue.toString()).append(")").toString();
+	}
+
 }

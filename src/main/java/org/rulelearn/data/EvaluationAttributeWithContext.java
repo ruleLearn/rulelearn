@@ -40,12 +40,21 @@ public class EvaluationAttributeWithContext extends AttributeWithContext<Evaluat
 	}
 	
 	/**
-	 * Gets preference type {@link AttributePreferenceType} of the attribute.
+	 * Gets type {@link AttributeType} of the evaluation attribute.
+	 * 
+	 * @return type of the evaluation attribute
+	 */
+	public AttributeType getAttributeType() {
+		return this.attribute.getType();
+	}
+	
+	/**
+	 * Gets preference type {@link AttributePreferenceType} of the evaluation attribute.
 	 * 
 	 * @return preference type of the evaluation attribute
 	 */
 	public AttributePreferenceType getAttributePreferenceType() {
-		return ((EvaluationAttribute)this.attribute).getPreferenceType();
+		return this.attribute.getPreferenceType();
 	}
 
 }

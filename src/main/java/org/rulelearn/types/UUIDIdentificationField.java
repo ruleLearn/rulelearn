@@ -39,6 +39,15 @@ public class UUIDIdentificationField extends IdentificationField {
 	protected UUID value;
 	
 	/**
+	 * Gets the value of this field.
+	 * 
+	 * @return the value of this field
+	 */
+	public UUID getValue() {
+		return value;
+	}
+
+	/**
 	 * Constructor setting UUID value of this identification field.
 	 * 
 	 * @param value UUID value to set
@@ -87,6 +96,16 @@ public class UUIDIdentificationField extends IdentificationField {
 	@SuppressWarnings("unchecked")
 	public <S extends Field> S selfClone() {
 		return (S)new UUIDIdentificationField(this.value);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return this.value.toString();
 	}
 
 }

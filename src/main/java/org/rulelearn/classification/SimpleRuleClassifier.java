@@ -16,8 +16,13 @@
 
 package org.rulelearn.classification;
 
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.RuleSet;
+import org.rulelearn.rules.SimpleCondition;
+import org.rulelearn.rules.SimpleConditionAtLeast;
+import org.rulelearn.rules.SimpleConditionAtMost;
+import org.rulelearn.types.SimpleField;
 
 /**
  * Simple classifier using decision rules to classify each object from an information table to exactly one decision class.
@@ -25,7 +30,7 @@ import org.rulelearn.rules.RuleSet;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class SimpleRuleClassifier extends RuleClassifier {
+public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassifier {
 
 	/**
 	 * Constructs this classifier.
@@ -51,8 +56,55 @@ public class SimpleRuleClassifier extends RuleClassifier {
 	 */
 	@Override
 	public SimpleClassificationResult classify(int objectIndex, InformationTable informationTable) {
-		//TODO: implement
-		return null;
+		SimpleClassificationResult result = (SimpleClassificationResult)this.getDefaultClassificationResult();
+		
+		// calculate classification interval [downLimit, upLimit]
+		SimpleCondition decision = null;
+		SimpleField upLimit = null, downLimit = null;
+		RuleSet rules = this.getRuleSet();
+		for (int i = 0; i < rules.size(); i++) {
+			if (rules.getRule(i).covers(objectIndex, informationTable)) {
+				decision = (SimpleCondition)rules.getRule(i).getDecision();
+				if (decision instanceof SimpleConditionAtLeast) {
+					if (upLimit == null) {
+						upLimit = decision.getLimitingEvaluation();
+					}
+					else {
+						if (decision.getLimitingEvaluation().isAtMostAsGoodAs(upLimit) == TernaryLogicValue.TRUE) {
+							upLimit = decision.getLimitingEvaluation();
+						}
+					}
+				}
+				else if (decision instanceof SimpleConditionAtMost) {
+					if (downLimit == null) {
+						downLimit = decision.getLimitingEvaluation();
+					}
+					else {
+						if (decision.getLimitingEvaluation().isAtLeastAsGoodAs(downLimit) == TernaryLogicValue.TRUE) {
+							downLimit = decision.getLimitingEvaluation();
+						}
+					}
+				}
+			}
+		}
+		
+		// set the result
+		if (upLimit != null) {
+			if (downLimit != null) {
+				if (upLimit.isEqualTo(downLimit) == TernaryLogicValue.TRUE) {
+					result = new SimpleClassificationResult(upLimit);
+				}	
+				// TODO should we take a median of the calculated classification interval?
+			}
+			else {
+				result = new SimpleClassificationResult(upLimit);
+			}
+		}
+		else if (downLimit != null) {
+			result = new SimpleClassificationResult(downLimit);
+		}
+		
+		return result;
 	}
 
 	/**
