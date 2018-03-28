@@ -19,12 +19,12 @@ package org.rulelearn.classification;
 import static org.rulelearn.core.Precondition.notNull;
 
 /**
- * Abstract classifier.
+ * Abstract classifier, storing default classification result and implementing {@link Classifier} interface.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class BasicClassifier implements Classifier {
+public abstract class AbstractClassifier implements Classifier {
 	
 	/**
 	 * Default classification result, returned by this classifier if it is unable to calculate such result.
@@ -46,7 +46,7 @@ public abstract class BasicClassifier implements Classifier {
 	 * @param defaultClassificationResult default classification result, to be returned by this classifier if it is unable to calculate such result
 	 * @throws NullPointerException if given default classification result is {@code null}
 	 */
-	public BasicClassifier(ClassificationResult defaultClassificationResult) {
+	public AbstractClassifier(ClassificationResult defaultClassificationResult) {
 		this.defaultClassificationResult = notNull(defaultClassificationResult, "Default classification result is null.");
 	}
 }
