@@ -36,7 +36,7 @@ import com.google.gson.stream.JsonReader;
  */
 public class ObjectParser {
 	/** 
-	 * Default value for this type of a field.
+	 * Default encoding.
 	 */
 	public final static String DEFAULT_ENCODING = "UTF-8";
 	
@@ -51,7 +51,7 @@ public class ObjectParser {
 	protected Attribute [] attributes = null;
 	
 	/**
-	 * Encoding of text data in JSON file.
+	 * Encoding of text data in JSON.
 	 */
 	protected String encoding = ObjectParser.DEFAULT_ENCODING;
 	

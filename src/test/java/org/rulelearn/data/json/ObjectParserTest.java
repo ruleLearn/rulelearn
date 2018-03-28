@@ -25,10 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
-
 /**
  * Test for {@link ObjectParser}
  *
@@ -45,37 +41,31 @@ class ObjectParserTest {
 	void testConstructionOfInformationTableBuilder() {
 		Attribute [] attributes = null;
 		
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
-		Gson gson = gsonBuilder.setPrettyPrinting().create();
-		
-		JsonReader jsonReader = null;
+		AttributeParser aParser = new AttributeParser();
 		try {
-			jsonReader = new JsonReader(new FileReader("src/test/resources/data/csv/prioritisation.json"));
+			attributes = aParser.parseAttributes(new FileReader("src/test/resources/data/csv/prioritisation.json"));
 		}
 		catch (FileNotFoundException ex) {
 			System.out.println(ex.toString());
 		}
-		if (jsonReader != null) {
-			attributes = gson.fromJson(jsonReader, Attribute[].class);
+		if (attributes != null) {
+			ObjectParser oParser = new ObjectParser(attributes);
+			InformationTable iTable = null;
+			try {
+				iTable = oParser.parseObjects(new FileReader("src/test/resources/data/json/examples.json"));
+			}
+			catch (FileNotFoundException ex) {
+				System.out.println(ex.toString());
+			}
+			if (iTable != null) {
+				assertEquals(iTable.getNumberOfObjects(), 2);
+			}
+			else {
+				fail("Unable to load JSON test file with definition of objects");
+			}
 		}
 		else {
 			fail("Unable to load JSON test file with definition of attributes");
-		}
-		
-		ObjectParser objectParser = new ObjectParser(attributes);
-		InformationTable iTable = null;
-		try {
-			iTable = objectParser.parseObjects(new FileReader("src/test/resources/data/json/examples.json"));
-		}
-		catch (FileNotFoundException ex) {
-			System.out.println(ex.toString());
-		}
-		if (iTable != null) {
-			assertEquals(iTable.getNumberOfObjects(), 2);
-		}
-		else {
-			fail("Unable to load JSON test file with definition of objects");
 		}
 
 	}
