@@ -34,6 +34,8 @@ import java.lang.annotation.*;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 @Documented
+@Retention(value=RetentionPolicy.SOURCE)
+@Target(value={ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface ReadOnlyArrayReference {
 	
 	/**
