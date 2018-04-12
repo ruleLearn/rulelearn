@@ -378,21 +378,21 @@ class InformationTableTest {
 	}
 	
 	/**
-	 * Test for {@link InformationTable#getActiveConditionFields()} method}.
+	 * Test for {@link InformationTable#getActiveConditionAttributeFields()} method}.
 	 */
 	@Test
 	public void testGetActiveConditionFields01() {
 		InformationTable informationTable = configuration01.getInformationTable(true);
-		assertEquals(informationTable.getActiveConditionFields().getNumberOfAttributes(), 2);
+		assertEquals(informationTable.getActiveConditionAttributeFields().getNumberOfAttributes(), 2);
 	}
 	
 	/**
-	 * Test for {@link InformationTable#getActiveConditionFields()} method}.
+	 * Test for {@link InformationTable#getActiveConditionAttributeFields()} method}.
 	 */
 	@Test
 	public void testGetActiveConditionFields02() {
 		InformationTable informationTable = configuration02.getInformationTable(true);
-		assertEquals(informationTable.getActiveConditionFields().getNumberOfAttributes(), 3);
+		assertEquals(informationTable.getActiveConditionAttributeFields().getNumberOfAttributes(), 3);
 	}
 	
 	/**
@@ -401,7 +401,7 @@ class InformationTableTest {
 	@Test
 	public void testGetNotActiveOrDescriptionFields01() {
 		InformationTable informationTable = configuration01.getInformationTable(false);
-		assertEquals(informationTable.getNotActiveOrDescriptionFields().getNumberOfAttributes(), 5);
+		assertEquals(informationTable.getNotActiveOrDescriptionAttributeFields().getNumberOfAttributes(), 5);
 	}
 	
 	/**
@@ -410,7 +410,7 @@ class InformationTableTest {
 	@Test
 	public void testGetNotActiveOrDescriptionFields02() {
 		InformationTable informationTable = configuration02.getInformationTable(false);
-		assertEquals(informationTable.getNotActiveOrDescriptionFields().getNumberOfAttributes(), 5);
+		assertEquals(informationTable.getNotActiveOrDescriptionAttributeFields().getNumberOfAttributes(), 5);
 	}
 	
 	/**

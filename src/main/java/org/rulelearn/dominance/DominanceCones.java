@@ -17,8 +17,11 @@
 package org.rulelearn.dominance;
 
 import java.util.Set;
+import java.util.SortedSet;
 import org.rulelearn.data.InformationTable;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import org.rulelearn.data.Table;
+import org.rulelearn.types.EvaluationField;
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import static org.rulelearn.core.Precondition.notNull;
 
 /**
@@ -29,25 +32,25 @@ import static org.rulelearn.core.Precondition.notNull;
  */
 public class DominanceCones {
 	/**
-	 * Array of positive cones w.r.t. (straight) dominance relation D (y D x &lt;=&gt; y dominates x), one for each object x from an information table.
+	 * Array of positive dominance cones w.r.t. (straight) dominance relation D (y D x &lt;=&gt; y dominates x), one for each object x from an information table.
 	 * Formally, D^+(x) = {y \in U : y D x}.
 	 */
-	protected Set<Integer>[] positiveDCones;
+	protected SortedSet<Integer>[] positiveDCones;
 	/**
-	 * Array of negative cones w.r.t. (straight) dominance relation D (x D y &lt;=&gt; x dominates y), one for each object x from an information table.
+	 * Array of negative dominance cones w.r.t. (straight) dominance relation D (x D y &lt;=&gt; x dominates y), one for each object x from an information table.
 	 * Formally, D^-(x) = {y \in U : x D y}.
 	 */
-	protected Set<Integer>[] negativeDCones; //used to calc lower appx of union "at most"
+	protected SortedSet<Integer>[] negativeDCones; //used to calc lower appx of union "at most"
 	/**
-	 * Array of positive cones w.r.t. (inverse) dominance relation InvD (x InvD y &lt;=&gt; x is dominated by y), one for each object x from an information table.
+	 * Array of positive dominance cones w.r.t. (inverse) dominance relation InvD (x InvD y &lt;=&gt; x is dominated by y), one for each object x from an information table.
 	 * Formally, InvD^+(x) = {y \in U : x InvD y}.
 	 */
-	protected Set<Integer>[] positiveInvDCones; //used to calc lower appx of union "at least"
+	protected SortedSet<Integer>[] positiveInvDCones; //used to calc lower appx of union "at least"
 	/**
-	 * Array of negative cones w.r.t. (inverse) dominance relation InvD (y InvD x &lt;=&gt; y is dominated by x), one for each object x from an information table.
+	 * Array of negative dominance cones w.r.t. (inverse) dominance relation InvD (y InvD x &lt;=&gt; y is dominated by x), one for each object x from an information table.
 	 * Formally, InvD^-(x) = {y \in U : y InvD x}.
 	 */
-	protected Set<Integer>[] negativeInvDCones;
+	protected SortedSet<Integer>[] negativeInvDCones;
 	
 	/**
 	 * Number of objects for which cones are calculated and stored.
@@ -65,10 +68,38 @@ public class DominanceCones {
 		notNull(informationTable, "Information table for calculation of dominance cones is null.");
 		this.numberOfObjects = informationTable.getNumberOfObjects();
 		
-		this.positiveDCones = (Set<Integer>[]) new Set[this.numberOfObjects];
-		this.negativeDCones = (Set<Integer>[]) new Set[this.numberOfObjects];
-		this.positiveInvDCones = (Set<Integer>[]) new Set[this.numberOfObjects];
-		this.negativeInvDCones = (Set<Integer>[]) new Set[this.numberOfObjects];
+		this.positiveDCones = (SortedSet<Integer>[]) new SortedSet[this.numberOfObjects];
+		this.negativeDCones = (SortedSet<Integer>[]) new SortedSet[this.numberOfObjects];
+		this.positiveInvDCones = (SortedSet<Integer>[]) new SortedSet[this.numberOfObjects];
+		this.negativeInvDCones = (SortedSet<Integer>[]) new SortedSet[this.numberOfObjects];
+		
+		this.calculatePositiveDCones(informationTable);
+		//TODO: extend
+	}
+	
+	/**
+	 * Calculates positive dominance cones w.r.t. (straight) dominance relation D.
+	 * 
+	 * @param informationTable information table for which dominance cones should be calculated
+	 */
+	protected void calculatePositiveDCones(InformationTable informationTable) {
+		int numberOfObjects = informationTable.getNumberOfObjects();
+		Table<EvaluationField> activeConditionAttributeFields = informationTable.getActiveConditionAttributeFields();
+		EvaluationField[] coneOriginFields;
+		EvaluationField[] candidateObjectFields;
+		boolean candidateObjectIsInCone;
+		
+		for (int coneOriginIndex = 0; coneOriginIndex < numberOfObjects; coneOriginIndex++) {
+			coneOriginFields = activeConditionAttributeFields.getFields(coneOriginIndex);
+			this.positiveDCones[coneOriginIndex] = new IntLinkedOpenHashSet(); //fastutil implementation
+			for (int candidateObjectIndex = 0; candidateObjectIndex < numberOfObjects; candidateObjectIndex++) {
+				candidateObjectFields = activeConditionAttributeFields.getFields(candidateObjectIndex);
+				candidateObjectIsInCone = true;
+				for (int fieldIndex = 0; fieldIndex < coneOriginFields.length; fieldIndex++) {
+					//TODO: implement
+				}
+			}
+		}
 	}
 	
 	/**
@@ -82,7 +113,7 @@ public class DominanceCones {
 
 	/**
 	 * Gets positive cone w.r.t. (straight) dominance relation D (y D x &lt;=&gt; y dominates x),
-	 * originating in the object x having given index. Formally, D^+(x) = {y \in U : y D x}.
+	 * originating in the object x addresses by the given index. Formally, D^+(x) = {y \in U : y D x}.
 	 * 
 	 * @param objectIndex index of an object x from an information table
 	 * @return positive cone w.r.t. (straight) dominance relation D, originating in the object x having given index
@@ -90,13 +121,14 @@ public class DominanceCones {
 	 * @throws IndexOutOfBoundsException if given object index is lower than zero or exceeds {@link #getNumberOfObjects()}-1
 	 */
 	public Set<Integer> getPositiveDCone (int objectIndex) {
-		if (this.positiveDCones[objectIndex] == null) {
-			this.positiveDCones[objectIndex] = new IntOpenHashSet();
-			//TODO
-		}
+//		if (this.positiveDCones[objectIndex] == null) {
+//			this.positiveDCones[objectIndex] = new IntLinkedOpenHashSet();
+//			//this.positiveDCones[objectIndex] = new LinkedHashSet<Integer>();
+//			//TODO
+//		}
 		return this.positiveDCones[objectIndex];
 	}
 	
-	//TODO: further implementation
+	//TODO: further implementation (IntLinkedOpenHashSet|LinkedHashSet<Integer>|IntArrayList?)
 	
 }

@@ -17,6 +17,7 @@
 package org.rulelearn.core;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Class used to verify if methods' preconditions (like non-null parameters) are verified.
@@ -28,6 +29,7 @@ public final class Precondition {
 
 	/**
 	 * Verifies if given object reference is not {@code null}, and if so, returns this reference.
+	 * This methods offers the same functionality as {@link Objects#requireNonNull(Object, String)}.
 	 * 
 	 * @param object object reference to verify
 	 * @param errorMsg error message of the thrown {@link NullPointerException}, used when given object does not verify non-null precondition
