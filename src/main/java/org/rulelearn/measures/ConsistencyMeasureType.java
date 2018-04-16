@@ -14,33 +14,22 @@
  * limitations under the License.
  */
 
-package org.rulelearn.measures.object;
-
-import org.rulelearn.approximations.ApproximatedSet;
-import org.rulelearn.measures.ConsistencyMeasureType;
+package org.rulelearn.measures;
 
 /**
- * Contract of all object consistency measures.
+ * Type of a rule/object consistency measure.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface ObjectConsistencyMeasure {
+public enum ConsistencyMeasureType {
 	
 	/**
-	 * Calculates consistency of the given object with respect to the given set of objects.
-	 * 
-	 * @param objectIndex index of an object in the information table for which approximated set is defined
-	 * @param approximatedSet approximated set of objects
-	 * @return consistency of the given object with respect to the given set of objects
+	 * Type of a gain-type consistency measure.
 	 */
-	public double consistency(int objectIndex, ApproximatedSet approximatedSet);
-	
+	GAIN,
 	/**
-	 * Gets type of this consistency measure.
-	 * 
-	 * @return see {@link ConsistencyMeasureType}
+	 * Type of a cost-type consistency measure.
 	 */
-	public ConsistencyMeasureType type();
-	
+	COST
 }

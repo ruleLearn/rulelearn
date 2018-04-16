@@ -20,7 +20,7 @@ import org.rulelearn.data.InformationTableWithDecisionClassDistributions;
 import org.rulelearn.types.EvaluationField;
 
 /**
- * Union of ordered decision classes, i.e., set of objects whose decision class is not worse or not better than given threshold decision class. 
+ * Union of ordered decision classes, i.e., set of objects whose decision class is not worse or not better than given limiting decision class.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -45,16 +45,43 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * TODO: write javadoc
-	 * TODO: validate presence and preference type of active decision attribute
-	 * 
-	 * @param unionType
-	 * @param decisionClass
-	 * @param informationTable
-	 * @param calculator
+	 * Reference to opposite union of decision classes that complements this union w.r.t. set of all objects U. This reference is useful when calculating the upper approximation of this union
+	 * by complementing the lower approximation of the opposite union. Initialized with {@code null}. Can be updated by {@link #registerComplementaryUnion(Union)} method.
 	 */
-	public Union(UnionType unionType, EvaluationField decisionClass, InformationTableWithDecisionClassDistributions informationTable, DominanceBasedRoughSetCalculator calculator) {
+	protected Union complementaryUnion = null;
+	
+	/**
+	 * Constructs this union.
+	 * 
+	 * @param unionType type of this union; see {@link UnionType}
+	 * @param limitingDecision value of active decision criterion that serves as a limit for this union; e.g., value 3 is a limit for union "at least 3" and "at most 3" 
+	 * @param informationTable information table with considered objects, some of which belong to this union
+	 * @param roughSetCalculator object capable of calculating lower/upper approximation of this union
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 */
+	public Union(UnionType unionType, EvaluationField limitingDecision, InformationTableWithDecisionClassDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator) {
 		super(informationTable);
+		//TODO: validate presence and preference type of active decision attribute
+	}
+	
+	/**
+	 * Remembers opposite union of decision classes that complements this union w.r.t. set of all objects U. This reference is useful when calculating the upper approximation of this union
+	 * by complementing the lower approximation of the opposite union.
+	 * 
+	 * @param union opposite union of decision classes; e.g., if there are five decision classes: 1, 2, 3, 4, 5, and this union concerns classes 3-5 (^gt;=3), then the opposite union concerns classes 1-2 (&lt;=2)
+	 */
+	public void registerComplementaryUnion(Union union) {
+		this.complementaryUnion = union;
+	}
+
+	/**
+	 * Gets opposite union of decision classes that complements this union w.r.t. set of all objects U.
+	 * 
+	 * @return opposite union of decision classes; e.g., if there are five decision classes: 1, 2, 3, 4, 5, and this union concerns classes 3-5 (&gt;=3), then the opposite union concerns classes 1-2 (&lt;=2)
+	 */
+	public Union getComplementaryUnion() {
+		return this.complementaryUnion;
 	}
 	
 	//TODO: implement

@@ -18,11 +18,13 @@ package org.rulelearn.approximations;
 
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.measures.object.ObjectConsistencyMeasure;
-
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
+import static org.rulelearn.core.Precondition.notNull;
 
 /**
  * Contract for classes capable of calculating dominance-based rough approximations and boundaries of unions of decision classes.
+ * 
+ * TODO: move parameter union to class constructors?
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -35,19 +37,53 @@ public abstract class DominanceBasedRoughSetCalculator {
 	
 	/**
 	 * TODO: write javadoc
+	 */
+	public DominanceBasedRoughSetCalculator() {}
+	
+	/**
+	 * TODO: write javadoc
 	 * 
-	 * @param consistencyMeasures
-	 * @param thresholds
+	 * @param lowerApproximationConsistencyMeasures array with object consistency measures applied when calculating lower approximation
+	 * @param lowerApproximationConsistencyThresholds array with thresholds for object consistency measures applied when calculating lower approximation
 	 * 
 	 * @throws InvalidValueException if numbers of object consistency measures and respective thresholds are different
 	 */
-	public DominanceBasedRoughSetCalculator(ObjectConsistencyMeasure[] consistencyMeasures, double[] thresholds) {
-		if (consistencyMeasures != null && thresholds != null) {
-			if (consistencyMeasures.length != thresholds.length) {
-				throw new InvalidValueException("Numbers of object consistency measures and respective thresholds are different.");
-			}
+	public DominanceBasedRoughSetCalculator(ObjectConsistencyMeasure[] lowerApproximationConsistencyMeasures, double[] lowerApproximationConsistencyThresholds) {
+		notNull(lowerApproximationConsistencyMeasures, "Consistency measures are null.");
+		notNull(lowerApproximationConsistencyThresholds, "Consistency thresholds are null.");
+		
+		if (lowerApproximationConsistencyMeasures.length != lowerApproximationConsistencyThresholds.length) {
+			throw new InvalidValueException("Numbers of object consistency measures and respective thresholds are different.");
 		}
 	}
 	
-	//ObjectConsistencyMeasure consistencyMeasure, double threshold
+	/**
+	 * TODO: write javadoc
+	 * 
+	 * @param lowerApproximationConsistencyMeasures array with object consistency measures applied when calculating lower approximation
+	 * @param lowerApproximationConsistencyThresholds array with thresholds for object consistency measures applied when calculating lower approximation
+	 * @param upperApproximationConsistencyMeasures array with object consistency measures applied when calculating upper approximation
+	 * @param upperApproximationConsistencyThresholds array with thresholds for object consistency measures applied when calculating upper approximation
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws InvalidValueException if numbers of lower approximation object consistency measures and respective thresholds are different
+	 * @throws InvalidValueException if numbers of upper approximation object consistency measures and respective thresholds are different
+	 */
+	public DominanceBasedRoughSetCalculator(ObjectConsistencyMeasure[] lowerApproximationConsistencyMeasures, double[] lowerApproximationConsistencyThresholds,
+			ObjectConsistencyMeasure[] upperApproximationConsistencyMeasures, double[] upperApproximationConsistencyThresholds) {
+		notNull(lowerApproximationConsistencyMeasures, "Lower approximation consistency measures are null.");
+		notNull(lowerApproximationConsistencyThresholds, "Lower approximation consistency thresholds are null.");
+		
+		notNull(upperApproximationConsistencyMeasures, "Upper approximation consistency measures are null.");
+		notNull(upperApproximationConsistencyThresholds, "Upper approximation consistency thresholds are null.");
+		
+		if (lowerApproximationConsistencyMeasures.length != lowerApproximationConsistencyThresholds.length) {
+			throw new InvalidValueException("Numbers of lower approximation object consistency measures and respective thresholds are different.");
+		}
+		
+		if (upperApproximationConsistencyMeasures.length != upperApproximationConsistencyThresholds.length) {
+			throw new InvalidValueException("Numbers of upper approximation object consistency measures and respective thresholds are different.");
+		}
+	}
+	
 }
