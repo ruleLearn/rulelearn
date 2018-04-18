@@ -21,11 +21,13 @@ import org.rulelearn.measures.ConsistencyMeasureType;
 
 /**
  * Contract of all object consistency measures.
+ * 
+ * @param <T> type of approximated set for which the object consistency measure can be calculated
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface ObjectConsistencyMeasure {
+public interface ObjectConsistencyMeasure<T extends ApproximatedSet> {
 	
 	/**
 	 * Calculates consistency of the given object with respect to the given set of objects.
@@ -34,7 +36,7 @@ public interface ObjectConsistencyMeasure {
 	 * @param approximatedSet approximated set of objects
 	 * @return consistency of the given object with respect to the given set of objects
 	 */
-	public double consistency(int objectIndex, ApproximatedSet approximatedSet);
+	public double consistency(int objectIndex, T approximatedSet);
 	
 	/**
 	 * Gets type of this consistency measure.

@@ -14,41 +14,22 @@
  * limitations under the License.
  */
 
-package org.rulelearn.dominance;
+package org.rulelearn.approximations;
 
-import org.rulelearn.data.InformationTable;
+import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
- * TODO: complete javadoc
+ * TODO: write javadoc
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+ * 
+ * @param<T>
  */
-public final class DominanceChecker {
+public abstract class RoughSetCalculator<T extends ApproximatedSet> {
 	
-	/**
-	 * Checks if the first given object ({@code x}) dominates the second given object ({@code y}).
-	 * TODO: complete javadoc
-	 * 
-	 * @param x
-	 * @param y
-	 * @param informationTable
-	 * @return
-	 */
-	public static boolean dominates(int x, int y, InformationTable informationTable) {
-		return false; //TODO: implement MSz
-	}
+	public abstract IntSortedSet getLowerApproximation(T set);
+	public abstract IntSortedSet getUpperApproximation(T set);
+	public abstract IntSortedSet getBoundary(T set);
 	
-	/**
-	 * Checks if the first given object ({@code x}) is dominated by the second given object ({@code y}).
-	 * TODO: complete javadoc
-	 * 
-	 * @param x
-	 * @param y
-	 * @param informationTable
-	 * @return
-	 */
-	public static boolean isDominatedBy(int x, int y, InformationTable informationTable) {
-		return false; //TODO: implement MSz
-	}
 }

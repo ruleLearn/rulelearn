@@ -339,6 +339,7 @@ public class EnumerationFieldTest {
 	/**
 	 * Tests {@link EnumerationField#equals(Object)} method.
 	 */
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
 		try {

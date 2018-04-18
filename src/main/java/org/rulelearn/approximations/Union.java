@@ -19,13 +19,20 @@ package org.rulelearn.approximations;
 import org.rulelearn.data.InformationTableWithDecisionClassDistributions;
 import org.rulelearn.types.EvaluationField;
 
+import it.unimi.dsi.fastutil.ints.IntSortedSet;
+
 /**
  * Union of ordered decision classes, i.e., set of objects whose decision class is not worse or not better than given limiting decision class.
+ * TODO: write javadoc
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class Union extends ApproximatedSet {
+	
+	protected UnionType unionType;
+	protected EvaluationField limitingDecision;
+	protected DominanceBasedRoughSetCalculator roughSetCalculator;
 	
 	/**
 	 * Type of union of decision classes.
@@ -62,6 +69,13 @@ public class Union extends ApproximatedSet {
 	 */
 	public Union(UnionType unionType, EvaluationField limitingDecision, InformationTableWithDecisionClassDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator) {
 		super(informationTable);
+		
+		//TODO: add validation
+		
+		this.unionType = unionType;
+		this.limitingDecision = limitingDecision;
+		this.roughSetCalculator = roughSetCalculator;
+		
 		//TODO: validate presence and preference type of active decision attribute
 	}
 	
@@ -72,7 +86,10 @@ public class Union extends ApproximatedSet {
 	 * @param union opposite union of decision classes; e.g., if there are five decision classes: 1, 2, 3, 4, 5, and this union concerns classes 3-5 (^gt;=3), then the opposite union concerns classes 1-2 (&lt;=2)
 	 */
 	public void registerComplementaryUnion(Union union) {
-		this.complementaryUnion = union;
+		//accept change if upper appr. not already calculated
+		if (this.upperApproximation == null) {
+			this.complementaryUnion = union;
+		}
 	}
 
 	/**
@@ -82,6 +99,48 @@ public class Union extends ApproximatedSet {
 	 */
 	public Union getComplementaryUnion() {
 		return this.complementaryUnion;
+	}
+
+	/**
+	 * @return the lowerApproximation
+	 */
+	public IntSortedSet getLowerApproximation() {
+		return lowerApproximation;
+	}
+
+	/**
+	 * @return the upperApproximation
+	 */
+	public IntSortedSet getUpperApproximation() {
+		return upperApproximation;
+	}
+
+	/**
+	 * @return the boundary
+	 */
+	public IntSortedSet getBoundary() {
+		return boundary;
+	}
+
+	/**
+	 * @return the unionType
+	 */
+	public UnionType getUnionType() {
+		return unionType;
+	}
+
+	/**
+	 * @return the limitingDecision
+	 */
+	public EvaluationField getLimitingDecision() {
+		return limitingDecision;
+	}
+
+	/**
+	 * @return the roughSetCalculator
+	 */
+	public DominanceBasedRoughSetCalculator getRoughSetCalculator() {
+		return roughSetCalculator;
 	}
 	
 	//TODO: implement

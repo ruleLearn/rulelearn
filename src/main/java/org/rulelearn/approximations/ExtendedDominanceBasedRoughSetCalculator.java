@@ -14,41 +14,14 @@
  * limitations under the License.
  */
 
-package org.rulelearn.dominance;
-
-import org.rulelearn.data.InformationTable;
+package org.rulelearn.approximations;
 
 /**
- * TODO: complete javadoc
+ * TODO: write javadoc
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public final class DominanceChecker {
-	
-	/**
-	 * Checks if the first given object ({@code x}) dominates the second given object ({@code y}).
-	 * TODO: complete javadoc
-	 * 
-	 * @param x
-	 * @param y
-	 * @param informationTable
-	 * @return
-	 */
-	public static boolean dominates(int x, int y, InformationTable informationTable) {
-		return false; //TODO: implement MSz
-	}
-	
-	/**
-	 * Checks if the first given object ({@code x}) is dominated by the second given object ({@code y}).
-	 * TODO: complete javadoc
-	 * 
-	 * @param x
-	 * @param y
-	 * @param informationTable
-	 * @return
-	 */
-	public static boolean isDominatedBy(int x, int y, InformationTable informationTable) {
-		return false; //TODO: implement MSz
-	}
+public abstract class ExtendedDominanceBasedRoughSetCalculator extends DominanceBasedRoughSetCalculator {
+
 }

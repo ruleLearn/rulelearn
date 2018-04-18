@@ -16,23 +16,34 @@
 
 package org.rulelearn.approximations;
 
+import java.util.HashSet;
+
 import org.rulelearn.data.InformationTable;
+import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
  * Top level class for all sets of objects that can be approximated using the rough set concept.
+ * TODO: add javadoc
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public abstract class ApproximatedSet {
+	
+	protected IntSortedSet lowerApproximation;
+	protected IntSortedSet upperApproximation;
+	protected IntSortedSet boundary;
 
 	protected InformationTable informationTable;
 	
-//	/**
-//	 * Array with numbers of examples belonging to this entity
-//	 */
-//	protected int[] examples = null;
-	//TODO: add field storing objects of this approximated set
+	protected HashSet<Integer> inconsistentObjectsInPositiveRegion = null;
+	
+	/**
+	 * Array with numbers of objects belonging to this set.
+	 */
+	protected int[] objects = null;
+	
+	//TODO: add has set storing objects of this approximated set?
 	
 	public ApproximatedSet(InformationTable informationTable) {
 		this.informationTable = informationTable;
