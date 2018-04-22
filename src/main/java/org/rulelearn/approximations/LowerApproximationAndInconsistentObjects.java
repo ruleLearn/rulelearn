@@ -30,16 +30,11 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
-public class ExtendedLowerApproximationWithContext<T extends ApproximatedSet> {
-	/**
-	 * Approximated set.
-	 */
-	protected T approximatedSet = null;
-	
+public class LowerApproximationAndInconsistentObjects {
 	/**
 	 * Set of objects belonging to lower approximation of the approximated set.
 	 */
-	protected IntSortedSet extendedLowerApproximation = null;
+	protected IntSortedSet lowerApproximation = null;
 
 	/**
 	 * Set of objects from the information table that are inconsistent with the objects belonging to the lower approximation of the approximated set.
@@ -49,30 +44,21 @@ public class ExtendedLowerApproximationWithContext<T extends ApproximatedSet> {
 	/**
 	 * Constructor initializing all fields.
 	 * 
-	 * @param approximatedSet approximated set
-	 * @param extendedLowerApproximation set of objects belonging to lower approximation of the approximated set
+	 * @param lowerApproximation set of objects belonging to lower approximation of the approximated set
 	 * @param inconsistentObjectsInPositiveRegion set of objects from the information table that are inconsistent with the objects belonging to the lower approximation of the approximated set
 	 * 
-	 * @throws NullPointerException if approximated set, extended lower approximation or inconsistentObjectsInPositiveRegion does not conform to {@link Precondition#notNull(Object, String)}
+	 * @throws NullPointerException if extended lower approximation or inconsistentObjectsInPositiveRegion does not conform to {@link Precondition#notNull(Object, String)}
 	 */
-	public ExtendedLowerApproximationWithContext(T approximatedSet, IntSortedSet extendedLowerApproximation, HashSet<Integer> inconsistentObjectsInPositiveRegion) {
-		this.approximatedSet = Precondition.notNull(approximatedSet, "Approximated set is null.");
-		this.extendedLowerApproximation = Precondition.notNull(extendedLowerApproximation, "Extended lower approximation is null.");
+	public LowerApproximationAndInconsistentObjects(IntSortedSet lowerApproximation, HashSet<Integer> inconsistentObjectsInPositiveRegion) {
+		this.lowerApproximation = Precondition.notNull(lowerApproximation, "Extended lower approximation is null.");
 		this.inconsistentObjectsInPositiveRegion = Precondition.notNull(inconsistentObjectsInPositiveRegion, "Set of inconsistent objects in positive region is null.");
 	}
 
 	/**
-	 * @return the approximatedSet
+	 * @return the lowerApproximation
 	 */
-	public T getApproximatedSet() {
-		return approximatedSet;
-	}
-
-	/**
-	 * @return the extendedLowerApproximation
-	 */
-	public IntSortedSet getExtendedLowerApproximation() {
-		return extendedLowerApproximation;
+	public IntSortedSet getLowerApproximation() {
+		return lowerApproximation;
 	}
 
 	/**

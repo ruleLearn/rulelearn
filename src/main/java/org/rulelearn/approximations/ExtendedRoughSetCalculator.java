@@ -24,6 +24,6 @@ package org.rulelearn.approximations;
  */
 public interface ExtendedRoughSetCalculator<T extends ApproximatedSet> extends RoughSetCalculator<T> {
 
-	public abstract ExtendedLowerApproximationWithContext<T> getExtendedLowerApproximation(T set);	
+	public abstract LowerApproximationAndInconsistentObjects getExtendedLowerApproximationWithContext(T set);	
 
 }
