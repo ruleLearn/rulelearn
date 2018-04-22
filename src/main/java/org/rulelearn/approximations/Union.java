@@ -25,15 +25,12 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
  * Union of ordered decision classes, i.e., set of objects whose decision class is not worse or not better than given limiting decision class.
  * TODO: write javadoc
  * TODO: getObjects, getInformationTable
+ * TODO: neutral examples?
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class Union extends ApproximatedSet {
-	
-	protected UnionType unionType;
-	protected EvaluationField limitingDecision;
-	protected DominanceBasedRoughSetCalculator roughSetCalculator;
 	
 	/**
 	 * Type of union of decision classes.
@@ -52,9 +49,13 @@ public class Union extends ApproximatedSet {
 		AT_MOST
 	}
 	
+	protected UnionType unionType;
+	protected EvaluationField limitingDecision;
+	protected DominanceBasedRoughSetCalculator roughSetCalculator;
+	
 	/**
 	 * Reference to opposite union of decision classes that complements this union w.r.t. set of all objects U. This reference is useful when calculating the upper approximation of this union
-	 * by complementing the lower approximation of the opposite union. Initialized with {@code null}. Can be updated by {@link #registerComplementaryUnion(Union)} method.
+	 * by complementing the lower approximation of the opposite union. Initialized with {@code null}. Can be updated by {@link #setComplementaryUnion(Union)} method.
 	 */
 	protected Union complementaryUnion = null;
 	
@@ -81,15 +82,23 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * Remembers opposite union of decision classes that complements this union w.r.t. set of all objects U. This reference is useful when calculating the upper approximation of this union
+	 * Registers opposite union of decision classes that complements this union w.r.t. set of all objects U.
+	 * This reference is useful when calculating the upper approximation of this union
 	 * by complementing the lower approximation of the opposite union.
+	 * Complementary union may be set only if the upper approximation of this union has not been calculated yet 
 	 * 
-	 * @param union opposite union of decision classes; e.g., if there are five decision classes: 1, 2, 3, 4, 5, and this union concerns classes 3-5 (^gt;=3), then the opposite union concerns classes 1-2 (&lt;=2)
+	 * @param union opposite union of decision classes; e.g., if there are five decision classes: 1, 2, 3, 4, 5,
+	 *        and this union concerns classes 3-5 (^gt;=3), then the opposite union concerns classes 1-2 (&lt;=2)
+	 * @return {@code true} if the upper approximation of this union has not been calculated yet,
+	 *         {@code false} otherwise 
 	 */
-	public void registerComplementaryUnion(Union union) {
+	public boolean setComplementaryUnion(Union union) {
 		//accept change if upper appr. not already calculated
 		if (this.upperApproximation == null) {
 			this.complementaryUnion = union;
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -142,6 +151,12 @@ public class Union extends ApproximatedSet {
 	 */
 	public DominanceBasedRoughSetCalculator getRoughSetCalculator() {
 		return roughSetCalculator;
+	}
+
+	@Override
+	public IntSortedSet getNegativeRegion() {
+		// TODO: implements using complementaryUnion
+		return null;
 	}
 	
 	//TODO: implement
