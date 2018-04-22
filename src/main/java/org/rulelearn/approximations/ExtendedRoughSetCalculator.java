@@ -16,12 +16,18 @@
 
 package org.rulelearn.approximations;
 
+import it.unimi.dsi.fastutil.ints.IntSortedSet;
+
 /**
  * TODO: write javadoc
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface ExtendedDominanceBasedRoughSetCalculator extends ExtendedRoughSetCalculator<Union> {
+public interface ExtendedRoughSetCalculator<T extends ApproximatedSet> extends RoughSetCalculator<T> {
+
+	public abstract IntSortedSet getPositiveRegion(T set);
+	public abstract IntSortedSet getNegativeRegion(T set);
+	public abstract IntSortedSet getBoundaryRegion(T set);	
 
 }
