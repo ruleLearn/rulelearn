@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class VCDominanceBasedRoughSetCalculator extends ExtendedDominanceBasedRoughSetCalculator {
+public class VCDominanceBasedRoughSetCalculator implements DominanceBasedRoughSetCalculator, ExtendedDominanceBasedRoughSetCalculator {
 	
 	protected ObjectConsistencyMeasure<Union>[] lowerApproximationConsistencyMeasures;
 	protected double[] lowerApproximationConsistencyThresholds;
@@ -88,6 +88,24 @@ public class VCDominanceBasedRoughSetCalculator extends ExtendedDominanceBasedRo
 	@Override
 	public IntSortedSet getBoundary(Union union) {
 		// TODO: implement
+		return null;
+	}
+
+	@Override
+	public IntSortedSet getPositiveRegion(Union set) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IntSortedSet getNegativeRegion(Union set) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IntSortedSet getBoundaryRegion(Union set) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

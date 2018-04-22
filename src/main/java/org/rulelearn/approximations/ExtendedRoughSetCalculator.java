@@ -16,12 +16,18 @@
 
 package org.rulelearn.approximations;
 
+import it.unimi.dsi.fastutil.ints.IntSortedSet;
+
 /**
- * Superclass for classes capable of calculating dominance-based rough approximations and boundaries of unions of decision classes.
- * 
+ * TODO: write javadoc
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface DominanceBasedRoughSetCalculator extends RoughSetCalculator<Union> {
-	
+public interface ExtendedRoughSetCalculator<T extends ApproximatedSet> extends RoughSetCalculator<T> {
+
+	public abstract IntSortedSet getPositiveRegion(T set);
+	public abstract IntSortedSet getNegativeRegion(T set);
+	public abstract IntSortedSet getBoundaryRegion(T set);	
+
 }
