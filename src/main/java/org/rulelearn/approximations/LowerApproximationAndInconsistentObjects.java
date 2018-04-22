@@ -47,10 +47,10 @@ public class LowerApproximationAndInconsistentObjects {
 	 * @param lowerApproximation set of objects belonging to lower approximation of the approximated set
 	 * @param inconsistentObjectsInPositiveRegion set of objects from the information table that are inconsistent with the objects belonging to the lower approximation of the approximated set
 	 * 
-	 * @throws NullPointerException if extended lower approximation or inconsistentObjectsInPositiveRegion does not conform to {@link Precondition#notNull(Object, String)}
+	 * @throws NullPointerException if lower approximation or set of inconsistent objects in positive region does not conform to {@link Precondition#notNull(Object, String)}
 	 */
 	public LowerApproximationAndInconsistentObjects(IntSortedSet lowerApproximation, HashSet<Integer> inconsistentObjectsInPositiveRegion) {
-		this.lowerApproximation = Precondition.notNull(lowerApproximation, "Extended lower approximation is null.");
+		this.lowerApproximation = Precondition.notNull(lowerApproximation, "Lower approximation is null.");
 		this.inconsistentObjectsInPositiveRegion = Precondition.notNull(inconsistentObjectsInPositiveRegion, "Set of inconsistent objects in positive region is null.");
 	}
 

@@ -92,10 +92,10 @@ public class VCDominanceBasedRoughSetCalculator implements DominanceBasedRoughSe
 	}
 
 	/* (non-Javadoc)
-	 * @see org.rulelearn.approximations.ExtendedRoughSetCalculator#getExtendedLowerApproximationWithContext(org.rulelearn.approximations.ApproximatedSet)
+	 * @see org.rulelearn.approximations.ExtendedRoughSetCalculator#getLowerApproximationAndInconsistentObjects(org.rulelearn.approximations.ApproximatedSet)
 	 */
 	@Override
-	public LowerApproximationAndInconsistentObjects getExtendedLowerApproximationWithContext(Union set) {
+	public LowerApproximationAndInconsistentObjects getLowerApproximationAndInconsistentObjects(Union set) {
 		// TODO Auto-generated method stub
 		return null;
 	}
