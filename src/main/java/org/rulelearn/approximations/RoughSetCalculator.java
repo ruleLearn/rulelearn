@@ -26,7 +26,7 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
  * 
  * @param<T>
  */
-public abstract class RoughSetCalculator<T extends ApproximatedSet> {
+public interface RoughSetCalculator<T extends ApproximatedSet> {
 	
 	public abstract IntSortedSet getLowerApproximation(T set);
 	public abstract IntSortedSet getUpperApproximation(T set);

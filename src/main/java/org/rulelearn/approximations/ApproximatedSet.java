@@ -24,6 +24,7 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 /**
  * Top level class for all sets of objects that can be approximated using the rough set concept.
  * TODO: add javadoc
+ * TODO: getPOSRegion, ...
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

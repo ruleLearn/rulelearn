@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class ClassicalDominanceBasedRoughSetCalculator extends DominanceBasedRoughSetCalculator {
+public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBasedRoughSetCalculator {
 
 	/* (non-Javadoc)
 	 * @see org.rulelearn.approximations.RoughSetCalculator#getLowerApproximation(org.rulelearn.approximations.ApproximatedSet)
