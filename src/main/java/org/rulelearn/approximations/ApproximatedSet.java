@@ -54,9 +54,9 @@ public abstract class ApproximatedSet {
 	protected HashSet<Integer> inconsistentObjectsInPositiveRegion = null;
 	
 	/**
-	 * Array with numbers of objects belonging to this set.
+	 * Sorted set with numbers of objects belonging to this set.
 	 */
-	protected int[] objects = null;
+	protected IntSortedSet objects = null;
 	
 	//TODO: add hash set storing objects of this approximated set?
 	//TODO: store regions?
@@ -84,7 +84,7 @@ public abstract class ApproximatedSet {
 	 * 
 	 * @return objects belonging to this approximated set
 	 */
-	public int[] getObjects() {
+	public IntSortedSet getObjects() {
 		return objects;
 	}
 
@@ -172,7 +172,7 @@ public abstract class ApproximatedSet {
 	 * @return number of examples belonging to this approximated set
 	 */
 	public int size() {
-		return this.objects.length;
+		return this.objects.size();
 	}
 	
 	/**
