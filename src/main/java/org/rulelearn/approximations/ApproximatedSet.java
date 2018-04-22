@@ -18,6 +18,8 @@ package org.rulelearn.approximations;
 
 import java.util.HashSet;
 import org.rulelearn.data.InformationTable;
+
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
@@ -51,7 +53,7 @@ public abstract class ApproximatedSet {
 	/**
 	 * Set of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set.
 	 */
-	protected HashSet<Integer> inconsistentObjectsInPositiveRegion = null;
+	protected IntSet inconsistentObjectsInPositiveRegion = null;
 	
 	/**
 	 * Sorted set with numbers of objects belonging to this set.
@@ -142,7 +144,7 @@ public abstract class ApproximatedSet {
 	 *  
 	 * @return set of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set
 	 */
-	public HashSet<Integer> getInconsistentObjectsInPositiveRegion() {
+	public IntSet getInconsistentObjectsInPositiveRegion() {
 		return this.inconsistentObjectsInPositiveRegion;
 	}
 	

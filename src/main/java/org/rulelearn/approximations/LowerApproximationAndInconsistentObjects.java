@@ -16,11 +16,9 @@
 
 package org.rulelearn.approximations;
 
-
-import java.util.HashSet;
-
 import org.rulelearn.core.Precondition;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
@@ -39,7 +37,7 @@ public class LowerApproximationAndInconsistentObjects {
 	/**
 	 * Set of objects from the information table that are inconsistent with the objects belonging to the lower approximation of the approximated set.
 	 */
-	protected HashSet<Integer> inconsistentObjectsInPositiveRegion = null;
+	protected IntSet inconsistentObjectsInPositiveRegion = null;
 	
 	/**
 	 * Constructor initializing all fields.
@@ -49,7 +47,7 @@ public class LowerApproximationAndInconsistentObjects {
 	 * 
 	 * @throws NullPointerException if lower approximation or set of inconsistent objects in positive region does not conform to {@link Precondition#notNull(Object, String)}
 	 */
-	public LowerApproximationAndInconsistentObjects(IntSortedSet lowerApproximation, HashSet<Integer> inconsistentObjectsInPositiveRegion) {
+	public LowerApproximationAndInconsistentObjects(IntSortedSet lowerApproximation, IntSet inconsistentObjectsInPositiveRegion) {
 		this.lowerApproximation = Precondition.notNull(lowerApproximation, "Lower approximation is null.");
 		this.inconsistentObjectsInPositiveRegion = Precondition.notNull(inconsistentObjectsInPositiveRegion, "Set of inconsistent objects in positive region is null.");
 	}
@@ -64,7 +62,7 @@ public class LowerApproximationAndInconsistentObjects {
 	/**
 	 * @return the inconsistentObjectsInPositiveRegion
 	 */
-	public HashSet<Integer> getInconsistentObjectsInPositiveRegion() {
+	public IntSet getInconsistentObjectsInPositiveRegion() {
 		return inconsistentObjectsInPositiveRegion;
 	}
 	
