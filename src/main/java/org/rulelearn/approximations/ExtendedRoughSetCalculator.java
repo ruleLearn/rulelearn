@@ -16,8 +16,6 @@
 
 package org.rulelearn.approximations;
 
-import it.unimi.dsi.fastutil.ints.IntSortedSet;
-
 /**
  * TODO: write javadoc
  *
@@ -26,8 +24,6 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
  */
 public interface ExtendedRoughSetCalculator<T extends ApproximatedSet> extends RoughSetCalculator<T> {
 
-	public abstract IntSortedSet getPositiveRegion(T set);
-	public abstract IntSortedSet getNegativeRegion(T set);
-	public abstract IntSortedSet getBoundaryRegion(T set);	
+	public abstract ExtendedLowerApproximationWithContext<T> getExtendedLowerApproximation(T set);	
 
 }

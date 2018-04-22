@@ -91,20 +91,11 @@ public class VCDominanceBasedRoughSetCalculator implements DominanceBasedRoughSe
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.rulelearn.approximations.ExtendedRoughSetCalculator#getExtendedLowerApproximation(org.rulelearn.approximations.ApproximatedSet)
+	 */
 	@Override
-	public IntSortedSet getPositiveRegion(Union set) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public IntSortedSet getNegativeRegion(Union set) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public IntSortedSet getBoundaryRegion(Union set) {
+	public ExtendedLowerApproximationWithContext<Union> getExtendedLowerApproximation(Union set) {
 		// TODO Auto-generated method stub
 		return null;
 	}
