@@ -16,9 +16,7 @@
 
 package org.rulelearn.approximations;
 
-import java.util.HashSet;
 import org.rulelearn.data.InformationTable;
-
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 

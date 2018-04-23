@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
  * Union of ordered decision classes, i.e., set of objects whose decision class is not worse or not better than given limiting decision class.
  * TODO: write javadoc
  * TODO: getObjects, getInformationTable
- * TODO: neutral examples?
+ * TODO: neutral objects?
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
