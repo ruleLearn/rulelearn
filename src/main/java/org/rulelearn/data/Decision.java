@@ -22,7 +22,7 @@ package org.rulelearn.data;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class Decision {
+public interface Decision {
 	
 	public abstract boolean isDominatedBy(Decision decision);
 	public abstract boolean dominates(Decision decision);

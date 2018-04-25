@@ -16,23 +16,37 @@
 
 package org.rulelearn.data;
 
+import static org.rulelearn.core.Precondition.notNull;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.core.InvalidValueException;
 
 /**
- * CompositeDecision
+ * Composite decision, i.e., decision corresponding to a collection of simultaneously fixed evaluations of active decision attributes.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class CompositeDecision extends Decision {
+public class CompositeDecision implements Decision {
 	
 	protected EvaluationField[] decisions;
 
 	protected int[] attributeIndices;
 
+	/**
+	 * Constructs this composite decisions.
+	 * 
+	 * @param decisions evaluations on considered attributes, which should be active and decision attributes
+	 * @param attributeIndices indices of attributes, which should be active and decision attributes
+	 * 
+	 * @throws InvalidValueException if the number of decisions is different than the number of attribute indices
+	 */
 	public CompositeDecision(EvaluationField[] decisions, int[] attributeIndices) {
-		this.decisions = decisions;
-		this.attributeIndices = attributeIndices;
+		this.decisions = notNull(decisions, "Decisions of a composite decision are null.");
+		this.attributeIndices = notNull(attributeIndices, "Attribute indices of a composite decision are null.");
+		
+		if (this.decisions.length != this.attributeIndices.length) {
+			throw new InvalidValueException("Different number of decisions and attribute indices for a composite decision.");
+		}
 	}
 
 	@Override
