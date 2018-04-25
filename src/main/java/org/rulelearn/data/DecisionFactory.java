@@ -19,13 +19,16 @@ package org.rulelearn.data;
 import org.rulelearn.types.EvaluationField;
 
 /**
- * Factory of {@link Decision} instances.
+ * Factory of {@link Decision} instances, written according to singleton pattern.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public enum DecisionFactory {
 	
+	/**
+	 * The only instance of this decision factory.
+	 */
 	INSTANCE;
 	
 	/**

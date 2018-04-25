@@ -37,7 +37,7 @@ public final class DominanceChecker {
 	 * @return
 	 */
 	public static boolean dominates(int x, int y, InformationTable informationTable) {
-		return false; //TODO: implement MSz
+		throw new UnsupportedOperationException("Not implemented yet!"); //TODO: implement MSz
 	}
 	
 	/**
@@ -51,6 +51,6 @@ public final class DominanceChecker {
 	 * @return
 	 */
 	public static boolean isDominatedBy(int x, int y, InformationTable informationTable) {
-		return false; //TODO: implement MSz
+		throw new UnsupportedOperationException("Not implemented yet!"); //TODO: implement MSz
 	}
 }

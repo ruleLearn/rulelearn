@@ -62,7 +62,7 @@ public class SimpleDecision extends Decision {
 	@Override
 	public TernaryLogicValue isAtMostAsGoodAs(Decision decision) {
 		// TODO: implement
-		return null;
+		throw new UnsupportedOperationException("Not implemented yet!");
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class SimpleDecision extends Decision {
 	@Override
 	public TernaryLogicValue isAtLeastAsGoodAs(Decision decision) {
 		// TODO: implement
-		return null;
+		throw new UnsupportedOperationException("Not implemented yet!");
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class SimpleDecision extends Decision {
 	@Override
 	public TernaryLogicValue isEqualTo(Decision decision) {
 		// TODO: implement
-		return null;
+		throw new UnsupportedOperationException("Not implemented yet!");
 	}
 	
 	/**

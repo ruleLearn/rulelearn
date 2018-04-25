@@ -88,6 +88,4 @@ public class InformationTableWithDecisionClassDistributions extends InformationT
 		return this.decisionClassDistribution;
 	}
 	
-	
-	
 }
