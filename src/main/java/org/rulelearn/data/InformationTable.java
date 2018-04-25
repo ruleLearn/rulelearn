@@ -162,7 +162,6 @@ public class InformationTable {
 	 *        it is assumed that each array is of the same length (i.e., the number of fields of each object is the same)
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
-	 * @throws InvalidValueException if there is more than one active decision attribute
 	 * @throws InvalidValueException if there is more than one active identification attribute
 	 */
 	public InformationTable(Attribute[] attributes, List<Field[]> listOfFields) {
