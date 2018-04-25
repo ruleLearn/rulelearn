@@ -28,7 +28,7 @@ import org.rulelearn.types.Field;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
-public class InformationTableWithDecisionClassDistributions extends InformationTable {
+public class InformationTableWithDecisionDistributions extends InformationTable {
 	
 	/**
 	 * Distribution of decisions found in this information table among different dominance cones defined for objects from this information table.
@@ -38,7 +38,7 @@ public class InformationTableWithDecisionClassDistributions extends InformationT
 	/**
 	 * Distribution of decisions associated with objects of this information table.
 	 */
-	protected DecisionDistribution decisionClassDistribution;
+	protected DecisionDistribution decisionDistribution;
 	
 	/**
 	 * TODO: write javadoc
@@ -46,7 +46,7 @@ public class InformationTableWithDecisionClassDistributions extends InformationT
 	 * @param attributes
 	 * @param listOfFields
 	 */
-	public InformationTableWithDecisionClassDistributions(Attribute[] attributes, List<Field[]> listOfFields) {
+	public InformationTableWithDecisionDistributions(Attribute[] attributes, List<Field[]> listOfFields) {
 		this(attributes, listOfFields, false);
 	}
 	
@@ -59,7 +59,7 @@ public class InformationTableWithDecisionClassDistributions extends InformationT
 	 * 
 	 * @throws InvalidValueException if given information table does not have any active decision attribute
 	 */
-	public InformationTableWithDecisionClassDistributions(Attribute[] attributes, List<Field[]> listOfFields, boolean accelerateByReadOnlyParams) {
+	public InformationTableWithDecisionDistributions(Attribute[] attributes, List<Field[]> listOfFields, boolean accelerateByReadOnlyParams) {
 		super(attributes, listOfFields, accelerateByReadOnlyParams);
 		
 		if (this.getDecisions(true) == null) {
@@ -67,7 +67,7 @@ public class InformationTableWithDecisionClassDistributions extends InformationT
 		}
 		
 		this.dominanceConesDecisionDistributions = new DominanceConesDecisionDistributions(this);
-		this.decisionClassDistribution = new DecisionDistribution(this);
+		this.decisionDistribution = new DecisionDistribution(this);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class InformationTableWithDecisionClassDistributions extends InformationT
 	 * @return distribution of decisions associated with objects of this information table
 	 */
 	public DecisionDistribution getDecisionDistribution() {
-		return this.decisionClassDistribution;
+		return this.decisionDistribution;
 	}
 	
 }
