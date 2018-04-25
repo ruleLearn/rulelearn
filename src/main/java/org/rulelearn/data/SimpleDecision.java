@@ -17,34 +17,74 @@
 package org.rulelearn.data;
 
 import org.rulelearn.types.EvaluationField;
+import static org.rulelearn.core.Precondition.notNull;
+import org.rulelearn.core.TernaryLogicValue;
 
 /**
- * SimpleDecision
+ * Simple decision reflecting {@link EvaluationField} evaluation of a single object on the only active decision attribute of an information table.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class SimpleDecision implements Decision {
 	
+	/**
+	 * Evaluation of a single object on the only active decision attribute of an information table.
+	 */
 	protected EvaluationField decision;
 
+	/**
+	 * Index of the only active decision attribute of an information table.
+	 */
 	protected int attributeIndex;
 
+	/**
+	 * Constructs this decision.
+	 * 
+	 * @param decision evaluation of a single object on the only active decision attribute of an information table
+	 * @param attributeIndex index of the only active decision attribute of an information table
+	 */
 	public SimpleDecision(EvaluationField decision, int attributeIndex) {
-		this.decision = decision;
+		this.decision = notNull(decision, "Simple decision is null.");
 		this.attributeIndex = attributeIndex;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param decision {@inheritDoc}
+	 * @return {@inheritDoc}
+	 */
 	@Override
-	public boolean isDominatedBy(Decision decision) {
-		// TODO Auto-generated method stub
-		return false;
+	public TernaryLogicValue isAtMostAsGoodAs(Decision decision) {
+		// TODO: implement
+		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param decision {@inheritDoc}
+	 * @return {@inheritDoc}
+	 */
 	@Override
-	public boolean dominates(Decision decision) {
-		// TODO Auto-generated method stub
-		return false;
+	public TernaryLogicValue isAtLeastAsGoodAs(Decision decision) {
+		// TODO: implement
+		return null;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param decision {@inheritDoc}
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public TernaryLogicValue isEqualTo(Decision decision) {
+		// TODO: implement
+		return null;
+	}
+	
+	
 	
 }

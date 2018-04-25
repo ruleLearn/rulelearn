@@ -17,42 +17,40 @@
 package org.rulelearn.data;
 
 import static org.rulelearn.core.Precondition.notNull;
-import org.rulelearn.types.Field;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 /**
- * Distribution of fields among considered objects (in a single column of an information table).
+ * Distribution of decisions in the set of considered objects (information table).
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class FieldDistribution {
-
+public class DecisionDistribution {
 	/**
-	 * Maps field to number of objects having this field.
+	 * Maps decision to number of objects having this decision.
 	 */
-	protected Object2IntMap<Field> field2CountMap;
+	protected Object2IntMap<Decision> decision2CountMap;
 	
 	/**
 	 * Sole constructor.
 	 */
-	public FieldDistribution() {
-		this.field2CountMap = new Object2IntOpenHashMap<Field>();
+	public DecisionDistribution() {
+		this.decision2CountMap = new Object2IntOpenHashMap<Decision>();
 	}
 	
 	/**
 	 * Constructs this distribution based on the given information table.
 	 * 
-	 * @param informationTable information table for which field distribution in a single column should be constructed
-	 * @param attributeIndex index of the considered attribute of the given information table
-	 * 
+	 * @param informationTable information table for which decision distribution should be constructed; this table should contain decisions for subsequent objects
 	 * @throws NullPointerException if given information table is {@code null}
 	 */
-	public FieldDistribution(InformationTable informationTable, int attributeIndex) {
-		notNull(informationTable, "Information table for calculation of distribution of fields is null.");
-		this.field2CountMap = new Object2IntOpenHashMap<Field>();
+	public DecisionDistribution(InformationTable informationTable) {
+		notNull(informationTable, "Information table for calculation of distribution of decisions is null.");
+		this.decision2CountMap = new Object2IntOpenHashMap<Decision>();
 		
+		//TODO: implement
+		/*
 		if (attributeIndex == informationTable.getActiveDecisionAttributeIndex()) {
 			Field[] fields = informationTable.getDecisions();
 			
@@ -67,28 +65,28 @@ public class FieldDistribution {
 			for (int i = 0; i < numberOfFields; i++) {
 				this.increaseCount(informationTable.getField(i, attributeIndex));
 			}
-		}
+		}*/
 
 	}
 	
 	/**
-	 * Gets number of objects having given field.
+	 * Gets number of objects having given decision.
 	 * 
-	 * @param field field from the considered column of an information table; should not be {@code null}
-	 * @return number of objects having given field
+	 * @param decision decision of interest; should not be {@code null}
+	 * @return number of objects having given decision
 	 */
-	public int getCount(Field field) {
-		return this.field2CountMap.containsKey(field) ? this.field2CountMap.getInt(field) : 0;
+	public int getCount(Decision decision) {
+		return this.decision2CountMap.containsKey(decision) ? this.decision2CountMap.getInt(decision) : 0;
 	}
 	
 	/**
-	 * Increases by one the number of objects having given field.
+	 * Increases by one the number of objects having given decision.
 	 * 
-	 * @param field field from the considered column of an information table; should not be {@code null}
+	 * @param decision decision of interest; should not be {@code null}
 	 */
-	public void increaseCount(Field field) {
-		int count = this.field2CountMap.containsKey(field) ? this.field2CountMap.getInt(field) : 0;
-		this.field2CountMap.put(field, ++count);
+	public void increaseCount(Decision decision) {
+		int count = this.decision2CountMap.containsKey(decision) ? this.decision2CountMap.getInt(decision) : 0;
+		this.decision2CountMap.put(decision, ++count);
 	}
-	
+
 }

@@ -16,16 +16,49 @@
 
 package org.rulelearn.data;
 
+import org.rulelearn.core.TernaryLogicValue;
+import org.rulelearn.types.EvaluationField;
+
 /**
- * Decision
+ * Decision reflecting a single object from an information table. It may relate to an {@link EvaluationField} evaluation of this object on the only active decision attribute,
+ * or to an ordered set of {@link EvaluationField} evaluations of this objects on subsequent active decision attributes.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public interface Decision {
 	
-	public abstract boolean isDominatedBy(Decision decision);
-	public abstract boolean dominates(Decision decision);
+	/**
+	 * Checks if this decision is at most as good as the other decision.
+	 * 
+	 * @param decision other decision that this decision is being compared to
+	 * @return {@link TernaryLogicValue#TRUE} if this decision is at most as good as the other decision,
+	 *         {@link TernaryLogicValue#FALSE} if this decision is not at most as good as the other decision,
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison
+	 * @throws NullPointerException if the other decision is {@code null}
+	 */
+	public TernaryLogicValue isAtMostAsGoodAs(Decision decision);
 	
+	/**
+	 * Checks if this decision is at least as good as the other decision.
+	 * 
+	 * @param decision other decision that this decision is being compared to
+	 * @return {@link TernaryLogicValue#TRUE} if this decision is at least as good as the other decision,
+	 *         {@link TernaryLogicValue#FALSE} if this decision is not at least as good as the other decision,
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison
+	 * @throws NullPointerException if the other decision is {@code null}
+	 */
+	public TernaryLogicValue isAtLeastAsGoodAs(Decision decision);
+	
+	/**
+	 * Checks if this decision is equal to the other decision.
+	 * 
+	 * @param decision other decision that this decision is being compared to
+	 * @return {@link TernaryLogicValue#TRUE} if this decision is equal to the other decision,
+	 *         {@link TernaryLogicValue#FALSE} if this decision is not equal to the other decision,
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison
+	 * @throws NullPointerException if the other decision is {@code null}
+	 */
+	public TernaryLogicValue isEqualTo(Decision decision);
 	
 }
