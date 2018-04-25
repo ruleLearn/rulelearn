@@ -53,20 +53,10 @@ public class FieldDistribution {
 		notNull(informationTable, "Information table for calculation of distribution of fields is null.");
 		this.field2CountMap = new Object2IntOpenHashMap<Field>();
 		
-		if (attributeIndex == informationTable.getActiveDecisionAttributeIndex()) {
-			Field[] fields = informationTable.getDecisions();
-			
-			if (fields != null) { //it is possible to calculate distribution of decision classes
-				for (int i = 0; i < fields.length; i++) {
-					this.increaseCount(fields[i]);
-				}
-			}
-		} else {
-			//manually browse fields from a single column of the information table
-			int numberOfFields = informationTable.getNumberOfObjects();
-			for (int i = 0; i < numberOfFields; i++) {
-				this.increaseCount(informationTable.getField(i, attributeIndex));
-			}
+		//manually browse fields from a single column of the information table
+		int numberOfFields = informationTable.getNumberOfObjects();
+		for (int i = 0; i < numberOfFields; i++) {
+			this.increaseCount(informationTable.getField(i, attributeIndex));
 		}
 
 	}

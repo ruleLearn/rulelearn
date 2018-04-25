@@ -18,34 +18,38 @@ package org.rulelearn.data;
 
 import org.rulelearn.types.EvaluationField;
 import static org.rulelearn.core.Precondition.notNull;
+
+import java.util.Objects;
+
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
- * Simple decision reflecting {@link EvaluationField} evaluation of a single object on the only active decision attribute of an information table.
+ * Simple decision reflecting {@link EvaluationField} evaluation of a single object on an active decision attribute of an information table.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class SimpleDecision implements Decision {
+public class SimpleDecision extends Decision {
 	
 	/**
-	 * Evaluation of a single object on the only active decision attribute of an information table.
+	 * Evaluation of a single object on an active decision attribute of an information table.
 	 */
-	protected EvaluationField decision;
+	protected EvaluationField evaluation;
 
 	/**
-	 * Index of the only active decision attribute of an information table.
+	 * Index of an active decision attribute of an information table.
 	 */
 	protected int attributeIndex;
 
 	/**
-	 * Constructs this decision.
+	 * Constructs this simple decision.
 	 * 
-	 * @param decision evaluation of a single object on the only active decision attribute of an information table
-	 * @param attributeIndex index of the only active decision attribute of an information table
+	 * @param evaluation evaluation of a single object on an active decision attribute of an information table
+	 * @param attributeIndex index of an active decision attribute of an information table
 	 */
-	public SimpleDecision(EvaluationField decision, int attributeIndex) {
-		this.decision = notNull(decision, "Simple decision is null.");
+	public SimpleDecision(EvaluationField evaluation, int attributeIndex) {
+		super();
+		this.evaluation = notNull(evaluation, "Evaluation of constructed simple decision is null.");
 		this.attributeIndex = attributeIndex;
 	}
 	
@@ -85,6 +89,47 @@ public class SimpleDecision implements Decision {
 		return null;
 	}
 	
-	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param attributeIndex {@inheritDoc}
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public EvaluationField getEvaluation(int attributeIndex) {
+		return attributeIndex == this.attributeIndex ? this.evaluation : null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getNumberOfEvaluations() {
+		return 1;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param otherObject {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject instanceof SimpleDecision &&
+				((SimpleDecision)otherObject).attributeIndex == this.attributeIndex &&
+				((SimpleDecision)otherObject).evaluation.equals(this.evaluation)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.getClass(), evaluation, attributeIndex);
+	}
 	
 }

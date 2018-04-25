@@ -49,24 +49,11 @@ public class DecisionDistribution {
 		notNull(informationTable, "Information table for calculation of distribution of decisions is null.");
 		this.decision2CountMap = new Object2IntOpenHashMap<Decision>();
 		
-		//TODO: implement
-		/*
-		if (attributeIndex == informationTable.getActiveDecisionAttributeIndex()) {
-			Field[] fields = informationTable.getDecisions();
-			
-			if (fields != null) { //it is possible to calculate distribution of decision classes
-				for (int i = 0; i < fields.length; i++) {
-					this.increaseCount(fields[i]);
-				}
-			}
-		} else {
-			//manually browse fields from a single column of the information table
-			int numberOfFields = informationTable.getNumberOfObjects();
-			for (int i = 0; i < numberOfFields; i++) {
-				this.increaseCount(informationTable.getField(i, attributeIndex));
-			}
-		}*/
-
+		int numberOfObjects = informationTable.getNumberOfObjects();
+		for (int i = 0; i < numberOfObjects; i++) {
+			this.increaseCount(informationTable.getDecision(i));
+		}
+		
 	}
 	
 	/**

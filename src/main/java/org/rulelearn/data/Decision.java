@@ -21,12 +21,12 @@ import org.rulelearn.types.EvaluationField;
 
 /**
  * Decision reflecting a single object from an information table. It may relate to an {@link EvaluationField} evaluation of this object on the only active decision attribute,
- * or to an ordered set of {@link EvaluationField} evaluations of this objects on subsequent active decision attributes.
+ * or to an ordered set of {@link EvaluationField} evaluations of this object on subsequent active decision attributes. Each such evaluation contributes to this decision.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface Decision {
+public abstract class Decision {
 	
 	/**
 	 * Checks if this decision is at most as good as the other decision.
@@ -37,7 +37,7 @@ public interface Decision {
 	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison
 	 * @throws NullPointerException if the other decision is {@code null}
 	 */
-	public TernaryLogicValue isAtMostAsGoodAs(Decision decision);
+	public abstract TernaryLogicValue isAtMostAsGoodAs(Decision decision);
 	
 	/**
 	 * Checks if this decision is at least as good as the other decision.
@@ -48,7 +48,7 @@ public interface Decision {
 	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison
 	 * @throws NullPointerException if the other decision is {@code null}
 	 */
-	public TernaryLogicValue isAtLeastAsGoodAs(Decision decision);
+	public abstract TernaryLogicValue isAtLeastAsGoodAs(Decision decision);
 	
 	/**
 	 * Checks if this decision is equal to the other decision.
@@ -59,6 +59,40 @@ public interface Decision {
 	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison
 	 * @throws NullPointerException if the other decision is {@code null}
 	 */
-	public TernaryLogicValue isEqualTo(Decision decision);
+	public abstract TernaryLogicValue isEqualTo(Decision decision);
+	
+	/**
+	 * Gets particular evaluation contributing to this decision.
+	 * 
+	 * @param attributeIndex index of an attribute from an information table, for which contributing evaluation should be returned
+	 * @return evaluation with respect to the attribute with given index, contributing to this decision, if there is such an evaluation,
+	 *         {@code null} otherwise
+	 */
+	public abstract EvaluationField getEvaluation(int attributeIndex);
+	
+	/**
+	 * Gets number of evaluations on active decision attributes contributing to this decision.
+	 * 
+	 * @return number of evaluations on active decision attributes contributing to this decision
+	 */
+	public abstract int getNumberOfEvaluations();
+	
+	/**
+	 * Tells if this decision is equal to the other object.
+	 * 
+	 * @param otherObject other object that this decision should be compared with
+	 * @return {@code true} if this decision is equal to the other object,
+	 *         {@code false} otherwise
+	 */
+	@Override
+	public abstract boolean equals(Object otherObject);
+	
+	/**
+     * Gets hash code of this decision.
+     *
+     * @return hash code of this decision
+     */
+	@Override
+    public abstract int hashCode(); 
 	
 }

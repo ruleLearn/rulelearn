@@ -18,7 +18,7 @@ package org.rulelearn.data;
 
 import java.util.List;
 import org.rulelearn.core.InvalidValueException;
-import org.rulelearn.dominance.DominanceConesDecisionClassDistributions;
+import org.rulelearn.dominance.DominanceConesDecisionDistributions;
 import org.rulelearn.types.Field;
 
 /**
@@ -31,14 +31,14 @@ import org.rulelearn.types.Field;
 public class InformationTableWithDecisionClassDistributions extends InformationTable {
 	
 	/**
-	 * Distribution of decision classes found in this information table among different dominance cones defined for objects from this information table.
+	 * Distribution of decisions found in this information table among different dominance cones defined for objects from this information table.
 	 */
-	protected DominanceConesDecisionClassDistributions dominanceConesDecisionClassDistributions;
+	protected DominanceConesDecisionDistributions dominanceConesDecisionDistributions;
 	
 	/**
-	 * Distribution of decision classes found in this information table.
+	 * Distribution of decisions associated with objects of this information table.
 	 */
-	protected FieldDistribution decisionClassDistribution;
+	protected DecisionDistribution decisionClassDistribution;
 	
 	/**
 	 * TODO: write javadoc
@@ -62,29 +62,29 @@ public class InformationTableWithDecisionClassDistributions extends InformationT
 	public InformationTableWithDecisionClassDistributions(Attribute[] attributes, List<Field[]> listOfFields, boolean accelerateByReadOnlyParams) {
 		super(attributes, listOfFields, accelerateByReadOnlyParams);
 		
-		if (this.getActiveDecisionAttributeIndex() < 0) {
-			throw new InvalidValueException("Information table for which decision class distributions should be calculated does not have any active decision attribute.");
+		if (this.getDecisions(true) == null) {
+			throw new InvalidValueException("Information table for which decision distributions should be calculated does not have any active decision attribute.");
 		}
 		
-		this.dominanceConesDecisionClassDistributions = new DominanceConesDecisionClassDistributions(this);
-		this.decisionClassDistribution = new FieldDistribution(this, this.getActiveDecisionAttributeIndex());
+		this.dominanceConesDecisionDistributions = new DominanceConesDecisionDistributions(this);
+		this.decisionClassDistribution = new DecisionDistribution(this);
 	}
 
 	/**
-	 * Gets distribution of decision classes found in this information table among different dominance cones defined for objects from this information table.
+	 * Gets distribution of decisions found in this information table among different dominance cones defined for objects from this information table.
 	 * 
-	 * @return distribution of decision classes found in this information table among different dominance cones defined for objects from this information table
+	 * @return distribution of decisions found in this information table among different dominance cones defined for objects from this information table
 	 */
-	public DominanceConesDecisionClassDistributions getDominanceConesDecisionClassDistributions() {
-		return this.dominanceConesDecisionClassDistributions;
+	public DominanceConesDecisionDistributions getDominanceConesDecisionDistributions() {
+		return this.dominanceConesDecisionDistributions;
 	}
 
 	/**
-	 * Gets distribution of decision classes found in this information table
+	 * Gets distribution of decisions associated with objects of this information table
 	 * 
-	 * @return distribution of decision classes found in this information table
+	 * @return distribution of decisions associated with objects of this information table
 	 */
-	public FieldDistribution getDecisionClassDistribution() {
+	public DecisionDistribution getDecisionDistribution() {
 		return this.decisionClassDistribution;
 	}
 	
