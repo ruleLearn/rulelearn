@@ -40,7 +40,9 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	 * @param lowerApproximationConsistencyMeasures array with object consistency measures applied when calculating lower approximation
 	 * @param lowerApproximationConsistencyThresholds array with thresholds for object consistency measures applied when calculating lower approximation
 	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidValueException if numbers of object consistency measures and respective thresholds are different
+	 * @throws InvalidValueException if the array with object consistency measures is empty
 	 */
 	public VCDominanceBasedRoughSetCalculator(ObjectConsistencyMeasure<Union>[] lowerApproximationConsistencyMeasures, double[] lowerApproximationConsistencyThresholds) {
 		super();
@@ -49,6 +51,10 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 		
 		if (lowerApproximationConsistencyMeasures.length != lowerApproximationConsistencyThresholds.length) {
 			throw new InvalidValueException("Numbers of object consistency measures and respective thresholds are different.");
+		}
+		
+		if (lowerApproximationConsistencyMeasures.length < 1) {
+			throw new InvalidValueException("VC dominance-based rough set calculator requires at least one object consistency measure.");
 		}
 		
 		this.lowerApproximationConsistencyMeasures = lowerApproximationConsistencyMeasures;
@@ -60,6 +66,8 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	 * 
 	 * @param lowerApproximationConsistencyMeasure
 	 * @param lowerApproximationConsistencyThreshold
+	 * 
+	 * @throws NullPointerException if lower approximation consistency measure is {@code null}
 	 */
 	@SuppressWarnings("unchecked")
 	public VCDominanceBasedRoughSetCalculator(ObjectConsistencyMeasure<Union> lowerApproximationConsistencyMeasure, double lowerApproximationConsistencyThreshold) {
