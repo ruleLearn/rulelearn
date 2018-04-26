@@ -54,15 +54,25 @@ public class SimpleDecision extends Decision {
 	}
 	
 	/**
-	 * {@inheritDoc}
+	 * Checks if this decision is at most as good as the other decision.
 	 * 
-	 * @param decision {@inheritDoc}
-	 * @return {@inheritDoc}
+	 * @param otherDecision other decision that this decision is being compared to
+	 * @return {@link TernaryLogicValue#TRUE} if this decision is at most as good as the other decision
+	 *         {@link TernaryLogicValue#FALSE} if this decision is not at most as good as the other decision
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison
+	 * @throws NullPointerException if the other decision is {@code null} 
 	 */
 	@Override
-	public TernaryLogicValue isAtMostAsGoodAs(Decision decision) {
-		// TODO: implement
-		throw new UnsupportedOperationException("Not implemented yet!");
+	public TernaryLogicValue isAtMostAsGoodAs(Decision otherDecision) {
+		if (otherDecision instanceof SimpleDecision) {
+			SimpleDecision otherSimpleDecision = (SimpleDecision)otherDecision;
+			
+			return (this.attributeIndex == otherSimpleDecision.attributeIndex) &&
+						(this.evaluation.isAtMostAsGoodAs(otherSimpleDecision.evaluation) == TernaryLogicValue.TRUE)
+					? TernaryLogicValue.TRUE : TernaryLogicValue.FALSE;
+		} else {
+			return TernaryLogicValue.UNCOMPARABLE;
+		}
 	}
 
 	/**

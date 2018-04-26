@@ -240,7 +240,7 @@ public class InformationTable {
 			} else if (isActiveIdentificationAttribute(attributes[i])) {
 				this.activeIdentificationAttributeIndex = i;
 				this.attributeMap[i] = 0; //no encoding
-			}else { //not active or description attribute
+			} else { //not active or description attribute
 				notActiveOrDescriptionAttributes[notActiveOrDescriptionAttributeIndex] = attributes[i];
 				this.attributeMap[i] = this.encodeNotActiveOrDescriptionAttributeIndex(notActiveOrDescriptionAttributeIndex);
 				notActiveOrDescriptionAttributeIndex++;
