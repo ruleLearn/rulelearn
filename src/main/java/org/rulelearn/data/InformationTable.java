@@ -26,15 +26,14 @@ import org.rulelearn.types.IdentificationField;
 import org.rulelearn.types.TextIdentificationField;
 import org.rulelearn.types.UUIDIdentificationField;
 
-
 /**
  * Information table composed of fields storing identifiers/evaluations of all considered objects on all specified attributes, among which we distinguish:<br>
  * (1) identification attributes,<br>
  * (2) evaluation attributes: condition, decision and description ones,<br>
  * both active and non-active.<br>
  * Each field is identified by object's index and attribute's index.
- * An information table is allowed to have zero or exactly one active decision attribute.
- * An object's evaluation on this attribute may, e.g., indicate decision class to which this object is assigned.
+ * An information table is allowed to have any number of active decision attributes.
+ * An ordered set of object's evaluations on active decision attributes defines decision associated with that object.
  * An information table is allowed to have zero or exactly one active identification attribute whose values are object identifiers.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
@@ -66,15 +65,15 @@ public class InformationTable {
 	protected Table<Field> notActiveOrDescriptionAttributeFields = null;
 	
 	/**
-	 * Contains evaluations of objects on the only active decision attribute.
+	 * Contains decisions associated with subsequent objects. Each decision is defined by an ordered set of object's evaluations on active decision attributes.
 	 * Can be {@code null}, e.g., if this information table stores evaluations of test objects (for which decisions are unknown).
 	 */
-	protected EvaluationField[] activeDecisionAttributeFields = null;
+	protected Decision[] decisions = null;
 	
-	/**
-	 * Index of the only active decision attribute used in calculations. If there is no such attribute, equals to -1.
-	 */
-	protected int activeDecisionAttributeIndex = -1;
+//	/**
+//	 * Index of the only active decision attribute used in calculations. If there is no such attribute, equals to -1.
+//	 */
+//	protected int activeDecisionAttributeIndex = -1;
 	
 	/**
 	 * Contains identifiers of objects assigned to them by the only active identification attribute.
@@ -90,14 +89,19 @@ public class InformationTable {
 	/**
 	 * Maps global index of an attribute of this information table to encoded local index of an active condition attribute (called AC-attribute)
 	 * or to encoded local index of a non-active/description attribute (called NA/D-attribute).
-	 * Moreover, marks the only active decision attribute (called AD-attribute) and the only active identification attribute (called AI-attribute),
-	 * if there are such attributes.
-	 * Mapping of a global index of an AC-attribute or NA/D-attribute is done as follows. Suppose that the 3-rd global attribute (having global index 2) is the first AC-attribute (having local index 0).
-	 * Then, {@code attributeMap[2]} encodes 0.<br>
-	 * Encoding of a local index of an AC-attribute is done by adding 1.<br>
+	 * Encoding of a local index of an AC-attribute is done by adding 1.
 	 * Encoding of a local index of a NA/D-attribute is done by subtracting 1.<br>
+	 * <br>
+	 * Suppose that the 3-rd global attribute (having global index 2) is the first AC-attribute (having local index 0).
+	 * Then, {@code attributeMap[2]} encodes 0, so it will be equal to 1.<br>
+	 * <br>
+	 * Suppose that the 5-rd global attribute (having global index 4) is the first NA/D-attribute (having local index 0).
+	 * Then, {@code attributeMap[4]} encodes 0, so it will be equal to -1.<br>
+	 * <br>
+	 * This map also marks active decision attributes (called AD-attributes) and the only active identification attribute (called AI-attribute),
+	 * if there are such attributes.<br>
 	 * If attributeMap[i]==0, then the global attribute having global index i is an AD-attribute or an AI-attribute
-	 * (one can verify which of the two cases is true by comparing i with {@link #activeDecisionAttributeIndex} and {@link #activeIdentificationAttributeIndex}).<br>
+	 * (one can verify which of the two cases is true by comparing index i with {@link #activeIdentificationAttributeIndex}).<br>
 	 * <br>
 	 * Suppose there are nine attributes:<br>
 	 * - attr0: active {@link EvaluationAttribute} of type {@link AttributeType#CONDITION},<br>
@@ -123,8 +127,7 @@ public class InformationTable {
 	 *        to unique object's id, which is meaningful in general
 	 * @param activeConditionAttributeFields sub-table corresponding to active condition attributes
 	 * @param notActiveOrDescriptionAttributeFields sub-table corresponding to non-active/description attributes
-	 * @param activeDecisionAttributeFields list of decisions concerning subsequent objects
-	 * @param activeDecisionAttributeIndex index of the only active decision attribute used in calculations
+	 * @param decisions list of decisions concerning subsequent objects
 	 * @param activeIdentificationAttributeFields list of identifiers of subsequent objects
 	 * @param activeIdentificationAttributeIndex index of the only active identification attribute
 	 * @param attributeMap see {@link #attributeMap}
@@ -133,7 +136,7 @@ public class InformationTable {
 	 *        to modify that arrays (and thus, this object does not need to clone the arrays for internal read-only use)
 	 */
 	protected InformationTable(Attribute[] attributes, Index2IdMapper mapper, Table<EvaluationField> activeConditionAttributeFields, Table<Field> notActiveOrDescriptionAttributeFields,
-			EvaluationField[] activeDecisionAttributeFields, int activeDecisionAttributeIndex,
+			Decision[] decisions, 
 			IdentificationField[] activeIdentificationAttributeFields, int activeIdentificationAttributeIndex,
 			int[] attributeMap, boolean accelerateByReadOnlyParams) {
 		this.attributes = accelerateByReadOnlyParams ? attributes : attributes.clone();
@@ -141,8 +144,8 @@ public class InformationTable {
 		this.activeConditionAttributeFields = activeConditionAttributeFields;
 		this.notActiveOrDescriptionAttributeFields = notActiveOrDescriptionAttributeFields;
 		
-		this.activeDecisionAttributeFields = accelerateByReadOnlyParams ? activeDecisionAttributeFields : activeDecisionAttributeFields.clone();
-		this.activeDecisionAttributeIndex = activeDecisionAttributeIndex;
+		this.decisions = accelerateByReadOnlyParams ? decisions : decisions.clone();
+//		this.activeDecisionAttributeIndex = activeDecisionAttributeIndex;
 		
 		this.activeIdentificationAttributeFields = accelerateByReadOnlyParams ? activeIdentificationAttributeFields : activeIdentificationAttributeFields.clone();
 		this.activeIdentificationAttributeIndex = activeIdentificationAttributeIndex;
@@ -159,7 +162,6 @@ public class InformationTable {
 	 *        it is assumed that each array is of the same length (i.e., the number of fields of each object is the same)
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
-	 * @throws InvalidValueException if there is more than one active decision attribute
 	 * @throws InvalidValueException if there is more than one active identification attribute
 	 */
 	public InformationTable(Attribute[] attributes, List<Field[]> listOfFields) {
@@ -181,7 +183,6 @@ public class InformationTable {
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidValueException if the number of attributes and the number of fields corresponding to one object
 	 *         (i.e., stored in a single array) do not match
-	 * @throws InvalidValueException if there is more than one active decision attribute
 	 * @throws InvalidValueException if there is more than one active identification attribute
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT)
@@ -199,9 +200,9 @@ public class InformationTable {
 				numberOfActiveConditionAttributes++;
 			} else if (isActiveDecisionAttribute(attributes[i])) {
 				numberOfActiveDecisionAttributes++;
-				if (numberOfActiveDecisionAttributes > 1) {
-					throw new InvalidValueException("The number of active decision attributes is greater than 1.");
-				}
+//				if (numberOfActiveDecisionAttributes > 1) {
+//					throw new InvalidValueException("The number of active decision attributes is greater than 1.");
+//				}
 			} else if (isActiveIdentificationAttribute(attributes[i])) {
 				numberOfActiveIdentificationAttributes++;
 				if (numberOfActiveIdentificationAttributes > 1) {
@@ -213,26 +214,28 @@ public class InformationTable {
 		int numberOfNotActiveOrDescriptionAttributes = attributes.length - numberOfActiveConditionAttributes - numberOfActiveDecisionAttributes - numberOfActiveIdentificationAttributes;
 		
 		boolean hasActiveConditionAttributes = numberOfActiveConditionAttributes > 0;
-		boolean hasActiveDecisionAttribute = numberOfActiveDecisionAttributes > 0;
+		boolean hasActiveDecisionAttributes = numberOfActiveDecisionAttributes > 0;
 		boolean hasActiveIdentificationAttribute = numberOfActiveIdentificationAttributes > 0;
 		boolean hasNotActiveOrDescriptionAttributes = numberOfNotActiveOrDescriptionAttributes > 0;
 		
+		//needed to construct instances of Table class
 		EvaluationAttribute[] activeConditionAttributes = hasActiveConditionAttributes ? new EvaluationAttribute[numberOfActiveConditionAttributes] : null;
 		Attribute[] notActiveOrDescriptionAttributes = hasNotActiveOrDescriptionAttributes ? new Attribute[numberOfNotActiveOrDescriptionAttributes] : null;
 		
 		int activeConditionAttributeIndex = 0;
+		int activeDecisionAttributeIndex = 0;
 		int notActiveOrDescriptionAttributeIndex = 0;
 		
 		this.attributeMap = new int[attributes.length];
 		
-		//split attributes into two tables + mark active decision attribute (if there is one) and active identification attribute (if there is one)
+		//split attributes into two tables + mark active decision attributes (if there are any) and active identification attribute (if there is such an attribute)
 		for (int i = 0; i < attributes.length; i++) {
 			if (isActiveConditionAttribute(attributes[i])) {
 				activeConditionAttributes[activeConditionAttributeIndex] = (EvaluationAttribute)attributes[i];
 				this.attributeMap[i] = this.encodeActiveConditionAttributeIndex(activeConditionAttributeIndex);
 				activeConditionAttributeIndex++;
 			} else if (isActiveDecisionAttribute(attributes[i])) {
-				this.activeDecisionAttributeIndex = i;
+//				this.activeDecisionAttributeIndex = i;
 				this.attributeMap[i] = 0; //no encoding
 			} else if (isActiveIdentificationAttribute(attributes[i])) {
 				this.activeIdentificationAttributeIndex = i;
@@ -245,33 +248,41 @@ public class InformationTable {
 		}
 		
 		EvaluationField[][] activeConditionAttributesFieldsArray = hasActiveConditionAttributes ? new EvaluationField[listOfFields.size()][] : null;
-		EvaluationField[] activeDecisionAttributeFields = hasActiveDecisionAttribute ? new EvaluationField[listOfFields.size()] : null;
+		Decision[] decisions = hasActiveDecisionAttributes ? new Decision[listOfFields.size()] : null;
 		IdentificationField[] activeIdentificationAttributeFields = hasActiveIdentificationAttribute ? new IdentificationField[listOfFields.size()] : null;
 		Field[][] notActiveOrDescriptionFieldsArray = hasNotActiveOrDescriptionAttributes ? new Field[listOfFields.size()][] : null;
 		
 		EvaluationField[] activeConditionFields = null;
-		EvaluationField activeDecisionField = null;
+		EvaluationField[] activeDecisionFields = null;
+		int[] activeDecisionAttributeIndices = null;
 		IdentificationField activeIdentificationField = null;
 		Field[] notActiveOrDescriptionFields = null;
 		
 		int rowIndex = 0;
 		
-		//split fields into two tables + collect decisions (if any) and identifiers (if any)
+		//split fields into two tables + collect decisions (if there are any) and identifiers (if there are any)
 		for (Field[] fields : listOfFields) { //choose a row (single object)
 			if (hasActiveConditionAttributes) {
 				activeConditionFields = new EvaluationField[numberOfActiveConditionAttributes];
 				activeConditionAttributeIndex = 0;
+			}
+			if (hasActiveDecisionAttributes) {
+				activeDecisionFields = new EvaluationField[numberOfActiveDecisionAttributes];
+				activeDecisionAttributeIndices = new int[numberOfActiveDecisionAttributes];
+				activeDecisionAttributeIndex = 0;
 			}
 			if (hasNotActiveOrDescriptionAttributes) {
 				notActiveOrDescriptionFields = new Field[numberOfNotActiveOrDescriptionAttributes];
 				notActiveOrDescriptionAttributeIndex = 0;
 			}
 			
-			for (int i = 0; i < attributes.length; i++) { //choose column (single attribute)
+			for (int i = 0; i < attributes.length; i++) { //choose a column (single attribute)
 				if (isActiveConditionAttribute(attributes[i])) {
 					activeConditionFields[activeConditionAttributeIndex++] = (EvaluationField)fields[i];
-				} else if (isActiveDecisionAttribute(attributes[i])) { //should be true at most once per row
-					activeDecisionField = (EvaluationField)fields[i];
+				} else if (isActiveDecisionAttribute(attributes[i])) {
+					activeDecisionFields[activeDecisionAttributeIndex] = (EvaluationField)fields[i];
+					activeDecisionAttributeIndices[activeDecisionAttributeIndex] = i;
+					activeDecisionAttributeIndex++;
 				} else if (isActiveIdentificationAttribute(attributes[i])) { //should be true at most once per row
 					activeIdentificationField = (IdentificationField)fields[i];
 				} else { //not active or description attribute
@@ -282,8 +293,8 @@ public class InformationTable {
 			if (hasActiveConditionAttributes) {
 				activeConditionAttributesFieldsArray[rowIndex] = activeConditionFields;
 			}
-			if (hasActiveDecisionAttribute) {
-				activeDecisionAttributeFields[rowIndex] = activeDecisionField;
+			if (hasActiveDecisionAttributes) {
+				decisions[rowIndex] = DecisionFactory.INSTANCE.create(activeDecisionFields, activeDecisionAttributeIndices);
 			}
 			if (hasActiveIdentificationAttribute) {
 				activeIdentificationAttributeFields[rowIndex] = activeIdentificationField;
@@ -300,7 +311,7 @@ public class InformationTable {
 		this.mapper = new Index2IdMapper(UniqueIdGenerator.getInstance().getUniqueIds(listOfFields.size()), true);
 		
 		this.activeConditionAttributeFields = hasActiveConditionAttributes ? new Table<EvaluationField>(activeConditionAttributes, activeConditionAttributesFieldsArray, this.mapper, true) : null;
-		this.activeDecisionAttributeFields = hasActiveDecisionAttribute ? activeDecisionAttributeFields : null;
+		this.decisions = hasActiveDecisionAttributes ? decisions : null;
 		this.activeIdentificationAttributeFields = hasActiveIdentificationAttribute ? activeIdentificationAttributeFields : null;
 		this.notActiveOrDescriptionAttributeFields = hasNotActiveOrDescriptionAttributes ? new Table<Field>(notActiveOrDescriptionAttributes, notActiveOrDescriptionFieldsArray, this.mapper, true) : null;
 	}
@@ -327,19 +338,17 @@ public class InformationTable {
 	
 	/**
 	 * Gets array of decisions concerning subsequent objects of this information table; i-th entry stores decision concerning i-th object.
-	 * This array stores evaluations of objects on the only active decision attribute.
-	 * Can be {@code null}, e.g., if this information table stores evaluations of test objects (for which decisions are unknown).
+	 * Result can be {@code null}, e.g., if this information table stores evaluations of test objects (for which decisions are unknown).
 	 * 
 	 * @return array of decisions concerning subsequent objects of this information table
 	 */
-	public EvaluationField[] getDecisions() {
+	public Decision[] getDecisions() {
 		return this.getDecisions(false);
 	}
 	
 	/**
 	 * Gets array of decisions concerning subsequent objects of this information table; i-th entry stores decision concerning i-th object.
-	 * This array stores evaluations of objects on the only active decision attribute.
-	 * Can be {@code null}, e.g., if this information table stores evaluations of test objects (for which decisions are unknown).
+	 * Result can be {@code null}, e.g., if this information table stores evaluations of test objects (for which decisions are unknown).
 	 * 
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
 	 *        at the cost of returning a read-only array, or should return a safe array (that can be
@@ -347,9 +356,9 @@ public class InformationTable {
 	 * @return array of decisions concerning subsequent objects of this information table
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
-	public EvaluationField[] getDecisions(boolean accelerateByReadOnlyResult) {
-		return accelerateByReadOnlyResult ? this.activeDecisionAttributeFields : 
-			(this.activeDecisionAttributeFields != null ? this.activeDecisionAttributeFields.clone() : null);
+	public Decision[] getDecisions(boolean accelerateByReadOnlyResult) {
+		return accelerateByReadOnlyResult ? this.decisions : 
+			(this.decisions != null ? this.decisions.clone() : null);
 	}
 	
 	/**
@@ -359,9 +368,9 @@ public class InformationTable {
 	 * @return decision available for an object with given index, or {@code null} if there is no such decision
 	 * @throws IndexOutOfBoundsException if given object index does not correspond to any object for which this table stores fields
 	 */
-	public EvaluationField getDecision(int objectIndex) {
-		if (this.activeDecisionAttributeFields != null) {
-			return this.activeDecisionAttributeFields[objectIndex];
+	public Decision getDecision(int objectIndex) {
+		if (this.decisions != null) {
+			return this.decisions[objectIndex];
 		} else {
 			return null;
 		}
@@ -454,10 +463,10 @@ public class InformationTable {
 		if (this.attributeMap[attributeIndex] > 0) { //active condition attribute
 			return this.activeConditionAttributeFields.getField(objectIndex, this.decodeActiveConditionAttributeIndex(this.attributeMap[attributeIndex]));
 		} else if (this.attributeMap[attributeIndex] == 0) { //active decision/identification attribute
-			if (attributeIndex == this.activeDecisionAttributeIndex) {
-				return this.activeDecisionAttributeFields[objectIndex];
-			} else {
+			if (attributeIndex == this.activeIdentificationAttributeIndex) { //active identification attribute
 				return this.activeIdentificationAttributeFields[objectIndex];
+			} else { //active decision attribute
+				return this.decisions[objectIndex].getEvaluation(attributeIndex);
 			}
 		} else { //not active or description attribute
 			return this.notActiveOrDescriptionAttributeFields.getField(objectIndex, this.decodeNotActiveOrDescriptionAttributeIndex(this.attributeMap[attributeIndex]));
@@ -569,11 +578,11 @@ public class InformationTable {
 			}
 		}
 		
-		EvaluationField[] newActiveDecisionAttributeFields = null;
-		if (this.activeDecisionAttributeFields != null) {
-			newActiveDecisionAttributeFields = new EvaluationField[objectIndices.length];
+		Decision[] newDecisions = null;
+		if (this.decisions != null) {
+			newDecisions = new Decision[objectIndices.length];
 			for (int i = 0; i < objectIndices.length; i++) {
-				newActiveDecisionAttributeFields[i] = this.activeDecisionAttributeFields[objectIndices[i]];
+				newDecisions[i] = this.decisions[objectIndices[i]];
 			}
 		}
 		
@@ -586,7 +595,7 @@ public class InformationTable {
 		}
 		
 		return new InformationTable(this.attributes, newMapper, newActiveConditionAttributeFields, newNotActiveOrDescriptionAttributeFields,
-				newActiveDecisionAttributeFields, this.activeDecisionAttributeIndex, newActiveIdentificationAttributeFields, this.activeIdentificationAttributeIndex, this.attributeMap, accelerateByReadOnlyResult);
+				newDecisions, newActiveIdentificationAttributeFields, this.activeIdentificationAttributeIndex, this.attributeMap, accelerateByReadOnlyResult);
 	}
 	
 	/**
@@ -607,14 +616,14 @@ public class InformationTable {
 		return this.attributes.length;
 	}
 
-	/**
-	 * Gets index of the only active decision attribute used in calculations. If there is no such attribute, returns -1.
-	 * 
-	 * @return index of the only active decision attribute used in calculations, or -1 if there is no such attribute
-	 */
-	public int getActiveDecisionAttributeIndex() {
-		return this.activeDecisionAttributeIndex;
-	}
+//	/**
+//	 * Gets index of the only active decision attribute used in calculations. If there is no such attribute, returns -1.
+//	 * 
+//	 * @return index of the only active decision attribute used in calculations, or -1 if there is no such attribute
+//	 */
+//	public int getActiveDecisionAttributeIndex() {
+//		return this.activeDecisionAttributeIndex;
+//	}
 	
 	/**
 	 * Gets index of the only active identification attribute. If there is no such attribute, returns -1.

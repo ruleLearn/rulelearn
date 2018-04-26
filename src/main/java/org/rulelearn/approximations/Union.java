@@ -16,9 +16,8 @@
 
 package org.rulelearn.approximations;
 
-import org.rulelearn.data.InformationTableWithDecisionClassDistributions;
-import org.rulelearn.types.EvaluationField;
-
+import org.rulelearn.data.Decision;
+import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
@@ -50,7 +49,7 @@ public class Union extends ApproximatedSet {
 	}
 	
 	protected UnionType unionType;
-	protected EvaluationField limitingDecision;
+	protected Decision limitingDecision;
 	protected DominanceBasedRoughSetCalculator roughSetCalculator;
 	
 	/**
@@ -63,13 +62,13 @@ public class Union extends ApproximatedSet {
 	 * Constructs this union.
 	 * 
 	 * @param unionType type of this union; see {@link UnionType}
-	 * @param limitingDecision value of active decision criterion that serves as a limit for this union; e.g., value 3 is a limit for union "at least 3" and "at most 3" 
+	 * @param limitingDecision decision that serves as a limit for this union; e.g., decision "3" is a limit for union "at least 3" and "at most 3" 
 	 * @param informationTable information table with considered objects, some of which belong to this union
 	 * @param roughSetCalculator object capable of calculating lower/upper approximation of this union
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public Union(UnionType unionType, EvaluationField limitingDecision, InformationTableWithDecisionClassDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator) {
+	public Union(UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator) {
 		super(informationTable);
 		
 		//TODO: add validation
@@ -142,7 +141,7 @@ public class Union extends ApproximatedSet {
 	/**
 	 * @return the limitingDecision
 	 */
-	public EvaluationField getLimitingDecision() {
+	public Decision getLimitingDecision() {
 		return limitingDecision;
 	}
 

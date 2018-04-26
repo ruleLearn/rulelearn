@@ -96,7 +96,7 @@ public class VCDominanceBasedRoughSetCalculator implements DominanceBasedRoughSe
 	 */
 	@Override
 	public LowerApproximationAndInconsistentObjects getLowerApproximationAndInconsistentObjects(Union set) {
-		// TODO Auto-generated method stub
+		// TODO: implement
 		return null;
 	}
 

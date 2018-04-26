@@ -259,15 +259,15 @@ class InformationTableTest {
 		int numberOfObjects = newInformationTable.getNumberOfObjects();
 		
 		//check decisions of the new table
-		Field[] expectedDecisions = configuration01.getDecisions(objectIndices);
-		Field[] decisions = newInformationTable.getDecisions(true);
+		Decision[] expectedDecisions = configuration01.getDecisions(objectIndices);
+		Decision[] decisions = newInformationTable.getDecisions(true);
 		
 		for (int i = 0; i < numberOfObjects; i++) {
 			assertEquals(decisions[i], expectedDecisions[i]);
 		}
 		
 		//check decision attribute index of the new table
-		assertEquals(newInformationTable.getActiveDecisionAttributeIndex(), configuration01.getActiveDecisionAttributeIndex());
+//		assertEquals(newInformationTable.getActiveDecisionAttributeIndex(), configuration01.getActiveDecisionAttributeIndex());
 		
 		//check identifiers of the new table
 		Field[] expectedIdentifiers = configuration01.getIdentifiers(objectIndices);
@@ -319,15 +319,15 @@ class InformationTableTest {
 		int numberOfObjects = newInformationTable.getNumberOfObjects();
 		
 		//check decisions of the new table
-		Field[] expectedDecisions = configuration02.getDecisions(objectIndices);
-		Field[] decisions = newInformationTable.getDecisions(true);
+		Decision[] expectedDecisions = configuration02.getDecisions(objectIndices);
+		Decision[] decisions = newInformationTable.getDecisions(true);
 		
 		for (int i = 0; i < numberOfObjects; i++) {
 			assertEquals(decisions[i], expectedDecisions[i]);
 		}
 		
 		//check decision attribute index of the new table
-		assertEquals(newInformationTable.getActiveDecisionAttributeIndex(), configuration02.getActiveDecisionAttributeIndex());
+//		assertEquals(newInformationTable.getActiveDecisionAttributeIndex(), configuration02.getActiveDecisionAttributeIndex());
 		
 		//check identifiers of the new table
 		Field[] expectedIdentifiers = configuration02.getIdentifiers(objectIndices);
@@ -413,23 +413,23 @@ class InformationTableTest {
 		assertEquals(informationTable.getNotActiveOrDescriptionAttributeFields().getNumberOfAttributes(), 5);
 	}
 	
-	/**
-	 * Test for {@link InformationTable#getActiveDecisionAttributeIndex} method}.
-	 */
-	@Test
-	public void testGetActiveDecisionAttributeIndex01() {
-		InformationTable informationTable = configuration01.getInformationTable(false);
-		assertEquals(informationTable.getActiveDecisionAttributeIndex(), configuration01.getActiveDecisionAttributeIndex());
-	}
-	
-	/**
-	 * Test for {@link InformationTable#getActiveDecisionAttributeIndex} method}.
-	 */
-	@Test
-	public void testGetActiveDecisionAttributeIndex02() {
-		InformationTable informationTable = configuration02.getInformationTable(false);
-		assertEquals(informationTable.getActiveDecisionAttributeIndex(), configuration02.getActiveDecisionAttributeIndex());
-	}
+//	/**
+//	 * Test for {@link InformationTable#getActiveDecisionAttributeIndex} method}.
+//	 */
+//	@Test
+//	public void testGetActiveDecisionAttributeIndex01() {
+//		InformationTable informationTable = configuration01.getInformationTable(false);
+//		assertEquals(informationTable.getActiveDecisionAttributeIndex(), configuration01.getActiveDecisionAttributeIndex());
+//	}
+//	
+//	/**
+//	 * Test for {@link InformationTable#getActiveDecisionAttributeIndex} method}.
+//	 */
+//	@Test
+//	public void testGetActiveDecisionAttributeIndex02() {
+//		InformationTable informationTable = configuration02.getInformationTable(false);
+//		assertEquals(informationTable.getActiveDecisionAttributeIndex(), configuration02.getActiveDecisionAttributeIndex());
+//	}
 	
 	/**
 	 * Test for {@link InformationTable#getDecision(int)} method}.
@@ -437,7 +437,7 @@ class InformationTableTest {
 	@Test
 	public void testGetDecision01() {
 		InformationTable informationTable = configuration01.getInformationTable(true);
-		Field[] expectedDecisions = configuration01.getDecisions();
+		Decision[] expectedDecisions = configuration01.getDecisions();
 		int numberOfObjects = informationTable.getNumberOfObjects();
 		
 		for (int i = 0; i < numberOfObjects; i++) {
@@ -451,7 +451,7 @@ class InformationTableTest {
 	@Test
 	public void testGetDecision02() {
 		InformationTable informationTable = configuration02.getInformationTable(true);
-		Field[] expectedDecisions = configuration02.getDecisions();
+		Decision[] expectedDecisions = configuration02.getDecisions();
 		int numberOfObjects = informationTable.getNumberOfObjects();
 		
 		for (int i = 0; i < numberOfObjects; i++) {
@@ -488,8 +488,8 @@ class InformationTableTest {
 	@Test
 	public void testGetDecisions01() {
 		InformationTable informationTable = configuration01.getInformationTable(false);
-		Field[] expectedDecisions = configuration01.getDecisions();
-		Field[] decisions = informationTable.getDecisions(false);
+		Decision[] expectedDecisions = configuration01.getDecisions();
+		Decision[] decisions = informationTable.getDecisions(false);
 		int numberOfObjects = informationTable.getNumberOfObjects();
 		
 		for (int i = 0; i < numberOfObjects; i++) {
@@ -503,8 +503,8 @@ class InformationTableTest {
 	@Test
 	public void testGetDecisions02() {
 		InformationTable informationTable = configuration02.getInformationTable(false);
-		Field[] expectedDecisions = configuration02.getDecisions();
-		Field[] decisions = informationTable.getDecisions(false);
+		Decision[] expectedDecisions = configuration02.getDecisions();
+		Decision[] decisions = informationTable.getDecisions(false);
 		int numberOfObjects = informationTable.getNumberOfObjects();
 		
 		for (int i = 0; i < numberOfObjects; i++) {

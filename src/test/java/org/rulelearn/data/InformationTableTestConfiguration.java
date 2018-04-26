@@ -16,6 +16,7 @@
 
 package org.rulelearn.data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.rulelearn.core.InvalidTypeException;
@@ -41,8 +42,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 public class InformationTableTestConfiguration {
 	protected Attribute[] attributes;
-	protected int activeDecisionAttributeIndex = -1;
+	//protected int activeDecisionAttributeIndex = -1;
 	protected int activeIdentificationAttributeIndex = -1;
+	protected List<Integer> listOfActiveDecisionAttributeIndices;
 	protected List<Field[]> listOfFields;
 	protected int[] allObjectIndices = null;
 	
@@ -121,23 +123,39 @@ public class InformationTableTestConfiguration {
 		return listOfFields;
 	}
 	
+//	/**
+//	 * Sets index of the only active decision attribute (if there is such attribute). Throws {@link InvalidValueException} if there is more than one such attribute.
+//	 * Assumes that {@link #attributes} have been already set.
+//	 * 
+//	 * @throws InvalidValueException if there is more than one active decision attribute
+//	 */
+//	protected void setDecisionAttributeIndex() {
+//		//calculate index of the active decision attribute, and verify if there is only one such attribute
+//		this.activeDecisionAttributeIndex = -1;
+//		for (int i = 0; i < this.attributes.length; i++) {
+//			if (this.attributes[i] instanceof EvaluationAttribute) {
+//				if (this.attributes[i].isActive() && ((EvaluationAttribute)this.attributes[i]).getType() == AttributeType.DECISION) {
+//					if (this.activeDecisionAttributeIndex >= 0) {
+//						throw new InvalidValueException("More than 1 active decision attribute detected.");
+//					} else {
+//						this.activeDecisionAttributeIndex = i;
+//					}
+//				}
+//			}
+//		}
+//	}
+	
 	/**
-	 * Sets index of the only active decision attribute (if there is such attribute). Throws {@link InvalidValueException} if there is more than one such attribute.
+	 * Sets list of indices of active decision attributes.
 	 * Assumes that {@link #attributes} have been already set.
-	 * 
-	 * @throws InvalidValueException if there is more than one active decision attribute
 	 */
-	protected void setDecisionAttributeIndex() {
-		//calculate index of the active decision attribute, and verify if there is only one such attribute
-		this.activeDecisionAttributeIndex = -1;
-		for (int i = 0; i < this.attributes.length; i++) {
-			if (this.attributes[i] instanceof EvaluationAttribute) {
-				if (this.attributes[i].isActive() && ((EvaluationAttribute)this.attributes[i]).getType() == AttributeType.DECISION) {
-					if (this.activeDecisionAttributeIndex >= 0) {
-						throw new InvalidValueException("More than 1 active decision attribute detected.");
-					} else {
-						this.activeDecisionAttributeIndex = i;
-					}
+	protected void setActiveDecisionAttributeIndices() {
+		this.listOfActiveDecisionAttributeIndices = new ArrayList<Integer>();
+		
+		for (int i = 0; i < attributes.length; i++) {
+			if (attributes[i] instanceof EvaluationAttribute) {
+				if (((EvaluationAttribute)attributes[i]).getType() == AttributeType.DECISION && attributes[i].isActive()) {
+					this.listOfActiveDecisionAttributeIndices.add(Integer.valueOf(i));
 				}
 			}
 		}
@@ -176,7 +194,8 @@ public class InformationTableTestConfiguration {
 	 */
 	public InformationTableTestConfiguration(Attribute[] attributes, String[][] fieldsAsText) {
 		this.attributes = attributes.clone();
-		this.setDecisionAttributeIndex();
+//		this.setDecisionAttributeIndex();
+		this.setActiveDecisionAttributeIndices();
 		this.setIdentificationAttributeIndex();
 		this.listOfFields = convertFields(attributes, fieldsAsText);
 	}
@@ -189,6 +208,7 @@ public class InformationTableTestConfiguration {
 	protected int[] getAllObjectIndices() {
 		if (this.allObjectIndices == null) {
 			this.allObjectIndices = new int[this.getNumberOfObjects()];
+			
 			for (int i = 0; i < this.allObjectIndices.length; i++) {
 				this.allObjectIndices[i] = i;
 			}
@@ -282,19 +302,19 @@ public class InformationTableTestConfiguration {
 	}
 	
 	/**
-	 * Gets decisions (active decision attribute values) of objects (rows) with given indices.<br>
+	 * Gets decisions of objects (rows) with given indices.<br>
 	 * <br>
 	 * Wraps {@link #getDecisions(int[])} by first calculating array with ordered indices of all objects (rows),
 	 * and then invoking wrapped method using this array as an input parameter.
 	 * 
 	 * @return see {@link #getDecisions(int[])}
 	 */
-	public EvaluationField[] getDecisions() {
+	public Decision[] getDecisions() {
 		return this.getDecisions(this.getAllObjectIndices());
 	}
 	
 	/**
-	 * Gets decisions (active decision attribute values) of objects (rows) with given indices.
+	 * Gets decisions of objects (rows) with given indices.
 	 * 
 	 * @param objectIndices list of indices of selected rows (only decisions concerning these objects (rows) should be returned)
 	 * @return decisions concerning objects (rows) with given indices or {@code null} if there is no active decision attribute
@@ -302,18 +322,27 @@ public class InformationTableTestConfiguration {
 	 * @throws NullPointerException if objects' indices are {@code null}
 	 * @throws IndexOutOfBoundsException if any of the given object indices is not in the interval [0, {@code this#getNumberOfObjects()})
 	 */
-	public EvaluationField[] getDecisions(int[] objectIndices) {
+	public Decision[] getDecisions(int[] objectIndices) {
 		if (objectIndices == null) {
 			throw new NullPointerException("Objects' indices are null.");
 		}
-		if (this.activeDecisionAttributeIndex < 0) {
+		if (this.listOfActiveDecisionAttributeIndices.size() < 1) { //there are no active decision attributes
 			return null;
 		}
 		
-		EvaluationField[] decisions = new EvaluationField[objectIndices.length];
+		Decision[] decisions = new Decision[objectIndices.length]; //returned array with decisions for subsequent objects
+		
+		int numberOfActiveDecisionAttributes = this.listOfActiveDecisionAttributeIndices.size();
+		
+		EvaluationField[] evaluations = new EvaluationField[numberOfActiveDecisionAttributes]; //content of this array will be overwritten for each object
+		int[] attributeIndices = new int[numberOfActiveDecisionAttributes]; //content of this array will be overwritten for each object
 		
 		for (int i = 0; i < objectIndices.length; i++) {
-			decisions[i] = this.listOfFields.get(objectIndices[i])[this.activeDecisionAttributeIndex].selfClone();
+			for (int j = 0; j < numberOfActiveDecisionAttributes; j++) {
+				evaluations[j] = this.listOfFields.get(objectIndices[i])[this.listOfActiveDecisionAttributeIndices.get(j).intValue()].selfClone();
+				attributeIndices[j] = this.listOfActiveDecisionAttributeIndices.get(j).intValue();
+			}
+			decisions[i] = DecisionFactory.INSTANCE.create(evaluations, attributeIndices);
 		}
 		
 		return decisions;
@@ -375,14 +404,14 @@ public class InformationTableTestConfiguration {
 		return this.listOfFields.size();
 	}
 	
-	/**
-	 * Gets index of the only active decision attribute.
-	 * 
-	 * @return index of the only active decision attribute or -1 if there is no such attribute
-	 */
-	public int getActiveDecisionAttributeIndex() {
-		return this.activeDecisionAttributeIndex;
-	}
+//	/**
+//	 * Gets index of the only active decision attribute.
+//	 * 
+//	 * @return index of the only active decision attribute or -1 if there is no such attribute
+//	 */
+//	public int getActiveDecisionAttributeIndex() {
+//		return this.activeDecisionAttributeIndex;
+//	}
 	
 	/**
 	 * Gets index of the only active identification attribute.
