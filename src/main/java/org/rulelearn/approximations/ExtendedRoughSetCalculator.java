@@ -17,13 +17,22 @@
 package org.rulelearn.approximations;
 
 /**
- * TODO: write javadoc
+ * Extended rough set calculator, capable of calculating both the lower approximation of a set of objects and the set of objects from the information table
+ * that are inconsistent with the objects belonging to that lower approximation.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public interface ExtendedRoughSetCalculator<T extends ApproximatedSet> extends RoughSetCalculator<T> {
 
+	/**
+	 * Gets a compound object containing:<br>
+	 * - the set of indices of objects belonging to the lower approximation of an approximated set, and<br>
+	 * - the set of indices of objects that are inconsistent with the objects belonging to that lower approximation.
+	 * 
+	 * @param set set of objects that is going to be approximated
+	 * @return see {@link LowerApproximationAndInconsistentObjects}
+	 */
 	public abstract LowerApproximationAndInconsistentObjects getLowerApproximationAndInconsistentObjects(T set);	
 
 }
