@@ -29,17 +29,17 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 public abstract class ApproximatedSet {
 	
 	/**
-	 * Set of objects belonging to lower approximation of this approximated set.
+	 * Set of indices of objects belonging to the lower approximation of this approximated set.
 	 */
 	protected IntSortedSet lowerApproximation = null;
 	
 	/**
-	 * Set of objects belonging to upper approximation of this approximated set.
+	 * Set of indices of objects belonging to the upper approximation of this approximated set.
 	 */
 	protected IntSortedSet upperApproximation = null;
 	
 	/**
-	 * Set of objects belonging to boundary of this approximated set.
+	 * Set of indices of objects belonging to the boundary of this approximated set.
 	 */
 	protected IntSortedSet boundary = null;
 	
@@ -49,17 +49,29 @@ public abstract class ApproximatedSet {
 	protected InformationTable informationTable;
 	
 	/**
-	 * Set of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set.
+	 * Set of indices of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set.
 	 */
 	protected IntSet inconsistentObjectsInPositiveRegion = null;
 	
 	/**
-	 * Sorted set with numbers of objects belonging to this set.
+	 * Set of indices of objects belonging to the positive region of this approximated set.
+	 */
+	protected IntSet positiveRegion = null;
+	/**
+	 * Set of indices of objects belonging to the negative region of this approximated set.
+	 */
+	protected IntSet negativeRegion = null;
+	/**
+	 * Set of indices of objects belonging to the boundary region of this approximated set.
+	 */
+	protected IntSet boundaryRegion = null;
+	
+	/**
+	 * Set with indices of objects belonging to this approximated set.
 	 */
 	protected IntSortedSet objects = null;
 	
-	//TODO: add hash set storing objects of this approximated set?
-	//TODO: store regions?
+	//TODO: store regions
 	
 	/**
 	 * Constructs this approximated set.
@@ -80,67 +92,67 @@ public abstract class ApproximatedSet {
 	}
 
 	/**
-	 * Gets objects belonging to this approximated set.
+	 * Gets indices of objects belonging to this approximated set.
 	 * 
-	 * @return objects belonging to this approximated set
+	 * @return indices of objects belonging to this approximated set
 	 */
 	public IntSortedSet getObjects() {
 		return objects;
 	}
 
 	/**
-	 * Gets the lower approximation of this approximated set.
+	 * Gets set of indices of objects belonging to the lower approximation of this approximated set.
 	 * 
-	 * @return the lower approximation of this approximated set
+	 * @return set of indices of objects belonging to the lower approximation of this approximated set
 	 */
 	public abstract IntSortedSet getLowerApproximation();
 	
 	/**
-	 * Gets the upper approximation of this approximated set.
+	 * Gets set of indices of objects belonging to the upper approximation of this approximated set.
 	 * 
-	 * @return the upper approximation of this approximated set
+	 * @return set of indices of objects belonging to the upper approximation of this approximated set
 	 */
 	public abstract IntSortedSet getUpperApproximation();
 	
 	/**
-	 * Gets the boundary of this approximated set.
+	 * Gets set of indices of objects belonging to the boundary of this approximated set.
 	 * 
-	 * @return the boundary of this approximated set
+	 * @return set of indices of objects belonging to the boundary of this approximated set
 	 */
 	public abstract IntSortedSet getBoundary();
 	
 	/**
-	 * Gets the positive region of this approximated set.
+	 * Gets set of indices of objects belonging to the positive region of this approximated set.
 	 * 
-	 * @return the positive region of this approximated set
+	 * @return set of indices of objects belonging to the positive region of this approximated set
 	 */
 	public IntSortedSet getPositiveRegion() {
 		//TODO: implement
-		return null;
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
-	 * Gets the negative region of this approximated set, i.e., the positive region of the complement of this approximated set.
+	 * Gets set of indices of objects belonging to the negative region of this approximated set, i.e., to the positive region of the complement of this approximated set.
 	 * 
-	 * @return the negative region of this approximated set
+	 * @return set of indices of objects belonging to the negative region of this approximated set
 	 */
 	public abstract IntSortedSet getNegativeRegion();
 	
 	/**
-	 * Gets the boundary region of this approximated set, i.e., the set of objects that are neither
+	 * Gets set of indices of objects belonging to the boundary region of this approximated set, i.e., the set of objects that are neither
 	 * in the positive region nor in the negative region of this approximated set.
 	 * 
-	 * @return the boundary region of this approximated set
+	 * @return set of indices of objects belonging to the boundary region of this approximated set
 	 */
 	public IntSortedSet getBoundaryRegion() {
 		//TODO: implement
-		return null;
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
-	 * Gets set of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set.
+	 * Gets the set of indices of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set
 	 *  
-	 * @return set of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set
+	 * @return set of indices of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set
 	 */
 	public IntSet getInconsistentObjectsInPositiveRegion() {
 		return this.inconsistentObjectsInPositiveRegion;
@@ -148,7 +160,7 @@ public abstract class ApproximatedSet {
 	
 	/**
 	 * Gets accuracy of approximation of this set.
-	 * This is the cardinality of lower approximation divided by the cardinality of upper approximation.
+	 * This is the cardinality of the lower approximation divided by the cardinality of the upper approximation.
 	 * 
 	 * @return accuracy of approximation of this set by the set of all active condition attributes of the information table
 	 */
@@ -158,7 +170,7 @@ public abstract class ApproximatedSet {
 	
 	/**
 	 * Gets quality of approximation of this set.
-	 * This is the cardinality of lower approximation divided by the number of all examples belonging to this set.
+	 * This is the cardinality of the lower approximation divided by the number of all objects belonging to this set.
 	 * 
 	 * @return quality of approximation of this set by the set of all active condition attributes of the information table
 	 */
@@ -167,26 +179,24 @@ public abstract class ApproximatedSet {
 	}
 	
 	/**
-	 * Gets number of examples belonging to this approximated set.
+	 * Gets number of objects belonging to this approximated set.
 	 * 
-	 * @return number of examples belonging to this approximated set
+	 * @return number of objects belonging to this approximated set
 	 */
 	public int size() {
 		return this.objects.size();
 	}
 	
 	/**
-	 * Checks if an object with given index, from the information table for which this set has been created,
-	 * belongs to this set.
+	 * Checks if an object with given index, from the information table for which this approximated set has been created,
+	 * belongs to this approximated set.
 	 * 
-	 * @param objectIndex index of an object, concerning information table for which this set has been created
-	 * @return {@code true} if this set contains the objects having given index,
+	 * @param objectIndex index of an object, concerning information table for which this approximated set has been created
+	 * @return {@code true} if this approximated set contains the object having given index,
 	 *         {@code false} otherwise
 	 */
 	public boolean contains(int objectIndex) {
-		//TODO: implement
-		//return examplesSet.contains(Integer.valueOf(objectIndex));
-		return false;
+		return this.objects.contains(objectIndex);
 	}
 	
 }

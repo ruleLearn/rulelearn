@@ -25,8 +25,8 @@ import static org.rulelearn.core.Precondition.notNull;
 
 /**
  * Union of ordered decision classes, i.e., set of objects whose decision class is not worse or not better than given limiting decision class.
- * TODO: write javadoc
- * TODO: neutral objects?
+ * 
+ * TODO: handle neutral objects
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -88,7 +88,7 @@ public class Union extends ApproximatedSet {
 		this.limitingDecision = limitingDecision;
 		this.roughSetCalculator = roughSetCalculator;
 		
-		//TODO: validate presence and preference type of active decision attribute
+		//TODO: validate presence and preference types of active decision attributes (namely, presence of at least one active decision criterion)
 	}
 	
 	/**
@@ -161,6 +161,7 @@ public class Union extends ApproximatedSet {
 
 	/**
 	 * Gets limiting (boundary) decision of this union.
+	 * 
 	 * @return limiting (boundary) decision of this union
 	 */
 	public Decision getLimitingDecision() {
