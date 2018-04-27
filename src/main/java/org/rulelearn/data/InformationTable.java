@@ -155,14 +155,13 @@ public class InformationTable {
 	
 	
 	/**
-	 * Information table constructor. Assumes that the type of fields in i-th column is compatible with the type of attribute at i-th position.
+	 * A wrapper-type constructor, passing arguments to {@link InformationTable#InformationTable(Attribute[], List, boolean)} with the boolean flag set to {@code false}. 
 	 * 
-	 * @param attributes all attributes of constructed information table (identification and evaluation (condition/decision/description) ones, both active and non-active)
-	 * @param listOfFields list of fields of subsequent objects; each array contains subsequent fields of a single object (row) in this information table;
-	 *        it is assumed that each array is of the same length (i.e., the number of fields of each object is the same)
+	 * @param attributes see {@link InformationTable#InformationTable(Attribute[], List, boolean)}
+	 * @param listOfFields see {@link InformationTable#InformationTable(Attribute[], List, boolean)}
 	 * 
-	 * @throws NullPointerException if any of the parameters is {@code null}
-	 * @throws InvalidValueException if there is more than one active identification attribute
+	 * @throws NullPointerException see {@link InformationTable#InformationTable(Attribute[], List, boolean)}
+	 * @throws InvalidValueException see {@link InformationTable#InformationTable(Attribute[], List, boolean)}
 	 */
 	public InformationTable(Attribute[] attributes, List<Field[]> listOfFields) {
 		this(attributes, listOfFields, false);
