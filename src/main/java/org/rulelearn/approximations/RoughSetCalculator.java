@@ -19,12 +19,12 @@ package org.rulelearn.approximations;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
- * TODO: write javadoc
+ * Basic rough set calculator capable of calculating lower/upper approximations and boundaries of an approximated set.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  * 
- * @param<T>
+ * @param<T> type of an approximated set for which this calculator can be applied
  */
 public interface RoughSetCalculator<T extends ApproximatedSet> {
 	

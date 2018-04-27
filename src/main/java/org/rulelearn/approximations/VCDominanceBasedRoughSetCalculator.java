@@ -64,8 +64,8 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	/**
 	 * TODO: add javadoc
 	 * 
-	 * @param lowerApproximationConsistencyMeasure
-	 * @param lowerApproximationConsistencyThreshold
+	 * @param lowerApproximationConsistencyMeasure object consistency measures applied when calculating lower approximation
+	 * @param lowerApproximationConsistencyThreshold threshold for object consistency measures applied when calculating lower approximation
 	 * 
 	 * @throws NullPointerException if lower approximation consistency measure is {@code null}
 	 */
