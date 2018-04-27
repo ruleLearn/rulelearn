@@ -31,35 +31,35 @@ public abstract class Decision {
 	/**
 	 * Checks if this decision is at most as good as the other decision.
 	 * 
-	 * @param decision other decision that this decision is being compared to
+	 * @param otherDecision other decision that this decision is being compared to
 	 * @return {@link TernaryLogicValue#TRUE} if this decision is at most as good as the other decision,
 	 *         {@link TernaryLogicValue#FALSE} if this decision is not at most as good as the other decision,
 	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison
 	 * @throws NullPointerException if the other decision is {@code null}
 	 */
-	public abstract TernaryLogicValue isAtMostAsGoodAs(Decision decision);
+	public abstract TernaryLogicValue isAtMostAsGoodAs(Decision otherDecision);
 	
 	/**
 	 * Checks if this decision is at least as good as the other decision.
 	 * 
-	 * @param decision other decision that this decision is being compared to
+	 * @param otherDecision other decision that this decision is being compared to
 	 * @return {@link TernaryLogicValue#TRUE} if this decision is at least as good as the other decision,
 	 *         {@link TernaryLogicValue#FALSE} if this decision is not at least as good as the other decision,
 	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison
 	 * @throws NullPointerException if the other decision is {@code null}
 	 */
-	public abstract TernaryLogicValue isAtLeastAsGoodAs(Decision decision);
+	public abstract TernaryLogicValue isAtLeastAsGoodAs(Decision otherDecision);
 	
 	/**
 	 * Checks if this decision is equal to the other decision.
 	 * 
-	 * @param decision other decision that this decision is being compared to
+	 * @param otherDecision other decision that this decision is being compared to
 	 * @return {@link TernaryLogicValue#TRUE} if this decision is equal to the other decision,
 	 *         {@link TernaryLogicValue#FALSE} if this decision is not equal to the other decision,
 	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison
 	 * @throws NullPointerException if the other decision is {@code null}
 	 */
-	public abstract TernaryLogicValue isEqualTo(Decision decision);
+	public abstract TernaryLogicValue isEqualTo(Decision otherDecision);
 	
 	/**
 	 * Gets particular evaluation contributing to this decision.
