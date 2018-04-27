@@ -18,9 +18,7 @@ package org.rulelearn.data;
 
 import org.rulelearn.types.EvaluationField;
 import static org.rulelearn.core.Precondition.notNull;
-
 import java.util.Objects;
-
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
@@ -54,49 +52,84 @@ public class SimpleDecision extends Decision {
 	}
 	
 	/**
-	 * Checks if this decision is at most as good as the other decision.
+	 * {@inheritDoc} The other decision is expected to also be a simple decision.
 	 * 
-	 * @param otherDecision other decision that this decision is being compared to
+	 * @param otherDecision {@inheritDoc}
 	 * @return {@link TernaryLogicValue#TRUE} if this decision is at most as good as the other decision
 	 *         {@link TernaryLogicValue#FALSE} if this decision is not at most as good as the other decision
-	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison
-	 * @throws NullPointerException if the other decision is {@code null} 
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison, or other decision concerns a different attribute
+	 * @throws NullPointerException if the other decision is {@code null}
 	 */
 	@Override
 	public TernaryLogicValue isAtMostAsGoodAs(Decision otherDecision) {
 		if (otherDecision instanceof SimpleDecision) {
 			SimpleDecision otherSimpleDecision = (SimpleDecision)otherDecision;
 			
-			return (this.attributeIndex == otherSimpleDecision.attributeIndex) &&
-						(this.evaluation.isAtMostAsGoodAs(otherSimpleDecision.evaluation) == TernaryLogicValue.TRUE)
-					? TernaryLogicValue.TRUE : TernaryLogicValue.FALSE;
+			if (this.attributeIndex == otherSimpleDecision.attributeIndex) {
+				return (this.evaluation.isAtMostAsGoodAs(otherSimpleDecision.evaluation) == TernaryLogicValue.TRUE) ?
+						TernaryLogicValue.TRUE :
+						TernaryLogicValue.FALSE;
+			} else {
+				return TernaryLogicValue.UNCOMPARABLE;
+			}
+			
 		} else {
 			return TernaryLogicValue.UNCOMPARABLE;
 		}
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * {@inheritDoc} The other decision is expected to also be a simple decision.
 	 * 
-	 * @param decision {@inheritDoc}
-	 * @return {@inheritDoc}
+	 * @param otherDecision {@inheritDoc}
+	 * @return {@link TernaryLogicValue#TRUE} if this decision is at least as good as the other decision
+	 *         {@link TernaryLogicValue#FALSE} if this decision is not at least as good as the other decision
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison, or other decision concerns a different attribute
+	 * @throws NullPointerException if the other decision is {@code null}
 	 */
 	@Override
-	public TernaryLogicValue isAtLeastAsGoodAs(Decision decision) {
-		// TODO: implement
-		throw new UnsupportedOperationException("Not implemented yet!");
+	public TernaryLogicValue isAtLeastAsGoodAs(Decision otherDecision) {
+		if (otherDecision instanceof SimpleDecision) {
+			SimpleDecision otherSimpleDecision = (SimpleDecision)otherDecision;
+			
+			if (this.attributeIndex == otherSimpleDecision.attributeIndex) {
+				return (this.evaluation.isAtLeastAsGoodAs(otherSimpleDecision.evaluation) == TernaryLogicValue.TRUE) ?
+						TernaryLogicValue.TRUE :
+						TernaryLogicValue.FALSE;
+			} else {
+				return TernaryLogicValue.UNCOMPARABLE;
+			}
+			
+		} else {
+			return TernaryLogicValue.UNCOMPARABLE;
+		}
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * {@inheritDoc} The other decision is expected to also be a simple decision.
 	 * 
-	 * @param decision {@inheritDoc}
-	 * @return {@inheritDoc}
+	 * @param decision other decision that this decision is being compared to
+	 * @return {@link TernaryLogicValue#TRUE} if this decision is equal to the other decision,
+	 *         {@link TernaryLogicValue#FALSE} if this decision is not equal to the other decision,
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison, or other decision concerns a different attribute
+	 * @throws NullPointerException if the other decision is {@code null}
 	 */
 	@Override
-	public TernaryLogicValue isEqualTo(Decision decision) {
-		// TODO: implement
-		throw new UnsupportedOperationException("Not implemented yet!");
+	public TernaryLogicValue isEqualTo(Decision otherDecision) {
+		if (otherDecision instanceof SimpleDecision) {
+			SimpleDecision otherSimpleDecision = (SimpleDecision)otherDecision;
+			
+			if (this.attributeIndex == otherSimpleDecision.attributeIndex) {
+				return (this.evaluation.isEqualTo(otherSimpleDecision.evaluation) == TernaryLogicValue.TRUE) ?
+						TernaryLogicValue.TRUE :
+						TernaryLogicValue.FALSE;
+			} else {
+				return TernaryLogicValue.UNCOMPARABLE;
+			}
+			
+		} else {
+			return TernaryLogicValue.UNCOMPARABLE;
+		}
 	}
 	
 	/**
