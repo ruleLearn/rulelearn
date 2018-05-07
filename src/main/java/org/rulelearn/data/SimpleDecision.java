@@ -17,6 +17,10 @@
 package org.rulelearn.data;
 
 import org.rulelearn.types.EvaluationField;
+
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 import static org.rulelearn.core.Precondition.notNull;
 import java.util.Objects;
 import java.util.function.BiPredicate;
@@ -148,6 +152,17 @@ public class SimpleDecision extends Decision {
 	@Override
 	public int getNumberOfEvaluations() {
 		return 1;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IntSet getAttributeIndices() {
+		IntSet indexSet = new IntArraySet(1);
+		indexSet.add(this.attributeIndex);
+		
+		return indexSet;
 	}
 
 	/**

@@ -17,8 +17,10 @@
 package org.rulelearn.approximations;
 
 import org.rulelearn.data.InformationTable;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
+import static org.rulelearn.core.Precondition.notNull;
 
 /**
  * Top level class for all sets of objects that can be approximated using the rough set concept.
@@ -49,12 +51,19 @@ public abstract class ApproximatedSet {
 	protected InformationTable informationTable;
 	
 	/**
+	 * Rough set calculator used to calculate approximations and boundary of this set.
+	 */
+	protected RoughSetCalculator<? extends ApproximatedSet> roughSetCalculator;
+	
+	/**
 	 * Set of indices of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set.
 	 */
 	protected IntSet inconsistentObjectsInPositiveRegion = null;
 	
 	/**
 	 * Set of indices of objects belonging to the positive region of this approximated set.
+	 * This region is composed of objects belonging to the lower approximation of this set plus
+	 * objects from the complement of this set which are inconsistent with the objects from the lower approximation.
 	 */
 	protected IntSet positiveRegion = null;
 	/**
@@ -71,15 +80,17 @@ public abstract class ApproximatedSet {
 	 */
 	protected IntSortedSet objects = null;
 	
-	//TODO: store regions
-	
 	/**
 	 * Constructs this approximated set.
 	 * 
 	 * @param informationTable information table containing, among other objects, the objects belonging to this approximated set
+	 * @param roughSetCalculator rough set calculator used to calculate approximations and boundary of this set
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public ApproximatedSet(InformationTable informationTable) {
-		this.informationTable = informationTable;
+	public ApproximatedSet(InformationTable informationTable, RoughSetCalculator<? extends ApproximatedSet> roughSetCalculator) {
+		this.informationTable = notNull(informationTable, "Information table for constructed approximated set is null.");
+		this.roughSetCalculator = notNull(roughSetCalculator, "Rough set calculator for constructed approximated set is null.");
 	}
 	
 	/**
@@ -123,12 +134,23 @@ public abstract class ApproximatedSet {
 	
 	/**
 	 * Gets set of indices of objects belonging to the positive region of this approximated set.
+	 * This region is composed of objects belonging to the lower approximation of this set plus
+	 * objects from the complement of this set which are inconsistent with the objects from the lower approximation. 
 	 * 
 	 * @return set of indices of objects belonging to the positive region of this approximated set
 	 */
-	public IntSortedSet getPositiveRegion() {
-		//TODO: implement
-		throw new UnsupportedOperationException();
+	public IntSet getPositiveRegion() {
+		if (this.positiveRegion == null) { //positive region not calculated yet
+			IntSortedSet lowerApproximation = getLowerApproximation();
+			IntSet inconsistentObjectsInPositiveRegion = getInconsistentObjectsInPositiveRegion();
+			
+			this.positiveRegion = new IntOpenHashSet(lowerApproximation.size() + inconsistentObjectsInPositiveRegion.size());
+			
+			this.positiveRegion.addAll(lowerApproximation);
+			this.positiveRegion.addAll(inconsistentObjectsInPositiveRegion);
+		}
+		
+		return this.positiveRegion;
 	}
 	
 	/**
@@ -136,7 +158,7 @@ public abstract class ApproximatedSet {
 	 * 
 	 * @return set of indices of objects belonging to the negative region of this approximated set
 	 */
-	public abstract IntSortedSet getNegativeRegion();
+	public abstract IntSet getNegativeRegion();
 	
 	/**
 	 * Gets set of indices of objects belonging to the boundary region of this approximated set, i.e., the set of objects that are neither
@@ -144,9 +166,22 @@ public abstract class ApproximatedSet {
 	 * 
 	 * @return set of indices of objects belonging to the boundary region of this approximated set
 	 */
-	public IntSortedSet getBoundaryRegion() {
-		//TODO: implement
-		throw new UnsupportedOperationException();
+	public IntSet getBoundaryRegion() {
+		if (this.boundaryRegion == null) { //boundary region not calculated yet
+			IntSet positiveRegion = this.getPositiveRegion();
+			IntSet negativeRegion = this.getNegativeRegion();
+			
+			int objectsCount = this.informationTable.getNumberOfObjects();
+			this.boundaryRegion = new IntOpenHashSet(objectsCount - positiveRegion.size() - negativeRegion.size());
+			
+			for (int i = 0; i < objectsCount; i++) {
+				if (!positiveRegion.contains(i) && !negativeRegion.contains(i)) {
+					this.boundaryRegion.add(i);
+				}
+			}
+		}
+		
+		return this.boundaryRegion;
 	}
 	
 	/**

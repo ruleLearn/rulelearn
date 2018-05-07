@@ -440,6 +440,18 @@ public class InformationTable {
 	}
 	
 	/**
+	 * Gets attribute with given index.
+	 * 
+	 * @param attributeIndex index of an attribute of this information table
+	 * @return the attribute of this information table having given index
+	 * 
+	 * @throws IndexOutOfBoundsException if given attribute index does not correspond to any attribute for which this table stores fields 
+	 */
+	public Attribute getAttribute(int attributeIndex) {
+		return this.attributes[attributeIndex];
+	}
+	
+	/**
 	 * Gets mapper that maps indices of objects stored in this information table to their globally unique ids.
 	 * 
 	 * @return mapper that maps indices of objects stored in this information table to their globally unique ids

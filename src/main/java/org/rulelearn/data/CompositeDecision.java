@@ -22,6 +22,8 @@ import java.util.function.BiPredicate;
 import org.rulelearn.types.EvaluationField;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.TernaryLogicValue;
 
@@ -185,6 +187,14 @@ public class CompositeDecision extends Decision {
 	public int getNumberOfEvaluations() {
 		return attributeIndex2EvaluationMap.size();
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IntSet getAttributeIndices() {
+		return this.attributeIndex2EvaluationMap.keySet();
+	}	
 
 	/**
 	 * {@inheritDoc}
@@ -208,5 +218,5 @@ public class CompositeDecision extends Decision {
 	public int hashCode() {
 		return Objects.hash(this.getClass(), attributeIndex2EvaluationMap);
 	}
-
+	
 }

@@ -18,8 +18,16 @@ package org.rulelearn.approximations;
 
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.TernaryLogicValue;
+import org.rulelearn.data.Attribute;
+import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.Decision;
+import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
+
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import static org.rulelearn.core.Precondition.notNull;
 
@@ -58,10 +66,6 @@ public class Union extends ApproximatedSet {
 	 * Limiting (boundary) decision of this union.
 	 */
 	protected Decision limitingDecision;
-	/**
-	 * Dominance-based rough set calculator used to calculate approximations and boundary of this union.
-	 */
-	protected DominanceBasedRoughSetCalculator roughSetCalculator;
 	
 	/**
 	 * Reference to opposite union of decision classes that complements this union w.r.t. set of all objects U. This reference is useful when calculating the upper approximation of this union
@@ -70,25 +74,85 @@ public class Union extends ApproximatedSet {
 	protected Union complementaryUnion = null;
 	
 	/**
-	 * Constructs this union.
+	 * Constructs union of ordered decision classes of given type (at least or at most), using given limiting decision (concerning the least or the most preferred decision class). Calculates objects
+	 * belonging to this union. Stores given information table and rough set calculator.
 	 * 
 	 * @param unionType type of this union; see {@link UnionType}
 	 * @param limitingDecision decision that serves as a limit for this union; e.g., decision "3" is a limit for union "at least 3" and "at most 3" 
 	 * @param informationTable information table with considered objects, some of which belong to this union
-	 * @param roughSetCalculator object capable of calculating lower/upper approximation of this union
+	 * @param roughSetCalculator dominance-based rough set calculator used to calculate approximations and boundary of this union
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws InvalidValueException if any of the attributes contributing to given limiting decision is not an evaluation attribute
+	 * @throws InvalidValueException if any of the attributes contributing to given limiting decision is not an active decision attribute
+	 * @throws InvalidValueException if none of the attributes contributing to given limiting decision is ordinal
 	 */
 	public Union(UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator) {
-		super(informationTable);
+		super(informationTable, roughSetCalculator);
 		
-		//TODO: add validation
+		this.unionType = notNull(unionType, "Union type is null.");
+		this.limitingDecision = notNull(limitingDecision, "Limiting decision is null.");
 		
-		this.unionType = unionType;
-		this.limitingDecision = limitingDecision;
-		this.roughSetCalculator = roughSetCalculator;
+		IntSet attributeIndices = this.limitingDecision.getAttributeIndices();
+		IntIterator attributeIndicesIterator  = attributeIndices.iterator();
+		int attributeIndex;
+		Attribute attribute;
+		EvaluationAttribute evaluationAttribute;
 		
-		//TODO: validate presence and preference types of active decision attributes (namely, presence of at least one active decision criterion)
+		boolean activeDecisionCriterionFound = false;
+		
+		//check attributes contributing to the limiting decision
+		while (attributeIndicesIterator.hasNext()) {
+			attributeIndex = attributeIndicesIterator.nextInt();
+			attribute = this.informationTable.getAttribute(attributeIndex);
+			
+			if (attribute instanceof EvaluationAttribute) {
+				evaluationAttribute = (EvaluationAttribute) attribute;
+				if (evaluationAttribute.isActive() && evaluationAttribute.getType() == AttributeType.DECISION) { //active decision attribute
+					if (evaluationAttribute.getPreferenceType() != AttributePreferenceType.NONE) { //gain/cost-type attribute
+						activeDecisionCriterionFound = true;
+						break;
+					}
+				} else {
+					throw new InvalidValueException("Attribute no. "+attributeIndex+" contributing to union's limiting decision is not an active decision attribute.");
+				}
+			} else {
+				throw new InvalidValueException("Attribute no. "+attributeIndex+" contributing to union's limiting decision is not an evaluation attribute.");
+			}
+		} //while
+		
+		if (!activeDecisionCriterionFound) {
+			throw new InvalidValueException("Cannot create union of ordered decision classes - none of the attributes contributing to union's limiting decision is ordinal.");
+		}
+		
+		this.findObjects();
+	}
+	
+	/**
+	 * Finds objects belonging to this union. Assumes that information table and limiting decision have already been set.
+	 */
+	protected void findObjects() {
+		this.objects = new IntLinkedOpenHashSet(); //TODO: estimate hash set capacity using distribution of decisions?
+		int objectsCount = this.informationTable.getNumberOfObjects();
+		
+		switch (this.unionType) { //discern union type at the beginning of search to increase time efficiency
+		case AT_LEAST:
+			for (int i = 0; i < objectsCount; i++) {
+				if (this.limitingDecision.isAtMostAsGoodAs(this.informationTable.getDecision(i)) == TernaryLogicValue.TRUE) {
+					this.objects.add(i);
+				}
+			}
+			break;
+		case AT_MOST:
+			for (int i = 0; i < objectsCount; i++) {
+				if (this.limitingDecision.isAtLeastAsGoodAs(this.informationTable.getDecision(i)) == TernaryLogicValue.TRUE) {
+					this.objects.add(i);
+				}
+			}
+			break;
+		default:
+			throw new InvalidValueException("Unexpected union type."); //this should not happen
+		}
 	}
 	
 	/**
@@ -174,7 +238,7 @@ public class Union extends ApproximatedSet {
 	 * @return the dominance-based rough set calculator used to calculate approximations and boundary of this union
 	 */
 	public DominanceBasedRoughSetCalculator getRoughSetCalculator() {
-		return roughSetCalculator;
+		return (DominanceBasedRoughSetCalculator)roughSetCalculator;
 	}
 
 	/**

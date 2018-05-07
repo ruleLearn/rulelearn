@@ -19,6 +19,8 @@ package org.rulelearn.data;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.EvaluationField;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 /**
  * Decision reflecting a single object from an information table. It may relate to an {@link EvaluationField} evaluation of this object on the only active decision attribute,
  * or to an ordered set of {@link EvaluationField} evaluations of this object on subsequent active decision attributes. Each such evaluation contributes to this decision.
@@ -76,6 +78,13 @@ public abstract class Decision {
 	 * @return number of evaluations on active decision attributes contributing to this decision
 	 */
 	public abstract int getNumberOfEvaluations();
+	
+	/**
+	 * Gets set of indices of active decision attributes contributing to this decision.
+	 * 
+	 * @return set of indices of active decision attributes contributing to this decision
+	 */
+	public abstract IntSet getAttributeIndices();
 	
 	/**
 	 * Tells if this decision is equal to the other object.
