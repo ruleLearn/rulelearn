@@ -142,7 +142,8 @@ public abstract class ApproximatedSet {
 	public IntSet getPositiveRegion() {
 		if (this.positiveRegion == null) { //positive region not calculated yet
 			IntSortedSet lowerApproximation = getLowerApproximation();
-			IntSet inconsistentObjectsInPositiveRegion = getInconsistentObjectsInPositiveRegion();
+			// TODO what if null?
+			IntSet inconsistentObjectsInPositiveRegion = this.getInconsistentObjectsInPositiveRegion();
 			
 			this.positiveRegion = new IntOpenHashSet(lowerApproximation.size() + inconsistentObjectsInPositiveRegion.size());
 			
