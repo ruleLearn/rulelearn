@@ -28,19 +28,10 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBasedRoughSetCalculator {
 
 	/* (non-Javadoc)
-	 * @see org.rulelearn.approximations.RoughSetCalculator#getLowerApproximation(org.rulelearn.approximations.ApproximatedSet)
-	 */
-	@Override
-	public IntSortedSet getLowerApproximation(Union set) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.rulelearn.approximations.RoughSetCalculator#getUpperApproximation(org.rulelearn.approximations.ApproximatedSet)
 	 */
 	@Override
-	public IntSortedSet getUpperApproximation(Union set) {
+	public IntSortedSet calculateUpperApproximation(Union set) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -49,7 +40,13 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 	 * @see org.rulelearn.approximations.RoughSetCalculator#getBoundary(org.rulelearn.approximations.ApproximatedSet)
 	 */
 	@Override
-	public IntSortedSet getBoundary(Union set) {
+	public IntSortedSet calculateBoundary(Union set) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PositiveRegion calculateLowerApproximation(Union set) {
 		// TODO Auto-generated method stub
 		return null;
 	}

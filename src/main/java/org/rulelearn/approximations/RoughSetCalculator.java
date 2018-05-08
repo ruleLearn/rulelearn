@@ -19,7 +19,7 @@ package org.rulelearn.approximations;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
- * Basic rough set calculator capable of calculating lower/upper approximation and boundary of an approximated set.
+ * Rough set calculator capable of calculating lower/upper approximation and boundary of an approximated set.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -29,12 +29,12 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 public interface RoughSetCalculator<T extends ApproximatedSet> {
 	
 	/**
-	 * Calculates the lower approximation of the given set.
+	 * Calculates the lower approximation of the given set. TODO
 	 * 
 	 * @param set set of objects that is going to be approximated
-	 * @return set if indices of objects belonging to the lower approximation of the given set
+	 * @return see {@link PositiveRegion}
 	 */
-	public abstract IntSortedSet getLowerApproximation(T set);
+	public abstract PositiveRegion calculateLowerApproximation(T set);
 	
 	/**
 	 * Calculates the upper approximation of the given set.
@@ -42,7 +42,7 @@ public interface RoughSetCalculator<T extends ApproximatedSet> {
 	 * @param set set of objects that is going to be approximated
 	 * @return set if indices of objects belonging to the upper approximation of the given set
 	 */
-	public abstract IntSortedSet getUpperApproximation(T set);
+	public abstract IntSortedSet calculateUpperApproximation(T set);
 	
 	/**
 	 * Calculates the boundary of the given set.
@@ -50,6 +50,6 @@ public interface RoughSetCalculator<T extends ApproximatedSet> {
 	 * @param set set of objects that is going to be approximated
 	 * @return set if indices of objects belonging to the boundary of the given set
 	 */
-	public abstract IntSortedSet getBoundary(T set);
+	public abstract IntSortedSet calculateBoundary(T set);
 	
 }

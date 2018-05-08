@@ -82,19 +82,13 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	}
 
 	@Override
-	public IntSortedSet getLowerApproximation(Union union) {
+	public IntSortedSet calculateUpperApproximation(Union union) {
 		// TODO: implement
 		return null;
 	}
 
 	@Override
-	public IntSortedSet getUpperApproximation(Union union) {
-		// TODO: implement
-		return null;
-	}
-
-	@Override
-	public IntSortedSet getBoundary(Union union) {
+	public IntSortedSet calculateBoundary(Union union) {
 		// TODO: implement
 		return null;
 	}
@@ -103,7 +97,7 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	 * @see org.rulelearn.approximations.ExtendedRoughSetCalculator#getLowerApproximationAndInconsistentObjects(org.rulelearn.approximations.ApproximatedSet)
 	 */
 	@Override
-	public LowerApproximationAndInconsistentObjects getLowerApproximationAndInconsistentObjects(Union set) {
+	public PositiveRegion calculateLowerApproximation(Union set) {
 		// TODO: implement
 		return null;
 	}
