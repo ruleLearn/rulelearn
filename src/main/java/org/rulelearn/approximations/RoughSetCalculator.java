@@ -29,10 +29,11 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 public interface RoughSetCalculator<T extends ApproximatedSet> {
 	
 	/**
-	 * Calculates the lower approximation of the given set. TODO
+	 * Calculates lower approximation of the given set, and returns positive region of that set encompassing calculated lower approximation.
+	 * See {@link PositiveRegion}.
 	 * 
 	 * @param set set of objects that is going to be approximated
-	 * @return see {@link PositiveRegion}
+	 * @return positive region of the given set encompassing calculated lower approximation of that set
 	 */
 	public abstract PositiveRegion calculateLowerApproximation(T set);
 	
@@ -40,7 +41,7 @@ public interface RoughSetCalculator<T extends ApproximatedSet> {
 	 * Calculates the upper approximation of the given set.
 	 * 
 	 * @param set set of objects that is going to be approximated
-	 * @return set if indices of objects belonging to the upper approximation of the given set
+	 * @return set of indices of objects belonging to the upper approximation of the given set
 	 */
 	public abstract IntSortedSet calculateUpperApproximation(T set);
 	
@@ -48,7 +49,7 @@ public interface RoughSetCalculator<T extends ApproximatedSet> {
 	 * Calculates the boundary of the given set.
 	 * 
 	 * @param set set of objects that is going to be approximated
-	 * @return set if indices of objects belonging to the boundary of the given set
+	 * @return set of indices of objects belonging to the boundary of the given set
 	 */
 	public abstract IntSortedSet calculateBoundary(T set);
 	

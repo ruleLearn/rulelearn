@@ -17,21 +17,26 @@
 package org.rulelearn.approximations;
 
 import static org.rulelearn.core.Precondition.notNull;
+import org.rulelearn.data.InformationTable;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
- * TODO: verify javadoc
+ * Positive region of an {@link ApproximatedSet}, grouping indices of two sets of objects from an {@link InformationTable}:<br>
+ * (1) a set of (sufficiently) consistent objects belonging to the lower approximation of the approximated set,<br>
+ * (2) a set of objects that do not belong to set (1), but are present in so-called granules (indiscernibility classes or dominance cones) of the objects from set (1).<br>
+ * The objects from set (2) are found during calculation of the objects from set (1).<br>
+ * <br>
+ * E.g., when using an indiscernibility-based rough set approach (IRSA), if an object x assigned to decision class X_i belongs to the lower approximation of that class,
+ * and there is an object y, assigned to a class different than X_i, such that x is indiscernible with y (i.e., y belongs to indiscernibility class of object x), then y would be in set (2).
+ * Moreover, when using a dominance-based rough set approach (DRSA), if an object x assigned to decision class X_i belongs to the lower approximation of a union of ordered decision classes
+ * "class X_i or better", and there is an object y, assigned to a class worse than X_i (i.e., not belonging to the considered union), such that x is dominated by y,
+ * (i.e., y belongs to inverse dominance cone of object x), then y would be in set (2).<br>
+ * <br>
+ * The concept of a positive region was considered in:<br>
+ * Błaszczyński, J., Słowiński, R., Szeląg, M., Sequential Covering Rule Induction Algorithm for Variable Consistency Rough Set Approaches. Information Sciences, 181, 2011, pp. 987-1002 - see Eq. (10).
  * 
- * Compound object, grouping indices of two sets of objects:<br>
- * - a set of (sufficiently) consistent objects belonging to the lower approximation of some approximated set,<br>
- * - a set of objects that are inconsistent with the objects belonging to that lower approximation.<br>
- * The latter set of objects contains objects that do not belong to the approximated set, but are:<br>
- * - indiscernible with at least one object from the lower approximation of approximated decision class, or<br>
- * - fall into a proper-type dominance cone of some object from the lower approximation of approximated union of ordered decision classes (where a proper-type dominance cone is understood as a positive
- * dominance cone when approximating an upward union of classes, or as a negative dominance cone, when approximating a downward union of classes).
- *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
@@ -48,7 +53,7 @@ public class PositiveRegion {
 	protected IntSortedSet lowerApproximation = null;
 
 	/**
-	 * Set of indices of objects from the information table that belong to this positive region but not to the lower approximation.
+	 * Set of indices of objects from an information table that belong to this positive region but not to the lower approximation.
 	 */
 	protected IntSet lowerApproximationComplement;
 	

@@ -24,7 +24,6 @@ import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
-
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -253,7 +252,7 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * Tests if this union is compatible with given decision. In case of an upward union, tests if limiting decision of this union is at most as good as the given decision.
+	 * Tests if this union is concordant with given decision. In case of an upward union, tests if limiting decision of this union is at most as good as the given decision.
 	 * In case of a downward union, tests if limiting decision of this union is at least as good as the given decision.
 	 * 
 	 * @param decision decision that limiting decision of this union is being compared with
@@ -261,7 +260,7 @@ public class Union extends ApproximatedSet {
 	 * 
 	 * @throws NullPointerException if given decision is {@code null}
 	 */
-	public boolean isCompatibleWithDecision(Decision decision) {
+	public boolean isConcordantWithDecision(Decision decision) {
 		notNull(decision, "Decision tested for compatibility with union is null.");
 		
 		switch (this.unionType) {
@@ -272,6 +271,15 @@ public class Union extends ApproximatedSet {
 		default:
 			throw new InvalidValueException("Unexpected union type."); //this should not happen
 		}
+	}
+	
+	/**
+	 * Gets the information table for which this approximated set was defined.
+	 * 
+	 * @return the information table for which this approximated set was defined
+	 */
+	public InformationTableWithDecisionDistributions getInformationTable() {
+		return (InformationTableWithDecisionDistributions)informationTable;
 	}
 	
 	//TODO: implement further methods
