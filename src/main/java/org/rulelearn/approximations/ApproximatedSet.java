@@ -76,9 +76,15 @@ public abstract class ApproximatedSet {
 	protected IntSet boundaryRegion = null;
 	
 	/**
-	 * Set with indices of objects belonging to this approximated set.
+	 * Set with indices of objects belonging to this approximated set (so-called positive objects).
 	 */
 	protected IntSortedSet objects = null;
+	
+	/**
+	 * Set with indices of objects neither belonging to this approximated set nor to its complement (so-called neutral objects).
+	 * If the concept of neutral objects does not apply to this approximated set, should be {@code null}.
+	 */
+	protected IntSortedSet neutralObjects = null;
 	
 	/**
 	 * Constructs this approximated set.
@@ -103,12 +109,22 @@ public abstract class ApproximatedSet {
 	}
 
 	/**
-	 * Gets indices of objects belonging to this approximated set.
+	 * Gets indices of objects belonging to this approximated set (so-called positive objects).
 	 * 
 	 * @return indices of objects belonging to this approximated set
 	 */
 	public IntSortedSet getObjects() {
 		return objects;
+	}
+	
+	/**
+	 * Gets indices of objects neither belonging to this approximated set nor to its complement (so-called neutral objects).
+	 * If the concept of neutral objects does not apply to this approximated set, returns {@code null}.
+	 * 
+	 * @return indices of objects neither belonging to this approximated set nor to its complement
+	 */
+	public IntSortedSet getNeutralObjects() {
+		return neutralObjects;
 	}
 
 	/**

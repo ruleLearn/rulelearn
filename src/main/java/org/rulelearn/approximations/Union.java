@@ -155,6 +155,14 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
+	 * Finds indices of objects neither belonging to this union nor to its complement (so-called neutral objects).
+	 * Assumes that information table and limiting decision have already been set.
+	 */
+	protected void findNeutralObjects() {
+		//TODO: implements
+	}
+	
+	/**
 	 * Registers opposite union of decision classes that complements this union w.r.t. set of all objects U.
 	 * This reference is useful when calculating the upper approximation of this union
 	 * by complementing the lower approximation of the opposite union.
