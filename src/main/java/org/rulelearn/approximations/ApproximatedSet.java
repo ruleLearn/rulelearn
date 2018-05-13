@@ -81,12 +81,6 @@ public abstract class ApproximatedSet {
 	protected IntSortedSet objects = null;
 	
 	/**
-	 * Set with indices of objects neither belonging to this approximated set nor to its complement (so-called neutral objects).
-	 * If the concept of neutral objects does not apply to this approximated set, should be {@code null}.
-	 */
-	protected IntSortedSet neutralObjects = null;
-	
-	/**
 	 * Constructs this approximated set.
 	 * 
 	 * @param informationTable information table containing, among other objects, the objects belonging to this approximated set
@@ -118,14 +112,12 @@ public abstract class ApproximatedSet {
 	}
 	
 	/**
-	 * Gets indices of objects neither belonging to this approximated set nor to its complement (so-called neutral objects).
+	 * Gets indices of objects neither belonging to this approximated set nor to its (specifically defined) complement (so-called neutral objects).
 	 * If the concept of neutral objects does not apply to this approximated set, returns {@code null}.
 	 * 
 	 * @return indices of objects neither belonging to this approximated set nor to its complement
 	 */
-	public IntSortedSet getNeutralObjects() {
-		return neutralObjects;
-	}
+	public abstract IntSortedSet getNeutralObjects();
 
 	/**
 	 * Gets set of indices of objects belonging to the lower approximation of this approximated set.

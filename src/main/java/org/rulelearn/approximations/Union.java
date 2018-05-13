@@ -73,6 +73,11 @@ public class Union extends ApproximatedSet {
 	protected Union complementaryUnion = null;
 	
 	/**
+	 * Set with indices of objects neither belonging to this union nor to its (specifically defined) complement (so-called neutral objects).
+	 */
+	protected IntSortedSet neutralObjects;
+	
+	/**
 	 * Constructs union of ordered decision classes of given type (at least or at most), using given limiting decision (concerning the least or the most preferred decision class). Calculates objects
 	 * belonging to this union. Stores given information table and rough set calculator.
 	 * 
@@ -125,6 +130,7 @@ public class Union extends ApproximatedSet {
 		}
 		
 		this.findObjects();
+		this.findNeutralObjects();
 	}
 	
 	/**
@@ -159,7 +165,7 @@ public class Union extends ApproximatedSet {
 	 * Assumes that information table and limiting decision have already been set.
 	 */
 	protected void findNeutralObjects() {
-		//TODO: implements
+		//TODO: implement
 	}
 	
 	/**
@@ -289,6 +295,15 @@ public class Union extends ApproximatedSet {
 	public InformationTableWithDecisionDistributions getInformationTable() {
 		return (InformationTableWithDecisionDistributions)informationTable;
 	}
+
+	/**
+	 * Gets indices of objects neither belonging to this union nor to its (specifically defined) complement (so-called neutral objects).
+	 * 
+	 * @return indices of objects neither belonging to this union nor to its complement
+	 */
+	@Override
+	public IntSortedSet getNeutralObjects() {
+		return this.neutralObjects;
+	}
 	
-	//TODO: implement further methods
 }
