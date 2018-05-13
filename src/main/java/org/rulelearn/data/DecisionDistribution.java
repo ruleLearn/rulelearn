@@ -19,6 +19,7 @@ package org.rulelearn.data;
 import static org.rulelearn.core.Precondition.notNull;
 
 import org.rulelearn.approximations.Union;
+import org.rulelearn.core.TernaryLogicValue;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -78,7 +79,7 @@ public class DecisionDistribution {
 		boolean concordant = Boolean.FALSE;
 		Decision[] decisions = union.getInformationTable().getDecisions();
 		for (Decision decision : decisions) {
-			if ((union.isConcordantWithDecision(decision)) && (this.decision2CountMap.containsKey(decision))) {
+			if ((union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) && (this.decision2CountMap.containsKey(decision))) {
 				concordant = Boolean.TRUE;
 				break;
 			}
@@ -106,7 +107,7 @@ public class DecisionDistribution {
 		int count = 0;
 		Decision[] decisions = union.getInformationTable().getDecisions();
 		for (Decision decision : decisions) {
-			if ((union.isConcordantWithDecision(decision)) && (this.decision2CountMap.containsKey(decision))) {
+			if ((union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) && (this.decision2CountMap.containsKey(decision))) {
 				count += this.decision2CountMap.getInt(decision);
 			}
 		}

@@ -16,11 +16,13 @@
 
 package org.rulelearn.approximations;
 
+import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import static org.rulelearn.core.Precondition.notNull;
+import org.rulelearn.core.TernaryLogicValue;
 
 /**
  * Top level class for all sets of objects that can be approximated using the rough set concept.
@@ -81,15 +83,22 @@ public abstract class ApproximatedSet {
 	protected IntSortedSet objects = null;
 	
 	/**
+	 * Limiting decision, determining which objects from the information table belong to this set.
+	 */
+	protected Decision limitingDecision;
+	
+	/**
 	 * Constructs this approximated set.
 	 * 
 	 * @param informationTable information table containing, among other objects, the objects belonging to this approximated set
+	 * @param limitingDecision limiting decision, determining which objects from the information table belong to this set
 	 * @param roughSetCalculator rough set calculator used to calculate approximations and boundary of this set
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public ApproximatedSet(InformationTable informationTable, RoughSetCalculator<? extends ApproximatedSet> roughSetCalculator) {
+	public ApproximatedSet(InformationTable informationTable, Decision limitingDecision, RoughSetCalculator<? extends ApproximatedSet> roughSetCalculator) {
 		this.informationTable = notNull(informationTable, "Information table for constructed approximated set is null.");
+		this.limitingDecision = notNull(limitingDecision, "Limiting decision for constructed approximated set is null.");
 		this.roughSetCalculator = notNull(roughSetCalculator, "Rough set calculator for constructed approximated set is null.");
 	}
 	
@@ -112,12 +121,26 @@ public abstract class ApproximatedSet {
 	}
 	
 	/**
-	 * Gets indices of objects neither belonging to this approximated set nor to its (specifically defined) complement (so-called neutral objects).
-	 * If the concept of neutral objects does not apply to this approximated set, returns {@code null}.
+	 * Gets limiting decision of this set, determining which objects from the information table belong to this set.
 	 * 
-	 * @return indices of objects neither belonging to this approximated set nor to its (specifically defined) complement
+	 * @return limiting decision of this set, determining which objects from the information table belong to this set
 	 */
-	public abstract IntSortedSet getNeutralObjects();
+	public Decision getLimitingDecision() {
+		return limitingDecision;
+	}
+	
+	/**
+	 * Gets indices of uncomparable objects from the information table such that this set's limiting decision is uncomparable with their decision.
+	 * The concept of uncomparable objects is important, e.g., in case of multicriteria decision problems,
+	 * when considering unions of ordered decision classes, and multiple decision criteria.
+	 * Then, it may be the case that limiting decision of a union of ordered decision classes is uncomparable with decisions assigned to some objects
+	 * from an {@link InformationTable}.<br>
+	 * <br>
+	 * If the concept of uncomparable objects is meaningless for a particular subtype of this class, then implementing method should return {@code null}.
+	 * 
+	 * @return indices of uncomparable objects from the information table, such that this set's limiting decision is uncomparable with their decision
+	 */
+	public abstract IntSortedSet getUncomparableObjects();
 
 	/**
 	 * Gets set of indices of objects belonging to the lower approximation of this approximated set.
@@ -242,5 +265,17 @@ public abstract class ApproximatedSet {
 	public boolean contains(int objectIndex) {
 		return this.objects.contains(objectIndex);
 	}
+	
+	/**
+	 * Tests if this set is concordant with given decision.
+	 * 
+	 * @param decision decision that limiting decision of this set should be compared with
+	 * @return {@link TernaryLogicValue#TRUE} if this sets' limiting decision is concordant with given decision,
+	 *         {@link TernaryLogicValue#FALSE} if this sets' limiting decision is not concordant with given decision,
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if this sets' limiting decision is uncomparable with given decision
+	 * 
+	 * @throws NullPointerException if given decision is {@code null}
+	 */
+	public abstract TernaryLogicValue isConcordantWithDecision(Decision decision);
 	
 }

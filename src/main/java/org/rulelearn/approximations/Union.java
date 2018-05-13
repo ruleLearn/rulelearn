@@ -33,8 +33,6 @@ import static org.rulelearn.core.Precondition.notNull;
 /**
  * Union of ordered decision classes, i.e., set of objects whose decision class is not worse or not better than given limiting decision class.
  * 
- * TODO: handle neutral objects
- *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
@@ -61,10 +59,6 @@ public class Union extends ApproximatedSet {
 	 * Type of this union.
 	 */
 	protected UnionType unionType;
-	/**
-	 * Limiting (boundary) decision of this union.
-	 */
-	protected Decision limitingDecision;
 	
 	/**
 	 * Reference to opposite union of decision classes that complements this union w.r.t. set of all objects U. This reference is useful when calculating the upper approximation of this union
@@ -73,9 +67,10 @@ public class Union extends ApproximatedSet {
 	protected Union complementaryUnion = null;
 	
 	/**
-	 * Set with indices of objects neither belonging to this union nor to its (specifically defined) complement (so-called neutral objects).
+	 * Set with indices of objects such that this union's limiting decision is uncomparable with their decision.
+	 * Limiting decision is considered to be uncomparable with a particular decision, if it is neither at least as good as nor at most as good as that decision.
 	 */
-	protected IntSortedSet neutralObjects;
+	protected IntSortedSet uncomparableObjects;
 	
 	/**
 	 * Constructs union of ordered decision classes of given type (at least or at most), using given limiting decision (concerning the least or the most preferred decision class). Calculates objects
@@ -92,10 +87,9 @@ public class Union extends ApproximatedSet {
 	 * @throws InvalidValueException if none of the attributes contributing to given limiting decision is ordinal
 	 */
 	public Union(UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator) {
-		super(informationTable, roughSetCalculator);
+		super(informationTable, limitingDecision, roughSetCalculator);
 		
 		this.unionType = notNull(unionType, "Union type is null.");
-		this.limitingDecision = notNull(limitingDecision, "Limiting decision is null.");
 		
 		IntSet attributeIndices = this.limitingDecision.getAttributeIndices();
 		IntIterator attributeIndicesIterator  = attributeIndices.iterator();
@@ -129,45 +123,27 @@ public class Union extends ApproximatedSet {
 			throw new InvalidValueException("Cannot create union of ordered decision classes - none of the attributes contributing to union's limiting decision is ordinal.");
 		}
 		
-		this.findPositiveAndNeutralObjects();
+		this.findPositiveAndUncomparableObjects();
 	}
 	
 	/**
-	 * Finds (positive) objects belonging to this union and (neutral) objects neither belonging to this union nor to its (specifically defined) complement.
+	 * Finds (positive) objects belonging to this union and (uncomparable) objects such that this union's limiting decision is uncomparable with their decision.
 	 * Assumes that information table and limiting decision have already been set.
 	 */
-	protected void findPositiveAndNeutralObjects() {
+	protected void findPositiveAndUncomparableObjects() {
 		this.objects = new IntLinkedOpenHashSet(); //TODO: estimate hash set capacity using distribution of decisions?
-		this.neutralObjects = new IntLinkedOpenHashSet(); //TODO: estimate hash set capacity using distribution of decisions?
+		this.uncomparableObjects = new IntLinkedOpenHashSet(); //TODO: estimate hash set capacity using distribution of decisions?
 		int objectsCount = this.informationTable.getNumberOfObjects();
+		TernaryLogicValue comparisonResult;
 		
-		switch (this.unionType) { //discern union type at the beginning of search to increase time efficiency
-		case AT_LEAST:
-			for (int i = 0; i < objectsCount; i++) {
-				if (this.limitingDecision.isAtMostAsGoodAs(this.informationTable.getDecision(i)) == TernaryLogicValue.TRUE) {
-					this.objects.add(i);
-				} else {
-					//i-th object neither belongs to this union nor to its complement
-					if (this.limitingDecision.isAtLeastAsGoodAs(this.informationTable.getDecision(i)) != TernaryLogicValue.TRUE) {
-						this.neutralObjects.add(i);
-					}
-				}
+		for (int i = 0; i < objectsCount; i++) {
+			comparisonResult = this.isConcordantWithDecision(this.informationTable.getDecision(i));
+			
+			if (comparisonResult == TernaryLogicValue.TRUE) {
+				this.objects.add(i);
+			} else if (comparisonResult == TernaryLogicValue.UNCOMPARABLE) {
+				this.uncomparableObjects.add(i);
 			}
-			break;
-		case AT_MOST:
-			for (int i = 0; i < objectsCount; i++) {
-				if (this.limitingDecision.isAtLeastAsGoodAs(this.informationTable.getDecision(i)) == TernaryLogicValue.TRUE) {
-					this.objects.add(i);
-				} else {
-					//i-th object neither belongs to this union nor to its complement
-					if (this.limitingDecision.isAtMostAsGoodAs(this.informationTable.getDecision(i)) != TernaryLogicValue.TRUE) {
-						this.neutralObjects.add(i);
-					}
-				}
-			}
-			break;
-		default:
-			throw new InvalidValueException("Unexpected union type."); //this should not happen
 		}
 	}
 	
@@ -240,15 +216,6 @@ public class Union extends ApproximatedSet {
 	}
 
 	/**
-	 * Gets limiting (boundary) decision of this union.
-	 * 
-	 * @return limiting (boundary) decision of this union
-	 */
-	public Decision getLimitingDecision() {
-		return limitingDecision;
-	}
-
-	/**
 	 * Gets the dominance-based rough set calculator used to calculate approximations and boundary of this union.
 	 * 
 	 * @return the dominance-based rough set calculator used to calculate approximations and boundary of this union
@@ -269,73 +236,49 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * Tests if this union is concordant with given decision. In case of an upward union, tests if limiting decision of this union
-	 * is at most as good as the given decision.
-	 * In case of a downward union, tests if limiting decision of this union is at least as good as the given decision.
+	 * Tests if this union is concordant with given decision. In case of an upward union, returns:<br>
+	 * - {@link TernaryLogicValue#TRUE} if limiting decision of this union is at most as good as the given decision,<br>
+	 * - {@link TernaryLogicValue#FALSE} if limiting decision of this union	is strictly better than the given decision,<br>
+	 * - {@link TernaryLogicValue#UNCOMPARABLE} otherwise.<br> 
+	 * In case of a downward union, return:<br>
+	 * - {@link TernaryLogicValue#TRUE} if limiting decision of this union is at least as good as the given decision,<br>
+	 * - {@link TernaryLogicValue#FALSE} if limiting decision of this union	is strictly worse than the given decision,<br>
+	 * - {@link TernaryLogicValue#UNCOMPARABLE} otherwise.
 	 * 
-	 * @param decision decision that limiting decision of this union is being compared with
-	 * @return {@code true} if given decision is concordant with this union, {@code false} otherwise
-	 * 
-	 * @throws NullPointerException if given decision is {@code null}
-	 */
-	public boolean isConcordantWithDecision(Decision decision) {
-		notNull(decision, "Decision tested for compatibility with union is null.");
-		
-		switch (this.unionType) {
-		case AT_LEAST:
-			return this.limitingDecision.isAtMostAsGoodAs(decision) == TernaryLogicValue.TRUE;
-		case AT_MOST:
-			return this.limitingDecision.isAtLeastAsGoodAs(decision) == TernaryLogicValue.TRUE;
-		default:
-			throw new InvalidValueException("Unexpected union type."); //this should not happen
-		}
-	}
-	
-	/**
-	 * Tests if this union is incomparable with given decision. This happens if limiting decision of this union
-	 * is neither at least as good as the given decision nor at most as good as given decision.
-	 * 
-	 * @param decision decision that limiting decision of this union is being compared with
-	 * @return {@code true} if given decision is incomparable with this union, {@code false} otherwise
+	 * @param decision decision that limiting decision of this union should be compared with
+	 * @return {@link TernaryLogicValue#TRUE} if this unions' limiting decision is concordant with given decision,
+	 *         {@link TernaryLogicValue#FALSE} if this unions' limiting decision is not concordant with given decision,
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if this unions' limiting decision is uncomparable with given decision
 	 * 
 	 * @throws NullPointerException if given decision is {@code null}
 	 */
-	public boolean isIncomparableWithDecision(Decision decision) {
-		notNull(decision, "Decision tested for incomparability with union is null.");
+	@Override
+	public TernaryLogicValue isConcordantWithDecision(Decision decision) {
+		notNull(decision, "Decision tested for concordance with union is null.");
 		
 		switch (this.unionType) {
 		case AT_LEAST:
-			return this.limitingDecision.isAtMostAsGoodAs(decision) != TernaryLogicValue.TRUE &&
-				this.limitingDecision.isAtLeastAsGoodAs(decision) != TernaryLogicValue.TRUE;
+			if (this.limitingDecision.isAtMostAsGoodAs(decision) == TernaryLogicValue.TRUE) {
+				return TernaryLogicValue.TRUE;
+			} else {
+				//limiting decision is strictly better (as equality was eliminated above)
+				if (this.limitingDecision.isAtLeastAsGoodAs(decision) == TernaryLogicValue.TRUE) {
+					return TernaryLogicValue.FALSE;
+				} else { //union's limiting decision is incomparable with given decision 
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
+			}
 		case AT_MOST:
-			return this.limitingDecision.isAtLeastAsGoodAs(decision) != TernaryLogicValue.TRUE &&
-					this.limitingDecision.isAtMostAsGoodAs(decision) != TernaryLogicValue.TRUE;
-		default:
-			throw new InvalidValueException("Unexpected union type."); //this should not happen
-		}
-	}
-	
-	/**
-	 * Tests if this union is discordant with given decision. In case of an upward union, tests if limiting decision of this union
-	 * is at least as good as the given decision, and not equal to the given decision (so, it is better).
-	 * In case of a downward union, tests if limiting decision of this union is at most as good as the given decision,
-	 * and not equal to the given decision (so, it is worse).
-	 * 
-	 * @param decision decision that limiting decision of this union is being compared with
-	 * @return {@code true} if given decision is discordant with this union, {@code false} otherwise
-	 * 
-	 * @throws NullPointerException if given decision is {@code null}
-	 */
-	public boolean isDiscordantWithDecision(Decision decision) {
-		notNull(decision, "Decision tested for discordance with union is null.");
-		
-		switch (this.unionType) {
-		case AT_LEAST:
-			return this.limitingDecision.isAtLeastAsGoodAs(decision) == TernaryLogicValue.TRUE &&
-					this.limitingDecision.isEqualTo(decision) != TernaryLogicValue.TRUE;
-		case AT_MOST:
-			return this.limitingDecision.isAtMostAsGoodAs(decision) == TernaryLogicValue.TRUE &&
-					this.limitingDecision.isEqualTo(decision) != TernaryLogicValue.TRUE;
+			if (this.limitingDecision.isAtLeastAsGoodAs(decision) == TernaryLogicValue.TRUE) {
+				return TernaryLogicValue.TRUE;
+			} else {
+				//limiting decision is strictly worse (as equality was eliminated above)
+				if (this.limitingDecision.isAtMostAsGoodAs(decision) == TernaryLogicValue.TRUE) {
+					return TernaryLogicValue.FALSE;
+				} else { //union's limiting decision is incomparable with given decision 
+					return TernaryLogicValue.UNCOMPARABLE;
+				}
+			}
 		default:
 			throw new InvalidValueException("Unexpected union type."); //this should not happen
 		}
@@ -351,21 +294,24 @@ public class Union extends ApproximatedSet {
 	}
 
 	/**
-	 * Gets indices of objects neither belonging to this union nor to its (specifically defined) complement (so-called neutral objects).
+	 * Gets indices of objects from the information table such that this union's limiting decision is uncomparable with their decision.
+	 * Limiting decision is considered to be uncomparable with a particular decision, if it is neither at least as good as nor at most as good as that decision.
 	 * 
-	 * @return indices of objects neither belonging to this union nor to its (specifically defined) complement
+	 * @return indices of objects from the information table such that this union's limiting decision is uncomparable with their decision
 	 */
 	@Override
-	public IntSortedSet getNeutralObjects() {
-		return this.neutralObjects;
+	public IntSortedSet getUncomparableObjects() {
+		return this.uncomparableObjects;
 	}
 	
-	public boolean objectIsNeutral(int objectNumber) {
-		return this.neutralObjects.contains(objectNumber);
+	/**
+	 * Tells if this union's limiting decision is uncomparable with decision of a particular object from the information table.
+	 * 
+	 * @param objectNumber index of an object from the information table
+	 * @return {@code true} if this union's limiting decision is uncomparable with decision assigned to the object with given index 
+	 */
+	public boolean objectIsUncomparable(int objectNumber) {
+		return this.uncomparableObjects.contains(objectNumber);
 	}
-	
-	public boolean objectBelongsToUnionComplement(int objectNumber) {
-		return !this.objects.contains(objectNumber) && !this.neutralObjects.contains(objectNumber);
-	}
-	
+
 }
