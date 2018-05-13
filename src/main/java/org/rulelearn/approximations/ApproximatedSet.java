@@ -115,7 +115,7 @@ public abstract class ApproximatedSet {
 	 * Gets indices of objects neither belonging to this approximated set nor to its (specifically defined) complement (so-called neutral objects).
 	 * If the concept of neutral objects does not apply to this approximated set, returns {@code null}.
 	 * 
-	 * @return indices of objects neither belonging to this approximated set nor to its complement
+	 * @return indices of objects neither belonging to this approximated set nor to its (specifically defined) complement
 	 */
 	public abstract IntSortedSet getNeutralObjects();
 

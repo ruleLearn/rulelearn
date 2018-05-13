@@ -129,15 +129,16 @@ public class Union extends ApproximatedSet {
 			throw new InvalidValueException("Cannot create union of ordered decision classes - none of the attributes contributing to union's limiting decision is ordinal.");
 		}
 		
-		this.findObjects();
-		this.findNeutralObjects();
+		this.findPositiveAndNeutralObjects();
 	}
 	
 	/**
-	 * Finds objects belonging to this union. Assumes that information table and limiting decision have already been set.
+	 * Finds (positive) objects belonging to this union and (neutral) objects neither belonging to this union nor to its (specifically defined) complement.
+	 * Assumes that information table and limiting decision have already been set.
 	 */
-	protected void findObjects() {
+	protected void findPositiveAndNeutralObjects() {
 		this.objects = new IntLinkedOpenHashSet(); //TODO: estimate hash set capacity using distribution of decisions?
+		this.neutralObjects = new IntLinkedOpenHashSet(); //TODO: estimate hash set capacity using distribution of decisions?
 		int objectsCount = this.informationTable.getNumberOfObjects();
 		
 		switch (this.unionType) { //discern union type at the beginning of search to increase time efficiency
@@ -145,6 +146,11 @@ public class Union extends ApproximatedSet {
 			for (int i = 0; i < objectsCount; i++) {
 				if (this.limitingDecision.isAtMostAsGoodAs(this.informationTable.getDecision(i)) == TernaryLogicValue.TRUE) {
 					this.objects.add(i);
+				} else {
+					//i-th object neither belongs to this union nor to its complement
+					if (this.limitingDecision.isAtLeastAsGoodAs(this.informationTable.getDecision(i)) != TernaryLogicValue.TRUE) {
+						this.neutralObjects.add(i);
+					}
 				}
 			}
 			break;
@@ -152,20 +158,17 @@ public class Union extends ApproximatedSet {
 			for (int i = 0; i < objectsCount; i++) {
 				if (this.limitingDecision.isAtLeastAsGoodAs(this.informationTable.getDecision(i)) == TernaryLogicValue.TRUE) {
 					this.objects.add(i);
+				} else {
+					//i-th object neither belongs to this union nor to its complement
+					if (this.limitingDecision.isAtMostAsGoodAs(this.informationTable.getDecision(i)) != TernaryLogicValue.TRUE) {
+						this.neutralObjects.add(i);
+					}
 				}
 			}
 			break;
 		default:
 			throw new InvalidValueException("Unexpected union type."); //this should not happen
 		}
-	}
-	
-	/**
-	 * Finds indices of objects neither belonging to this union nor to its complement (so-called neutral objects).
-	 * Assumes that information table and limiting decision have already been set.
-	 */
-	protected void findNeutralObjects() {
-		//TODO: implement
 	}
 	
 	/**
@@ -266,11 +269,12 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * Tests if this union is concordant with given decision. In case of an upward union, tests if limiting decision of this union is at most as good as the given decision.
+	 * Tests if this union is concordant with given decision. In case of an upward union, tests if limiting decision of this union
+	 * is at most as good as the given decision.
 	 * In case of a downward union, tests if limiting decision of this union is at least as good as the given decision.
 	 * 
 	 * @param decision decision that limiting decision of this union is being compared with
-	 * @return {@code true} if given decision is compatible with this union, {@code false} otherwise
+	 * @return {@code true} if given decision is concordant with this union, {@code false} otherwise
 	 * 
 	 * @throws NullPointerException if given decision is {@code null}
 	 */
@@ -288,6 +292,56 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
+	 * Tests if this union is incomparable with given decision. This happens if limiting decision of this union
+	 * is neither at least as good as the given decision nor at most as good as given decision.
+	 * 
+	 * @param decision decision that limiting decision of this union is being compared with
+	 * @return {@code true} if given decision is incomparable with this union, {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given decision is {@code null}
+	 */
+	public boolean isIncomparableWithDecision(Decision decision) {
+		notNull(decision, "Decision tested for incomparability with union is null.");
+		
+		switch (this.unionType) {
+		case AT_LEAST:
+			return this.limitingDecision.isAtMostAsGoodAs(decision) != TernaryLogicValue.TRUE &&
+				this.limitingDecision.isAtLeastAsGoodAs(decision) != TernaryLogicValue.TRUE;
+		case AT_MOST:
+			return this.limitingDecision.isAtLeastAsGoodAs(decision) != TernaryLogicValue.TRUE &&
+					this.limitingDecision.isAtMostAsGoodAs(decision) != TernaryLogicValue.TRUE;
+		default:
+			throw new InvalidValueException("Unexpected union type."); //this should not happen
+		}
+	}
+	
+	/**
+	 * Tests if this union is discordant with given decision. In case of an upward union, tests if limiting decision of this union
+	 * is at least as good as the given decision, and not equal to the given decision (so, it is better).
+	 * In case of a downward union, tests if limiting decision of this union is at most as good as the given decision,
+	 * and not equal to the given decision (so, it is worse).
+	 * 
+	 * @param decision decision that limiting decision of this union is being compared with
+	 * @return {@code true} if given decision is discordant with this union, {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given decision is {@code null}
+	 */
+	public boolean isDiscordantWithDecision(Decision decision) {
+		notNull(decision, "Decision tested for discordance with union is null.");
+		
+		switch (this.unionType) {
+		case AT_LEAST:
+			return this.limitingDecision.isAtLeastAsGoodAs(decision) == TernaryLogicValue.TRUE &&
+					this.limitingDecision.isEqualTo(decision) != TernaryLogicValue.TRUE;
+		case AT_MOST:
+			return this.limitingDecision.isAtMostAsGoodAs(decision) == TernaryLogicValue.TRUE &&
+					this.limitingDecision.isEqualTo(decision) != TernaryLogicValue.TRUE;
+		default:
+			throw new InvalidValueException("Unexpected union type."); //this should not happen
+		}
+	}
+	
+	/**
 	 * Gets the information table for which this approximated set was defined.
 	 * 
 	 * @return the information table for which this approximated set was defined
@@ -299,11 +353,19 @@ public class Union extends ApproximatedSet {
 	/**
 	 * Gets indices of objects neither belonging to this union nor to its (specifically defined) complement (so-called neutral objects).
 	 * 
-	 * @return indices of objects neither belonging to this union nor to its complement
+	 * @return indices of objects neither belonging to this union nor to its (specifically defined) complement
 	 */
 	@Override
 	public IntSortedSet getNeutralObjects() {
 		return this.neutralObjects;
+	}
+	
+	public boolean objectIsNeutral(int objectNumber) {
+		return this.neutralObjects.contains(objectNumber);
+	}
+	
+	public boolean objectBelongsToUnionComplement(int objectNumber) {
+		return !this.objects.contains(objectNumber) && !this.neutralObjects.contains(objectNumber);
 	}
 	
 }

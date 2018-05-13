@@ -57,8 +57,10 @@ public class SimpleDecision extends Decision {
 	}
 	
 	/**
-	 * Checks if this simple decision is in relation with the other decision (expected to also be a simple decision). Such relation holds if both decisions concern the same attribute,
-	 * and {@code integralRelationTester} verifies that the first evaluation (contributing to the first decision) is in a particular relation with the second evaluation (contributing to the second decision).
+	 * Checks if this simple decision is in relation with the other decision (expected to also be a simple decision).
+	 * Such relation holds if both decisions concern the same attribute,
+	 * and {@code integralRelationTester} verifies that the first evaluation (contributing to this decision) is in a particular relation
+	 * with the second evaluation (contributing to the other decision).
 	 * Two evaluations are in relation verified by {@code integralRelationTester} if:<br>
 	 * <br>
 	 * {@code integralRelationTester.test(firstEvaluation, secondEvaluation) == true}.
@@ -102,7 +104,7 @@ public class SimpleDecision extends Decision {
 	@Override
 	public TernaryLogicValue isAtMostAsGoodAs(Decision otherDecision) {
 		return this.isInRelationWith(otherDecision, "Cannot verify if a simple decision is at most as good as null.",
-				(evaluation1, evaluation2) -> evaluation1.isAtMostAsGoodAs(evaluation2) == TernaryLogicValue.TRUE);
+				(ownEvaluation, otherEvaluation) -> ownEvaluation.isAtMostAsGoodAs(otherEvaluation) == TernaryLogicValue.TRUE);
 	}
 
 	/**
@@ -117,7 +119,7 @@ public class SimpleDecision extends Decision {
 	@Override
 	public TernaryLogicValue isAtLeastAsGoodAs(Decision otherDecision) {
 		return this.isInRelationWith(otherDecision, "Cannot verify if a simple decision is at least as good as null.",
-				(evaluation1, evaluation2) -> evaluation1.isAtLeastAsGoodAs(evaluation2) == TernaryLogicValue.TRUE);
+				(ownEvaluation, otherEvaluation) -> ownEvaluation.isAtLeastAsGoodAs(otherEvaluation) == TernaryLogicValue.TRUE);
 	}
 
 	/**
@@ -132,7 +134,7 @@ public class SimpleDecision extends Decision {
 	@Override
 	public TernaryLogicValue isEqualTo(Decision otherDecision) {
 		return this.isInRelationWith(otherDecision, "Cannot verify if a simple decision is equal to null.",
-				(evaluation1, evaluation2) -> evaluation1.isEqualTo(evaluation2) == TernaryLogicValue.TRUE);
+				(ownEvaluation, otherEvaluation) -> ownEvaluation.isEqualTo(otherEvaluation) == TernaryLogicValue.TRUE);
 	}
 	
 	/**
@@ -186,7 +188,7 @@ public class SimpleDecision extends Decision {
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.getClass(), evaluation, attributeIndex);
+		return Objects.hash(this.getClass(), this.evaluation, this.attributeIndex);
 	}
 	
 }

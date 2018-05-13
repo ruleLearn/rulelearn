@@ -74,7 +74,8 @@ public class CompositeDecision extends Decision {
 	/**
 	 * Checks if this composite decision is in relation with the other decision (expected to also be a composite decision).
 	 * Such relation holds if for each pair of corresponding evaluations (i.e., evaluations on the same attribute),
-	 * {@code integralRelationTester} verifies that the first evaluation (contributing to the first decision) is in a particular relation with the second evaluation (contributing to the second decision).
+	 * {@code integralRelationTester} verifies that the first evaluation (contributing to this decision) is in a particular relation
+	 * with the second evaluation (contributing to the other decision).
 	 * Two evaluations are in relation verified by {@code integralRelationTester} if:<br>
 	 * <br>
 	 * {@code integralRelationTester.test(firstEvaluation, secondEvaluation) == true}.
@@ -134,7 +135,7 @@ public class CompositeDecision extends Decision {
 	@Override
 	public TernaryLogicValue isAtMostAsGoodAs(Decision otherDecision) {
 		return this.isInRelationWith(otherDecision, "Cannot verify if a composite decision is at most as good as null.",
-				(evaluation1, evaluation2) -> evaluation1.isAtMostAsGoodAs(evaluation2) == TernaryLogicValue.TRUE);
+				(ownEvaluation, otherEvaluation) -> ownEvaluation.isAtMostAsGoodAs(otherEvaluation) == TernaryLogicValue.TRUE);
 	}
 
 	/**
@@ -150,7 +151,7 @@ public class CompositeDecision extends Decision {
 	@Override
 	public TernaryLogicValue isAtLeastAsGoodAs(Decision otherDecision) {
 		return this.isInRelationWith(otherDecision, "Cannot verify if a composite decision is at least as good as null.",
-				(evaluation1, evaluation2) -> evaluation1.isAtLeastAsGoodAs(evaluation2) == TernaryLogicValue.TRUE);
+				(ownEvaluation, otherEvaluation) -> ownEvaluation.isAtLeastAsGoodAs(otherEvaluation) == TernaryLogicValue.TRUE);
 	}
 
 	/**
@@ -166,7 +167,7 @@ public class CompositeDecision extends Decision {
 	@Override
 	public TernaryLogicValue isEqualTo(Decision otherDecision) {
 		return this.isInRelationWith(otherDecision, "Cannot verify if a composite decision is equal to null.",
-				(evaluation1, evaluation2) -> evaluation1.isEqualTo(evaluation2) == TernaryLogicValue.TRUE);
+				(ownEvaluation, otherEvaluation) -> ownEvaluation.isEqualTo(otherEvaluation) == TernaryLogicValue.TRUE);
 	}
 	
 	/**
@@ -216,7 +217,7 @@ public class CompositeDecision extends Decision {
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.getClass(), attributeIndex2EvaluationMap);
+		return Objects.hash(this.getClass(), this.attributeIndex2EvaluationMap);
 	}
 	
 }
