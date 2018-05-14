@@ -76,10 +76,10 @@ public class DecisionDistribution {
 	 * @return true if a value of decision concordant with the given union is present in the distribution
 	 */
 	public boolean isPresent(Union union) {
-		boolean concordant = Boolean.FALSE;
+		boolean concordant = false;
 		for (Decision decision : this.decision2CountMap.keySet()) {
 			if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
-				concordant = Boolean.TRUE;
+				concordant = true;
 				break;
 			}
 		}
@@ -100,7 +100,7 @@ public class DecisionDistribution {
 	 * Gets number of objects having the decision concordant with a given union.
 	 * 
 	 * @param union union of interest; should not be {@code null}
-	 * @return number of objects having the decision value concrodant with a given union 
+	 * @return number of objects having the decision value concordant with a given union 
 	 */
 	public int getCount(Union union) {
 		int count = 0;
