@@ -74,7 +74,7 @@ public class Union extends ApproximatedSet {
 	
 	/**
 	 * Constructs union of ordered decision classes of given type (at least or at most), using given limiting decision (concerning the least or the most preferred decision class). Calculates objects
-	 * belonging to this union. Stores given information table and rough set calculator.
+	 * belonging to this union and uncomparable objects. Stores given information table and rough set calculator.
 	 * 
 	 * @param unionType type of this union; see {@link UnionType}
 	 * @param limitingDecision decision that serves as a limit for this union; e.g., decision "3" is a limit for union "at least 3" and "at most 3" 
@@ -145,6 +145,16 @@ public class Union extends ApproximatedSet {
 				this.uncomparableObjects.add(i);
 			}
 		}
+	}
+	
+	/**
+	 * Gets indices of objects belonging to this union (so-called positive objects).
+	 * 
+	 * @return indices of objects belonging to this union
+	 */
+	@Override
+	public IntSortedSet getObjects() {
+		return objects;
 	}
 	
 	/**
@@ -220,6 +230,7 @@ public class Union extends ApproximatedSet {
 	 * 
 	 * @return the dominance-based rough set calculator used to calculate approximations and boundary of this union
 	 */
+	@Override
 	public DominanceBasedRoughSetCalculator getRoughSetCalculator() {
 		return (DominanceBasedRoughSetCalculator)roughSetCalculator;
 	}
@@ -312,6 +323,18 @@ public class Union extends ApproximatedSet {
 	 */
 	public boolean objectIsUncomparable(int objectNumber) {
 		return this.uncomparableObjects.contains(objectNumber);
+	}
+
+	@Override
+	protected void calculateLowerApproximation() {
+		//TODO: save calculated positive region
+		this.getRoughSetCalculator().calculateLowerApproximation(this);
+	}
+
+	@Override
+	protected void calculateUpperApproximation() {
+		this.upperApproximation = this.getRoughSetCalculator().calculateUpperApproximation(this);
+		
 	}
 
 }

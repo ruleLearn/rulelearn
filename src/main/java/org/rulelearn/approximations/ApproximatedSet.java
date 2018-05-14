@@ -18,6 +18,9 @@ package org.rulelearn.approximations;
 
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
+
+import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
@@ -31,6 +34,8 @@ import org.rulelearn.core.TernaryLogicValue;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public abstract class ApproximatedSet {
+	
+	//TODO: use PositiveRegion
 	
 	/**
 	 * Set of indices of objects belonging to the lower approximation of this approximated set.
@@ -112,15 +117,6 @@ public abstract class ApproximatedSet {
 	}
 
 	/**
-	 * Gets indices of objects belonging to this approximated set (so-called positive objects).
-	 * 
-	 * @return indices of objects belonging to this approximated set
-	 */
-	public IntSortedSet getObjects() {
-		return objects;
-	}
-	
-	/**
 	 * Gets limiting decision of this set, determining which objects from the information table belong to this set.
 	 * 
 	 * @return limiting decision of this set, determining which objects from the information table belong to this set
@@ -128,6 +124,22 @@ public abstract class ApproximatedSet {
 	public Decision getLimitingDecision() {
 		return limitingDecision;
 	}
+	
+	/**
+	 * Gets rough set calculator.
+	 * 
+	 * @return rough set calculator
+	 */
+	public RoughSetCalculator<? extends ApproximatedSet> getRoughSetCalculator() {
+		return roughSetCalculator;
+	}
+
+	/**
+	 * Gets indices of objects belonging to this approximated set (so-called positive objects).
+	 * 
+	 * @return indices of objects belonging to this approximated set
+	 */
+	public abstract IntSortedSet getObjects();
 	
 	/**
 	 * Gets indices of uncomparable objects from the information table such that this set's limiting decision is uncomparable with their decision.
@@ -147,21 +159,54 @@ public abstract class ApproximatedSet {
 	 * 
 	 * @return set of indices of objects belonging to the lower approximation of this approximated set
 	 */
-	public abstract IntSortedSet getLowerApproximation();
+	public IntSortedSet getLowerApproximation() {
+		if (this.lowerApproximation == null) {
+			this.calculateLowerApproximation();
+		}
+		return this.lowerApproximation;
+	}
+	
+	protected abstract void calculateLowerApproximation();
 	
 	/**
 	 * Gets set of indices of objects belonging to the upper approximation of this approximated set.
 	 * 
 	 * @return set of indices of objects belonging to the upper approximation of this approximated set
 	 */
-	public abstract IntSortedSet getUpperApproximation();
+	public IntSortedSet getUpperApproximation() {
+		if (this.upperApproximation == null) {
+			this.calculateUpperApproximation();
+		}
+		return this.upperApproximation;
+	}
+	
+	protected abstract void calculateUpperApproximation();
+	
 	
 	/**
 	 * Gets set of indices of objects belonging to the boundary of this approximated set.
 	 * 
 	 * @return set of indices of objects belonging to the boundary of this approximated set
 	 */
-	public abstract IntSortedSet getBoundary();
+	public IntSortedSet getBoundary() {
+		if (this.boundary == null) {
+			IntSortedSet upperApproximation = this.getUpperApproximation();
+			IntSortedSet lowerApproximation = this.getLowerApproximation();
+			
+			this.boundary = new IntLinkedOpenHashSet(upperApproximation.size() - lowerApproximation.size());
+			
+			IntBidirectionalIterator iterator = upperApproximation.iterator();
+			int objectIndex;
+			
+			while (iterator.hasNext()) {
+				objectIndex = iterator.nextInt();
+				if (!lowerApproximation.contains(objectIndex)) {
+					this.boundary.add(objectIndex);
+				}
+			}
+		}
+		return this.boundary;
+	}
 	
 	/**
 	 * Gets set of indices of objects belonging to the positive region of this approximated set.
