@@ -77,9 +77,8 @@ public class DecisionDistribution {
 	 */
 	public boolean isPresent(Union union) {
 		boolean concordant = Boolean.FALSE;
-		Decision[] decisions = union.getInformationTable().getDecisions();
-		for (Decision decision : decisions) {
-			if ((union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) && (this.decision2CountMap.containsKey(decision))) {
+		for (Decision decision : this.decision2CountMap.keySet()) {
+			if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
 				concordant = Boolean.TRUE;
 				break;
 			}
@@ -105,9 +104,8 @@ public class DecisionDistribution {
 	 */
 	public int getCount(Union union) {
 		int count = 0;
-		Decision[] decisions = union.getInformationTable().getDecisions();
-		for (Decision decision : decisions) {
-			if ((union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) && (this.decision2CountMap.containsKey(decision))) {
+		for (Decision decision : this.decision2CountMap.keySet()) {
+			if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
 				count += this.decision2CountMap.getInt(decision);
 			}
 		}
