@@ -154,7 +154,7 @@ public class Union extends ApproximatedSet {
 	 */
 	@Override
 	public IntSortedSet getObjects() {
-		return objects;
+		return this.objects; //objects have been calculated in class constructor, so just return them
 	}
 	
 	/**
@@ -190,33 +190,6 @@ public class Union extends ApproximatedSet {
 	}
 
 	/**
-	 * Gets sorted set of indices of objects belonging to the lower approximation of this union.
-	 * 
-	 * @return sorted set of indices of objects belonging to the lower approximation of this union
-	 */
-	public IntSortedSet getLowerApproximation() {
-		return lowerApproximation;
-	}
-
-	/**
-	 * Gets sorted set of indices of objects belonging to the upper approximation of this union.
-	 * 
-	 * @return sorted set of indices of objects belonging to the upper approximation of this union
-	 */
-	public IntSortedSet getUpperApproximation() {
-		return upperApproximation;
-	}
-
-	/**
-	 * Gets sorted set of indices of objects belonging to the boundary of this union.
-	 * 
-	 * @return sorted set of indices of objects belonging to the boundary of this union
-	 */
-	public IntSortedSet getBoundary() {
-		return boundary;
-	}
-
-	/**
 	 * Gets type of this union.
 	 * 
 	 * @return type of this union
@@ -241,7 +214,7 @@ public class Union extends ApproximatedSet {
 	 * @return the negative region of this union, i.e., the positive region of the complementary union
 	 */
 	@Override
-	public IntSortedSet getNegativeRegion() {
+	public IntSortedSet getNegativeRegionObjects() {
 		// TODO: implement using complementaryUnion
 		throw new UnsupportedOperationException();
 	}
@@ -312,7 +285,7 @@ public class Union extends ApproximatedSet {
 	 */
 	@Override
 	public IntSortedSet getUncomparableObjects() {
-		return this.uncomparableObjects;
+		return this.uncomparableObjects; //uncomparable objects have been calculated in class constructor, so just return them
 	}
 	
 	/**
@@ -326,14 +299,13 @@ public class Union extends ApproximatedSet {
 	}
 
 	@Override
-	protected void calculateLowerApproximation() {
-		//TODO: save calculated positive region
-		this.getRoughSetCalculator().calculateLowerApproximation(this);
+	protected PositiveRegion calculateLowerApproximation() {
+		return this.getRoughSetCalculator().calculateLowerApproximation(this);
 	}
 
 	@Override
-	protected void calculateUpperApproximation() {
-		this.upperApproximation = this.getRoughSetCalculator().calculateUpperApproximation(this);
+	protected IntSortedSet calculateUpperApproximation() {
+		return this.getRoughSetCalculator().calculateUpperApproximation(this);
 		
 	}
 
