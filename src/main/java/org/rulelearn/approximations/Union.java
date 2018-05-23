@@ -326,7 +326,7 @@ public class Union extends ApproximatedSet {
 	}
 
 	@Override
-	protected PositiveRegion calculateLowerApproximation() {
+	protected IntSortedSet calculateLowerApproximation() {
 		return this.getRoughSetCalculator().calculateLowerApproximation(this);
 	}
 
