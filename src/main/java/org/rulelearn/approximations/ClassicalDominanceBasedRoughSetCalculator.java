@@ -36,17 +36,8 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.rulelearn.approximations.RoughSetCalculator#getBoundary(org.rulelearn.approximations.ApproximatedSet)
-	 */
 	@Override
-	public IntSortedSet calculateBoundary(Union set) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PositiveRegion calculateLowerApproximation(Union set) {
+	public IntSortedSet calculateLowerApproximation(Union set) {
 		// TODO Auto-generated method stub
 		return null;
 	}

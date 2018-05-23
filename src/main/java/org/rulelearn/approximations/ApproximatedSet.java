@@ -285,6 +285,7 @@ public abstract class ApproximatedSet {
 	 * @return set of indices of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set
 	 */
 	public IntSet getInconsistentObjectsInPositiveRegion() {
+		//TODO: implement
 //		if (this.positiveRegion == null) {
 //			this.positiveRegion = this.calculateLowerApproximation();
 //		}
