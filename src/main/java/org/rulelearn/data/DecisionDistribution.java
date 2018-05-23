@@ -18,8 +18,10 @@ package org.rulelearn.data;
 
 import static org.rulelearn.core.Precondition.notNull;
 
-import org.rulelearn.approximations.Union;
-import org.rulelearn.core.TernaryLogicValue;
+import java.util.Set;
+
+//import org.rulelearn.approximations.Union;
+//import org.rulelearn.core.TernaryLogicValue;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -75,7 +77,7 @@ public class DecisionDistribution {
 	 * @param union union of interest; should not be {@code null}
 	 * @return true if a value of decision concordant with the given union is present in the distribution
 	 */
-	public boolean isPresent(Union union) {
+	/*public boolean isPresent(Union union) {
 		boolean concordant = false;
 		for (Decision decision : this.decision2CountMap.keySet()) {
 			if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
@@ -84,6 +86,15 @@ public class DecisionDistribution {
 			}
 		}
 		return concordant;
+	}*/
+	
+	/**
+	 * Gets all decisions, which are present in the distribution.
+	 * 
+	 * @return set {@link Set} of decisions
+	 */
+	public Set<Decision> getDecisions() {
+		return this.decision2CountMap.keySet();
 	}
 	
 	/**
@@ -102,7 +113,7 @@ public class DecisionDistribution {
 	 * @param union union of interest; should not be {@code null}
 	 * @return number of objects having the decision value concordant with a given union 
 	 */
-	public int getCount(Union union) {
+	/*public int getCount(Union union) {
 		int count = 0;
 		for (Decision decision : this.decision2CountMap.keySet()) {
 			if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
@@ -110,7 +121,7 @@ public class DecisionDistribution {
 			}
 		}
 		return count;
-	}
+	}*/
 	
 	/**
 	 * Increases by one the number of objects having given decision.

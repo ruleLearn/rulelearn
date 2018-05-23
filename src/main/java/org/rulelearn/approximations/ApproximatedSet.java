@@ -35,9 +35,14 @@ import org.rulelearn.core.TernaryLogicValue;
 public abstract class ApproximatedSet {
 	
 	/**
-	 * Positive region of this approximated entity.
+	 * Set of indices of objects belonging to the lower approximation of this approximated set.
 	 */
-	protected PositiveRegion positiveRegion = null;
+	protected IntSortedSet lowerApproximation = null;
+	
+	/**
+	 * Set of indices of objects from an information table that belong to this positive region but not to the lower approximation.
+	 */
+	protected IntSet lowerApproximationComplement;
 	
 	/**
 	 * Set of indices of objects belonging to the upper approximation of this approximated set.
@@ -155,16 +160,16 @@ public abstract class ApproximatedSet {
 	 * @return set of indices of objects belonging to the lower approximation of this approximated set
 	 */
 	public IntSortedSet getLowerApproximation() {
-		if (this.positiveRegion == null) {
-			this.positiveRegion = this.calculateLowerApproximation();
+		if (this.lowerApproximation == null) {
+			this.lowerApproximation = this.calculateLowerApproximation();
 		}
-		return this.positiveRegion.getLowerApproximation();
+		return this.lowerApproximation;
 	}
 	
 	/**
-	 * Calculates positive region of this approximated set (including its lower approximation), using the rough set calculator.
+	 * Calculates lower approximation of this approximated set, using the rough set calculator.
 	 */
-	protected abstract PositiveRegion calculateLowerApproximation();
+	protected abstract IntSortedSet calculateLowerApproximation();
 	
 	/**
 	 * Gets set of indices of objects belonging to the upper approximation of this approximated set.
@@ -271,10 +276,11 @@ public abstract class ApproximatedSet {
 	 * @return set of indices of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set
 	 */
 	public IntSet getInconsistentObjectsInPositiveRegion() {
-		if (this.positiveRegion == null) {
-			this.positiveRegion = this.calculateLowerApproximation();
-		}
-		return this.positiveRegion.getLowerApproximationComplement();
+//		if (this.positiveRegion == null) {
+//			this.positiveRegion = this.calculateLowerApproximation();
+//		}
+//		return this.positiveRegion.getLowerApproximationComplement();
+		return null;
 	}
 	
 	/**
