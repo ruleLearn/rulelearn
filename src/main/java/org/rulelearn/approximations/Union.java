@@ -253,7 +253,7 @@ public class Union extends ApproximatedSet {
 				//limiting decision is strictly better (as equality was eliminated above)
 				if (this.limitingDecision.isAtLeastAsGoodAs(decision) == TernaryLogicValue.TRUE) {
 					return TernaryLogicValue.FALSE;
-				} else { //union's limiting decision is incomparable with given decision 
+				} else { //union's limiting decision is uncomparable with given decision 
 					return TernaryLogicValue.UNCOMPARABLE;
 				}
 			}
@@ -264,7 +264,7 @@ public class Union extends ApproximatedSet {
 				//limiting decision is strictly worse (as equality was eliminated above)
 				if (this.limitingDecision.isAtMostAsGoodAs(decision) == TernaryLogicValue.TRUE) {
 					return TernaryLogicValue.FALSE;
-				} else { //union's limiting decision is incomparable with given decision 
+				} else { //union's limiting decision is uncomparable with given decision 
 					return TernaryLogicValue.UNCOMPARABLE;
 				}
 			}
@@ -273,7 +273,49 @@ public class Union extends ApproximatedSet {
 		}
 	}
 	
+	/**
+	 * Tells if given decision is positive with respect to this union, i.e., in case of an upward union - limiting decision of this union is at most as good as the given decision,
+	 * and in case of a downward union - limiting decision of this union is at least as good as the given decision.
+	 * 
+	 * @param decision decision to verify for being positive with this union
+	 * @return {@code true} if given decision is positive with this union, {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given decision is {@code null}
+	 */
+	public boolean isDecisionPositive(Decision decision) {
+		notNull(decision, "Decision tested for being positive with union is null.");
+		
+		return this.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE;
+	}
 	
+	/**
+	 * Tells if given decision is negative with respect to this union, i.e., in case of an upward union - limiting decision of this union is strictly better than the given decision,
+	 * and in case of a downward union - limiting decision of this union is strictly worse than the given decision.
+	 * 
+	 * @param decision decision to verify for being negative with this union
+	 * @return {@code true} if given decision is negative with this union, {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given decision is {@code null}
+	 */
+	public boolean isDecisionNegative(Decision decision) {
+		notNull(decision, "Decision tested for being negative with union is null.");
+		
+		return this.isConcordantWithDecision(decision) == TernaryLogicValue.FALSE;
+	}
+	
+	/**
+	 * Tells if given decision is neutral with respect to this union, i.e., limiting decision of this union is neither at most as good as the given decision nor at least as good as the given decision.
+	 * 
+	 * @param decision decision to verify for being neutral with this union
+	 * @return {@code true} if given decision is neutral with this union, {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given decision is {@code null}
+	 */
+	public boolean isDecisionNeutral(Decision decision) {
+		notNull(decision, "Decision tested for being neutral with union is null.");
+		
+		return this.isConcordantWithDecision(decision) == TernaryLogicValue.UNCOMPARABLE;
+	}
 	
 	/**
 	 * Gets the information table for which this approximated set was defined.
@@ -295,15 +337,25 @@ public class Union extends ApproximatedSet {
 //		return this.uncomparableObjects; //uncomparable objects have been calculated in class constructor, so just return them
 //	}
 	
+//	/**
+//	 * Tells if this union's limiting decision is uncomparable with decision of a particular object from the information table.
+//	 * 
+//	 * @param objectNumber index of an object from the information table
+//	 * @return {@code true} if this union's limiting decision is uncomparable with decision assigned to the object with given index,
+//	 *         {@code false} otherwise
+//	 */
+//	public boolean objectIsUncomparable(int objectNumber) {
+//		return this.uncomparableObjects.contains(objectNumber);
+//	}
+	
 	/**
-	 * Tells if this union's limiting decision is uncomparable with decision of a particular object from the information table.
+	 * Tells if given object is positive with respect to this union.
 	 * 
 	 * @param objectNumber index of an object from the information table
-	 * @return {@code true} if this union's limiting decision is uncomparable with decision assigned to the object with given index,
-	 *         {@code false} otherwise
+	 * @return {@code true} if object with given number is positive with respect to this union, {@code false} otherwise
 	 */
-	public boolean objectIsUncomparable(int objectNumber) {
-		return this.uncomparableObjects.contains(objectNumber);
+	public boolean isObjectPositive(int objectNumber) {
+		return this.objects.contains(objectNumber);
 	}
 	
 	/**
@@ -312,7 +364,7 @@ public class Union extends ApproximatedSet {
 	 * @param objectNumber index of an object from the information table
 	 * @return {@code true} if object with given number is neutral with respect to this union, {@code false} otherwise
 	 */
-	public boolean objectIsNeutral(int objectNumber) {
+	public boolean isObjectNeutral(int objectNumber) {
 		return this.uncomparableObjects.contains(objectNumber);
 	}
 	
@@ -322,7 +374,7 @@ public class Union extends ApproximatedSet {
 	 * @param objectNumber index of an object from the information table
 	 * @return {@code true} if object with given number is negative with respect to this union, {@code false} otherwise
 	 */
-	public boolean objectIsNegative(int objectNumber) {
+	public boolean isObjectNegative(int objectNumber) {
 		return !this.objects.contains(objectNumber) &&
 				!this.uncomparableObjects.contains(objectNumber);
 	}
