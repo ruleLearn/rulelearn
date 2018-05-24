@@ -242,7 +242,7 @@ public class Union extends ApproximatedSet {
 	 * @throws NullPointerException if given decision is {@code null}
 	 */
 	@Override
-	public TernaryLogicValue isConcordantWithDecision(Decision decision) {
+	protected TernaryLogicValue isConcordantWithDecision(Decision decision) {
 		notNull(decision, "Decision tested for concordance with union is null.");
 		
 		switch (this.unionType) {
@@ -273,6 +273,8 @@ public class Union extends ApproximatedSet {
 		}
 	}
 	
+	
+	
 	/**
 	 * Gets the information table for which this approximated set was defined.
 	 * 
@@ -282,16 +284,16 @@ public class Union extends ApproximatedSet {
 		return (InformationTableWithDecisionDistributions)informationTable;
 	}
 
-	/**
-	 * Gets indices of objects from the information table such that this union's limiting decision is uncomparable with their decision.
-	 * Limiting decision is considered to be uncomparable with a particular decision, if it is neither at least as good as nor at most as good as that decision.
-	 * 
-	 * @return indices of objects from the information table such that this union's limiting decision is uncomparable with their decision
-	 */
-	@Override
-	public IntSortedSet getUncomparableObjects() {
-		return this.uncomparableObjects; //uncomparable objects have been calculated in class constructor, so just return them
-	}
+//	/**
+//	 * Gets indices of objects from the information table such that this union's limiting decision is uncomparable with their decision.
+//	 * Limiting decision is considered to be uncomparable with a particular decision, if it is neither at least as good as nor at most as good as that decision.
+//	 * 
+//	 * @return indices of objects from the information table such that this union's limiting decision is uncomparable with their decision
+//	 */
+//	@Override
+//	public IntSortedSet getUncomparableObjects() {
+//		return this.uncomparableObjects; //uncomparable objects have been calculated in class constructor, so just return them
+//	}
 	
 	/**
 	 * Tells if this union's limiting decision is uncomparable with decision of a particular object from the information table.

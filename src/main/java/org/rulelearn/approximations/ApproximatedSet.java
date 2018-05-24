@@ -144,18 +144,18 @@ public abstract class ApproximatedSet {
 	 */
 	public abstract IntSortedSet getObjects();
 	
-	/**
-	 * Gets indices of uncomparable objects from the information table such that this set's limiting decision is uncomparable with their decision.
-	 * The concept of uncomparable objects is important, e.g., in case of multicriteria decision problems,
-	 * when considering unions of ordered decision classes, and multiple decision criteria.
-	 * Then, it may be the case that limiting decision of a union of ordered decision classes is uncomparable with decisions assigned to some objects
-	 * from an {@link InformationTable}.<br>
-	 * <br>
-	 * If the concept of uncomparable objects is meaningless for a particular subtype of this class, then implementing method should return {@code null}.
-	 * 
-	 * @return indices of uncomparable objects from the information table, such that this set's limiting decision is uncomparable with their decision
-	 */
-	public abstract IntSortedSet getUncomparableObjects();
+//	/**
+//	 * Gets indices of uncomparable objects from the information table such that this set's limiting decision is uncomparable with their decision.
+//	 * The concept of uncomparable objects is important, e.g., in case of multicriteria decision problems,
+//	 * when considering unions of ordered decision classes, and multiple decision criteria.
+//	 * Then, it may be the case that limiting decision of a union of ordered decision classes is uncomparable with decisions assigned to some objects
+//	 * from an {@link InformationTable}.<br>
+//	 * <br>
+//	 * If the concept of uncomparable objects is meaningless for a particular subtype of this class, then implementing method should return {@code null}.
+//	 * 
+//	 * @return indices of uncomparable objects from the information table, such that this set's limiting decision is uncomparable with their decision
+//	 */
+//	public abstract IntSortedSet getUncomparableObjects();
 
 	/**
 	 * Gets set of indices of objects belonging to the lower approximation of this approximated set.
@@ -344,6 +344,6 @@ public abstract class ApproximatedSet {
 	 * 
 	 * @throws NullPointerException if given decision is {@code null}
 	 */
-	public abstract TernaryLogicValue isConcordantWithDecision(Decision decision);
+	protected abstract TernaryLogicValue isConcordantWithDecision(Decision decision);
 	
 }
