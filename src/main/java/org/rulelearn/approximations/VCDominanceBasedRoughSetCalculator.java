@@ -17,8 +17,11 @@
 package org.rulelearn.approximations;
 
 import static org.rulelearn.core.Precondition.notNull;
-import org.rulelearn.core.InvalidValueException;
+
+import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.measures.object.ObjectConsistencyMeasure;
+
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
@@ -30,36 +33,9 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
  */
 public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBasedRoughSetCalculator {
 	
-	protected ObjectConsistencyMeasure<Union>[] lowerApproximationConsistencyMeasures;
-	protected double[] lowerApproximationConsistencyThresholds;
+	protected ObjectConsistencyMeasure<Union> lowerApproximationConsistencyMeasure;
+	protected double lowerApproximationConsistencyThreshold;
 
-	/**
-	 * TODO: write javadoc
-	 * TODO: add method with accelerateByReadOnlyParam
-	 * 
-	 * @param lowerApproximationConsistencyMeasures array with object consistency measures applied when calculating lower approximation
-	 * @param lowerApproximationConsistencyThresholds array with thresholds for object consistency measures applied when calculating lower approximation
-	 * 
-	 * @throws NullPointerException if any of the parameters is {@code null}
-	 * @throws InvalidValueException if numbers of object consistency measures and respective thresholds are different
-	 * @throws InvalidValueException if the array with object consistency measures is empty
-	 */
-	public VCDominanceBasedRoughSetCalculator(ObjectConsistencyMeasure<Union>[] lowerApproximationConsistencyMeasures, double[] lowerApproximationConsistencyThresholds) {
-		super();
-		notNull(lowerApproximationConsistencyMeasures, "Consistency measures are null.");
-		notNull(lowerApproximationConsistencyThresholds, "Consistency thresholds are null.");
-		
-		if (lowerApproximationConsistencyMeasures.length != lowerApproximationConsistencyThresholds.length) {
-			throw new InvalidValueException("Numbers of object consistency measures and respective thresholds are different.");
-		}
-		
-		if (lowerApproximationConsistencyMeasures.length < 1) {
-			throw new InvalidValueException("VC dominance-based rough set calculator requires at least one object consistency measure.");
-		}
-		
-		this.lowerApproximationConsistencyMeasures = lowerApproximationConsistencyMeasures;
-		this.lowerApproximationConsistencyThresholds = lowerApproximationConsistencyThresholds;
-	}
 	
 	/**
 	 * TODO: add javadoc
@@ -69,31 +45,64 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	 * 
 	 * @throws NullPointerException if lower approximation consistency measure is {@code null}
 	 */
-	@SuppressWarnings("unchecked")
 	public VCDominanceBasedRoughSetCalculator(ObjectConsistencyMeasure<Union> lowerApproximationConsistencyMeasure, double lowerApproximationConsistencyThreshold) {
 		super();
 		notNull(lowerApproximationConsistencyMeasure, "Consistency measure is null.");
 		
-		this.lowerApproximationConsistencyMeasures = (ObjectConsistencyMeasure<Union>[])new ObjectConsistencyMeasure[1];
-		//this.lowerApproximationConsistencyMeasures = (ObjectConsistencyMeasure<Union>[])Array.newInstance(lowerApproximationConsistencyMeasures.getClass(), 1);
-		this.lowerApproximationConsistencyMeasures[0] = lowerApproximationConsistencyMeasure;
-		this.lowerApproximationConsistencyThresholds = new double[1];
-		this.lowerApproximationConsistencyThresholds[0] = lowerApproximationConsistencyThreshold;
+		this.lowerApproximationConsistencyMeasure = lowerApproximationConsistencyMeasure;
+		this.lowerApproximationConsistencyThreshold = lowerApproximationConsistencyThreshold;
 	}
-
-	@Override
-	public IntSortedSet calculateUpperApproximation(Union union) {
-		// TODO: implement
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.rulelearn.approximations.ExtendedRoughSetCalculator#getLowerApproximationAndInconsistentObjects(org.rulelearn.approximations.ApproximatedSet)
+	
+	/**
+	 * Calculate lower approximation of an union according to the definition...
+	 * TODO: write javadoc
+	 * 
+	 * @param union union of interest; should not be {@code null}
+	 * @return positive region {@link PositiveRegion} containing set of indices of objects belonging to the lower approximation of the union and complement 
+	 * of the lower approximation
 	 */
 	@Override
-	public IntSortedSet calculateLowerApproximation(Union set) {
-		// TODO: implement
-		return null;
+	public IntSortedSet calculateLowerApproximation(Union union) {
+		IntSortedSet lowerApproximationObjects = new IntLinkedOpenHashSet();
+		//IntSet lowerApproximationComplementObjects = new IntOpenHashSet();
+		
+		for (int i : union.getObjects()) {
+			if (this.lowerApproximationConsistencyMeasure.isConsistencyThresholdReached(i, union, lowerApproximationConsistencyThreshold)) {
+				lowerApproximationObjects.add(i);		
+			}
+		}
+		return lowerApproximationObjects;
 	}
-
+	
+	/**
+	 * Calculate upper approximation of an union according to the definition...
+	 * TODO: write javadoc
+	 * TODO: only one decision
+	 * 
+	 * @param union union of interest; should not be {@code null}
+	 * @return set of indices of objects belonging to the upper approximation of the given set
+	 */
+	@Override
+	public IntSortedSet calculateUpperApproximation(Union union) {
+		IntSortedSet upperApproximationObjects = null;
+		//check whether the union is defined for only one decision criterion
+		if (union.getLimitingDecision().getNumberOfEvaluations() == 1) {
+			InformationTableWithDecisionDistributions infromationTable = union.getInformationTable();
+			int objectsCount = infromationTable.getNumberOfObjects();
+			upperApproximationObjects = new IntLinkedOpenHashSet();
+			
+			IntSortedSet compLowerApproximationObjects = union.getComplementaryUnion().getLowerApproximation();
+			for (int i = 0; i < objectsCount; i++) {
+				// check whether object i is in lower approximation of complement union
+				if (!compLowerApproximationObjects.contains(i)) {
+						upperApproximationObjects.add(i);
+				}
+			}
+		}
+		else {
+			throw new UnsupportedOperationException();
+		}
+		
+		return upperApproximationObjects;
+	}
 }
