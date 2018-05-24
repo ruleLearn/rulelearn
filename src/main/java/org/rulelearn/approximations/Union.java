@@ -28,6 +28,8 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
+import it.unimi.dsi.fastutil.ints.IntSortedSets;
+
 import static org.rulelearn.core.Precondition.notNull;
 
 /**
@@ -145,6 +147,9 @@ public class Union extends ApproximatedSet {
 				this.uncomparableObjects.add(i);
 			}
 		}
+		
+		this.objects = IntSortedSets.unmodifiable(this.objects);
+		this.uncomparableObjects = IntSortedSets.unmodifiable(this.uncomparableObjects);
 	}
 	
 	/**
@@ -214,7 +219,7 @@ public class Union extends ApproximatedSet {
 	 * @return the negative region of this union, i.e., the positive region of the complementary union
 	 */
 	@Override
-	public IntSortedSet getNegativeRegionObjects() {
+	public IntSortedSet getNegativeRegion() {
 		// TODO: implement using complementaryUnion
 		throw new UnsupportedOperationException();
 	}
@@ -292,10 +297,32 @@ public class Union extends ApproximatedSet {
 	 * Tells if this union's limiting decision is uncomparable with decision of a particular object from the information table.
 	 * 
 	 * @param objectNumber index of an object from the information table
-	 * @return {@code true} if this union's limiting decision is uncomparable with decision assigned to the object with given index 
+	 * @return {@code true} if this union's limiting decision is uncomparable with decision assigned to the object with given index,
+	 *         {@code false} otherwise
 	 */
 	public boolean objectIsUncomparable(int objectNumber) {
 		return this.uncomparableObjects.contains(objectNumber);
+	}
+	
+	/**
+	 * Tells if given object is neutral with respect to this union.
+	 * 
+	 * @param objectNumber index of an object from the information table
+	 * @return {@code true} if object with given number is neutral with respect to this union, {@code false} otherwise
+	 */
+	public boolean objectIsNeutral(int objectNumber) {
+		return this.uncomparableObjects.contains(objectNumber);
+	}
+	
+	/**
+	 * Tells if given object is negative with respect to this union.
+	 * 
+	 * @param objectNumber index of an object from the information table
+	 * @return {@code true} if object with given number is negative with respect to this union, {@code false} otherwise
+	 */
+	public boolean objectIsNegative(int objectNumber) {
+		return !this.objects.contains(objectNumber) &&
+				!this.uncomparableObjects.contains(objectNumber);
 	}
 
 	@Override

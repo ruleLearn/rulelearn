@@ -22,7 +22,10 @@ import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
+import it.unimi.dsi.fastutil.ints.IntSortedSets;
+
 import static org.rulelearn.core.Precondition.notNull;
 import org.rulelearn.core.TernaryLogicValue;
 
@@ -178,7 +181,7 @@ public abstract class ApproximatedSet {
 	 */
 	public IntSortedSet getUpperApproximation() {
 		if (this.upperApproximation == null) {
-			this.upperApproximation = this.calculateUpperApproximation();
+			this.upperApproximation = IntSortedSets.unmodifiable(this.calculateUpperApproximation());
 		}
 		return this.upperApproximation;
 	}
@@ -209,6 +212,8 @@ public abstract class ApproximatedSet {
 					this.boundary.add(objectIndex);
 				}
 			}
+			
+			this.boundary = IntSortedSets.unmodifiable(this.boundary);
 		}
 		return this.boundary;
 	}
@@ -221,7 +226,7 @@ public abstract class ApproximatedSet {
 	 * 
 	 * @return set of indices of objects belonging to the positive region of this approximated set
 	 */
-	public IntSet getPositiveRegionObjects() {
+	public IntSet getPositiveRegion() {
 		//TODO: verify
 		if (this.positiveRegionObjects == null) { //positive region not calculated yet
 			IntSortedSet lowerApproximation = this.getLowerApproximation();
@@ -232,6 +237,8 @@ public abstract class ApproximatedSet {
 			
 			this.positiveRegionObjects.addAll(lowerApproximation);
 			this.positiveRegionObjects.addAll(inconsistentObjectsInPositiveRegion);
+			
+			this.positiveRegionObjects = IntSets.unmodifiable(this.positiveRegionObjects);
 		}
 		
 		return this.positiveRegionObjects;
@@ -244,7 +251,7 @@ public abstract class ApproximatedSet {
 	 * 
 	 * @return set of indices of objects belonging to the negative region of this approximated set
 	 */
-	public abstract IntSet getNegativeRegionObjects();
+	public abstract IntSet getNegativeRegion();
 	
 	/**
 	 * Gets set of indices of objects belonging to the boundary region of this approximated set, i.e., the set of objects that are neither
@@ -252,10 +259,10 @@ public abstract class ApproximatedSet {
 	 * 
 	 * @return set of indices of objects belonging to the boundary region of this approximated set
 	 */
-	public IntSet getBoundaryRegionObjects() {
+	public IntSet getBoundaryRegion() {
 		if (this.boundaryRegionObjects == null) { //boundary region not calculated yet
-			IntSet positiveRegion = this.getPositiveRegionObjects();
-			IntSet negativeRegion = this.getNegativeRegionObjects();
+			IntSet positiveRegion = this.getPositiveRegion();
+			IntSet negativeRegion = this.getNegativeRegion();
 			
 			int objectsCount = this.informationTable.getNumberOfObjects();
 			this.boundaryRegionObjects = new IntOpenHashSet(objectsCount - positiveRegion.size() - negativeRegion.size());
@@ -265,6 +272,8 @@ public abstract class ApproximatedSet {
 					this.boundaryRegionObjects.add(i);
 				}
 			}
+			
+			this.boundaryRegionObjects = IntSets.unmodifiable(this.boundaryRegionObjects);
 		}
 		
 		return this.boundaryRegionObjects;
@@ -276,6 +285,7 @@ public abstract class ApproximatedSet {
 	 * @return set of indices of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set
 	 */
 	public IntSet getInconsistentObjectsInPositiveRegion() {
+		//TODO: implement
 //		if (this.positiveRegion == null) {
 //			this.positiveRegion = this.calculateLowerApproximation();
 //		}
