@@ -17,7 +17,7 @@
 package org.rulelearn.approximations;
 
 import org.rulelearn.approximations.Union.UnionType;
-import org.rulelearn.core.TernaryLogicValue;
+//import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
