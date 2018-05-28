@@ -33,7 +33,16 @@ import it.unimi.dsi.fastutil.ints.IntSortedSets;
 import static org.rulelearn.core.Precondition.notNull;
 
 /**
- * Union of ordered decision classes, i.e., set of objects whose decision class is not worse or not better than given limiting decision class.
+ * Union of ordered decision classes, i.e., set of objects whose decision is not worse or not better than given limiting decision.
+ * Objects from the information table such that:<br>
+ * - upward union's limiting decision is at most as good as their decision, or<br>
+ * - downward union's limiting decision is at least as good as their decision,<br>
+ * are considered to belong to this union (they are called positive objects).<br>
+ * Objects from the information table such that:<br>
+ * - upward union's limiting decision is better than their decision, or<br>
+ * - downward union's limiting decision is worse than their decision,<br>
+ * are considered to belong to the complement of this union (they are called negative objects).<br>
+ * Remaining objects from the information table are called neutral objects. Their decision is uncomparable with this union's decision.
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -68,11 +77,16 @@ public class Union extends ApproximatedSet {
 	 */
 	protected Union complementaryUnion = null;
 	
+//	/**
+//	 * Set with indices of objects such that this union's limiting decision is uncomparable with their decision.
+//	 * Limiting decision is considered to be uncomparable with a particular decision, if it is neither at least as good as nor at most as good as that decision.
+//	 */
+//	protected IntSortedSet uncomparableObjects;
+	
 	/**
-	 * Set with indices of objects such that this union's limiting decision is uncomparable with their decision.
-	 * Limiting decision is considered to be uncomparable with a particular decision, if it is neither at least as good as nor at most as good as that decision.
+	 * Set of objects from information table that are neither positive nor negative with respect to this union.  
 	 */
-	protected IntSortedSet uncomparableObjects;
+	protected IntSortedSet neutralObjects;
 	
 	/**
 	 * Constructs union of ordered decision classes of given type (at least or at most), using given limiting decision (concerning the least or the most preferred decision class). Calculates objects
@@ -125,31 +139,31 @@ public class Union extends ApproximatedSet {
 			throw new InvalidValueException("Cannot create union of ordered decision classes - none of the attributes contributing to union's limiting decision is ordinal.");
 		}
 		
-		this.findPositiveAndUncomparableObjects();
+		this.findPositiveAndNeutralObjects();
 	}
 	
 	/**
 	 * Finds (positive) objects belonging to this union and (uncomparable) objects such that this union's limiting decision is uncomparable with their decision.
 	 * Assumes that information table and limiting decision have already been set.
 	 */
-	protected void findPositiveAndUncomparableObjects() {
+	protected void findPositiveAndNeutralObjects() {
+		IntSortedSet uncomparableObjects = new IntLinkedOpenHashSet(); //TODO: estimate hash set capacity using distribution of decisions?
 		this.objects = new IntLinkedOpenHashSet(); //TODO: estimate hash set capacity using distribution of decisions?
-		this.uncomparableObjects = new IntLinkedOpenHashSet(); //TODO: estimate hash set capacity using distribution of decisions?
+		
 		int objectsCount = this.informationTable.getNumberOfObjects();
-		TernaryLogicValue comparisonResult;
 		
 		for (int i = 0; i < objectsCount; i++) {
-			comparisonResult = this.isConcordantWithDecision(this.informationTable.getDecision(i));
-			
-			if (comparisonResult == TernaryLogicValue.TRUE) {
+			if (this.isDecisionPositive(this.informationTable.getDecision(i))) {
 				this.objects.add(i);
-			} else if (comparisonResult == TernaryLogicValue.UNCOMPARABLE) {
-				this.uncomparableObjects.add(i);
+			} else {
+				if (this.isDecisionNeutral(this.informationTable.getDecision(i))) {
+					uncomparableObjects.add(i);
+				}
 			}
 		}
 		
 		this.objects = IntSortedSets.unmodifiable(this.objects);
-		this.uncomparableObjects = IntSortedSets.unmodifiable(this.uncomparableObjects);
+		this.neutralObjects = IntSortedSets.unmodifiable(uncomparableObjects);
 	}
 	
 	/**
@@ -311,7 +325,7 @@ public class Union extends ApproximatedSet {
 	 * 
 	 * @throws NullPointerException if given decision is {@code null}
 	 */
-	public boolean isDecisionNeutral(Decision decision) {
+	protected boolean isDecisionNeutral(Decision decision) {
 		notNull(decision, "Decision tested for being neutral with union is null.");
 		
 		return this.isConcordantWithDecision(decision) == TernaryLogicValue.UNCOMPARABLE;
@@ -365,7 +379,7 @@ public class Union extends ApproximatedSet {
 	 * @return {@code true} if object with given number is neutral with respect to this union, {@code false} otherwise
 	 */
 	public boolean isObjectNeutral(int objectNumber) {
-		return this.uncomparableObjects.contains(objectNumber);
+		return this.neutralObjects.contains(objectNumber);
 	}
 	
 	/**
@@ -376,18 +390,32 @@ public class Union extends ApproximatedSet {
 	 */
 	public boolean isObjectNegative(int objectNumber) {
 		return !this.objects.contains(objectNumber) &&
-				!this.uncomparableObjects.contains(objectNumber);
+				!this.neutralObjects.contains(objectNumber);
 	}
 
+	/**
+	 * Calculates lower approximation of this union, using the rough set calculator.
+	 */
 	@Override
 	protected IntSortedSet calculateLowerApproximation() {
 		return this.getRoughSetCalculator().calculateLowerApproximation(this);
 	}
 
+	/**
+	 * Calculates upper approximation of this union, using the rough set calculator.
+	 */
 	@Override
 	protected IntSortedSet calculateUpperApproximation() {
 		return this.getRoughSetCalculator().calculateUpperApproximation(this);
-		
+	}
+	
+	/**
+	 * Gets size of the set that is complementary to this union.
+	 * 
+	 * @return size of the set that is complementary to this union
+	 */
+	public int getComplementarySetSize() {
+		return this.informationTable.getNumberOfObjects() - this.size() - this.neutralObjects.size();
 	}
 
 }

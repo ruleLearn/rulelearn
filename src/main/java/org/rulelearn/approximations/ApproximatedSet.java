@@ -314,9 +314,9 @@ public abstract class ApproximatedSet {
 	}
 	
 	/**
-	 * Gets number of objects belonging to this approximated set.
+	 * Gets number of (positive) objects belonging to this approximated set.
 	 * 
-	 * @return number of objects belonging to this approximated set
+	 * @return number of (positive) objects belonging to this approximated set
 	 */
 	public int size() {
 		return this.objects.size();
@@ -345,5 +345,12 @@ public abstract class ApproximatedSet {
 	 * @throws NullPointerException if given decision is {@code null}
 	 */
 	protected abstract TernaryLogicValue isConcordantWithDecision(Decision decision);
+	
+	/**
+	 * Gets size of the set that is complementary to this set.
+	 * 
+	 * @return size of the set that is complementary to this set
+	 */
+	public abstract int getComplementarySetSize();
 	
 }
