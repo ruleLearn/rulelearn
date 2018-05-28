@@ -49,7 +49,7 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 		IntSortedSet lowerApproximationObjects = null;  
 		boolean canBeAdded = false;
 		
-		if (union.unionType == UnionType.AT_LEAST) {
+		if (union.getUnionType() == UnionType.AT_LEAST) {
 			lowerApproximationObjects = new IntLinkedOpenHashSet();
 			for (int i = 0; i < objectsCount; i++) {
 				canBeAdded = false;
@@ -70,7 +70,7 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 				}
 			}
 		}
-		else if (union.unionType == UnionType.AT_MOST) {
+		else if (union.getUnionType() == UnionType.AT_MOST) {
 			lowerApproximationObjects = new IntLinkedOpenHashSet();
 			for (int i = 0; i < objectsCount; i++) {
 				canBeAdded = false;
@@ -108,7 +108,7 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 		DominanceConesDecisionDistributions dominanceCDD = infromationTable.getDominanceConesDecisionDistributions();
 		IntSortedSet upperApproximationObjects = null;
 		
-		if (union.unionType == UnionType.AT_LEAST) {
+		if (union.getUnionType() == UnionType.AT_LEAST) {
 			upperApproximationObjects = new IntLinkedOpenHashSet();
 			for (int i = 0; i < objectsCount; i++) {
 				// check whether some objects from the set (i.e., union) are present in a negative dominance cone based on the object
@@ -121,7 +121,7 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 				}
 			}
 		}
-		else if (union.unionType == UnionType.AT_MOST) {
+		else if (union.getUnionType() == UnionType.AT_MOST) {
 			upperApproximationObjects = new IntLinkedOpenHashSet();
 			for (int i = 0; i < objectsCount; i++) {
 				// check whether some objects from the set (i.e., union) are present in a positive inverted dominance cone based on the object 

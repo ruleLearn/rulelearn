@@ -33,20 +33,20 @@ public interface ObjectConsistencyMeasure<T extends ApproximatedSet> {
 	 * Calculates consistency of the given object with respect to the given set of objects.
 	 * 
 	 * @param objectIndex index of an object in the information table for which approximated set is defined
-	 * @param approximatedSet approximated set of objects
+	 * @param set approximated set of objects
 	 * @return consistency of the given object with respect to the given set of objects
 	 */
-	public double consistency(int objectIndex, T approximatedSet);
+	public double consistency(int objectIndex, T set);
 	
 	/**
 	 * Calculates consistency of the given object with respect to the given set of objects and checks whether a given threshold is reached.
 	 * 
 	 * @param objectIndex index of an object in the information table for which approximated set is defined
-	 * @param approximatedSet approximated set of objects
+	 * @param set approximated set of objects
 	 * @param threshold threshold specified for the  consistency measure
 	 * @return consistency of the given object with respect to the given set of objects
 	 */
-	public boolean isConsistencyThresholdReached(int objectIndex, T approximatedSet, double threshold);
+	public boolean isConsistencyThresholdReached(int objectIndex, T set, double threshold);
 	
 	/**
 	 * Gets type of this consistency measure.
