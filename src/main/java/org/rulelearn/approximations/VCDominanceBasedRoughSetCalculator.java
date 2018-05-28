@@ -95,7 +95,7 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 			for (int i = 0; i < objectsCount; i++) {
 				// check whether object i is in lower approximation of complement union
 				if (!compLowerApproximationObjects.contains(i)) {
-						upperApproximationObjects.add(i);
+					upperApproximationObjects.add(i);
 				}
 			}
 		}

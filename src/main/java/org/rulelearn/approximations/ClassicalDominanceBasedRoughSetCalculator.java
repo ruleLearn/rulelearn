@@ -17,7 +17,7 @@
 package org.rulelearn.approximations;
 
 import org.rulelearn.approximations.Union.UnionType;
-import org.rulelearn.core.TernaryLogicValue;
+//import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
@@ -49,13 +49,14 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 		IntSortedSet lowerApproximationObjects = null;  
 		boolean canBeAdded = false;
 		
-		if (union.unionType == UnionType.AT_LEAST) {
+		if (union.getUnionType() == UnionType.AT_LEAST) {
 			lowerApproximationObjects = new IntLinkedOpenHashSet();
 			for (int i = 0; i < objectsCount; i++) {
 				canBeAdded = false;
 				for (Decision decision : dominanceCDD.getPositiveInvDConeDecisionClassDistribution(i).getDecisions()) {
 					// check whether some objects not concordant with union (i.e. not in the set and not uncomparable) are present in a positive inverted dominance cone based on the object
-					if (union.isConcordantWithDecision(decision) == TernaryLogicValue.FALSE) {
+					//if (union.isConcordantWithDecision(decision) == TernaryLogicValue.FALSE) {
+					if (union.isDecisionNegative(decision)) {
 						canBeAdded = false;
 						break;
 					}
@@ -69,13 +70,14 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 				}
 			}
 		}
-		else if (union.unionType == UnionType.AT_MOST) {
+		else if (union.getUnionType() == UnionType.AT_MOST) {
 			lowerApproximationObjects = new IntLinkedOpenHashSet();
 			for (int i = 0; i < objectsCount; i++) {
 				canBeAdded = false;
 				for (Decision decision : dominanceCDD.getNegativeDConeDecisionClassDistribution(i).getDecisions()) {
 					// check whether some objects not concordant with union (i.e. not in the set and not uncomparable) are present in a negative dominance cone based on the object
-					if (union.isConcordantWithDecision(decision) == TernaryLogicValue.FALSE) {
+					//if (union.isConcordantWithDecision(decision) == TernaryLogicValue.FALSE) {
+					if (union.isDecisionNegative(decision)) {
 						canBeAdded = false;
 						break;
 					}
@@ -106,24 +108,26 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 		DominanceConesDecisionDistributions dominanceCDD = infromationTable.getDominanceConesDecisionDistributions();
 		IntSortedSet upperApproximationObjects = null;
 		
-		if (union.unionType == UnionType.AT_LEAST) {
+		if (union.getUnionType() == UnionType.AT_LEAST) {
 			upperApproximationObjects = new IntLinkedOpenHashSet();
 			for (int i = 0; i < objectsCount; i++) {
 				// check whether some objects from the set (i.e., union) are present in a negative dominance cone based on the object
 				for (Decision decision : dominanceCDD.getNegativeDConeDecisionClassDistribution(i).getDecisions()) {
-					if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
+					//if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
+					if (union.isDecisionPositive(decision)) {
 						upperApproximationObjects.add(i);
 						break;
 					}
 				}
 			}
 		}
-		else if (union.unionType == UnionType.AT_MOST) {
+		else if (union.getUnionType() == UnionType.AT_MOST) {
 			upperApproximationObjects = new IntLinkedOpenHashSet();
 			for (int i = 0; i < objectsCount; i++) {
 				// check whether some objects from the set (i.e., union) are present in a positive inverted dominance cone based on the object 
 				for (Decision decision : dominanceCDD.getPositiveInvDConeDecisionClassDistribution(i).getDecisions()) {
-					if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
+					//if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
+					if (union.isDecisionPositive(decision)) {
 						upperApproximationObjects.add(i);
 						break;
 					}
