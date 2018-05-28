@@ -114,7 +114,7 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 				// check whether some objects from the set (i.e., union) are present in a negative dominance cone based on the object
 				for (Decision decision : dominanceCDD.getNegativeDConeDecisionClassDistribution(i).getDecisions()) {
 					//if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
-					if (union.isDecisionPositive(decision) || union.isDecisionNeutral(decision)) {
+					if (union.isDecisionPositive(decision)) {
 						upperApproximationObjects.add(i);
 						break;
 					}
@@ -127,7 +127,7 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 				// check whether some objects from the set (i.e., union) are present in a positive inverted dominance cone based on the object 
 				for (Decision decision : dominanceCDD.getPositiveInvDConeDecisionClassDistribution(i).getDecisions()) {
 					//if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
-					if (union.isDecisionPositive(decision) || union.isDecisionNeutral(decision)) {
+					if (union.isDecisionPositive(decision)) {
 						upperApproximationObjects.add(i);
 						break;
 					}
