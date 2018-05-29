@@ -45,7 +45,7 @@ public abstract class ApproximatedSet {
 	/**
 	 * Set of indices of objects from an information table that belong to this positive region but not to the lower approximation.
 	 */
-	protected IntSet lowerApproximationComplement;
+	protected IntSet lowerApproximationComplement; //TODO
 	
 	/**
 	 * Set of indices of objects belonging to the upper approximation of this approximated set.
@@ -63,27 +63,28 @@ public abstract class ApproximatedSet {
 	protected InformationTable informationTable;
 	
 	/**
-	 * Rough set calculator used to calculate approximations and boundary of this set.
+	 * Rough set calculator used to calculate approximations of this set.
 	 */
 	protected RoughSetCalculator<? extends ApproximatedSet> roughSetCalculator;
 	
 	/**
-	 * Set of indices of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set.
+	 * Set of indices of objects from the information table that are inconsistent with the objects
+	 * belonging to the lower approximation of this approximated set.
 	 */
-	protected IntSet inconsistentObjectsInPositiveRegion = null;
+	protected IntSet inconsistentObjectsInPositiveRegion = null; //TODO
 	
 	/**
 	 * Set of indices of objects belonging to the positive region of this approximated set.
 	 */
-	protected IntSet positiveRegionObjects = null;
+	protected IntSet positiveRegion = null;
 	/**
 	 * Set of indices of objects belonging to the negative region of this approximated set.
 	 */
-	protected IntSet negativeRegionObjects = null;
+	protected IntSet negativeRegion = null;
 	/**
 	 * Set of indices of objects belonging to the boundary region of this approximated set.
 	 */
-	protected IntSet boundaryRegionObjects = null;
+	protected IntSet boundaryRegion = null;
 	
 	/**
 	 * Set with indices of objects belonging to this approximated set (so-called positive objects).
@@ -91,12 +92,12 @@ public abstract class ApproximatedSet {
 	protected IntSortedSet objects = null;
 	
 	/**
-	 * Limiting decision, determining which objects from the information table belong to this set.
+	 * Limiting decision, determining which objects from the information table belong to this approximated set.
 	 */
 	protected Decision limitingDecision;
 	
 	/**
-	 * Constructs this approximated set.
+	 * Constructs this approximated set using given information table, limiting decision, and rough set calculator.
 	 * 
 	 * @param informationTable information table containing, among other objects, the objects belonging to this approximated set
 	 * @param limitingDecision limiting decision, determining which objects from the information table belong to this set
@@ -129,9 +130,9 @@ public abstract class ApproximatedSet {
 	}
 	
 	/**
-	 * Gets rough set calculator.
+	 * Gets rough set calculator used to calculate approximations of this set.
 	 * 
-	 * @return rough set calculator
+	 * @return rough set calculator used to calculate approximations of this set
 	 */
 	public RoughSetCalculator<? extends ApproximatedSet> getRoughSetCalculator() {
 		return roughSetCalculator;
@@ -228,20 +229,20 @@ public abstract class ApproximatedSet {
 	 */
 	public IntSet getPositiveRegion() {
 		//TODO: verify
-		if (this.positiveRegionObjects == null) { //positive region not calculated yet
+		if (this.positiveRegion == null) { //positive region not calculated yet
 			IntSortedSet lowerApproximation = this.getLowerApproximation();
 			// TODO what if null?
 			IntSet inconsistentObjectsInPositiveRegion = this.getInconsistentObjectsInPositiveRegion();
 			
-			this.positiveRegionObjects = new IntOpenHashSet(lowerApproximation.size() + inconsistentObjectsInPositiveRegion.size());
+			this.positiveRegion = new IntOpenHashSet(lowerApproximation.size() + inconsistentObjectsInPositiveRegion.size());
 			
-			this.positiveRegionObjects.addAll(lowerApproximation);
-			this.positiveRegionObjects.addAll(inconsistentObjectsInPositiveRegion);
+			this.positiveRegion.addAll(lowerApproximation);
+			this.positiveRegion.addAll(inconsistentObjectsInPositiveRegion);
 			
-			this.positiveRegionObjects = IntSets.unmodifiable(this.positiveRegionObjects);
+			this.positiveRegion = IntSets.unmodifiable(this.positiveRegion);
 		}
 		
-		return this.positiveRegionObjects;
+		return this.positiveRegion;
 	}
 	
 	/**
@@ -260,26 +261,27 @@ public abstract class ApproximatedSet {
 	 * @return set of indices of objects belonging to the boundary region of this approximated set
 	 */
 	public IntSet getBoundaryRegion() {
-		if (this.boundaryRegionObjects == null) { //boundary region not calculated yet
+		if (this.boundaryRegion == null) { //boundary region not calculated yet
 			IntSet positiveRegion = this.getPositiveRegion();
 			IntSet negativeRegion = this.getNegativeRegion();
 			
 			int objectsCount = this.informationTable.getNumberOfObjects();
-			this.boundaryRegionObjects = new IntOpenHashSet(objectsCount - positiveRegion.size() - negativeRegion.size());
+			this.boundaryRegion = new IntOpenHashSet(objectsCount - positiveRegion.size() - negativeRegion.size());
 			
 			for (int i = 0; i < objectsCount; i++) {
 				if (!positiveRegion.contains(i) && !negativeRegion.contains(i)) {
-					this.boundaryRegionObjects.add(i);
+					this.boundaryRegion.add(i);
 				}
 			}
 			
-			this.boundaryRegionObjects = IntSets.unmodifiable(this.boundaryRegionObjects);
+			this.boundaryRegion = IntSets.unmodifiable(this.boundaryRegion);
 		}
 		
-		return this.boundaryRegionObjects;
+		return this.boundaryRegion;
 	}
 	
 	/**
+	 * TODO: verify doc
 	 * Gets the set of indices of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set
 	 *  
 	 * @return set of indices of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set
@@ -305,7 +307,7 @@ public abstract class ApproximatedSet {
 	
 	/**
 	 * Gets quality of approximation of this set.
-	 * This is the cardinality of the lower approximation divided by the number of all objects belonging to this set.
+	 * This is the cardinality of the lower approximation divided by the number of all objects belonging to this approximated set.
 	 * 
 	 * @return quality of approximation of this set by the set of all active condition attributes of the information table
 	 */
@@ -335,7 +337,7 @@ public abstract class ApproximatedSet {
 	}
 	
 	/**
-	 * Tests if this set is concordant with given decision.
+	 * Tests if this approximated set is concordant with given decision.
 	 * 
 	 * @param decision decision that limiting decision of this set should be compared with
 	 * @return {@link TernaryLogicValue#TRUE} if this sets' limiting decision is concordant with given decision,
@@ -347,9 +349,10 @@ public abstract class ApproximatedSet {
 	protected abstract TernaryLogicValue isConcordantWithDecision(Decision decision);
 	
 	/**
-	 * Gets size of the set that is complementary to this set.
+	 * Gets the size of the set of objects that is complementary to the set of objects belonging to this approximated set.
+	 * The understanding of the notion of set complementarity is on behalf of the implementing subclass.
 	 * 
-	 * @return size of the set that is complementary to this set
+	 * @return the size of the set of objects that is complementary to the set of (positive) objects belonging to this approximated set
 	 */
 	public abstract int getComplementarySetSize();
 	

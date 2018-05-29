@@ -67,7 +67,7 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * Type of this union.
+	 * Type of this union. See {@link UnionType}.
 	 */
 	protected UnionType unionType;
 	
@@ -90,7 +90,7 @@ public class Union extends ApproximatedSet {
 	
 	/**
 	 * Constructs union of ordered decision classes of given type (at least or at most), using given limiting decision (concerning the least or the most preferred decision class). Calculates objects
-	 * belonging to this union and uncomparable objects. Stores given information table and rough set calculator.
+	 * belonging to this union and neutral objects. Stores given information table and given rough set calculator.
 	 * 
 	 * @param unionType type of this union; see {@link UnionType}
 	 * @param limitingDecision decision that serves as a limit for this union; e.g., decision "3" is a limit for union "at least 3" and "at most 3" 
@@ -143,7 +143,7 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * Finds (positive) objects belonging to this union and (uncomparable) objects such that this union's limiting decision is uncomparable with their decision.
+	 * Finds (positive) objects belonging to this union and neutral (i.e., objects such that this union's limiting decision is neutral with their decision).
 	 * Assumes that information table and limiting decision have already been set.
 	 */
 	protected void findPositiveAndNeutralObjects() {
@@ -180,11 +180,11 @@ public class Union extends ApproximatedSet {
 	 * Registers opposite union of decision classes that complements this union w.r.t. set of all objects U.
 	 * This reference is useful when calculating the upper approximation of this union
 	 * by complementing the lower approximation of the opposite union.
-	 * Complementary union may be set only if the upper approximation of this union has not been calculated yet 
+	 * Complementary union may be set only if the upper approximation of this union has not been calculated yet.
 	 * 
 	 * @param union opposite union of decision classes; e.g., if there are five decision classes: 1, 2, 3, 4, 5,
 	 *        and this union concerns classes 3-5 (^gt;=3), then the opposite union concerns classes 1-2 (&lt;=2)
-	 * @return {@code true} if the upper approximation of this union has not been calculated yet,
+	 * @return {@code true} if given complementary union has been set (the upper approximation of this union has not been calculated yet),
 	 *         {@code false} otherwise 
 	 */
 	public boolean setComplementaryUnion(Union union) {
@@ -209,7 +209,7 @@ public class Union extends ApproximatedSet {
 	}
 
 	/**
-	 * Gets type of this union.
+	 * Gets type of this union. See {@link UnionType}.
 	 * 
 	 * @return type of this union
 	 */
@@ -218,9 +218,9 @@ public class Union extends ApproximatedSet {
 	}
 
 	/**
-	 * Gets the dominance-based rough set calculator used to calculate approximations and boundary of this union.
+	 * Gets the dominance-based rough set calculator used to calculate approximations of this union.
 	 * 
-	 * @return the dominance-based rough set calculator used to calculate approximations and boundary of this union
+	 * @return the dominance-based rough set calculator used to calculate approximations of this union
 	 */
 	@Override
 	public DominanceBasedRoughSetCalculator getRoughSetCalculator() {
@@ -332,9 +332,9 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * Gets the information table for which this approximated set was defined.
+	 * Gets the information table for which this union was defined.
 	 * 
-	 * @return the information table for which this approximated set was defined
+	 * @return the information table for which this union was defined
 	 */
 	public InformationTableWithDecisionDistributions getInformationTable() {
 		return (InformationTableWithDecisionDistributions)informationTable;
@@ -410,9 +410,11 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * Gets size of the set that is complementary to this union.
+	 * Gets the size of the set of objects that is complementary to the set of objects belonging to this union.
+	 * The result is calculated as the number of all objects in the information tables minus number of objects belonging to this union,
+	 * and minus number of objects that are neutral with respect to this union.
 	 * 
-	 * @return size of the set that is complementary to this union
+	 * @return the size of the set of objects that is complementary to the set of (positive) objects belonging to this union
 	 */
 	public int getComplementarySetSize() {
 		return this.informationTable.getNumberOfObjects() - this.size() - this.neutralObjects.size();
