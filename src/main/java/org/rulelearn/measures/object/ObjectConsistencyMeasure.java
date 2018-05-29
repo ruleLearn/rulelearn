@@ -36,7 +36,7 @@ public interface ObjectConsistencyMeasure<T extends ApproximatedSet> {
 	 * @param set approximated set of objects
 	 * @return consistency of the given object with respect to the given set of objects
 	 */
-	public double consistency(int objectIndex, T set);
+	public double calculateConsistency(int objectIndex, T set);
 	
 	/**
 	 * Calculates consistency of the given object with respect to the given set of objects and checks whether a given threshold is reached.
@@ -46,13 +46,24 @@ public interface ObjectConsistencyMeasure<T extends ApproximatedSet> {
 	 * @param threshold threshold specified for the  consistency measure
 	 * @return consistency of the given object with respect to the given set of objects
 	 */
-	public boolean isConsistencyThresholdReached(int objectIndex, T set, double threshold);
+	public default boolean isConsistencyThresholdReached(int objectIndex, T set, double threshold) {
+		boolean reached = false;
+		if (this.getType() == ConsistencyMeasureType.GAIN) {
+			if (this.calculateConsistency(objectIndex, set) >= threshold)
+				reached = true;
+		}
+		else if (this.getType() == ConsistencyMeasureType.COST) {
+			if (this.calculateConsistency(objectIndex, set) <= threshold)
+				reached = true;
+		}
+		return reached;
+	}
 	
 	/**
 	 * Gets type of this consistency measure.
 	 * 
 	 * @return see {@link ConsistencyMeasureType}
 	 */
-	public ConsistencyMeasureType type();
+	public ConsistencyMeasureType getType();
 	
 }
