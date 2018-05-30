@@ -92,6 +92,7 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 			upperApproximationObjects = new IntLinkedOpenHashSet();
 			
 			IntSortedSet compLowerApproximationObjects = union.getComplementaryUnion().getLowerApproximation();
+			notNull(compLowerApproximationObjects, "Complementary union is not set.");
 			for (int i = 0; i < objectsCount; i++) {
 				// check whether object i is in lower approximation of complement union
 				if (!compLowerApproximationObjects.contains(i)) {

@@ -23,7 +23,7 @@ import org.rulelearn.dominance.DominanceConesDecisionDistributions;
 import org.rulelearn.measures.ConsistencyMeasureType;
 
 /**
- * Epsilon consistency measure defined with respet to union of decision classes in Błaszczyński, J., Greco, S., Słowiński, R., Szeląg, M.: 
+ * Epsilon consistency measure defined with respect to union of decision classes in Błaszczyński, J., Greco, S., Słowiński, R., Szeląg, M.: 
  * Monotonic variable consistency rough set approaches. International Journal of Approximate Reasoning 50(7), 979--999 (2009).
  * 
  * The exact definition implemented here is more general and allows proper handling of missing values. It and involves standard and inverted
