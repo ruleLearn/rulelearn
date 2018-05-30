@@ -19,8 +19,9 @@ package org.rulelearn.approximations;
 import static org.rulelearn.core.Precondition.notNull;
 
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
-import org.rulelearn.measures.object.ObjectConsistencyMeasure;
+import org.rulelearn.measures.ConsistencyMeasure;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
@@ -33,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
  */
 public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBasedRoughSetCalculator {
 	
-	protected ObjectConsistencyMeasure<Union> lowerApproximationConsistencyMeasure;
+	protected ConsistencyMeasure<Union> lowerApproximationConsistencyMeasure;
 	protected double lowerApproximationConsistencyThreshold;
 
 	
@@ -45,7 +46,7 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	 * 
 	 * @throws NullPointerException if lower approximation consistency measure is {@code null}
 	 */
-	public VCDominanceBasedRoughSetCalculator(ObjectConsistencyMeasure<Union> lowerApproximationConsistencyMeasure, double lowerApproximationConsistencyThreshold) {
+	public VCDominanceBasedRoughSetCalculator(ConsistencyMeasure<Union> lowerApproximationConsistencyMeasure, double lowerApproximationConsistencyThreshold) {
 		super();
 		notNull(lowerApproximationConsistencyMeasure, "Consistency measure is null.");
 		
@@ -64,11 +65,13 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	@Override
 	public IntSortedSet calculateLowerApproximation(Union union) {
 		IntSortedSet lowerApproximationObjects = new IntLinkedOpenHashSet();
-		//IntSet lowerApproximationComplementObjects = new IntOpenHashSet();
+		IntIterator objectIndicesIterator  = union.getObjects().iterator();
 		
-		for (int i : union.getObjects()) {
-			if (this.lowerApproximationConsistencyMeasure.isConsistencyThresholdReached(i, union, lowerApproximationConsistencyThreshold)) {
-				lowerApproximationObjects.add(i);		
+		int objectIndex;
+		while (objectIndicesIterator.hasNext()) {
+			objectIndex = objectIndicesIterator.nextInt();
+			if (this.lowerApproximationConsistencyMeasure.isConsistencyThresholdReached(objectIndex, union, lowerApproximationConsistencyThreshold)) {
+				lowerApproximationObjects.add(objectIndex);		
 			}
 		}
 		return lowerApproximationObjects;
@@ -92,6 +95,7 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 			upperApproximationObjects = new IntLinkedOpenHashSet();
 			
 			IntSortedSet compLowerApproximationObjects = union.getComplementaryUnion().getLowerApproximation();
+			notNull(compLowerApproximationObjects, "Complementary union is not set.");
 			for (int i = 0; i < objectsCount; i++) {
 				// check whether object i is in lower approximation of complement union
 				if (!compLowerApproximationObjects.contains(i)) {
