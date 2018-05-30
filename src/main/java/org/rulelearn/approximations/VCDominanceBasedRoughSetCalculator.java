@@ -19,7 +19,7 @@ package org.rulelearn.approximations;
 import static org.rulelearn.core.Precondition.notNull;
 
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
-import org.rulelearn.measures.object.ObjectConsistencyMeasure;
+import org.rulelearn.measures.ConsistencyMeasure;
 
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
  */
 public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBasedRoughSetCalculator {
 	
-	protected ObjectConsistencyMeasure<Union> lowerApproximationConsistencyMeasure;
+	protected ConsistencyMeasure<Union> lowerApproximationConsistencyMeasure;
 	protected double lowerApproximationConsistencyThreshold;
 
 	
@@ -45,7 +45,7 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	 * 
 	 * @throws NullPointerException if lower approximation consistency measure is {@code null}
 	 */
-	public VCDominanceBasedRoughSetCalculator(ObjectConsistencyMeasure<Union> lowerApproximationConsistencyMeasure, double lowerApproximationConsistencyThreshold) {
+	public VCDominanceBasedRoughSetCalculator(ConsistencyMeasure<Union> lowerApproximationConsistencyMeasure, double lowerApproximationConsistencyThreshold) {
 		super();
 		notNull(lowerApproximationConsistencyMeasure, "Consistency measure is null.");
 		

@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package org.rulelearn.measures.object;
+package org.rulelearn.measures;
 
 import org.rulelearn.approximations.ApproximatedSet;
-import org.rulelearn.measures.ConsistencyMeasureType;
 
 /**
- * Contract of all object consistency measures.
+ * Contract of all consistency measures.
  * 
- * @param <T> type of approximated set for which the object consistency measure can be calculated
+ * @param <T> type of approximated set for which the consistency measure can be calculated
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface ObjectConsistencyMeasure<T extends ApproximatedSet> {
+public interface ConsistencyMeasure<T extends ApproximatedSet> {
 	
 	/**
 	 * Calculates consistency of the given object with respect to the given set of objects.
