@@ -21,6 +21,7 @@ import static org.rulelearn.core.Precondition.notNull;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.measures.ConsistencyMeasure;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
@@ -64,11 +65,13 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	@Override
 	public IntSortedSet calculateLowerApproximation(Union union) {
 		IntSortedSet lowerApproximationObjects = new IntLinkedOpenHashSet();
-		//IntSet lowerApproximationComplementObjects = new IntOpenHashSet();
+		IntIterator objectIndicesIterator  = union.getObjects().iterator();
 		
-		for (int i : union.getObjects()) {
-			if (this.lowerApproximationConsistencyMeasure.isConsistencyThresholdReached(i, union, lowerApproximationConsistencyThreshold)) {
-				lowerApproximationObjects.add(i);		
+		int objectIndex;
+		while (objectIndicesIterator.hasNext()) {
+			objectIndex = objectIndicesIterator.nextInt();
+			if (this.lowerApproximationConsistencyMeasure.isConsistencyThresholdReached(objectIndex, union, lowerApproximationConsistencyThreshold)) {
+				lowerApproximationObjects.add(objectIndex);		
 			}
 		}
 		return lowerApproximationObjects;
