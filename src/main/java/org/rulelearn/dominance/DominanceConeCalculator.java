@@ -26,7 +26,12 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class DominanceConeCalculator {
+public enum DominanceConeCalculator {
+	
+	/**
+	 * The only instance of this calculator.
+	 */
+	INSTANCE;
 	
 	/**
 	 * Calculates, for object having index x, set of indices of objects in its positive dominance cone w.r.t. (straight) dominance relation D.

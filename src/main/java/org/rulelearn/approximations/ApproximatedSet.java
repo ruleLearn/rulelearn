@@ -38,17 +38,12 @@ import org.rulelearn.core.TernaryLogicValue;
 public abstract class ApproximatedSet {
 	
 	/**
-	 * Set of indices of objects belonging to the lower approximation of this approximated set.
+	 * Set of indices of objects belonging to the lower approximation of this approximated set, calculated using the rough set calculator.
 	 */
 	protected IntSortedSet lowerApproximation = null;
 	
 	/**
-	 * Set of indices of objects from an information table that belong to this positive region but not to the lower approximation.
-	 */
-	protected IntSet lowerApproximationComplement; //TODO
-	
-	/**
-	 * Set of indices of objects belonging to the upper approximation of this approximated set.
+	 * Set of indices of objects belonging to the upper approximation of this approximated set, calculated using the rough set calculator.
 	 */
 	protected IntSortedSet upperApproximation = null;
 	
@@ -66,12 +61,6 @@ public abstract class ApproximatedSet {
 	 * Rough set calculator used to calculate approximations of this set.
 	 */
 	protected RoughSetCalculator<? extends ApproximatedSet> roughSetCalculator;
-	
-	/**
-	 * Set of indices of objects from the information table that are inconsistent with the objects
-	 * belonging to the lower approximation of this approximated set.
-	 */
-	protected IntSet inconsistentObjectsInPositiveRegion = null; //TODO
 	
 	/**
 	 * Set of indices of objects belonging to the positive region of this approximated set.
@@ -172,6 +161,8 @@ public abstract class ApproximatedSet {
 	
 	/**
 	 * Calculates lower approximation of this approximated set, using the rough set calculator.
+	 * 
+	 * @return set of indices of objects belonging to the lower approximation of this approximated set, calculated using the rough set calculator
 	 */
 	protected abstract IntSortedSet calculateLowerApproximation();
 	
@@ -189,8 +180,10 @@ public abstract class ApproximatedSet {
 	
 	/**
 	 * Calculates upper approximation of this approximated set, using the rough set calculator.
+	 * 
+	 * @return set of indices of objects belonging to the upper approximation of this approximated set, calculated using the rough set calculator
 	 */
-	protected abstract IntSortedSet calculateUpperApproximation();	
+	protected abstract IntSortedSet calculateUpperApproximation();
 	
 	/**
 	 * Gets set of indices of objects belonging to the boundary of this approximated set.
@@ -220,30 +213,31 @@ public abstract class ApproximatedSet {
 	}
 	
 	/**
-	 * TODO: verify doc
 	 * Gets set of indices of objects belonging to the positive region of this approximated set.
 	 * This region is composed of objects belonging to the lower approximation of this set plus
-	 * objects from the complement of this set which are inconsistent with the objects from the lower approximation. 
+	 * objects belonging to so-called granules (equivalence classes or dominance cones)
+	 * defined with respect to the objects from the lower approximation.
 	 * 
 	 * @return set of indices of objects belonging to the positive region of this approximated set
 	 */
 	public IntSet getPositiveRegion() {
-		//TODO: verify
 		if (this.positiveRegion == null) { //positive region not calculated yet
-			IntSortedSet lowerApproximation = this.getLowerApproximation();
-			// TODO what if null?
-			IntSet inconsistentObjectsInPositiveRegion = this.getInconsistentObjectsInPositiveRegion();
-			
-			this.positiveRegion = new IntOpenHashSet(lowerApproximation.size() + inconsistentObjectsInPositiveRegion.size());
-			
-			this.positiveRegion.addAll(lowerApproximation);
-			this.positiveRegion.addAll(inconsistentObjectsInPositiveRegion);
-			
-			this.positiveRegion = IntSets.unmodifiable(this.positiveRegion);
+			this.positiveRegion = IntSets.unmodifiable(this.calculatePositiveRegion(this.getLowerApproximation()));
 		}
 		
 		return this.positiveRegion;
 	}
+	
+	/**
+	 * Calculates positive region of this approximated set, using the given lower approximation.
+	 * This region is composed of objects belonging to the lower approximation of this set plus
+	 * objects belonging to so-called granules (equivalence classes or dominance cones)
+	 * defined with respect to the objects from the lower approximation.
+	 * 
+	 * @return set of indices of objects belonging to the positive region of this approximated set, calculated using given lower approximation
+	 * @throws NullPointerException if given lower approximation is {@code null}
+	 */
+	protected abstract IntSet calculatePositiveRegion(IntSortedSet lowerApproximation);
 	
 	/**
 	 * TODO: verify doc
@@ -278,21 +272,6 @@ public abstract class ApproximatedSet {
 		}
 		
 		return this.boundaryRegion;
-	}
-	
-	/**
-	 * TODO: verify doc
-	 * Gets the set of indices of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set
-	 *  
-	 * @return set of indices of objects from the information table that are inconsistent with the objects belonging to the lower approximation of this approximated set
-	 */
-	public IntSet getInconsistentObjectsInPositiveRegion() {
-		//TODO: implement
-//		if (this.positiveRegion == null) {
-//			this.positiveRegion = this.calculateLowerApproximation();
-//		}
-//		return this.positiveRegion.getLowerApproximationComplement();
-		return null;
 	}
 	
 	/**

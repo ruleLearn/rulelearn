@@ -24,8 +24,12 @@ import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
+import org.rulelearn.dominance.DominanceConeCalculator;
+
+import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSets;
@@ -50,7 +54,7 @@ import static org.rulelearn.core.Precondition.notNull;
 public class Union extends ApproximatedSet {
 	
 	/**
-	 * Type of union of decision classes.
+	 * Type of a union of decision classes.
 	 *
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -226,7 +230,7 @@ public class Union extends ApproximatedSet {
 	public DominanceBasedRoughSetCalculator getRoughSetCalculator() {
 		return (DominanceBasedRoughSetCalculator)roughSetCalculator;
 	}
-
+	
 	/**
 	 * Gets the negative region of this union, i.e., the positive region of the complementary union.
 	 * 
@@ -378,7 +382,7 @@ public class Union extends ApproximatedSet {
 	 * @param objectNumber index of an object from the information table
 	 * @return {@code true} if object with given number is neutral with respect to this union, {@code false} otherwise
 	 */
-	public boolean isObjectNeutral(int objectNumber) {
+	protected boolean isObjectNeutral(int objectNumber) {
 		return this.neutralObjects.contains(objectNumber);
 	}
 	
@@ -394,7 +398,9 @@ public class Union extends ApproximatedSet {
 	}
 
 	/**
-	 * Calculates lower approximation of this union, using the rough set calculator.
+	 * Calculates lower approximation of this union, using the dominance-based rough set calculator.
+	 * 
+	 * @return set of indices of objects belonging to the lower approximation of this union, calculated using the dominance-based rough set calculator
 	 */
 	@Override
 	protected IntSortedSet calculateLowerApproximation() {
@@ -402,11 +408,50 @@ public class Union extends ApproximatedSet {
 	}
 
 	/**
-	 * Calculates upper approximation of this union, using the rough set calculator.
+	 * Calculates upper approximation of this union, using the dominance-based rough set calculator.
+	 * 
+	 * @return set of indices of objects belonging to the upper approximation of this union, calculated using the dominance-based rough set calculator
 	 */
 	@Override
 	protected IntSortedSet calculateUpperApproximation() {
 		return this.getRoughSetCalculator().calculateUpperApproximation(this);
+	}
+	
+	/**
+	 * Calculates positive region of this union, using the given lower approximation.
+	 * This region is composed of objects belonging to the lower approximation of this union plus
+	 * objects belonging to dominance cones defined with respect to the objects from the lower approximation.
+	 * 
+	 * @return set of indices of objects belonging to the positive region of this union, calculated using given lower approximation
+	 * @throws NullPointerException if given lower approximation is {@code null}
+	 */
+	@Override
+	protected IntSet calculatePositiveRegion(IntSortedSet lowerApproximation) {
+		notNull(lowerApproximation, "Lower approximation for calculation of positive region is null.");
+		IntSet positiveRegion = new IntOpenHashSet(lowerApproximation.size()); //use estimation of the size of calculated positive region
+		
+		IntBidirectionalIterator iterator = lowerApproximation.iterator();
+		int objectIndex;
+		IntSortedSet dominanceCone;
+		
+		while (iterator.hasNext()) {
+			objectIndex = iterator.nextInt();
+		
+			switch (this.getUnionType()) {
+			case AT_LEAST:
+				dominanceCone = DominanceConeCalculator.INSTANCE.calculatePositiveInvDCone(objectIndex, this.informationTable);
+				break;
+			case AT_MOST:
+				dominanceCone = DominanceConeCalculator.INSTANCE.calculateNegativeDCone(objectIndex, this.informationTable);
+				break;
+			default:
+				throw new InvalidValueException("Unexpected union type."); //this should not happen
+			}
+			
+			positiveRegion.addAll(dominanceCone);
+		}
+		
+		return positiveRegion;
 	}
 	
 	/**
