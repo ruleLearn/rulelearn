@@ -27,7 +27,7 @@ import org.rulelearn.measures.ConsistencyMeasure;
  * Epsilon consistency measure defined with respect to union of decision classes in Błaszczyński, J., Greco, S., Słowiński, R., Szeląg, M.: 
  * Monotonic variable consistency rough set approaches. International Journal of Approximate Reasoning 50(7), 979--999 (2009).
  * 
- * The exact definition implemented here is more general and allows proper handling of missing values. It and involves standard and inverted
+ * The exact definition implemented here is more general and allows proper handling of missing values. It involves standard and inverted
  * dominance relations as defined in M. Szeląg, J. Błaszczyński, R. Słowiński, Rough Set Analysis of Classification Data with Missing Values. [In]:
  * L. Polkowski et al. (Eds.): Rough Sets, International Joint Conference, IJCRS 2017, Olsztyn, Poland, July 3–7, 2017, Proceedings, Part I.
  * Lecture Notes in Artificial Intelligence, vol. 10313, Springer, 2017, pp. 552–565.   

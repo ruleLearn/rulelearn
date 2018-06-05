@@ -26,8 +26,15 @@ import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
- * VCDominanceBasedRoughSetCalculator (assumes x \in X)
- * TODO: write javadoc
+ * Calculator of variable consistency rough approximations of a union of decision classes according to Variable Consistency Dominance-based Rough Set Approach (VC-DRSA). 
+ * For more details about VC-DRSA please refer to Błaszczyński, J., Greco, S., Słowiński, R., Szeląg, M.: 
+ * Monotonic variable consistency rough set approaches. International Journal of Approximate Reasoning 50(7), 979--999 (2009).
+ * 
+ * The precise definition implemented here is more general and allows proper handling of missing values. 
+ * It involves standard and inverted dominance relations as defined in M. Szeląg, J. Błaszczyński, R. Słowiński, 
+ * Rough Set Analysis of Classification Data with Missing Values. [In]:
+ * L. Polkowski et al. (Eds.): Rough Sets, International Joint Conference, IJCRS 2017, Olsztyn, Poland, July 3–7, 2017, Proceedings, Part I.
+ * Lecture Notes in Artificial Intelligence, vol. 10313, Springer, 2017, pp. 552–565. 
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -39,7 +46,8 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 
 	
 	/**
-	 * TODO: add javadoc
+	 * Constructs calculator for specified consistency measure and threshold value used to limit consitency of objects included in 
+	 * extended lower approximation of a union of decision classes. 
 	 * 
 	 * @param lowerApproximationConsistencyMeasure object consistency measures applied when calculating lower approximation
 	 * @param lowerApproximationConsistencyThreshold threshold for object consistency measures applied when calculating lower approximation
@@ -55,12 +63,10 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	}
 	
 	/**
-	 * Calculate lower approximation of an union according to the definition...
-	 * TODO: write javadoc
+	 * Calculates extended (variable consistency) lower approximation of a union of decision classes.
 	 * 
 	 * @param union union of interest; should not be {@code null}
-	 * @return positive region {@link PositiveRegion} containing set of indices of objects belonging to the lower approximation of the union and complement 
-	 * of the lower approximation
+	 * @return positive region {@link PositiveRegion} containing set of indices of objects belonging to the lower approximation of the given union
 	 */
 	@Override
 	public IntSortedSet calculateLowerApproximation(Union union) {
@@ -78,12 +84,12 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	}
 	
 	/**
-	 * Calculate upper approximation of an union according to the definition...
-	 * TODO: write javadoc
+	 * Calculates variable consistency upper approximation of a union of decision classes.
+	 * 
 	 * TODO: only one decision
 	 * 
 	 * @param union union of interest; should not be {@code null}
-	 * @return set of indices of objects belonging to the upper approximation of the given set
+	 * @return set of indices of objects belonging to the upper approximation of the given union
 	 */
 	@Override
 	public IntSortedSet calculateUpperApproximation(Union union) {

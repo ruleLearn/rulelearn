@@ -17,7 +17,7 @@
 package org.rulelearn.approximations;
 
 /**
- * TODO: write javadoc
+ * Contract for classes capable of calculating extended dominance-based rough approximations of a union of decision classes.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

@@ -19,7 +19,7 @@ package org.rulelearn.approximations;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
- * Rough set calculator capable of calculating lower/upper approximation of an approximated set.
+ * Contract for classes capable of calculating lower and upper approximations of an approximated set.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

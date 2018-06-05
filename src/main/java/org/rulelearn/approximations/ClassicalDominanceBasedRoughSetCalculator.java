@@ -26,8 +26,13 @@ import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
- * Class calculating approximations of unions according to the classical Dominance-based Rough Set Approach (DRSA).
- * TODO: write javadoc
+ * Calculator of rough approximations of a union of decision classes according to the classical definition of Dominance-based Rough Set Approach (DRSA or CDRSA).
+ * 
+ * The precise definition implemented here is more general and allows proper handling of missing values. 
+ * It involves standard and inverted dominance relations as defined in M. Szeląg, J. Błaszczyński, R. Słowiński, 
+ * Rough Set Analysis of Classification Data with Missing Values. [In]:
+ * L. Polkowski et al. (Eds.): Rough Sets, International Joint Conference, IJCRS 2017, Olsztyn, Poland, July 3–7, 2017, Proceedings, Part I.
+ * Lecture Notes in Artificial Intelligence, vol. 10313, Springer, 2017, pp. 552–565.   
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -35,8 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBasedRoughSetCalculator {
 	
 	/**
-	 * Calculate lower approximation of an union according to the definition...
-	 * TODO: write javadoc
+	 * Calculates lower approximation of a union of decision classes.
 	 * 
 	 * @param union union of interest; should not be {@code null}
 	 * @return set of indices of objects belonging to the lower approximation of this approximated set
@@ -95,8 +99,7 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 	}
 	
 	/**
-	 * Calculate upper approximation of an union according to the definition...
-	 * TODO: write javadoc
+	 * Calculates upper approximation of a union of decision classes.
 	 * 
 	 * @param union union of interest; should not be {@code null}
 	 * @return sorted set of indices of objects belonging to the upper approximation of the union
