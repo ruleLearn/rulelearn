@@ -242,6 +242,7 @@ public abstract class ApproximatedSet {
 	 * defined with respect to the objects from the lower approximation.
 	 * 
 	 * @return set of indices of objects belonging to the positive region of this approximated set, calculated using given lower approximation
+	 * @param lowerApproximation lower approximation of this approximated set
 	 * @throws NullPointerException if given lower approximation is {@code null}
 	 */
 	protected abstract IntSet calculatePositiveRegion(IntSortedSet lowerApproximation);

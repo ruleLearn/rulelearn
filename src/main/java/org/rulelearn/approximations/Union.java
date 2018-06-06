@@ -170,7 +170,7 @@ public class Union extends ApproximatedSet {
 	 * @param includeLimitingDecision tells if objects having decision equal to the limiting decision of this union should be included in this union
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
-	 * @throws see {@link #validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}
+	 * @throws InvalidValueException see {@link #validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}
 	 */
 	protected Union(UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator, boolean includeLimitingDecision) {
 		super(informationTable, limitingDecision, roughSetCalculator);
