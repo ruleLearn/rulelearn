@@ -18,7 +18,6 @@ package org.rulelearn.approximations;
 
 import static org.rulelearn.core.Precondition.notNull;
 
-import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.measures.ConsistencyMeasure;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -85,34 +84,22 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	
 	/**
 	 * Calculates variable consistency upper approximation of a union of decision classes.
-	 * 
-	 * TODO: only one decision
-	 * 
+	 *  
 	 * @param union union of interest; should not be {@code null}
 	 * @return set of indices of objects belonging to the upper approximation of the given union
 	 */
 	@Override
 	public IntSortedSet calculateUpperApproximation(Union union) {
-		IntSortedSet upperApproximationObjects = null;
-		//check whether the union is defined for only one decision criterion
-		if (union.getLimitingDecision().getNumberOfEvaluations() == 1) {
-			InformationTableWithDecisionDistributions infromationTable = union.getInformationTable();
-			int objectsCount = infromationTable.getNumberOfObjects();
-			upperApproximationObjects = new IntLinkedOpenHashSet();
-			
-			IntSortedSet compLowerApproximationObjects = union.getComplementaryUnion().getLowerApproximation();
-			notNull(compLowerApproximationObjects, "Complementary union is not set.");
-			for (int i = 0; i < objectsCount; i++) {
-				// check whether object i is in lower approximation of complement union
-				if (!compLowerApproximationObjects.contains(i)) {
-					upperApproximationObjects.add(i);
-				}
+		IntSortedSet upperApproximationObjects = new IntLinkedOpenHashSet();
+		int objectsCount = union.getInformationTable().getNumberOfObjects();
+		
+		IntSortedSet compLowerApproximationObjects = union.getComplementaryUnion().getLowerApproximation();
+		for (int i = 0; i < objectsCount; i++) {
+			// check whether object i is in lower approximation of complement union
+			if (!compLowerApproximationObjects.contains(i)) {
+				upperApproximationObjects.add(i);
 			}
 		}
-		else {
-			throw new UnsupportedOperationException();
-		}
-		
 		return upperApproximationObjects;
 	}
 }
