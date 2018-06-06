@@ -86,6 +86,13 @@ public abstract class ApproximatedSet {
 	protected Decision limitingDecision;
 	
 	/**
+	 * Indicates if objects having decision equal to the limiting decision of this approximated set should be included in this approximated set.
+	 * Value of this field affects calculation of objects belonging to this set.
+	 * Defaults to {@code true}.
+	 */
+	protected boolean includeLimitingDecision = true;
+	
+	/**
 	 * Constructs this approximated set using given information table, limiting decision, and rough set calculator.
 	 * 
 	 * @param informationTable information table containing, among other objects, the objects belonging to this approximated set
@@ -240,9 +247,8 @@ public abstract class ApproximatedSet {
 	protected abstract IntSet calculatePositiveRegion(IntSortedSet lowerApproximation);
 	
 	/**
-	 * TODO: verify doc
-	 * Gets set of indices of objects belonging to the negative region of this approximated set,
-	 * i.e., to the positive region of the complement of this approximated set.
+	 * Gets set of indices of objects belonging to the negative region of this approximated set.
+	 * The negative region is a set difference between positive region of the complement of this set and positive region of this set.
 	 * 
 	 * @return set of indices of objects belonging to the negative region of this approximated set
 	 */

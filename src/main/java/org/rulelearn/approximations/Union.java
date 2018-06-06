@@ -76,8 +76,8 @@ public class Union extends ApproximatedSet {
 	protected UnionType unionType;
 	
 	/**
-	 * Reference to opposite union of decision classes that complements this union w.r.t. set of all objects U. This reference is useful when calculating the upper approximation of this union
-	 * by complementing the lower approximation of the opposite union. Initialized with {@code null}. Can be updated by {@link #setComplementaryUnion(Union)} method.
+	 * Reference to complementary union of decision classes that complements this union w.r.t. set of all objects U. This reference is useful, e.g., when calculating the upper approximation of this union using VC-DRSA
+	 * (by complementing the lower approximation of the complementary union). Initialized with {@code null}. Can be updated by {@link #setComplementaryUnion(Union)} method.
 	 */
 	protected Union complementaryUnion = null;
 	
@@ -108,10 +108,24 @@ public class Union extends ApproximatedSet {
 	 */
 	public Union(UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator) {
 		super(informationTable, limitingDecision, roughSetCalculator);
-		
 		this.unionType = notNull(unionType, "Union type is null.");
+		validateLimitingDecision(limitingDecision, informationTable);
 		
-		IntSet attributeIndices = this.limitingDecision.getAttributeIndices();
+		this.findPositiveAndNeutralObjects();
+	}
+	
+	/**
+	 * Validates given limiting decision, taking into account given information table.
+	 * 
+	 * @param limitingDecision decision that serves as a limit for this union; e.g., decision "3" is a limit for union "at least 3" and "at most 3"
+	 * @param informationTable information table with considered objects, some of which belong to this union
+	 * 
+	 * @throws InvalidValueException if any of the attributes contributing to given limiting decision is not an evaluation attribute
+	 * @throws InvalidValueException if any of the attributes contributing to given limiting decision is not an active decision attribute
+	 * @throws InvalidValueException if none of the attributes contributing to given limiting decision is ordinal
+	 */
+	protected void validateLimitingDecision(Decision limitingDecision, InformationTableWithDecisionDistributions informationTable) {
+		IntSet attributeIndices = limitingDecision.getAttributeIndices();
 		IntIterator attributeIndicesIterator  = attributeIndices.iterator();
 		int attributeIndex;
 		Attribute attribute;
@@ -122,7 +136,7 @@ public class Union extends ApproximatedSet {
 		//check attributes contributing to the limiting decision
 		while (attributeIndicesIterator.hasNext()) {
 			attributeIndex = attributeIndicesIterator.nextInt();
-			attribute = this.informationTable.getAttribute(attributeIndex);
+			attribute = informationTable.getAttribute(attributeIndex);
 			
 			if (attribute instanceof EvaluationAttribute) {
 				evaluationAttribute = (EvaluationAttribute) attribute;
@@ -142,6 +156,28 @@ public class Union extends ApproximatedSet {
 		if (!activeDecisionCriterionFound) {
 			throw new InvalidValueException("Cannot create union of ordered decision classes - none of the attributes contributing to union's limiting decision is ordinal.");
 		}
+	}
+	
+	/**
+	 * Constructs union of ordered decision classes of given type (at least or at most), using given limiting decision (concerning the least or the most preferred decision class). Calculates objects
+	 * belonging to this union and neutral objects. Stores given information table and given rough set calculator. Takes into account the flag concerning inclusion of objects
+	 * having decision equal to the limiting decision of this union. 
+	 * 
+	 * @param unionType see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param limitingDecision see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param informationTable see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param roughSetCalculator see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param includeLimitingDecision tells if objects having decision equal to the limiting decision of this union should be included in this union
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws see {@link #validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}
+	 */
+	protected Union(UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator, boolean includeLimitingDecision) {
+		super(informationTable, limitingDecision, roughSetCalculator);
+		this.unionType = notNull(unionType, "Union type is null.");
+		validateLimitingDecision(limitingDecision, informationTable);
+		
+		this.includeLimitingDecision = includeLimitingDecision; //set flag concerning inclusion of limiting decision
 		
 		this.findPositiveAndNeutralObjects();
 	}
@@ -181,19 +217,19 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * Registers opposite union of decision classes that complements this union w.r.t. set of all objects U.
-	 * This reference is useful when calculating the upper approximation of this union
-	 * by complementing the lower approximation of the opposite union.
-	 * Complementary union may be set only if the upper approximation of this union has not been calculated yet.
+	 * Registers complementary union of decision classes that complements this union w.r.t. set of all objects U.
+	 * This reference is useful, e.g., when calculating the upper approximation of this union using VC-DRSA
+	 * (by complementing the lower approximation of the complementary union).
+	 * Complementary union may be set only if it is not already stored in this union.
 	 * 
-	 * @param union opposite union of decision classes; e.g., if there are five decision classes: 1, 2, 3, 4, 5,
-	 *        and this union concerns classes 3-5 (^gt;=3), then the opposite union concerns classes 1-2 (&lt;=2)
-	 * @return {@code true} if given complementary union has been set (the upper approximation of this union has not been calculated yet),
+	 * @param union complementary union of decision classes; e.g., if there are five decision classes: 1, 2, 3, 4, 5,
+	 *        and this union concerns classes 3-5 (^gt;=3), then the complementary union concerns classes 1-2 (&lt;=2)
+	 * @return {@code true} if given union has been set as a complementary union,
 	 *         {@code false} otherwise 
 	 */
 	public boolean setComplementaryUnion(Union union) {
-		//accept change if upper appr. not already calculated
-		if (this.upperApproximation == null) {
+		//accept change only if the complementary union has not been set nor calculated yet
+		if (this.complementaryUnion == null) {
 			this.complementaryUnion = union;
 			return true;
 		} else {
@@ -202,13 +238,26 @@ public class Union extends ApproximatedSet {
 	}
 
 	/**
-	 * Gets opposite union of decision classes that complements this union w.r.t. set of all objects U.
-	 * Can be {@code null} if complementary union has not been set using {@link #setComplementaryUnion(Union)} method.
+	 * Gets complementary union of decision classes that complements this union w.r.t. set of all objects U.
 	 * 
-	 * @return opposite union of decision classes; e.g., if there are five decision classes: 1, 2, 3, 4, 5, and this union concerns classes 3-5 (&gt;=3),
-	 *         then the opposite union concerns classes 1-2 (&lt;=2)
+	 * @return complementary union of decision classes; e.g., if there are five decision classes: 1, 2, 3, 4, 5, and this union concerns classes 3-5 (&gt;=3),
+	 *         then the complementary union concerns classes 1-2 (&lt;=2)
 	 */
 	public Union getComplementaryUnion() {
+		if (this.complementaryUnion == null) {
+			UnionType complementaryUnionType = null;
+			
+			switch (this.unionType) {
+			case AT_LEAST:
+				complementaryUnionType = UnionType.AT_MOST;
+				break;
+			case AT_MOST:
+				complementaryUnionType = UnionType.AT_LEAST;
+				break;
+			}
+			this.complementaryUnion = new Union(complementaryUnionType, this.limitingDecision, this.getInformationTable(), this.getRoughSetCalculator(), false);
+		}
+		
 		return this.complementaryUnion;
 	}
 
@@ -263,31 +312,60 @@ public class Union extends ApproximatedSet {
 	protected TernaryLogicValue isConcordantWithDecision(Decision decision) {
 		notNull(decision, "Decision tested for concordance with union is null.");
 		
-		switch (this.unionType) {
-		case AT_LEAST:
-			if (this.limitingDecision.isAtMostAsGoodAs(decision) == TernaryLogicValue.TRUE) {
-				return TernaryLogicValue.TRUE;
-			} else {
-				//limiting decision is strictly better (as equality was eliminated above)
-				if (this.limitingDecision.isAtLeastAsGoodAs(decision) == TernaryLogicValue.TRUE) {
-					return TernaryLogicValue.FALSE;
-				} else { //union's limiting decision is uncomparable with given decision 
-					return TernaryLogicValue.UNCOMPARABLE;
-				}
-			}
-		case AT_MOST:
-			if (this.limitingDecision.isAtLeastAsGoodAs(decision) == TernaryLogicValue.TRUE) {
-				return TernaryLogicValue.TRUE;
-			} else {
-				//limiting decision is strictly worse (as equality was eliminated above)
+		if (this.includeLimitingDecision) { //"normal" union
+			switch (this.unionType) {
+			case AT_LEAST:
 				if (this.limitingDecision.isAtMostAsGoodAs(decision) == TernaryLogicValue.TRUE) {
-					return TernaryLogicValue.FALSE;
-				} else { //union's limiting decision is uncomparable with given decision 
-					return TernaryLogicValue.UNCOMPARABLE;
+					return TernaryLogicValue.TRUE;
+				} else {
+					//limiting decision is strictly better (as equality was eliminated above)
+					if (this.limitingDecision.isAtLeastAsGoodAs(decision) == TernaryLogicValue.TRUE) {
+						return TernaryLogicValue.FALSE;
+					} else { //union's limiting decision is uncomparable with given decision 
+						return TernaryLogicValue.UNCOMPARABLE;
+					}
 				}
+			case AT_MOST:
+				if (this.limitingDecision.isAtLeastAsGoodAs(decision) == TernaryLogicValue.TRUE) {
+					return TernaryLogicValue.TRUE;
+				} else {
+					//limiting decision is strictly worse (as equality was eliminated above)
+					if (this.limitingDecision.isAtMostAsGoodAs(decision) == TernaryLogicValue.TRUE) {
+						return TernaryLogicValue.FALSE;
+					} else { //union's limiting decision is uncomparable with given decision 
+						return TernaryLogicValue.UNCOMPARABLE;
+					}
+				}
+			default:
+				throw new InvalidValueException("Unexpected union type."); //this should not happen
 			}
-		default:
-			throw new InvalidValueException("Unexpected union type."); //this should not happen
+		} else { //"strict union"
+			switch (this.unionType) {
+			case AT_LEAST:
+				if (this.limitingDecision.isAtLeastAsGoodAs(decision) == TernaryLogicValue.TRUE) { //includes equality of decisions
+					return TernaryLogicValue.FALSE;
+				} else {
+					//limiting decision is strictly worse (as equality was eliminated above)
+					if (this.limitingDecision.isAtMostAsGoodAs(decision) == TernaryLogicValue.TRUE) {
+						return TernaryLogicValue.TRUE;
+					} else { //union's limiting decision is uncomparable with given decision 
+						return TernaryLogicValue.UNCOMPARABLE;
+					}
+				}
+			case AT_MOST:
+				if (this.limitingDecision.isAtMostAsGoodAs(decision) == TernaryLogicValue.TRUE) { //includes equality of decisions
+					return TernaryLogicValue.FALSE;
+				} else {
+					//limiting decision is strictly better (as equality was eliminated above)
+					if (this.limitingDecision.isAtLeastAsGoodAs(decision) == TernaryLogicValue.TRUE) {
+						return TernaryLogicValue.TRUE;
+					} else { //union's limiting decision is uncomparable with given decision 
+						return TernaryLogicValue.UNCOMPARABLE;
+					}
+				}
+			default:
+				throw new InvalidValueException("Unexpected union type."); //this should not happen
+			}
 		}
 	}
 	
@@ -439,10 +517,10 @@ public class Union extends ApproximatedSet {
 		
 			switch (this.getUnionType()) {
 			case AT_LEAST:
-				dominanceCone = DominanceConeCalculator.INSTANCE.calculatePositiveInvDCone(objectIndex, this.informationTable);
+				dominanceCone = DominanceConeCalculator.INSTANCE.calculatePositiveInvDCone(objectIndex, this.informationTable); //SIC! hardcoded type of dominance cone
 				break;
 			case AT_MOST:
-				dominanceCone = DominanceConeCalculator.INSTANCE.calculateNegativeDCone(objectIndex, this.informationTable);
+				dominanceCone = DominanceConeCalculator.INSTANCE.calculateNegativeDCone(objectIndex, this.informationTable); //SIC! hardcoded type of dominance cone
 				break;
 			default:
 				throw new InvalidValueException("Unexpected union type."); //this should not happen
