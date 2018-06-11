@@ -20,11 +20,11 @@ import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Union.UnionType;
 import org.rulelearn.data.Decision;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
-import org.rulelearn.measures.ConsistencyMeasureType;
 import org.rulelearn.measures.ConsistencyMeasure;
+import org.rulelearn.measures.ConsistencyMeasureType;
 
 /**
- * Epsilon consistency measure defined with respect to union of decision classes in Błaszczyński, J., Greco, S., Słowiński, R., Szeląg, M.: 
+ * Rough membership consistency measure defined with respect to union of decision classes in Błaszczyński, J., Greco, S., Słowiński, R., Szeląg, M.: 
  * Monotonic variable consistency rough set approaches. International Journal of Approximate Reasoning 50(7), 979--999 (2009).
  * 
  * The exact definition implemented here is more general and allows proper handling of missing values. It involves standard and inverted
@@ -35,42 +35,43 @@ import org.rulelearn.measures.ConsistencyMeasure;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class EpsilonConsistencyMeasure implements ConsistencyMeasure<Union> {
-
-	protected final static double BEST_VALUE = 0.0;
-	protected final static double WORST_VALUE = 1.0;
+public class RoughMembershipMeasure implements ConsistencyMeasure<Union> {
+	protected final static double BEST_VALUE = 1.0;
+	protected final static double WORST_VALUE = 0.0;
 	
 	/**
-	 * Calculates value of epsilon consistency of the given object with respect to the given union of decision classes.
+	 * Calculates value of rough membership of the given object with respect to the given union of decision classes.
 	 * 
 	 * @param objectIndex index of an object in the information table for which approximated set is defined
 	 * @param union approximated union
-	 * @return value of epsilon consistency measure for the given object with respect to the given union
+	 * @return value of rough membership measure for the given object with respect to the given union
 	 */
 	@Override
 	public double calculateConsistency(int objectIndex, Union union) {
 		DominanceConesDecisionDistributions dominanceCDD = union.getInformationTable().getDominanceConesDecisionDistributions();
-		int negativeCount = 0;
+		int count = 0, positiveCount = 0;
 		
 		if (union.getUnionType() == UnionType.AT_LEAST) {
 			for (Decision decision : dominanceCDD.getPositiveInvDConeDecisionClassDistribution(objectIndex).getDecisions()) {
-				// check how many objects in a positive inverted dominance cone based on the object are not concordant with the union (i.e., not in the union and not uncomparable) 
-				if (union.isDecisionNegative(decision)) {
-					negativeCount += dominanceCDD.getPositiveInvDConeDecisionClassDistribution(objectIndex).getCount(decision);
+				// check how many objects in a positive inverted dominance cone based on the object are concordant with the union (i.e., in the union) 
+				if (union.isDecisionPositive(decision)) {
+					positiveCount += dominanceCDD.getPositiveInvDConeDecisionClassDistribution(objectIndex).getCount(decision);
 				}
+				count += dominanceCDD.getPositiveInvDConeDecisionClassDistribution(objectIndex).getCount(decision); 
 			}
 		
 		}
 		else if (union.getUnionType() == UnionType.AT_MOST) {
 			for (Decision decision : dominanceCDD.getNegativeDConeDecisionClassDistribution(objectIndex).getDecisions()) {
-				// check how many objects in a negative dominance cone based on the object are not concordant with the union (i.e., not in the union and not uncomparable) 
-				if (union.isDecisionNegative(decision)) {
-					negativeCount += dominanceCDD.getNegativeDConeDecisionClassDistribution(objectIndex).getCount(decision);
+				// check how many objects in a negative dominance cone based on the object are concordant with the union (i.e., in the union) 
+				if (union.isDecisionPositive(decision)) {
+					positiveCount += dominanceCDD.getNegativeDConeDecisionClassDistribution(objectIndex).getCount(decision);
 				}
+				count += dominanceCDD.getNegativeDConeDecisionClassDistribution(objectIndex).getCount(decision); 
 			}
 		} 
 		
-		return (((double)negativeCount) / union.getComplementarySetSize());
+		return (((double)positiveCount) / count);
 	}
 
 	/* 
@@ -78,7 +79,6 @@ public class EpsilonConsistencyMeasure implements ConsistencyMeasure<Union> {
 	 */
 	@Override
 	public ConsistencyMeasureType getType() {
-		return ConsistencyMeasureType.COST;
+		return ConsistencyMeasureType.GAIN;
 	}
-
 }
