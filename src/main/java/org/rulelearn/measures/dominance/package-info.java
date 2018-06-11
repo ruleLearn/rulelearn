@@ -16,7 +16,7 @@
 
 /**
  * Package grouping different dominance-based consistency measures. These measures are capable of measuring consistency of an object from an information table
- *  with respect to a single set of objects.
+ * with respect to a single union of ordered decision classes.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
