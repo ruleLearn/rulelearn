@@ -42,32 +42,40 @@ public class RoughMembershipMeasure implements ConsistencyMeasure<Union> {
 	/**
 	 * Calculates value of rough membership of the given object with respect to the given union of decision classes.
 	 * 
-	 * @param objectIndex index of an object in the information table for which approximated set is defined
+	 * @param objectIndex index of an object in the information table for which the given union is defined
 	 * @param union approximated union
 	 * @return value of rough membership measure for the given object with respect to the given union
 	 */
 	@Override
 	public double calculateConsistency(int objectIndex, Union union) {
 		DominanceConesDecisionDistributions dominanceCDD = union.getInformationTable().getDominanceConesDecisionDistributions();
-		int count = 0, positiveCount = 0;
+		int count = 0, positiveCount = 0, delta = 0;
 		
 		if (union.getUnionType() == UnionType.AT_LEAST) {
 			for (Decision decision : dominanceCDD.getPositiveInvDConeDecisionClassDistribution(objectIndex).getDecisions()) {
+				delta = dominanceCDD.getPositiveInvDConeDecisionClassDistribution(objectIndex).getCount(decision);
 				// check how many objects in a positive inverted dominance cone based on the object are concordant with the union (i.e., in the union) 
 				if (union.isDecisionPositive(decision)) {
-					positiveCount += dominanceCDD.getPositiveInvDConeDecisionClassDistribution(objectIndex).getCount(decision);
+					positiveCount += delta;
+					count += delta;
 				}
-				count += dominanceCDD.getPositiveInvDConeDecisionClassDistribution(objectIndex).getCount(decision); 
+				else {
+					count += delta;
+				} 
 			}
 		
 		}
 		else if (union.getUnionType() == UnionType.AT_MOST) {
 			for (Decision decision : dominanceCDD.getNegativeDConeDecisionClassDistribution(objectIndex).getDecisions()) {
+				delta = dominanceCDD.getNegativeDConeDecisionClassDistribution(objectIndex).getCount(decision);
 				// check how many objects in a negative dominance cone based on the object are concordant with the union (i.e., in the union) 
 				if (union.isDecisionPositive(decision)) {
-					positiveCount += dominanceCDD.getNegativeDConeDecisionClassDistribution(objectIndex).getCount(decision);
+					positiveCount += delta;
+					count += delta;
 				}
-				count += dominanceCDD.getNegativeDConeDecisionClassDistribution(objectIndex).getCount(decision); 
+				else {
+					count += delta;
+				}
 			}
 		} 
 		

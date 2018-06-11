@@ -43,7 +43,7 @@ public class EpsilonConsistencyMeasure implements ConsistencyMeasure<Union> {
 	/**
 	 * Calculates value of epsilon consistency of the given object with respect to the given union of decision classes.
 	 * 
-	 * @param objectIndex index of an object in the information table for which approximated set is defined
+	 * @param objectIndex index of an object in the information table for which the given union is defined
 	 * @param union approximated union
 	 * @return value of epsilon consistency measure for the given object with respect to the given union
 	 */
