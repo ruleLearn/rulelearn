@@ -239,26 +239,37 @@ public class Union extends ApproximatedSet {
 
 	/**
 	 * Gets complementary union of decision classes that complements this union w.r.t. set of all objects U.
+	 * E.g., if there are five decision classes: 1, 2, 3, 4, 5, and this union concerns classes 3-5 (&gt;=3),
+	 * then the complementary union concerns classes 1-2 (&lt;=2).
 	 * 
-	 * @return complementary union of decision classes; e.g., if there are five decision classes: 1, 2, 3, 4, 5, and this union concerns classes 3-5 (&gt;=3),
-	 *         then the complementary union concerns classes 1-2 (&lt;=2)
+	 * @return complementary union of decision classes 
 	 */
 	public Union getComplementaryUnion() {
 		if (this.complementaryUnion == null) {
-			UnionType complementaryUnionType = null;
-			
-			switch (this.unionType) {
-			case AT_LEAST:
-				complementaryUnionType = UnionType.AT_MOST;
-				break;
-			case AT_MOST:
-				complementaryUnionType = UnionType.AT_LEAST;
-				break;
-			}
-			this.complementaryUnion = new Union(complementaryUnionType, this.limitingDecision, this.getInformationTable(), this.getRoughSetCalculator(), false);
+			this.complementaryUnion = calculateComplementaryUnion();
 		}
 		
 		return this.complementaryUnion;
+	}
+	
+	/**
+	 * Calculates complementary union of decision classes that complements this union w.r.t. set of all objects U.
+	 * 
+	 * @return complementary union of decision classes
+	 */
+	protected Union calculateComplementaryUnion() {
+		UnionType complementaryUnionType = null;
+		
+		switch (this.unionType) {
+		case AT_LEAST:
+			complementaryUnionType = UnionType.AT_MOST;
+			break;
+		case AT_MOST:
+			complementaryUnionType = UnionType.AT_LEAST;
+			break;
+		}
+		
+		return new Union(complementaryUnionType, this.limitingDecision, this.getInformationTable(), this.getRoughSetCalculator(), false);
 	}
 
 	/**
@@ -281,14 +292,29 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * Gets the negative region of this union, i.e., the positive region of the complementary union.
+	 * Calculates the negative region of this union.
+	 * This region is composed of objects belonging to the positive region of the complementary union, but not to the positive region of this union.
 	 * 
-	 * @return the negative region of this union, i.e., the positive region of the complementary union
+	 * @return the negative region of this union
 	 */
 	@Override
-	public IntSortedSet getNegativeRegion() {
-		// TODO: implement using complementaryUnion
-		throw new UnsupportedOperationException();
+	protected IntSet calculateNegativeRegion() {
+		IntSet complementaryUnionPositiveRegion = this.getComplementaryUnion().getPositiveRegion();
+		IntSet positiveRegion = this.getPositiveRegion();
+		
+		IntSet negativeRegion = new IntOpenHashSet();
+		
+		IntIterator iterator = complementaryUnionPositiveRegion.iterator();
+		int objectIndex;
+		
+		while (iterator.hasNext()) {
+			objectIndex = iterator.nextInt();
+			if (!positiveRegion.contains(objectIndex)) {
+				negativeRegion.add(objectIndex);
+			}
+		}
+		
+		return negativeRegion;
 	}
 	
 	/**
