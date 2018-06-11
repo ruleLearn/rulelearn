@@ -249,11 +249,25 @@ public abstract class ApproximatedSet {
 	
 	/**
 	 * Gets set of indices of objects belonging to the negative region of this approximated set.
-	 * The negative region is a set difference between positive region of the complement of this set and positive region of this set.
+	 * The negative region is a (set) difference between positive region of the complement of this approximated set and positive region of this approximated set.
 	 * 
 	 * @return set of indices of objects belonging to the negative region of this approximated set
 	 */
-	public abstract IntSet getNegativeRegion();
+	public IntSet getNegativeRegion() {
+		if (this.negativeRegion == null) { //negative region not calculated yet
+			this.negativeRegion = IntSets.unmodifiable(this.calculateNegativeRegion());
+		}
+		
+		return this.negativeRegion;
+	}
+	
+	/**
+	 * Calculates negative region of this approximated set.
+	 * This region is composed of objects belonging to the positive region of the complement of this approximated set, but not to the positive region of this approximated set.
+	 * 
+	 * @return set of indices of objects belonging to the negative region of this approximated set
+	 */
+	protected abstract IntSet calculateNegativeRegion();
 	
 	/**
 	 * Gets set of indices of objects belonging to the boundary region of this approximated set, i.e., the set of objects that are neither
