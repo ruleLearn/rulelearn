@@ -65,7 +65,7 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	 * Calculates extended (variable consistency) lower approximation of a union of decision classes.
 	 * 
 	 * @param union union of interest; should not be {@code null}
-	 * @return positive region {@link PositiveRegion} containing set of indices of objects belonging to the lower approximation of the given union
+	 * @return set of indices of objects belonging to the lower approximation of the given union
 	 */
 	@Override
 	public IntSortedSet calculateLowerApproximation(Union union) {
