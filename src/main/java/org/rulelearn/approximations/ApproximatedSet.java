@@ -161,7 +161,7 @@ public abstract class ApproximatedSet {
 	 */
 	public IntSortedSet getLowerApproximation() {
 		if (this.lowerApproximation == null) {
-			this.lowerApproximation = this.calculateLowerApproximation();
+			this.lowerApproximation = IntSortedSets.unmodifiable(this.calculateLowerApproximation());
 		}
 		return this.lowerApproximation;
 	}
@@ -201,8 +201,9 @@ public abstract class ApproximatedSet {
 		if (this.boundary == null) {
 			IntSortedSet upperApproximation = this.getUpperApproximation();
 			IntSortedSet lowerApproximation = this.getLowerApproximation();
+			IntSortedSet boundary;
 			
-			this.boundary = new IntLinkedOpenHashSet(upperApproximation.size() - lowerApproximation.size());
+			boundary = new IntLinkedOpenHashSet(upperApproximation.size() - lowerApproximation.size());
 			
 			IntBidirectionalIterator iterator = upperApproximation.iterator();
 			int objectIndex;
@@ -210,12 +211,13 @@ public abstract class ApproximatedSet {
 			while (iterator.hasNext()) {
 				objectIndex = iterator.nextInt();
 				if (!lowerApproximation.contains(objectIndex)) {
-					this.boundary.add(objectIndex);
+					boundary.add(objectIndex);
 				}
 			}
 			
-			this.boundary = IntSortedSets.unmodifiable(this.boundary);
+			this.boundary = IntSortedSets.unmodifiable(boundary);
 		}
+		
 		return this.boundary;
 	}
 	
@@ -263,7 +265,8 @@ public abstract class ApproximatedSet {
 	
 	/**
 	 * Calculates negative region of this approximated set.
-	 * This region is composed of objects belonging to the positive region of the complement of this approximated set, but not to the positive region of this approximated set.
+	 * This region is composed of objects belonging to the positive region of the complement of this approximated set,
+	 * but not to the positive region of this approximated set.
 	 * 
 	 * @return set of indices of objects belonging to the negative region of this approximated set
 	 */
@@ -314,6 +317,13 @@ public abstract class ApproximatedSet {
 	public double getQualityOfApproximation() {
 		return (double)getLowerApproximation().size() / (double)size();
 	}
+	
+//	/**
+//	 * Calculates set with indices of objects belonging to this approximated set (so-called positive objects).
+//	 * 
+//	 * @return set with indices of objects belonging to this approximated set (so-called positive objects).
+//	 */
+//	protected abstract IntSortedSet calculateObjects();
 	
 	/**
 	 * Gets number of (positive) objects belonging to this approximated set.
