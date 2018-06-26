@@ -40,7 +40,14 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
  */
 public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBasedRoughSetCalculator {
 	
+	/**
+	 * Consistency measure {@link ConsistencyMeasure} applied when calculating lower approximation of union of decision classes. 
+	 */
 	protected ConsistencyMeasure<Union> lowerApproximationConsistencyMeasure;
+	
+	/**
+	 * Threshold on consistency measure {@link ConsistencyMeasure} applied when calculating lower approximation of union of decision classes. 
+	 */
 	protected double lowerApproximationConsistencyThreshold;
 
 	
@@ -48,7 +55,7 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	 * Constructs calculator for specified consistency measure and threshold value used to limit consitency of objects included in 
 	 * extended lower approximation of a union of decision classes. 
 	 * 
-	 * @param lowerApproximationConsistencyMeasure object consistency measures applied when calculating lower approximation
+	 * @param lowerApproximationConsistencyMeasure consistency measures applied when calculating lower approximation
 	 * @param lowerApproximationConsistencyThreshold threshold for object consistency measures applied when calculating lower approximation
 	 * 
 	 * @throws NullPointerException if lower approximation consistency measure is {@code null}
@@ -70,11 +77,11 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	@Override
 	public IntSortedSet calculateLowerApproximation(Union union) {
 		IntSortedSet lowerApproximationObjects = new IntLinkedOpenHashSet();
-		IntIterator objectIndicesIterator  = union.getObjects().iterator();
+		IntIterator unionObjectIndicesIterator  = union.getObjects().iterator();
 		
 		int objectIndex;
-		while (objectIndicesIterator.hasNext()) {
-			objectIndex = objectIndicesIterator.nextInt();
+		while (unionObjectIndicesIterator.hasNext()) {
+			objectIndex = unionObjectIndicesIterator.nextInt();
 			if (this.lowerApproximationConsistencyMeasure.isConsistencyThresholdReached(objectIndex, union, lowerApproximationConsistencyThreshold)) {
 				lowerApproximationObjects.add(objectIndex);		
 			}

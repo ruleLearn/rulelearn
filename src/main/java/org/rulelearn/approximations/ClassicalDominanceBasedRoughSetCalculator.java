@@ -22,6 +22,7 @@ import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
@@ -40,6 +41,29 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBasedRoughSetCalculator {
 	
 	/**
+	 * Reflexive property of dominance relations used to compare objects.
+	 */
+	protected boolean reflexiveDominanceRelations = true;
+ 	
+	/**
+	 * Constructs calculator of lower approximation of a union of decision classes for reflexive dominance relations (i.e., standard case). 
+	 */
+	public ClassicalDominanceBasedRoughSetCalculator () {
+		super();
+		this.reflexiveDominanceRelations = true;
+	}
+	
+	/**
+	 * Constructs calculator of lower approximation of a union of decision classes and sets reflexive property of dominance relations used to compare objects.
+	 * 
+	 * @param reflexiveDominanceRelations reflexive property of dominance relations used to compare objects
+	 */
+	public ClassicalDominanceBasedRoughSetCalculator (boolean reflexiveDominanceRelations) {
+		super();
+		this.reflexiveDominanceRelations = reflexiveDominanceRelations;
+	}
+	
+	/**
 	 * Calculates lower approximation of a union of decision classes.
 	 * 
 	 * @param union union of interest; should not be {@code null}
@@ -47,6 +71,83 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 	 */
 	@Override
 	public IntSortedSet calculateLowerApproximation(Union union) {
+		if (this.reflexiveDominanceRelations) { 
+			return calculateLowerApproximationForReflexiveDominanceRelations(union);
+		}
+		else {
+			return calculateLowerApproximationForNotReflexiveDominanceRelations(union);
+		}
+	}
+	
+	/**
+	 * Calculates lower approximation of a union of decision classes for dominance relations, which are reflexive.
+	 * 
+	 * @param union union of interest; should not be {@code null}
+	 * @return set of indices of objects belonging to the lower approximation of this approximated set
+	 */
+	public IntSortedSet calculateLowerApproximationForReflexiveDominanceRelations(Union union) {
+		InformationTableWithDecisionDistributions infromationTable = union.getInformationTable(); 
+		IntIterator unionObjectIndicesIterator  = union.getObjects().iterator();
+		DominanceConesDecisionDistributions dominanceCDD = infromationTable.getDominanceConesDecisionDistributions();
+		IntSortedSet lowerApproximationObjects = null;  
+		boolean canBeAdded = false;
+		
+		if (union.getUnionType() == UnionType.AT_LEAST) {
+			lowerApproximationObjects = new IntLinkedOpenHashSet();
+			int i = 0;
+			while (unionObjectIndicesIterator.hasNext()) {
+				i = unionObjectIndicesIterator.nextInt();
+				canBeAdded = false;
+				for (Decision decision : dominanceCDD.getPositiveInvDConeDecisionClassDistribution(i).getDecisions()) {
+					// check whether some objects not concordant with union (i.e. not in the set and not uncomparable) are present in a positive inverted dominance cone based on the object
+					//if (union.isConcordantWithDecision(decision) == TernaryLogicValue.FALSE) {
+					if (union.isDecisionNegative(decision)) {
+						canBeAdded = false;
+						break;
+					}
+					// check whether some objects concordant with union are present in a positive inverted dominance cone based on the object - not necessary
+					/*else if (set.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {	
+						canBeAdded = true;
+					}*/
+				}
+				if (canBeAdded) {
+					lowerApproximationObjects.add(i);
+				}
+			}
+		}
+		else if (union.getUnionType() == UnionType.AT_MOST) {
+			lowerApproximationObjects = new IntLinkedOpenHashSet();
+			int i = 0;
+			while (unionObjectIndicesIterator.hasNext()) {
+				i = unionObjectIndicesIterator.nextInt();
+				canBeAdded = false;
+				for (Decision decision : dominanceCDD.getNegativeDConeDecisionClassDistribution(i).getDecisions()) {
+					// check whether some objects not concordant with union (i.e. not in the set and not uncomparable) are present in a negative dominance cone based on the object
+					//if (union.isConcordantWithDecision(decision) == TernaryLogicValue.FALSE) {
+					if (union.isDecisionNegative(decision)) {
+						canBeAdded = false;
+						break;
+					}
+					// check whether some objects concordant with union are present in a negative dominance cone based on the object - not necessary
+					/*else if (set.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
+						canBeAdded = true;
+					}*/
+				}
+				if (canBeAdded) {
+					lowerApproximationObjects.add(i);
+				}
+			}
+		}
+		return lowerApproximationObjects;
+	}
+	
+	/**
+	 * Calculates lower approximation of a union of decision classes for dominance relations, which are not reflexive.
+	 * 
+	 * @param union union of interest; should not be {@code null}
+	 * @return set of indices of objects belonging to the lower approximation of this approximated set
+	 */
+	public IntSortedSet calculateLowerApproximationForNotReflexiveDominanceRelations(Union union) {
 		InformationTableWithDecisionDistributions infromationTable = union.getInformationTable(); 
 		int objectsCount = infromationTable.getNumberOfObjects();
 		DominanceConesDecisionDistributions dominanceCDD = infromationTable.getDominanceConesDecisionDistributions();
