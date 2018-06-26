@@ -94,6 +94,7 @@ public abstract class ApproximatedSet {
 	
 	/**
 	 * Constructs this approximated set using given information table, limiting decision, and rough set calculator.
+	 * Calculates objects belonging to this approximated entity.
 	 * 
 	 * @param informationTable information table containing, among other objects, the objects belonging to this approximated set
 	 * @param limitingDecision limiting decision, determining which objects from the information table belong to this set
@@ -135,11 +136,28 @@ public abstract class ApproximatedSet {
 	}
 
 	/**
-	 * Gets indices of objects belonging to this approximated set (so-called positive objects).
+	 * Gets set with indices of objects belonging to this approximated set (so-called positive objects).
 	 * 
-	 * @return indices of objects belonging to this approximated set
+	 * @return set with indices of objects belonging to this approximated set  (so-called positive objects)
+	 * @throws NullPointerException if the set with indices of objects belonging to this approximated set cannot be determined
 	 */
-	public abstract IntSortedSet getObjects();
+	public IntSortedSet getObjects() {
+		if (this.objects == null) {
+			this.findObjects();
+			
+			if (this.objects == null) {
+				throw new NullPointerException("Cannot determine objects belonging to an approximated set.");
+			}
+		}
+		
+		return this.objects;
+	}
+	
+	/**
+	 * Calculates and stores in the field {@link #objects} the set with indices of objects belonging to this approximated set (so-called positive objects).
+	 * Stored set should be unmodifiable, as obtained by {@link IntSortedSets#unmodifiable(IntSortedSet)}.
+	 */
+	protected abstract void findObjects();
 	
 //	/**
 //	 * Gets indices of uncomparable objects from the information table such that this set's limiting decision is uncomparable with their decision.
@@ -318,20 +336,13 @@ public abstract class ApproximatedSet {
 		return (double)getLowerApproximation().size() / (double)size();
 	}
 	
-//	/**
-//	 * Calculates set with indices of objects belonging to this approximated set (so-called positive objects).
-//	 * 
-//	 * @return set with indices of objects belonging to this approximated set (so-called positive objects).
-//	 */
-//	protected abstract IntSortedSet calculateObjects();
-	
 	/**
 	 * Gets number of (positive) objects belonging to this approximated set.
 	 * 
 	 * @return number of (positive) objects belonging to this approximated set
 	 */
 	public int size() {
-		return this.objects.size();
+		return this.getObjects().size();
 	}
 	
 	/**
@@ -343,7 +354,7 @@ public abstract class ApproximatedSet {
 	 *         {@code false} otherwise
 	 */
 	public boolean contains(int objectIndex) {
-		return this.objects.contains(objectIndex);
+		return this.getObjects().contains(objectIndex);
 	}
 	
 	/**

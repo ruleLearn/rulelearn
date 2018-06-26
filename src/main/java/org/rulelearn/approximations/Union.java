@@ -111,7 +111,7 @@ public class Union extends ApproximatedSet {
 		this.unionType = notNull(unionType, "Union type is null.");
 		validateLimitingDecision(limitingDecision, informationTable);
 		
-		this.findPositiveAndNeutralObjects();
+		this.findObjects();
 	}
 	
 	/**
@@ -179,22 +179,23 @@ public class Union extends ApproximatedSet {
 		
 		this.includeLimitingDecision = includeLimitingDecision; //set flag concerning inclusion of limiting decision
 		
-		this.findPositiveAndNeutralObjects();
+		this.findObjects();
 	}
 	
 	/**
-	 * Finds (positive) objects belonging to this union and neutral (i.e., objects such that this union's limiting decision is neutral with their decision).
+	 * Finds (positive) objects belonging to this union and neutral objects (i.e., objects such that this union's limiting decision is neutral with their decision).
 	 * Assumes that information table and limiting decision have already been set.
 	 */
-	protected void findPositiveAndNeutralObjects() {
+	@Override
+	protected void findObjects() {
+		IntSortedSet objects = new IntLinkedOpenHashSet(); //TODO: estimate hash set capacity using distribution of decisions?
 		IntSortedSet uncomparableObjects = new IntLinkedOpenHashSet(); //TODO: estimate hash set capacity using distribution of decisions?
-		this.objects = new IntLinkedOpenHashSet(); //TODO: estimate hash set capacity using distribution of decisions?
 		
 		int objectsCount = this.informationTable.getNumberOfObjects();
 		
 		for (int i = 0; i < objectsCount; i++) {
 			if (this.isDecisionPositive(this.informationTable.getDecision(i))) {
-				this.objects.add(i);
+				objects.add(i);
 			} else {
 				if (this.isDecisionNeutral(this.informationTable.getDecision(i))) {
 					uncomparableObjects.add(i);
@@ -202,18 +203,8 @@ public class Union extends ApproximatedSet {
 			}
 		}
 		
-		this.objects = IntSortedSets.unmodifiable(this.objects);
+		this.objects = IntSortedSets.unmodifiable(objects);
 		this.neutralObjects = IntSortedSets.unmodifiable(uncomparableObjects);
-	}
-	
-	/**
-	 * Gets indices of objects belonging to this union (so-called positive objects).
-	 * 
-	 * @return indices of objects belonging to this union
-	 */
-	@Override
-	public IntSortedSet getObjects() {
-		return this.objects; //objects have been calculated in class constructor, so just return them
 	}
 	
 	/**
