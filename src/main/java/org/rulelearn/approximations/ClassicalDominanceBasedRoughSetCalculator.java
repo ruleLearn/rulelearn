@@ -63,6 +63,10 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 		this.reflexiveDominanceRelations = reflexiveDominanceRelations;
 	}
 	
+	public boolean areDominanceRelationsReflexive () {
+		return this.reflexiveDominanceRelations;
+	}
+	
 	/**
 	 * Calculates lower approximation of a union of decision classes.
 	 * 

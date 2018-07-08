@@ -28,14 +28,42 @@ import org.junit.jupiter.api.Test;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 class ClassicalDominanceBasedRoughSetCalculatorTest {
+	
+	protected ClassicalDominanceBasedRoughSetCalculator cDRSACalculator;
 
 	@BeforeEach
 	public void setUp() {
-		
+		this.cDRSACalculator = new ClassicalDominanceBasedRoughSetCalculator();
 	}
 	
+	/**
+	 * Test for constructor {@link org.rulelearn.approximations.ClassicalDominanceBasedRoughSetCalculator#ClassicalDominanceBasedRoughSetCalculator()}, and
+	 * for constructor {@link org.rulelearn.approximations.ClassicalDominanceBasedRoughSetCalculator#ClassicalDominanceBasedRoughSetCalculator(boolean)}.
+	 */
 	@Test
-	void test() {
+	void testConstruction() {
+		assertTrue(cDRSACalculator.areDominanceRelationsReflexive());
+		this.cDRSACalculator = new ClassicalDominanceBasedRoughSetCalculator(false);
+		assertFalse(cDRSACalculator.areDominanceRelationsReflexive());
+	}
+	
+	/**
+	 * Test for method {@link org.rulelearn.approximations.ClassicalDominanceBasedRoughSetCalculator#calculateLowerApproximation(Union)}.
+	 * 
+	 * Test at this point is only performed for one decision class.
+	 */
+	@Test
+	void testCalculateLowerApproximation() {
+		fail("Not yet implemented");
+	}
+	
+	/**
+	 * Test for method {@link org.rulelearn.approximations.ClassicalDominanceBasedRoughSetCalculator#calculateUpperApproximation(Union)}.
+	 * 
+	 * Test at this point is only performed for one decision class.
+	 */
+	@Test
+	void testCalculateUpperApproximation() {
 		fail("Not yet implemented");
 	}
 
