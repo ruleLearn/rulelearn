@@ -16,8 +16,6 @@
 
 package org.rulelearn.rules;
 
-import org.rulelearn.rules.ruleml.RuleParseException;
-
 /**
  * Exception occurring when the semantics of rule is different than expected (i.e., it might be correct but is not concordant with the expected semantics).
  *
