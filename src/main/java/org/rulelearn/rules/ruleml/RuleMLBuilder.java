@@ -117,26 +117,26 @@ public class RuleMLBuilder {
 	public String toRuleMLString(Rule rule) {
 		StringBuilder result = new StringBuilder();
 
-    		//conditions part
+    	//conditions part
 	    result.append(RuleMLElements.getBeginingTag(RuleMLElements.getAssertKeyword())).append(RuleMLElements.getTab()).append(
 	    		RuleMLElements.getBeginingTag(RuleMLElements.getImpliesKeyword()));
 	    result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginingTag(RuleMLElements.getIfKeyword()));
 	    Condition<? extends EvaluationField>[] conditions = rule.getConditions();
-    		if (conditions.length > 1)
-    			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginingTag(RuleMLElements.getAndKeyword()));
-    		for (int i = 0; i < conditions.length; i++) {
-    			result.append(toRuleMLString(conditions[i], 4));
-    		}
-    		if (conditions.length > 1)
-    			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getEndTag(RuleMLElements.getAndKeyword()));
-    		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.getIfKeyword()));
-    	
-	    	// decision part
-    		// TODO multiple decisions (with different operator than and)
-	    	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginingTag(RuleMLElements.Then));
-	    	Condition<? extends EvaluationField>[] decisions = rule.getDecisions();
-	    	if (decisions.length > 1)
-    			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginingTag(RuleMLElements.getAndKeyword()));
+		if (conditions.length > 1)
+			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginingTag(RuleMLElements.getAndKeyword()));
+		for (int i = 0; i < conditions.length; i++) {
+			result.append(toRuleMLString(conditions[i], 4));
+		}
+		if (conditions.length > 1)
+			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getEndTag(RuleMLElements.getAndKeyword()));
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.getIfKeyword()));
+	
+    	// decision part
+		// TODO multiple decisions (with different operator than and)
+    	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginingTag(RuleMLElements.Then));
+    	Condition<? extends EvaluationField>[] decisions = rule.getDecisions();
+    	if (decisions.length > 1)
+			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginingTag(RuleMLElements.getAndKeyword()));
 		for (int i = 0; i < decisions.length; i++) 
 		     result.append(toRuleMLString(decisions[i], 4));
 		if (decisions.length > 1)
@@ -162,41 +162,46 @@ public class RuleMLBuilder {
 	public String toRuleMLString(Rule rule, RuleCharacteristics ruleCharacteristics) {
 		StringBuilder result = new StringBuilder();
 
-    		// rule beginning
+    	// rule beginning
 	    result.append(RuleMLElements.getBeginingTag(RuleMLElements.getAssertKeyword())).append(RuleMLElements.getTab()).append(
 	    		RuleMLElements.getBeginingTag(RuleMLElements.getImpliesKeyword()));
 	    
 	    //conditions part
 	    result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginingTag(RuleMLElements.getIfKeyword()));
 	    Condition<? extends EvaluationField>[] conditions = rule.getConditions();
-    		if (conditions.length > 1)
-    			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginingTag(RuleMLElements.getAndKeyword()));
-    		for (int i = 0; i < conditions.length; i++) {
-    			result.append(toRuleMLString(conditions[i], 4));
-    		}
-    		if (conditions.length > 1)
-    			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getEndTag(RuleMLElements.getAndKeyword()));
-    		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.getIfKeyword()));
-    	
-    		// decision part
-    		// TODO multiple decisions (with different operator than and)
-	    	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginingTag(RuleMLElements.Then));
-	    	Condition<? extends EvaluationField>[] decisions = rule.getDecisions();
-	    	if (decisions.length > 1)
-    			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginingTag(RuleMLElements.getAndKeyword()));
-		for (int i = 0; i < decisions.length; i++) 
-		     result.append(toRuleMLString(decisions[i], 4));
-		if (decisions.length > 1)
+		if (conditions.length > 1) {
+			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginingTag(RuleMLElements.getAndKeyword()));
+		}
+		for (int i = 0; i < conditions.length; i++) {
+			result.append(toRuleMLString(conditions[i], 4));
+		}
+		if (conditions.length > 1) {
 			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getEndTag(RuleMLElements.getAndKeyword()));
-	    	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.Then));
+		}
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.getIfKeyword()));
+	
+		// decision part
+		// TODO multiple decisions (with different operator than and)
+    	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginingTag(RuleMLElements.Then));
+    	Condition<? extends EvaluationField>[] decisions = rule.getDecisions();
+    	if (decisions.length > 1) {
+			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginingTag(RuleMLElements.getAndKeyword()));
+    	}
+    	for (int i = 0; i < decisions.length; i++) { 
+		     result.append(toRuleMLString(decisions[i], 4));
+    	}
+		if (decisions.length > 1) {
+			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getEndTag(RuleMLElements.getAndKeyword()));
+		}
+	    result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.Then));
 	    	
-	    	// rule characteristics
-	    	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginingTag(RuleMLElements.getEvaluationKeyword()));
-	    	result.append(toRuleMLString(ruleCharacteristics, 3));
-	    	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.getEvaluationKeyword()));
-	    	
-	    	// end rule
-	    	result.append(RuleMLElements.getTab()).append(RuleMLElements.getEndTag(RuleMLElements.Implies)).append(RuleMLElements.getEndTag(RuleMLElements.Assert));
+    	// rule characteristics
+    	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginingTag(RuleMLElements.getEvaluationKeyword()));
+    	result.append(toRuleMLString(ruleCharacteristics, 3));
+    	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.getEvaluationKeyword()));
+    	
+    	// end rule
+    	result.append(RuleMLElements.getTab()).append(RuleMLElements.getEndTag(RuleMLElements.Implies)).append(RuleMLElements.getEndTag(RuleMLElements.Assert));
 	    	
 		return result.toString();
 	}
