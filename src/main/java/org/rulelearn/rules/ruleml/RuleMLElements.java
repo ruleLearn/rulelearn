@@ -89,7 +89,7 @@ public class RuleMLElements {
      * 
      * @return RuleML beginning of a rule set tag
      */
-    public static String getBeginingOfRuleSet (int ruleSetIndex) {
+    public static String getBeginningOfRuleSet (int ruleSetIndex) {
     		StringBuffer buffer = new StringBuffer();
     		buffer.append("<act index=\"").append(ruleSetIndex).append("\">").append(getNewLine());
     		return buffer.toString();
@@ -101,7 +101,7 @@ public class RuleMLElements {
      * 
      * @return RuleML beginning of a rule set tag
      */
-    public static String getBeginingOfRuleSet (UUID ruleSetIndex) {
+    public static String getBeginningOfRuleSet (UUID ruleSetIndex) {
     		StringBuffer buffer = new StringBuffer();
     		buffer.append("<act index=\"").append(ruleSetIndex.toString()).append("\">").append(getNewLine());
     		return buffer.toString();
@@ -122,7 +122,7 @@ public class RuleMLElements {
      * 
      * @return beginning of specified RuleML tag
      */
-    public static String getBeginingTag (String ruleMLTag) {
+    public static String getBeginningTag (String ruleMLTag) {
     		StringBuffer buffer = new StringBuffer();
     		buffer.append("<").append(ruleMLTag).append(">").append(getNewLine());
     		return buffer.toString();
@@ -134,7 +134,7 @@ public class RuleMLElements {
      * 
      * @return beginning of specified RuleML tag
      */
-    public static String getBeginigInlineTag (String ruleMLTag) {
+    public static String getBeginnigInlineTag (String ruleMLTag) {
     		StringBuffer buffer = new StringBuffer();
 		buffer.append("<").append(ruleMLTag).append(">");
 		return buffer.toString();
@@ -210,7 +210,7 @@ public class RuleMLElements {
      */
     public static String getCaseTag (int id) {
 	    	StringBuffer buffer = new StringBuffer();
-	    	buffer.append(getBeginigInlineTag(Case)).append(id).append(getEndTag(Case));
+	    	buffer.append(getBeginnigInlineTag(Case)).append(id).append(getEndTag(Case));
 	    	return buffer.toString();
     }
     
@@ -225,7 +225,7 @@ public class RuleMLElements {
      */
     public static String getCaseTag (UUID id) {
 	    	StringBuffer buffer = new StringBuffer();
-	    	buffer.append(getBeginigInlineTag(Case)).append(id.toString()).append(getEndTag(Case));
+	    	buffer.append(getBeginnigInlineTag(Case)).append(id.toString()).append(getEndTag(Case));
 	    	return buffer.toString();
     }
 
@@ -309,7 +309,7 @@ public class RuleMLElements {
 	/**
 	 * @return the evaluations keyword
 	 */
-	public static String getEvalutaionsKeyword() {
+	public static String getEvaluationsKeyword() {
 		return Evaluations;
 	}
 

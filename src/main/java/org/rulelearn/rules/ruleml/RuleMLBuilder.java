@@ -50,8 +50,9 @@ public class RuleMLBuilder {
 	public String toRuleMLString(RuleSet ruleSet, int ruleSetIndex) {
 		StringBuilder result = new StringBuilder();
 		result.append(RuleMLElements.getHeader());
-		result.append(RuleMLElements.getBeginingOfRuleSet(ruleSetIndex));
+		result.append(RuleMLElements.getBeginningOfRuleSet(ruleSetIndex));
 		result.append(toRuleMLString(ruleSet));
+		result.append(RuleMLElements.getEndOfRuleSet());
 		result.append(RuleMLElements.getFooter());
 		return result.toString();
 	}
@@ -68,8 +69,9 @@ public class RuleMLBuilder {
 	public String toRuleMLString(RuleSet ruleSet, UUID ruleSetIndex) {
 		StringBuilder result = new StringBuilder();
 		result.append(RuleMLElements.getHeader());
-		result.append(RuleMLElements.getBeginingOfRuleSet(ruleSetIndex));
+		result.append(RuleMLElements.getBeginningOfRuleSet(ruleSetIndex));
 		result.append(toRuleMLString(ruleSet));
+		result.append(RuleMLElements.getEndOfRuleSet());
 		result.append(RuleMLElements.getFooter());
 		return result.toString();
 	}
@@ -103,7 +105,6 @@ public class RuleMLBuilder {
 				}
 			}
 		}
-		result.append(RuleMLElements.getEndOfRuleSet());
 		return result.toString();
 	}
 	
@@ -116,37 +117,42 @@ public class RuleMLBuilder {
 	 */
 	public String toRuleMLString(Rule rule) {
 		StringBuilder result = new StringBuilder();
-
-    	//conditions part
-	    result.append(RuleMLElements.getBeginingTag(RuleMLElements.getAssertKeyword())).append(RuleMLElements.getTab()).append(
-	    		RuleMLElements.getBeginingTag(RuleMLElements.getImpliesKeyword()));
-	    result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginingTag(RuleMLElements.getIfKeyword()));
+		
+		result.append(RuleMLElements.getBeginningTag(RuleMLElements.getAssertKeyword())).append(RuleMLElements.getTab()).append(
+	    		RuleMLElements.getBeginningTag(RuleMLElements.getImpliesKeyword()));
+		//conditions part
+	    result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginningTag(RuleMLElements.getIfKeyword()));
 	    Condition<? extends EvaluationField>[] conditions = rule.getConditions();
-		if (conditions.length > 1)
-			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginingTag(RuleMLElements.getAndKeyword()));
+		if (conditions.length > 1) {
+			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginningTag(RuleMLElements.getAndKeyword()));
+		}
 		for (int i = 0; i < conditions.length; i++) {
 			result.append(toRuleMLString(conditions[i], 4));
 		}
-		if (conditions.length > 1)
+		if (conditions.length > 1) {
 			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getEndTag(RuleMLElements.getAndKeyword()));
+		}
 		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.getIfKeyword()));
 	
-    	// decision part
+		// decision part
 		// TODO multiple decisions (with different operator than and)
-    	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginingTag(RuleMLElements.Then));
-    	Condition<? extends EvaluationField>[] decisions = rule.getDecisions();
-    	if (decisions.length > 1)
-			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginingTag(RuleMLElements.getAndKeyword()));
-		for (int i = 0; i < decisions.length; i++) 
-		     result.append(toRuleMLString(decisions[i], 4));
-		if (decisions.length > 1)
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginningTag(RuleMLElements.Then));
+		Condition<? extends EvaluationField>[] decisions = rule.getDecisions();
+		if (decisions.length > 1) {
+			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginningTag(RuleMLElements.getAndKeyword()));
+		}
+		for (int i = 0; i < decisions.length; i++) { 
+			result.append(toRuleMLString(decisions[i], 4));
+		}
+		if (decisions.length > 1) {
 			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getEndTag(RuleMLElements.getAndKeyword()));
+		}
 	    	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.Then));
 	    		
 	    	// end rule
 	    	result.append(RuleMLElements.getTab()).append(RuleMLElements.getEndTag(RuleMLElements.Implies)).append(RuleMLElements.getEndTag(RuleMLElements.Assert));
 	    	
-		return result.toString();
+	    	return result.toString();
 	}
 	
 	/**
@@ -162,15 +168,15 @@ public class RuleMLBuilder {
 	public String toRuleMLString(Rule rule, RuleCharacteristics ruleCharacteristics) {
 		StringBuilder result = new StringBuilder();
 
-    	// rule beginning
-	    result.append(RuleMLElements.getBeginingTag(RuleMLElements.getAssertKeyword())).append(RuleMLElements.getTab()).append(
-	    		RuleMLElements.getBeginingTag(RuleMLElements.getImpliesKeyword()));
+		// rule beginning
+		result.append(RuleMLElements.getBeginningTag(RuleMLElements.getAssertKeyword())).append(RuleMLElements.getTab()).append(
+				RuleMLElements.getBeginningTag(RuleMLElements.getImpliesKeyword()));
 	    
 	    //conditions part
-	    result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginingTag(RuleMLElements.getIfKeyword()));
-	    Condition<? extends EvaluationField>[] conditions = rule.getConditions();
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginningTag(RuleMLElements.getIfKeyword()));
+		Condition<? extends EvaluationField>[] conditions = rule.getConditions();
 		if (conditions.length > 1) {
-			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginingTag(RuleMLElements.getAndKeyword()));
+			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginningTag(RuleMLElements.getAndKeyword()));
 		}
 		for (int i = 0; i < conditions.length; i++) {
 			result.append(toRuleMLString(conditions[i], 4));
@@ -182,26 +188,26 @@ public class RuleMLBuilder {
 	
 		// decision part
 		// TODO multiple decisions (with different operator than and)
-    	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginingTag(RuleMLElements.Then));
-    	Condition<? extends EvaluationField>[] decisions = rule.getDecisions();
-    	if (decisions.length > 1) {
-			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginingTag(RuleMLElements.getAndKeyword()));
-    	}
-    	for (int i = 0; i < decisions.length; i++) { 
-		     result.append(toRuleMLString(decisions[i], 4));
-    	}
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginningTag(RuleMLElements.Then));
+		Condition<? extends EvaluationField>[] decisions = rule.getDecisions();
+		if (decisions.length > 1) {
+			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginningTag(RuleMLElements.getAndKeyword()));
+		}
+		for (int i = 0; i < decisions.length; i++) { 
+			result.append(toRuleMLString(decisions[i], 4));
+		}
 		if (decisions.length > 1) {
 			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getEndTag(RuleMLElements.getAndKeyword()));
 		}
-	    result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.Then));
-	    	
-    	// rule characteristics
-    	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginingTag(RuleMLElements.getEvaluationKeyword()));
-    	result.append(toRuleMLString(ruleCharacteristics, 3));
-    	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.getEvaluationKeyword()));
-    	
-    	// end rule
-    	result.append(RuleMLElements.getTab()).append(RuleMLElements.getEndTag(RuleMLElements.Implies)).append(RuleMLElements.getEndTag(RuleMLElements.Assert));
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.Then));
+		
+		// rule characteristics
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginningTag(RuleMLElements.getEvaluationsKeyword()));
+		result.append(toRuleMLString(ruleCharacteristics, 3));
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.getEvaluationsKeyword()));
+		
+		// end rule
+		result.append(RuleMLElements.getTab()).append(RuleMLElements.getEndTag(RuleMLElements.Implies)).append(RuleMLElements.getEndTag(RuleMLElements.Assert));
 	    	
 		return result.toString();
 	}
@@ -218,24 +224,24 @@ public class RuleMLBuilder {
 		StringBuilder result = new StringBuilder(); 
 		
 		// beginning of elementary condition
-        result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(RuleMLElements.getBeginingTag(RuleMLElements.getAtomKeyword()));
+        result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(RuleMLElements.getBeginningTag(RuleMLElements.getAtomKeyword()));
         RuleSemantics semantics = condition.getRuleSemantics();
-        result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(RuleMLElements.getBeginingTag(RuleMLElements.getOperationKeyword()));
+        result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(RuleMLElements.getBeginningTag(RuleMLElements.getOperationKeyword()));
         
         // relation
         if (semantics == RuleSemantics.AT_LEAST) {
         		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture+1)).append(
-        			RuleMLElements.getBeginigInlineTag(RuleMLElements.getRelationKeyword())).append(RuleMLElements.getAtLeastKeyword()).append(
+        			RuleMLElements.getBeginnigInlineTag(RuleMLElements.getRelationKeyword())).append(RuleMLElements.getAtLeastKeyword()).append(
         					RuleMLElements.getEndTag(RuleMLElements.getRelationKeyword()));
         }
         else if (semantics == RuleSemantics.AT_MOST) {
         		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture+1)).append(
-    				RuleMLElements.getBeginigInlineTag(RuleMLElements.getRelationKeyword())).append(RuleMLElements.getAtMostKeyword()).append(
+    				RuleMLElements.getBeginnigInlineTag(RuleMLElements.getRelationKeyword())).append(RuleMLElements.getAtMostKeyword()).append(
     						RuleMLElements.getEndTag(RuleMLElements.getRelationKeyword()));
         }
         else if (semantics == RuleSemantics.EQUAL) {
         	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture+1)).append(
-    				RuleMLElements.getBeginigInlineTag(RuleMLElements.getRelationKeyword())).append(RuleMLElements.getEqualsKeyword()).append(
+    				RuleMLElements.getBeginnigInlineTag(RuleMLElements.getRelationKeyword())).append(RuleMLElements.getEqualsKeyword()).append(
     						RuleMLElements.getEndTag(RuleMLElements.getRelationKeyword()));
         }
         else {
@@ -245,11 +251,11 @@ public class RuleMLBuilder {
         
         // evaluation
         result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-        		RuleMLElements.getBeginigInlineTag(RuleMLElements.getConstantKeyword())).append(condition.getLimitingEvaluation().toString()).append(
+        		RuleMLElements.getBeginnigInlineTag(RuleMLElements.getConstantKeyword())).append(condition.getLimitingEvaluation().toString()).append(
         				RuleMLElements.getEndTag(RuleMLElements.getConstantKeyword()));
         // attribute name
         result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture+1)).append(
-        		RuleMLElements.getBeginigInlineTag(RuleMLElements.getVariableKeyword())).append(
+        		RuleMLElements.getBeginnigInlineTag(RuleMLElements.getVariableKeyword())).append(
         				condition.getAttributeWithContext().getAttributeName()).append(RuleMLElements.getEndTag(RuleMLElements.getVariableKeyword()));
         
         // end elementary condition
