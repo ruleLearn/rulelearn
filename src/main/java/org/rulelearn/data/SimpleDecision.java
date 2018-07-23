@@ -18,9 +18,11 @@ package org.rulelearn.data;
 
 import org.rulelearn.types.EvaluationField;
 import static org.rulelearn.core.Precondition.notNull;
+import static org.rulelearn.core.Precondition.nonNegative;
 
 import java.util.Objects;
 
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
@@ -46,11 +48,14 @@ public class SimpleDecision extends Decision {
 	 * 
 	 * @param evaluation evaluation of a single object on an active decision attribute of an information table
 	 * @param attributeIndex index of an active decision attribute of an information table
+	 * 
+	 * @throws NullPointerException if given evaluation is {@code null}
+	 * @throws InvalidValueException if given attribute's index is negative
 	 */
 	public SimpleDecision(EvaluationField evaluation, int attributeIndex) {
 		super();
 		this.evaluation = notNull(evaluation, "Evaluation of constructed simple decision is null.");
-		this.attributeIndex = attributeIndex;
+		this.attributeIndex = nonNegative(attributeIndex, "Attribute index should be non-negative.");
 	}
 	
 	/**

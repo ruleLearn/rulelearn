@@ -17,6 +17,7 @@
 package org.rulelearn.data;
 
 import static org.rulelearn.core.Precondition.notNull;
+import static org.rulelearn.core.Precondition.nonNegative;
 
 import java.util.Objects;
 
@@ -50,6 +51,7 @@ public class CompositeDecision extends Decision {
 	 * @throws NullPointerException if any of the parameters is {@code null} or if any single evaluation is {@code null}
 	 * @throws InvalidValueException if the number of evaluations is different than the number of attribute indices
 	 * @throws InvalidValueException if the number of evaluations is less than 2
+	 * @throws InvalidValueException if any attribute index is negative
 	 */
 	public CompositeDecision(EvaluationField[] evaluations, int[] attributeIndices) {
 		notNull(evaluations, "Evaluations of a composite decision are null.");
@@ -66,7 +68,9 @@ public class CompositeDecision extends Decision {
 		this.attributeIndex2EvaluationMap = new Int2ObjectOpenHashMap<>(attributeIndices.length); //use known number of elements in the map to avoid its resizing
 		
 		for (int i = 0; i < attributeIndices.length; i++) {
-			this.attributeIndex2EvaluationMap.put(attributeIndices[i], notNull(evaluations[i], "Evaluation contributing to a composite decision is null."));
+			this.attributeIndex2EvaluationMap.put(
+					nonNegative(attributeIndices[i], "Attribute index is negative."),
+					notNull(evaluations[i], "Evaluation contributing to a composite decision is null."));
 		}
 
 	}
