@@ -27,12 +27,12 @@ import static org.rulelearn.core.Precondition.notNull;
 public abstract class AbstractClassifier implements Classifier {
 	
 	/**
-	 * Default classification result, returned by this classifier if it is unable to calculate such result.
+	 * Default classification result, returned by this classifier if it is unable to calculate such a result.
 	 */
 	protected ClassificationResult defaultClassificationResult;
 	
 	/**
-	 * Gets default classification result returned by this classifier if it is unable to calculate such result
+	 * Gets default classification result returned by this classifier if it is unable to calculate such a result.
 	 * 
 	 * @return default classification result returned by this classifier
 	 */
