@@ -155,7 +155,7 @@ class SimpleDecisionTest {
 		try {
 			assertTrue(simpleDecision1.isEqualTo(simpleDecision2) == TernaryLogicValue.TRUE);
 			assertTrue(simpleDecision1.isEqualTo(simpleDecision3) == TernaryLogicValue.FALSE);
-			assertTrue(simpleDecision1.isEqualTo(simpleDecision4) == TernaryLogicValue.FALSE);
+			assertTrue(simpleDecision1.isEqualTo(simpleDecision4) == TernaryLogicValue.UNCOMPARABLE);
 			assertTrue(simpleDecision1.isEqualTo(decision5) == TernaryLogicValue.UNCOMPARABLE);
 		} catch (UnsupportedOperationException exception) {
 			//TODO: remove this try-catch when implementation of tested method is finished

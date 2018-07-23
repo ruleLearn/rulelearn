@@ -148,9 +148,9 @@ class CompositeDecisionTest {
 		
 		try {
 			assertTrue(compositeDecision1.isEqualTo(compositeDecision2) == TernaryLogicValue.TRUE);
-			assertTrue(compositeDecision1.isEqualTo(compositeDecision3) == TernaryLogicValue.FALSE);
-			assertTrue(compositeDecision1.isEqualTo(compositeDecision4) == TernaryLogicValue.FALSE);
-			assertTrue(compositeDecision1.isEqualTo(compositeDecision5) == TernaryLogicValue.UNCOMPARABLE);
+			assertTrue(compositeDecision1.isEqualTo(compositeDecision3) == TernaryLogicValue.UNCOMPARABLE);
+			assertTrue(compositeDecision1.isEqualTo(compositeDecision4) == TernaryLogicValue.FALSE); //
+			assertTrue(compositeDecision1.isEqualTo(compositeDecision5) == TernaryLogicValue.FALSE);
 			assertTrue(compositeDecision1.isEqualTo(decision6) == TernaryLogicValue.UNCOMPARABLE);
 		} catch (UnsupportedOperationException exception) {
 			//TODO: remove this try-catch when implementation of tested method is finished
@@ -179,7 +179,7 @@ class CompositeDecisionTest {
 		
 		EvaluationField[] evaluations4 = {
 				IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN),
-				IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.COST)}; //better evaluation
+				IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.COST)}; //better evaluation
 		int[] attributeIndices4 = {3, 6};
 		
 		EvaluationField[] evaluations5 = {
