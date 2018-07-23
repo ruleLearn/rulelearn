@@ -60,8 +60,15 @@ public class ClassificationResultSet {
 	public ClassificationResultSet(InformationTable informationTable, Classifier classifier) {
 		this.informationTable = notNull(informationTable, "Information table for classification result set is null.");
 		this.classifier = notNull(classifier, "Classifier for classification result set is null.");
-		this.classificationResults = new ClassificationResult[informationTable.getNumberOfObjects()];
+		this.initializeClassificationResults();
 		this.calculatedClassificationResultsCount = 0;
+	}
+	
+	/** 
+	 * Initializes classification result array.
+	 */
+	protected void initializeClassificationResults() {
+		this.classificationResults = new ClassificationResult[informationTable.getNumberOfObjects()];
 	}
 	
 	/**
@@ -75,7 +82,7 @@ public class ClassificationResultSet {
 	public ClassificationResult getClassificationResult(int objectIndex) {
 		if (this.classificationResults[objectIndex] == null) {
 			this.classificationResults[objectIndex] = this.classifier.classify(objectIndex, informationTable);
-			calculatedClassificationResultsCount++;
+			this.calculatedClassificationResultsCount++;
 		}
 		return this.classificationResults[objectIndex];
 	}

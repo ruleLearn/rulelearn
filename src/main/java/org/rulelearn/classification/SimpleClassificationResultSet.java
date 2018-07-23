@@ -41,6 +41,14 @@ public class SimpleClassificationResultSet extends ClassificationResultSet {
 		super(informationTable, classifier);
 	}
 	
+	/** 
+	 * Initializes classification result array.
+	 */
+	@Override
+	protected void initializeClassificationResults() {
+		this.classificationResults = new SimpleClassificationResult[informationTable.getNumberOfObjects()];
+	}
+	
 	/**
 	 * Gets classification result for the object having given index.
 	 * 

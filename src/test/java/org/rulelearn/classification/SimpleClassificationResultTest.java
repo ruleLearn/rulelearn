@@ -46,7 +46,7 @@ class SimpleClassificationResultTest {
 	void testConstruction() {
 		try {
 			SimpleClassificationResult result = new SimpleClassificationResult(null);
-			fail("Construction of classificationi result with null suggested decision should fail.");
+			fail("Construction of classification result with null suggested decision should fail.");
 		}
 		catch (NullPointerException ex) {
 			System.out.println(ex.toString());
