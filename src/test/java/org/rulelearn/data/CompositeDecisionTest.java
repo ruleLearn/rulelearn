@@ -101,9 +101,11 @@ class CompositeDecisionTest {
 		int[] attributeIndices = {3, 6};
 		
 		CompositeDecision compositeDecision = new CompositeDecision(evaluations, attributeIndices);
+		CompositeDecision otherCompositeDecision = new CompositeDecision(evaluations, attributeIndices);
 		
 		assertNotNull(compositeDecision.hashCode());
 		assertEquals(compositeDecision.hashCode(), compositeDecision.hashCode());
+		assertEquals(otherCompositeDecision.hashCode(), compositeDecision.hashCode());
 	}
 
 	/**
@@ -132,9 +134,9 @@ class CompositeDecisionTest {
 		int[] attributeIndices4 = {3, 6};
 		
 		EvaluationField[] evaluations5 = {
-				IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN),
+				IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), //diff
 				IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.COST)};
-		int[] attributeIndices5 = {3, 5}; //diff
+		int[] attributeIndices5 = {3, 6}; //diff
 		
 		CompositeDecision compositeDecision1 = new CompositeDecision(evaluations1, attributeIndices1);
 		CompositeDecision compositeDecision2 = new CompositeDecision(evaluations2, attributeIndices2);
@@ -319,8 +321,8 @@ class CompositeDecisionTest {
 		CompositeDecision compositeDecision2 = new CompositeDecision(evaluations2, attributeIndices2);
 		CompositeDecision compositeDecision3 = new CompositeDecision(evaluations3, attributeIndices3);
 		
-		assertEquals(compositeDecision1, compositeDecision2);
-		assertNotEquals(compositeDecision1, compositeDecision3);
+		assertTrue(compositeDecision1.equals(compositeDecision2));
+		assertFalse(compositeDecision1.equals(compositeDecision3));
 	}
 	
 	private Decision getIncompatibleDecision() {
