@@ -45,6 +45,16 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 	}
 	
 	/**
+	 * Gets default classification result returned by this classifier if it is unable to calculate such a result.
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public SimpleClassificationResult getDefaultClassificationResult() {
+		return (SimpleClassificationResult)defaultClassificationResult;
+	}
+	
+	/**
 	 * Classifies an object from an information table using rules stored in this classifier.
 	 * 
 	 * @param objectIndex {@inheritDoc}
@@ -56,7 +66,7 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 	 */
 	@Override
 	public SimpleClassificationResult classify(int objectIndex, InformationTable informationTable) {
-		SimpleClassificationResult result = (SimpleClassificationResult)this.getDefaultClassificationResult();
+		SimpleClassificationResult result = this.getDefaultClassificationResult();
 		
 		// calculate classification interval [downLimit, upLimit]
 		SimpleCondition decision = null;
@@ -87,7 +97,6 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 				}
 			}
 		}
-		
 		// set the result
 		if (upLimit != null) {
 			if (downLimit != null) {
@@ -118,11 +127,9 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 	@Override
 	public SimpleClassificationResult[] classifyAll(InformationTable informationTable) {
 		SimpleClassificationResult[] classificationResults = new SimpleClassificationResult[informationTable.getNumberOfObjects()];
-		
 		for (int i = 0; i < classificationResults.length; i++) {
 			classificationResults[i] = this.classify(i, informationTable);
 		}
-		
 		return classificationResults;
 	}
 

@@ -116,8 +116,6 @@ class SimpleClassificationResultTest {
 	
 	/**
 	 * Test {@link SimpleClassificationResult#isConsistentWith(org.rulelearn.types.EvaluationField)}.
-	 * 
-	 * TODO is this way of comparing correct? (fields indicate the same value but of different preference type)
 	 */
 	@Test
 	void testIsConsistentWithIntegerField02() {
@@ -129,8 +127,6 @@ class SimpleClassificationResultTest {
 	
 	/**
 	 * Test {@link SimpleClassificationResult#isConsistentWith(org.rulelearn.types.EvaluationField)}.
-	 * 
-	 * TODO is this way of comparing correct? (fields indicate the same value but of different preference type)
 	 */
 	@Test
 	void testIsConsistentWithIntegerField03() {
@@ -223,8 +219,6 @@ class SimpleClassificationResultTest {
 	
 	/**
 	 * Test {@link SimpleClassificationResult#isConsistentWith(org.rulelearn.types.EvaluationField)}.
-	 * 
-	 * TODO is this way of comparing correct? (fields indicate the same value but of different preference type)
 	 */
 	@Test
 	void testIsConsistentWithEnumerationField02() {
@@ -245,8 +239,6 @@ class SimpleClassificationResultTest {
 	
 	/**
 	 * Test {@link SimpleClassificationResult#isConsistentWith(org.rulelearn.types.EvaluationField)}.
-	 * 
-	 * TODO is this way of comparing correct? (fields indicate the same value but of different preference type)
 	 */
 	@Test
 	void testIsConsistentWithEnumerationField03() {
