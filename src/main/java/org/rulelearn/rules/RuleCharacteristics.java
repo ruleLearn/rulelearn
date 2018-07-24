@@ -37,7 +37,7 @@ public class RuleCharacteristics {
 	/**
 	 * Default value of all integer characteristics, indicating that given characteristic is unknown, i.e., it has not been set or calculated yet.
 	 */
-	public static final int UNKNOWN_INT_VALUE = -1;
+	public static final int UNKNOWN_INT_VALUE = Integer.MIN_VALUE;
 	
 	/**
 	 * Default value of all floating-point characteristics, indicating that given characteristic is unknown, i.e., it has not been set or calculated yet.
