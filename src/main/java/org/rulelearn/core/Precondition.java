@@ -88,13 +88,13 @@ public final class Precondition {
 	 * @param <T> type of the object to verify
 	 * @return {@code array}, if it is not empty
 	 * 
-	 * @throws InvalidValueException if given array is empty (has length 0)
+	 * @throws InvalidSizeException with given error message if given array is empty (has length 0)
 	 */
 	public static <T extends Object> T[] nonEmpty(T[] array, String errorMsg) {
 		if (array.length > 0) {
 			return array;
 		} else {
-			throw new InvalidValueException(errorMsg);
+			throw new InvalidSizeException(errorMsg);
 		}
 	}
 	
