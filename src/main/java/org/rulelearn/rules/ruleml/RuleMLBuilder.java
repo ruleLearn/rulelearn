@@ -21,9 +21,11 @@ import java.util.UUID;
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleCharacteristics;
-import org.rulelearn.rules.RuleSemantics;
 import org.rulelearn.rules.RuleSet;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
+import org.rulelearn.rules.SimpleConditionAtLeast;
+import org.rulelearn.rules.SimpleConditionAtMost;
+import org.rulelearn.rules.SimpleConditionEqual;
 import org.rulelearn.rules.UnknownRuleSemanticsException;
 import org.rulelearn.types.EvaluationField;
 
@@ -225,28 +227,23 @@ public class RuleMLBuilder {
 		
 		// beginning of elementary condition
         result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(RuleMLElements.getBeginningTag(RuleMLElements.getAtomKeyword()));
-        RuleSemantics semantics = condition.getRuleSemantics();
         result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(RuleMLElements.getBeginningTag(RuleMLElements.getOperationKeyword()));
         
         // relation
-        if (semantics == RuleSemantics.AT_LEAST) {
-        		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture+1)).append(
-        			RuleMLElements.getBeginnigInlineTag(RuleMLElements.getRelationKeyword())).append(RuleMLElements.getAtLeastKeyword()).append(
-        					RuleMLElements.getEndTag(RuleMLElements.getRelationKeyword()));
+        result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture+1)).append(RuleMLElements.getBeginnigInlineTag(RuleMLElements.getRelationKeyword()));
+        if (condition instanceof SimpleConditionAtLeast) {
+        		result.append(RuleMLElements.getAtLeastKeyword());
         }
-        else if (semantics == RuleSemantics.AT_MOST) {
-        		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture+1)).append(
-    				RuleMLElements.getBeginnigInlineTag(RuleMLElements.getRelationKeyword())).append(RuleMLElements.getAtMostKeyword()).append(
-    						RuleMLElements.getEndTag(RuleMLElements.getRelationKeyword()));
+        else if (condition instanceof SimpleConditionAtMost) {
+        		result.append(RuleMLElements.getAtMostKeyword());
         }
-        else if (semantics == RuleSemantics.EQUAL) {
-        	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture+1)).append(
-    				RuleMLElements.getBeginnigInlineTag(RuleMLElements.getRelationKeyword())).append(RuleMLElements.getEqualsKeyword()).append(
-    						RuleMLElements.getEndTag(RuleMLElements.getRelationKeyword()));
+        else if (condition instanceof SimpleConditionEqual) {
+        		result.append(RuleMLElements.getEqualsKeyword());
         }
         else {
-        		throw new UnknownRuleSemanticsException("Semantics of the processed condition " + condition + " is unknown.");
+        		throw new UnknownRuleSemanticsException("Type of the processed condition " + condition + " is unknown.");
         }
+        result.append(RuleMLElements.getEndTag(RuleMLElements.getRelationKeyword()));
         result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(RuleMLElements.getEndTag(RuleMLElements.getOperationKeyword()));
         
         // evaluation

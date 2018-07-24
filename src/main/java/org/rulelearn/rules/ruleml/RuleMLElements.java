@@ -61,6 +61,7 @@ public class RuleMLElements {
     /** 
      * Declarations of character sequences used for white spaces.
      */
+    static final String NewLine = System.lineSeparator();
     static final String UnixNewLine = "\n";
     static final String Tab = "\t";
     
@@ -380,7 +381,7 @@ public class RuleMLElements {
 	 * @return the new line keyword
 	 */
 	public static String getNewLine() {
-		return UnixNewLine;
+		return NewLine;
 	}
 
 	/**
