@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'org.junit.platform.gradle.plugin'
+
+group = 'org.rulelearn'
+version = '0.8.0'
 
 buildscript {
 	repositories {
@@ -34,28 +37,23 @@ repositories {
 
 dependencies {
  	//adding FastUtil library
-	compile("it.unimi.dsi:fastutil:8.1.1")
-	runtime("it.unimi.dsi:fastutil:8.1.1")
-	
-	//adding Moshi library
-	//compile('com.squareup.moshi:moshi:1.5.0')
-	//runtime('com.squareup.moshi:moshi:1.5.0')
+	api("it.unimi.dsi:fastutil:8.1.1")
+	//runtime("it.unimi.dsi:fastutil:8.1.1")
 	
 	//adding Gson library
-	compile ('com.google.code.gson:gson:2.8.2')
-	runtime ('com.google.code.gson:gson:2.8.2')
+	api('com.google.code.gson:gson:2.8.2')
+	//runtime ('com.google.code.gson:gson:2.8.2')
 	
 	//adding uniVocity-parsers
-	compile ('com.univocity:univocity-parsers:2.5.9')
-	runtime ('com.univocity:univocity-parsers:2.5.9')
+	implementation('com.univocity:univocity-parsers:2.5.9')
+	//runtime ('com.univocity:univocity-parsers:2.5.9')
 	
-	testCompile("org.junit.jupiter:junit-jupiter-api:5.0.2")
-	testRuntime("org.junit.jupiter:junit-jupiter-engine:5.0.2")
+	testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.2")
+	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.2")
 	
-	testRuntime("org.junit.platform:junit-platform-launcher:1.0.2")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.0.2")
 	
-	testCompile("org.mockito:mockito-core:2.13.0")
-	
+	testImplementation("org.mockito:mockito-core:2.13.0")
 	
 	//For running JUnit 4 based tests:
 	//testCompile("junit:junit:4.12")
@@ -65,8 +63,8 @@ dependencies {
 	testCompileOnly('org.apiguardian:apiguardian-api:1.0.0') //licenced under Apache License 2.0; https://github.com/apiguardian-team/apiguardian
 	
 	// To use Log4J's LogManager
-	testRuntime("org.apache.logging.log4j:log4j-core:2.10.0") //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/
-	testRuntime("org.apache.logging.log4j:log4j-jul:2.10.0") //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/
+	testRuntimeOnly("org.apache.logging.log4j:log4j-core:2.10.0") //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/
+	testRuntimeOnly("org.apache.logging.log4j:log4j-jul:2.10.0") //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/
 }
 
 compileJava {
@@ -140,7 +138,17 @@ javadoc {
     }
 }
 
+jar {
+	manifest {
+		attributes('Implementation-Title': project.name,
+				   'Implementation-Version': project.version)
+	}
+}
+
 task all(dependsOn: ["junitPlatformTest", "jar", "javadoc"], description: "Performs all tasks") {
+	group 'aggregate'
+	description 'Run tests, generate javadoc, build jar'
+	
 	doLast {
 		println("Building ruleLearn completed.")
 	}

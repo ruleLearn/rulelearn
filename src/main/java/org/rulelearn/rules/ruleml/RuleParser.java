@@ -121,7 +121,7 @@ public class RuleParser {
 		this.attributesWithContext = new AttributeWithContext<?>[size];
 		this.attributeNamesMap = new Object2IntOpenHashMap<String> ();
 		this.attributeNamesMap.defaultReturnValue(RuleParser.DEFAULT_INDEX);
-		for (int i=0; i < size; i++) {
+		for (int i = 0; i < size; i++) {
 			if (this.attributes[i] instanceof EvaluationAttribute) {
 				this.attributesWithContext[i] = new EvaluationAttributeWithContext((EvaluationAttribute)this.attributes[i], i);
 			}

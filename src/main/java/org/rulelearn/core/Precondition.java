@@ -17,6 +17,7 @@
 package org.rulelearn.core;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Class used to verify if methods' preconditions (like non-null parameters) are verified.
@@ -28,6 +29,7 @@ public final class Precondition {
 
 	/**
 	 * Verifies if given object reference is not {@code null}, and if so, returns this reference.
+	 * This methods offers the same functionality as {@link Objects#requireNonNull(Object, String)}.
 	 * 
 	 * @param object object reference to verify
 	 * @param errorMsg error message of the thrown {@link NullPointerException}, used when given object does not verify non-null precondition
@@ -86,13 +88,13 @@ public final class Precondition {
 	 * @param <T> type of the object to verify
 	 * @return {@code array}, if it is not empty
 	 * 
-	 * @throws InvalidValueException if given array is empty (has length 0)
+	 * @throws InvalidSizeException with given error message if given array is empty (has length 0)
 	 */
 	public static <T extends Object> T[] nonEmpty(T[] array, String errorMsg) {
 		if (array.length > 0) {
 			return array;
 		} else {
-			throw new InvalidValueException(errorMsg);
+			throw new InvalidSizeException(errorMsg);
 		}
 	}
 	

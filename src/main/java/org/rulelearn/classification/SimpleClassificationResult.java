@@ -55,7 +55,6 @@ public class SimpleClassificationResult extends ClassificationResult {
 		return suggestedDecision;
 	}
 
-
 	/**
 	 * {@inheritDoc}
 	 * 
