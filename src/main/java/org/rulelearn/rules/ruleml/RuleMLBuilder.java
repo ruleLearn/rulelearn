@@ -18,6 +18,8 @@ package org.rulelearn.rules.ruleml;
 
 import java.util.UUID;
 
+import static org.rulelearn.core.Precondition.notNull;
+
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleCharacteristics;
@@ -50,6 +52,7 @@ public class RuleMLBuilder {
 	 * @return RuleML document string representing all rules  
 	 */
 	public String toRuleMLString(RuleSet ruleSet, int ruleSetIndex) {
+		notNull(ruleSet, "Rule set to be transfomed into a RuleML document string is null.");
 		StringBuilder result = new StringBuilder();
 		result.append(RuleMLElements.getHeader());
 		result.append(RuleMLElements.getBeginningOfRuleSet(ruleSetIndex));
@@ -69,6 +72,8 @@ public class RuleMLBuilder {
 	 * @return RuleML document string representing all rules  
 	 */
 	public String toRuleMLString(RuleSet ruleSet, UUID ruleSetIndex) {
+		notNull(ruleSet, "Rule set to be transfomed into a RuleML document string is null.");
+		notNull(ruleSetIndex, "Rule set UUID is null.");
 		StringBuilder result = new StringBuilder();
 		result.append(RuleMLElements.getHeader());
 		result.append(RuleMLElements.getBeginningOfRuleSet(ruleSetIndex));
@@ -118,6 +123,7 @@ public class RuleMLBuilder {
 	 * @return RuleML representation of the rule
 	 */
 	public String toRuleMLString(Rule rule) {
+		notNull(rule, "Rule to be transfomed into a RuleML string is null.");
 		StringBuilder result = new StringBuilder();
 		
 		result.append(RuleMLElements.getBeginningTag(RuleMLElements.getAssertKeyword())).append(RuleMLElements.getTab()).append(
@@ -168,6 +174,8 @@ public class RuleMLBuilder {
 	 * @return RuleML representation of the rule
 	 */
 	public String toRuleMLString(Rule rule, RuleCharacteristics ruleCharacteristics) {
+		notNull(rule, "Rule to be transfomed into a RuleML string is null.");
+		notNull(ruleCharacteristics, "Rule characteristics to be transfomed into a RuleML string are null.");
 		StringBuilder result = new StringBuilder();
 
 		// rule beginning
@@ -223,6 +231,7 @@ public class RuleMLBuilder {
 	 * @return RuleML representation of the elementary condition
 	 */
 	String toRuleMLString(Condition<? extends EvaluationField> condition, int indenture) {
+		notNull(condition, "Condition to be transfomed into a RuleML string is null.");
 		StringBuilder result = new StringBuilder(); 
 		
 		// beginning of elementary condition
@@ -270,6 +279,7 @@ public class RuleMLBuilder {
 	 * @return RuleML representation of the rule characteristics 
 	 */
 	String toRuleMLString(RuleCharacteristics ruleCharacteristics, int indenture) {
+		notNull(ruleCharacteristics, "Rule characteristics to be transfomed into a RuleML string are null.");
 		final StringBuilder stringBuilder = new StringBuilder();
 		
 		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(

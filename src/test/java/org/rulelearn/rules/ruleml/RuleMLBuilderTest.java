@@ -505,4 +505,5 @@ class RuleMLBuilderTest {
 		//System.out.println(ruleMLBuilder.toRuleMLString(this.ruleSetWithCharacteristicsMock, new UUID(0, 1)));
 		assertEquals(ruleMLBuilder.toRuleMLString(this.ruleSetWithCharacteristicsMock, new UUID(0, 1)), ruleSetRuleML);
 	}
+		
 }
