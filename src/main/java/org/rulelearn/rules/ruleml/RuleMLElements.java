@@ -381,7 +381,7 @@ public class RuleMLElements {
 	 * @return the new line keyword
 	 */
 	public static String getNewLine() {
-		return NewLine;
+		return UnixNewLine;
 	}
 
 	/**
