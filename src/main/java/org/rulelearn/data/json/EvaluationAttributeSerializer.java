@@ -36,7 +36,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 /**
- * Serializer {@link com.google.gson.JsonSerializer} for EvaluationAttribute {@link org.rulelearn.data.EvaluationAttribute} 
+ * Serializer {@link com.google.gson.JsonSerializer} for evaluation attributes {@link org.rulelearn.data.EvaluationAttribute}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -66,7 +66,7 @@ public class EvaluationAttributeSerializer implements JsonSerializer<EvaluationA
 		
 		Field type;
 		boolean pair = false;
-		JsonArray jsonPairArray = new JsonArray(2);;
+		JsonArray jsonPairArray = new JsonArray(2);
 		if (src.getValueType() instanceof PairField<?>) {
 			type = ((PairField<?>)src.getValueType()).getFirstValue();
 			pair = true;

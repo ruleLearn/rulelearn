@@ -29,7 +29,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 /**
- * Serializer {@link com.google.gson.JsonSerializer} for IdentificationAttribute {@link org.rulelearn.data.IdentificationAttribute} 
+ * Serializer {@link com.google.gson.JsonSerializer} for identification attributes {@link org.rulelearn.data.IdentificationAttribute}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
