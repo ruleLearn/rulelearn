@@ -23,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.Test;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.SimpleDecision;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
@@ -59,7 +60,7 @@ class SimpleClassificationResultTest {
 	@Test
 	void testIsConsistentWith() {
 		SimpleField field1 = IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN);
-		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(field1);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(new SimpleDecision(field1, 0));
 		try {
 			classificationResult1.isConsistentWith(null);
 			fail("Checking consistency of classification result with null value should fail.");
@@ -75,8 +76,8 @@ class SimpleClassificationResultTest {
 	@Test
 	void testGetSuggestedDecisionIntegerField01() {
 		SimpleField field1 = IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN);
-		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(field1);
-		SimpleClassificationResult classificationResult2 = new SimpleClassificationResult(field1);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(new SimpleDecision(field1, 0));
+		SimpleClassificationResult classificationResult2 = new SimpleClassificationResult(new SimpleDecision(field1, 0));
 		assertTrue(classificationResult1.getSuggestedDecision().equals(classificationResult2.getSuggestedDecision()));
 	}
 	
@@ -87,8 +88,8 @@ class SimpleClassificationResultTest {
 	void testGetSuggestedDecisionIntegerField02() {
 		SimpleField field1 = IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN);
 		SimpleField field2 = IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.COST);
-		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(field1);
-		SimpleClassificationResult classificationResult2 = new SimpleClassificationResult(field2);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(new SimpleDecision(field1, 0));
+		SimpleClassificationResult classificationResult2 = new SimpleClassificationResult(new SimpleDecision(field2, 0));
 		assertFalse(classificationResult1.getSuggestedDecision().equals(classificationResult2.getSuggestedDecision()));
 	}
 	
@@ -99,8 +100,20 @@ class SimpleClassificationResultTest {
 	void testGetSuggestedDecisionIntegerField03() {
 		SimpleField field1 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
 		SimpleField field2 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
-		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(field1);
-		SimpleClassificationResult classificationResult2 = new SimpleClassificationResult(field2);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(new SimpleDecision(field1, 0));
+		SimpleClassificationResult classificationResult2 = new SimpleClassificationResult(new SimpleDecision(field2, 0));
+		assertFalse(classificationResult1.getSuggestedDecision().equals(classificationResult2.getSuggestedDecision()));
+	}
+	
+	/**
+	 * Test {@link SimpleClassificationResult#getSuggestedDecision()}. * 
+	 */
+	@Test
+	void testGetSuggestedDecisionIntegerField04() {
+		SimpleField field1 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
+		SimpleField field2 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(new SimpleDecision(field1, 0));
+		SimpleClassificationResult classificationResult2 = new SimpleClassificationResult(new SimpleDecision(field2, 1));
 		assertFalse(classificationResult1.getSuggestedDecision().equals(classificationResult2.getSuggestedDecision()));
 	}
 	
@@ -109,9 +122,9 @@ class SimpleClassificationResultTest {
 	 */
 	@Test
 	void testIsConsistentWithIntegerField01() {
-		SimpleField field1 = IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN);
-		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(field1);
-		assertTrue(classificationResult1.isConsistentWith(field1) == TernaryLogicValue.TRUE);
+		SimpleDecision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN), 0);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(decision1);
+		assertTrue(classificationResult1.isConsistentWith(decision1) == TernaryLogicValue.TRUE);
 	}
 	
 	/**
@@ -119,10 +132,10 @@ class SimpleClassificationResultTest {
 	 */
 	@Test
 	void testIsConsistentWithIntegerField02() {
-		SimpleField field1 = IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN);
-		SimpleField field2 = IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.COST);
-		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(field1);
-		assertFalse(classificationResult1.isConsistentWith(field2) == TernaryLogicValue.TRUE);
+		SimpleDecision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN), 0);
+		SimpleDecision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.COST), 0);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(decision1);
+		assertFalse(classificationResult1.isConsistentWith(decision2) == TernaryLogicValue.TRUE);
 	}
 	
 	/**
@@ -130,10 +143,10 @@ class SimpleClassificationResultTest {
 	 */
 	@Test
 	void testIsConsistentWithIntegerField03() {
-		SimpleField field1 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
-		SimpleField field2 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
-		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(field1);
-		assertFalse(classificationResult1.isConsistentWith(field2) == TernaryLogicValue.TRUE);
+		SimpleDecision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), 0);
+		SimpleDecision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), 0);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(decision1);
+		assertFalse(classificationResult1.isConsistentWith(decision2) == TernaryLogicValue.TRUE);
 	}
 	
 	/**
@@ -150,9 +163,9 @@ class SimpleClassificationResultTest {
 			System.out.println(ex);
 		}
 		
-		SimpleField field1 = EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.GAIN);		
-		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(field1);
-		SimpleClassificationResult classificationResult2 = new SimpleClassificationResult(field1);
+		SimpleDecision decision1 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.GAIN), 0);		
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(decision1);
+		SimpleClassificationResult classificationResult2 = new SimpleClassificationResult(decision1);
 		assertTrue(classificationResult1.getSuggestedDecision().equals(classificationResult2.getSuggestedDecision()));
 	}
 	
@@ -170,10 +183,10 @@ class SimpleClassificationResultTest {
 			System.out.println(ex);
 		}
 		
-		SimpleField field1 = EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.GAIN);
-		SimpleField field2 = EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.COST);
-		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(field1);
-		SimpleClassificationResult classificationResult2 = new SimpleClassificationResult(field2);
+		SimpleDecision decision1 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.GAIN), 0);
+		SimpleDecision decision2 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.COST), 0);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(decision1);
+		SimpleClassificationResult classificationResult2 = new SimpleClassificationResult(decision2);
 		assertFalse(classificationResult1.getSuggestedDecision().equals(classificationResult2.getSuggestedDecision()));
 	}
 	
@@ -191,10 +204,10 @@ class SimpleClassificationResultTest {
 			System.out.println(ex);
 		}
 		
-		SimpleField field1 = EnumerationFieldFactory.getInstance().create(domain, 0, AttributePreferenceType.GAIN);
-		SimpleField field2 = EnumerationFieldFactory.getInstance().create(domain, 1, AttributePreferenceType.GAIN);
-		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(field1);
-		SimpleClassificationResult classificationResult2 = new SimpleClassificationResult(field2);
+		SimpleDecision decision1 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, 0, AttributePreferenceType.GAIN), 0);
+		SimpleDecision decision2 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, 1, AttributePreferenceType.GAIN), 0);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(decision1);
+		SimpleClassificationResult classificationResult2 = new SimpleClassificationResult(decision2);
 		assertFalse(classificationResult1.getSuggestedDecision().equals(classificationResult2.getSuggestedDecision()));
 	}
 	
@@ -212,9 +225,9 @@ class SimpleClassificationResultTest {
 			System.out.println(ex);
 		}
 		
-		SimpleField field1 = EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.GAIN);
-		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(field1);
-		assertTrue(classificationResult1.isConsistentWith(field1) == TernaryLogicValue.TRUE);
+		SimpleDecision decision1 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.GAIN), 0);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(decision1);
+		assertTrue(classificationResult1.isConsistentWith(decision1) == TernaryLogicValue.TRUE);
 	}
 	
 	/**
@@ -231,10 +244,11 @@ class SimpleClassificationResultTest {
 			System.out.println(ex);
 		}
 		
-		SimpleField field1 = EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.GAIN);
-		SimpleField field2 = EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.COST);
-		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(field1);
-		assertFalse(classificationResult1.isConsistentWith(field2) == TernaryLogicValue.TRUE);
+		SimpleDecision decision1 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.GAIN), 0);
+		SimpleDecision decision2 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.COST), 0);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(decision1);
+		//TODO is this really OK?
+		assertTrue(classificationResult1.isConsistentWith(decision2) == TernaryLogicValue.TRUE);
 	}
 	
 	/**
@@ -251,10 +265,10 @@ class SimpleClassificationResultTest {
 			System.out.println(ex);
 		}
 		
-		SimpleField field1 = EnumerationFieldFactory.getInstance().create(domain, 0, AttributePreferenceType.GAIN);
-		SimpleField field2 = EnumerationFieldFactory.getInstance().create(domain, 1, AttributePreferenceType.GAIN);
-		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(field1);
-		assertFalse(classificationResult1.isConsistentWith(field2) == TernaryLogicValue.TRUE);
+		SimpleDecision decision1 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, 0, AttributePreferenceType.GAIN), 0);
+		SimpleDecision decision2 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, 1, AttributePreferenceType.GAIN), 0);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(decision1);
+		assertFalse(classificationResult1.isConsistentWith(decision2) == TernaryLogicValue.TRUE);
 	}
 	
 }
