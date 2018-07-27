@@ -17,6 +17,12 @@
 package org.rulelearn.data;
 
 import static org.rulelearn.core.Precondition.notNull;
+
+import java.util.Set;
+
+//import org.rulelearn.approximations.Union;
+//import org.rulelearn.core.TernaryLogicValue;
+
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
@@ -53,7 +59,42 @@ public class DecisionDistribution {
 		for (int i = 0; i < numberOfObjects; i++) {
 			this.increaseCount(informationTable.getDecision(i));
 		}
-		
+	}
+	
+	/**
+	 * Checks whether a given decision is present in the distribution (i.e., object/objects having a given value of decision are present in the distribution).
+	 * 
+	 * @param decision decision of interest; should not be {@code null}
+	 * @return true if a given decision is present in the distribution
+	 */
+	public boolean isPresent(Decision decision) {
+		return this.decision2CountMap.containsKey(decision);
+	}
+	
+	/**
+	 * Checks whether a given union is present in the distribution (i.e., object/objects having a value of decision concordant with the union are present in the distribution).
+	 * 
+	 * @param union union of interest; should not be {@code null}
+	 * @return true if a value of decision concordant with the given union is present in the distribution
+	 */
+	/*public boolean isPresent(Union union) {
+		boolean concordant = false;
+		for (Decision decision : this.decision2CountMap.keySet()) {
+			if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
+				concordant = true;
+				break;
+			}
+		}
+		return concordant;
+	}*/
+	
+	/**
+	 * Gets all decisions, which are present in the distribution.
+	 * 
+	 * @return set {@link Set} of decisions
+	 */
+	public Set<Decision> getDecisions() {
+		return this.decision2CountMap.keySet();
 	}
 	
 	/**
@@ -65,6 +106,22 @@ public class DecisionDistribution {
 	public int getCount(Decision decision) {
 		return this.decision2CountMap.containsKey(decision) ? this.decision2CountMap.getInt(decision) : 0;
 	}
+	
+	/**
+	 * Gets number of objects having the decision concordant with a given union.
+	 * 
+	 * @param union union of interest; should not be {@code null}
+	 * @return number of objects having the decision value concordant with a given union 
+	 */
+	/*public int getCount(Union union) {
+		int count = 0;
+		for (Decision decision : this.decision2CountMap.keySet()) {
+			if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
+				count += this.decision2CountMap.getInt(decision);
+			}
+		}
+		return count;
+	}*/
 	
 	/**
 	 * Increases by one the number of objects having given decision.

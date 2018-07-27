@@ -19,6 +19,8 @@ package org.rulelearn.data;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.EvaluationField;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 /**
  * Decision reflecting a single object from an information table. It may relate to an {@link EvaluationField} evaluation of this object on the only active decision attribute,
  * or to an ordered set of {@link EvaluationField} evaluations of this object on subsequent active decision attributes. Each such evaluation contributes to this decision.
@@ -31,35 +33,35 @@ public abstract class Decision {
 	/**
 	 * Checks if this decision is at most as good as the other decision.
 	 * 
-	 * @param decision other decision that this decision is being compared to
+	 * @param otherDecision other decision that this decision is being compared to
 	 * @return {@link TernaryLogicValue#TRUE} if this decision is at most as good as the other decision,
 	 *         {@link TernaryLogicValue#FALSE} if this decision is not at most as good as the other decision,
 	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison
 	 * @throws NullPointerException if the other decision is {@code null}
 	 */
-	public abstract TernaryLogicValue isAtMostAsGoodAs(Decision decision);
+	public abstract TernaryLogicValue isAtMostAsGoodAs(Decision otherDecision);
 	
 	/**
 	 * Checks if this decision is at least as good as the other decision.
 	 * 
-	 * @param decision other decision that this decision is being compared to
+	 * @param otherDecision other decision that this decision is being compared to
 	 * @return {@link TernaryLogicValue#TRUE} if this decision is at least as good as the other decision,
 	 *         {@link TernaryLogicValue#FALSE} if this decision is not at least as good as the other decision,
 	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison
 	 * @throws NullPointerException if the other decision is {@code null}
 	 */
-	public abstract TernaryLogicValue isAtLeastAsGoodAs(Decision decision);
+	public abstract TernaryLogicValue isAtLeastAsGoodAs(Decision otherDecision);
 	
 	/**
 	 * Checks if this decision is equal to the other decision.
 	 * 
-	 * @param decision other decision that this decision is being compared to
+	 * @param otherDecision other decision that this decision is being compared to
 	 * @return {@link TernaryLogicValue#TRUE} if this decision is equal to the other decision,
 	 *         {@link TernaryLogicValue#FALSE} if this decision is not equal to the other decision,
 	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison
 	 * @throws NullPointerException if the other decision is {@code null}
 	 */
-	public abstract TernaryLogicValue isEqualTo(Decision decision);
+	public abstract TernaryLogicValue isEqualTo(Decision otherDecision);
 	
 	/**
 	 * Gets particular evaluation contributing to this decision.
@@ -76,6 +78,13 @@ public abstract class Decision {
 	 * @return number of evaluations on active decision attributes contributing to this decision
 	 */
 	public abstract int getNumberOfEvaluations();
+	
+	/**
+	 * Gets set of indices of active decision attributes contributing to this decision.
+	 * 
+	 * @return set of indices of active decision attributes contributing to this decision
+	 */
+	public abstract IntSet getAttributeIndices();
 	
 	/**
 	 * Tells if this decision is equal to the other object.

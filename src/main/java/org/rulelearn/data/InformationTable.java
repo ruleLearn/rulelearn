@@ -155,14 +155,13 @@ public class InformationTable {
 	
 	
 	/**
-	 * Information table constructor. Assumes that the type of fields in i-th column is compatible with the type of attribute at i-th position.
+	 * A wrapper-type constructor, passing arguments to {@link InformationTable#InformationTable(Attribute[], List, boolean)} with the boolean flag set to {@code false}. 
 	 * 
-	 * @param attributes all attributes of constructed information table (identification and evaluation (condition/decision/description) ones, both active and non-active)
-	 * @param listOfFields list of fields of subsequent objects; each array contains subsequent fields of a single object (row) in this information table;
-	 *        it is assumed that each array is of the same length (i.e., the number of fields of each object is the same)
+	 * @param attributes see {@link InformationTable#InformationTable(Attribute[], List, boolean)}
+	 * @param listOfFields see {@link InformationTable#InformationTable(Attribute[], List, boolean)}
 	 * 
-	 * @throws NullPointerException if any of the parameters is {@code null}
-	 * @throws InvalidValueException if there is more than one active identification attribute
+	 * @throws NullPointerException see {@link InformationTable#InformationTable(Attribute[], List, boolean)}
+	 * @throws InvalidValueException see {@link InformationTable#InformationTable(Attribute[], List, boolean)}
 	 */
 	public InformationTable(Attribute[] attributes, List<Field[]> listOfFields) {
 		this(attributes, listOfFields, false);
@@ -240,7 +239,7 @@ public class InformationTable {
 			} else if (isActiveIdentificationAttribute(attributes[i])) {
 				this.activeIdentificationAttributeIndex = i;
 				this.attributeMap[i] = 0; //no encoding
-			}else { //not active or description attribute
+			} else { //not active or description attribute
 				notActiveOrDescriptionAttributes[notActiveOrDescriptionAttributeIndex] = attributes[i];
 				this.attributeMap[i] = this.encodeNotActiveOrDescriptionAttributeIndex(notActiveOrDescriptionAttributeIndex);
 				notActiveOrDescriptionAttributeIndex++;
@@ -438,6 +437,18 @@ public class InformationTable {
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
 	public Attribute[] getAttributes(boolean accelerateByReadOnlyResult) {
 		return accelerateByReadOnlyResult ? this.attributes : this.attributes.clone();
+	}
+	
+	/**
+	 * Gets attribute with given index.
+	 * 
+	 * @param attributeIndex index of an attribute of this information table
+	 * @return the attribute of this information table having given index
+	 * 
+	 * @throws IndexOutOfBoundsException if given attribute index does not correspond to any attribute for which this table stores fields 
+	 */
+	public Attribute getAttribute(int attributeIndex) {
+		return this.attributes[attributeIndex];
 	}
 	
 	/**

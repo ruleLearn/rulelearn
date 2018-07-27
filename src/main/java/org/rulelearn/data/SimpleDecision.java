@@ -20,7 +20,11 @@ import org.rulelearn.types.EvaluationField;
 import static org.rulelearn.core.Precondition.notNull;
 import static org.rulelearn.core.Precondition.nonNegative;
 
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 import java.util.Objects;
+import java.util.function.BiPredicate;
 
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.TernaryLogicValue;
@@ -59,39 +63,84 @@ public class SimpleDecision extends Decision {
 	}
 	
 	/**
-	 * {@inheritDoc}
+	 * Checks if this simple decision is in relation with the other decision (expected to also be a simple decision).
+	 * Such relation holds if both decisions concern the same attribute,
+	 * and {@code integralRelationTester} verifies that the first evaluation (contributing to this decision) is in a particular relation
+	 * with the second evaluation (contributing to the other decision).
+	 * Two evaluations are in relation verified by {@code integralRelationTester} if:<br>
+	 * <br>
+	 * {@code integralRelationTester.test(firstEvaluation, secondEvaluation) == true}.
 	 * 
-	 * @param decision {@inheritDoc}
-	 * @return {@inheritDoc}
+	 * @param otherDecision other decision that this decision is being compared to
+	 * @param nullPointerMessage message of the {@link NullPointerException} thrown if given other decision is {@code null}
+	 * @param integralRelationTester object implementing {@link BiPredicate#test(Object, Object)} method that compares two evaluations;
+	 *        this method is used to compare two evaluations, the first from this decision, and the second from the other decision
+	 * @return {@link TernaryLogicValue#TRUE} if this decision is in relation with the other decision
+	 *         {@link TernaryLogicValue#FALSE} if this decision is not in relation with the other decision
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison,
+	 *         or the other decision concerns a different attribute
+	 * @throws NullPointerException if the other decision is {@code null}
+	 */
+	protected TernaryLogicValue isInRelationWith(Decision otherDecision, String nullPointerMessage, BiPredicate<EvaluationField, EvaluationField> integralRelationTester) {
+		notNull(otherDecision, nullPointerMessage);
+		
+		if (otherDecision instanceof SimpleDecision) {
+			SimpleDecision otherSimpleDecision = (SimpleDecision)otherDecision;
+			
+			if (this.attributeIndex == otherSimpleDecision.attributeIndex) {
+				return integralRelationTester.test(this.evaluation, otherSimpleDecision.evaluation) ? TernaryLogicValue.TRUE : TernaryLogicValue.FALSE;
+			} else {
+				return TernaryLogicValue.UNCOMPARABLE;
+			}
+			
+		} else {
+			return TernaryLogicValue.UNCOMPARABLE;
+		}
+	}
+	
+	/**
+	 * {@inheritDoc} The other decision is expected to also be a simple decision.
+	 * 
+	 * @param otherDecision {@inheritDoc}
+	 * @return {@link TernaryLogicValue#TRUE} if this decision is at most as good as the other decision
+	 *         {@link TernaryLogicValue#FALSE} if this decision is not at most as good as the other decision
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison, or the other decision concerns a different attribute
+	 * @throws NullPointerException if the other decision is {@code null}
 	 */
 	@Override
-	public TernaryLogicValue isAtMostAsGoodAs(Decision decision) {
-		// TODO: implement
-		throw new UnsupportedOperationException("Not implemented yet!");
+	public TernaryLogicValue isAtMostAsGoodAs(Decision otherDecision) {
+		return this.isInRelationWith(otherDecision, "Cannot verify if a simple decision is at most as good as null.",
+				(ownEvaluation, otherEvaluation) -> ownEvaluation.isAtMostAsGoodAs(otherEvaluation) == TernaryLogicValue.TRUE);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * {@inheritDoc} The other decision is expected to also be a simple decision.
 	 * 
-	 * @param decision {@inheritDoc}
-	 * @return {@inheritDoc}
+	 * @param otherDecision {@inheritDoc}
+	 * @return {@link TernaryLogicValue#TRUE} if this decision is at least as good as the other decision
+	 *         {@link TernaryLogicValue#FALSE} if this decision is not at least as good as the other decision
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison, or the other decision concerns a different attribute
+	 * @throws NullPointerException if the other decision is {@code null}
 	 */
 	@Override
-	public TernaryLogicValue isAtLeastAsGoodAs(Decision decision) {
-		// TODO: implement
-		throw new UnsupportedOperationException("Not implemented yet!");
+	public TernaryLogicValue isAtLeastAsGoodAs(Decision otherDecision) {
+		return this.isInRelationWith(otherDecision, "Cannot verify if a simple decision is at least as good as null.",
+				(ownEvaluation, otherEvaluation) -> ownEvaluation.isAtLeastAsGoodAs(otherEvaluation) == TernaryLogicValue.TRUE);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * {@inheritDoc} The other decision is expected to also be a simple decision.
 	 * 
-	 * @param decision {@inheritDoc}
-	 * @return {@inheritDoc}
+	 * @param otherDecision other decision that this decision is being compared to
+	 * @return {@link TernaryLogicValue#TRUE} if this decision is equal to the other decision,
+	 *         {@link TernaryLogicValue#FALSE} if this decision is not equal to the other decision,
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison, or the other decision concerns a different attribute
+	 * @throws NullPointerException if the other decision is {@code null}
 	 */
 	@Override
-	public TernaryLogicValue isEqualTo(Decision decision) {
-		// TODO: implement
-		throw new UnsupportedOperationException("Not implemented yet!");
+	public TernaryLogicValue isEqualTo(Decision otherDecision) {
+		return this.isInRelationWith(otherDecision, "Cannot verify if a simple decision is equal to null.",
+				(ownEvaluation, otherEvaluation) -> ownEvaluation.isEqualTo(otherEvaluation) == TernaryLogicValue.TRUE);
 	}
 	
 	/**
@@ -111,6 +160,17 @@ public class SimpleDecision extends Decision {
 	@Override
 	public int getNumberOfEvaluations() {
 		return 1;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IntSet getAttributeIndices() {
+		IntSet indexSet = new IntArraySet(1);
+		indexSet.add(this.attributeIndex);
+		
+		return indexSet;
 	}
 
 	/**
@@ -134,7 +194,7 @@ public class SimpleDecision extends Decision {
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.getClass(), evaluation, attributeIndex);
+		return Objects.hash(this.getClass(), this.evaluation, this.attributeIndex);
 	}
 	
 }
