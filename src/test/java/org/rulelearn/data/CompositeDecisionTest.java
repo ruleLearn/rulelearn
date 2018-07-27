@@ -146,15 +146,11 @@ class CompositeDecisionTest {
 		
 		Decision decision6 = getIncompatibleDecision();
 		
-		try {
-			assertTrue(compositeDecision1.isEqualTo(compositeDecision2) == TernaryLogicValue.TRUE);
-			assertTrue(compositeDecision1.isEqualTo(compositeDecision3) == TernaryLogicValue.UNCOMPARABLE);
-			assertTrue(compositeDecision1.isEqualTo(compositeDecision4) == TernaryLogicValue.FALSE); //
-			assertTrue(compositeDecision1.isEqualTo(compositeDecision5) == TernaryLogicValue.FALSE);
-			assertTrue(compositeDecision1.isEqualTo(decision6) == TernaryLogicValue.UNCOMPARABLE);
-		} catch (UnsupportedOperationException exception) {
-			//TODO: remove this try-catch when implementation of tested method is finished
-		}
+		assertTrue(compositeDecision1.isEqualTo(compositeDecision2) == TernaryLogicValue.TRUE);
+		assertTrue(compositeDecision1.isEqualTo(compositeDecision3) == TernaryLogicValue.UNCOMPARABLE);
+		assertTrue(compositeDecision1.isEqualTo(compositeDecision4) == TernaryLogicValue.FALSE); //
+		assertTrue(compositeDecision1.isEqualTo(compositeDecision5) == TernaryLogicValue.FALSE);
+		assertTrue(compositeDecision1.isEqualTo(decision6) == TernaryLogicValue.UNCOMPARABLE);
 	}
 	
 	/**
@@ -195,15 +191,11 @@ class CompositeDecisionTest {
 		CompositeDecision compositeDecision5 = new CompositeDecision(evaluations5, attributeIndices5);
 		Decision decision6 = getIncompatibleDecision();
 		
-		try {
-			assertTrue(compositeDecision1.isAtLeastAsGoodAs(compositeDecision2) == TernaryLogicValue.TRUE);
-			assertTrue(compositeDecision1.isAtLeastAsGoodAs(compositeDecision3) == TernaryLogicValue.TRUE);
-			assertTrue(compositeDecision1.isAtLeastAsGoodAs(compositeDecision4) == TernaryLogicValue.FALSE);
-			assertTrue(compositeDecision1.isAtLeastAsGoodAs(compositeDecision5) == TernaryLogicValue.UNCOMPARABLE);
-			assertTrue(compositeDecision1.isAtLeastAsGoodAs(decision6) == TernaryLogicValue.UNCOMPARABLE);
-		} catch (UnsupportedOperationException exception) {
-			//TODO: remove this try-catch when implementation of tested method is finished
-		}
+		assertTrue(compositeDecision1.isAtLeastAsGoodAs(compositeDecision2) == TernaryLogicValue.TRUE);
+		assertTrue(compositeDecision1.isAtLeastAsGoodAs(compositeDecision3) == TernaryLogicValue.TRUE);
+		assertTrue(compositeDecision1.isAtLeastAsGoodAs(compositeDecision4) == TernaryLogicValue.FALSE);
+		assertTrue(compositeDecision1.isAtLeastAsGoodAs(compositeDecision5) == TernaryLogicValue.UNCOMPARABLE);
+		assertTrue(compositeDecision1.isAtLeastAsGoodAs(decision6) == TernaryLogicValue.UNCOMPARABLE);
 	}
 	
 	/**
@@ -243,15 +235,11 @@ class CompositeDecisionTest {
 		CompositeDecision compositeDecision5 = new CompositeDecision(evaluations5, attributeIndices5);
 		Decision decision6 = getIncompatibleDecision();
 		
-		try {
-			assertTrue(compositeDecision1.isAtMostAsGoodAs(compositeDecision2) == TernaryLogicValue.TRUE);
-			assertTrue(compositeDecision1.isAtMostAsGoodAs(compositeDecision3) == TernaryLogicValue.TRUE);
-			assertTrue(compositeDecision1.isAtMostAsGoodAs(compositeDecision4) == TernaryLogicValue.FALSE);
-			assertTrue(compositeDecision1.isAtMostAsGoodAs(compositeDecision5) == TernaryLogicValue.UNCOMPARABLE);
-			assertTrue(compositeDecision1.isAtMostAsGoodAs(decision6) == TernaryLogicValue.UNCOMPARABLE);
-		} catch (UnsupportedOperationException exception) {
-			//TODO: remove this try-catch when implementation of tested method is finished
-		}
+		assertTrue(compositeDecision1.isAtMostAsGoodAs(compositeDecision2) == TernaryLogicValue.TRUE);
+		assertTrue(compositeDecision1.isAtMostAsGoodAs(compositeDecision3) == TernaryLogicValue.TRUE);
+		assertTrue(compositeDecision1.isAtMostAsGoodAs(compositeDecision4) == TernaryLogicValue.FALSE);
+		assertTrue(compositeDecision1.isAtMostAsGoodAs(compositeDecision5) == TernaryLogicValue.UNCOMPARABLE);
+		assertTrue(compositeDecision1.isAtMostAsGoodAs(decision6) == TernaryLogicValue.UNCOMPARABLE);
 	}
 
 	/**
