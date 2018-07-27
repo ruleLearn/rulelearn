@@ -78,15 +78,11 @@ class SimpleDecisionTest {
 		
 		Decision decision6 = getIncompatibleDecision();
 		
-		try {
-			assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision2) == TernaryLogicValue.TRUE); //equal
-			assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision3) == TernaryLogicValue.FALSE); //worse
-			assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision4) == TernaryLogicValue.TRUE); //better
-			assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision5) == TernaryLogicValue.UNCOMPARABLE); //different attribute
-			assertTrue(simpleDecision1.isAtLeastAsGoodAs(decision6) == TernaryLogicValue.UNCOMPARABLE); //different attribute
-		} catch (UnsupportedOperationException exception) {
-			//TODO: remove this try-catch when implementation of tested method is finished
-		}
+		assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision2) == TernaryLogicValue.TRUE); //equal
+		assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision3) == TernaryLogicValue.FALSE); //worse
+		assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision4) == TernaryLogicValue.TRUE); //better
+		assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision5) == TernaryLogicValue.UNCOMPARABLE); //different attribute
+		assertTrue(simpleDecision1.isAtLeastAsGoodAs(decision6) == TernaryLogicValue.UNCOMPARABLE); //different attribute
 	}
 
 	/**
@@ -117,15 +113,11 @@ class SimpleDecisionTest {
 		
 		Decision decision6 = getIncompatibleDecision();
 		
-		try {
-			assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision2) == TernaryLogicValue.TRUE); //equal
-			assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision3) == TernaryLogicValue.TRUE); //worse
-			assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision4) == TernaryLogicValue.FALSE); //better
-			assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision5) == TernaryLogicValue.UNCOMPARABLE); //different attribute
-			assertTrue(simpleDecision1.isAtMostAsGoodAs(decision6) == TernaryLogicValue.UNCOMPARABLE); //different attribute
-		} catch (UnsupportedOperationException exception) {
-			//TODO: remove this try-catch when implementation of tested method is finished
-		}
+		assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision2) == TernaryLogicValue.TRUE); //equal
+		assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision3) == TernaryLogicValue.TRUE); //worse
+		assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision4) == TernaryLogicValue.FALSE); //better
+		assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision5) == TernaryLogicValue.UNCOMPARABLE); //different attribute
+		assertTrue(simpleDecision1.isAtMostAsGoodAs(decision6) == TernaryLogicValue.UNCOMPARABLE); //different attribute
 	}
 
 	/**
@@ -152,14 +144,10 @@ class SimpleDecisionTest {
 		
 		Decision decision5 = getIncompatibleDecision();
 		
-		try {
-			assertTrue(simpleDecision1.isEqualTo(simpleDecision2) == TernaryLogicValue.TRUE);
-			assertTrue(simpleDecision1.isEqualTo(simpleDecision3) == TernaryLogicValue.FALSE);
-			assertTrue(simpleDecision1.isEqualTo(simpleDecision4) == TernaryLogicValue.UNCOMPARABLE);
-			assertTrue(simpleDecision1.isEqualTo(decision5) == TernaryLogicValue.UNCOMPARABLE);
-		} catch (UnsupportedOperationException exception) {
-			//TODO: remove this try-catch when implementation of tested method is finished
-		}
+		assertTrue(simpleDecision1.isEqualTo(simpleDecision2) == TernaryLogicValue.TRUE);
+		assertTrue(simpleDecision1.isEqualTo(simpleDecision3) == TernaryLogicValue.FALSE);
+		assertTrue(simpleDecision1.isEqualTo(simpleDecision4) == TernaryLogicValue.UNCOMPARABLE);
+		assertTrue(simpleDecision1.isEqualTo(decision5) == TernaryLogicValue.UNCOMPARABLE);
 	}
 
 	/**
