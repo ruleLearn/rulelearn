@@ -25,21 +25,24 @@ import org.junit.jupiter.api.Test;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
- * Test for {@link ObjectParser}.
+ * Test for {@link InformationTableSerializer}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
-class ObjectParserTest {
+class InformationTableSerializerTest {
 
 	/**
-	 * Test method for {@link ObjectBuilder#getObjects(String)}.
+	 * Test method for {@link InformationTableSerializer}.
 	 */
 	@Test
-	void testConstructionOfInformationTableBuilder() {
+	void testInformationTableSerializer() {
 		Attribute [] attributes = null;
+		InformationTable iTable = null;
 		
 		AttributeParser aParser = new AttributeParser();
 		try {
@@ -50,7 +53,6 @@ class ObjectParserTest {
 		}
 		if (attributes != null) {
 			ObjectParser oParser = new ObjectParser(attributes);
-			InformationTable iTable = null;
 			try {
 				iTable = oParser.parseObjects(new FileReader("src/test/resources/data/json/examples.json"));
 			}
@@ -67,7 +69,36 @@ class ObjectParserTest {
 		else {
 			fail("Unable to load JSON test file with definition of attributes");
 		}
-
+		
+		String serializediTable = "[\n" + 
+				"  {\n" + 
+				"    \"ID\": \"b70eac70-b4ac-11e7-9460-002564d9514f\",\n" + 
+				"    \"SourceAssetCriticality\": \"low\",\n" + 
+				"    \"TargetAssetCriticality\": \"critical\",\n" + 
+				"    \"TimeToDueDate\": \"-100896.193\",\n" + 
+				"    \"TimeFromDetectTime\": \"187296.193\",\n" + 
+				"    \"SeverityForAttackCategory\": \"critical\",\n" + 
+				"    \"MAQuality\": \"0.7\",\n" + 
+				"    \"AttackSourceReputationScore\": \"0.5\",\n" + 
+				"    \"MaxCVE\": \"0.0\"\n" + 
+				"  },\n" + 
+				"  {\n" + 
+				"    \"ID\": \"b70eac70-b4ac-11e7-9460-002564d9514e\",\n" + 
+				"    \"SourceAssetCriticality\": \"NA\",\n" + 
+				"    \"TargetAssetCriticality\": \"critical\",\n" + 
+				"    \"TimeToDueDate\": \"-1.0641696193E7\",\n" + 
+				"    \"TimeFromDetectTime\": \"1.0728096193E7\",\n" + 
+				"    \"SeverityForAttackCategory\": \"low\",\n" + 
+				"    \"MAQuality\": \"0.7\",\n" + 
+				"    \"AttackSourceReputationScore\": \"0.5\",\n" + 
+				"    \"MaxCVE\": \"1.0\"\n" + 
+				"  }\n" + 
+				"]";
+		
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(InformationTable.class, new InformationTableSerializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		assertEquals(serializediTable, gson.toJson(iTable).toString());
 	}
 
 }
