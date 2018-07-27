@@ -19,7 +19,9 @@ package org.rulelearn.dominance;
 import org.rulelearn.data.InformationTable;
 
 /**
- * TODO: complete javadoc
+ * Dominance checker capable of verifying if a given pair {@code (x,y)} of objects {@code x, y} from an information table
+ * belongs to dominance relation (i.e., {@code x} dominates {@code y}) or inverse dominance relation
+ * (i.e., {@code x} is dominated by {@code y}). 
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -29,12 +31,15 @@ public final class DominanceChecker {
 	/**
 	 * Checks if the first given object ({@code x}) dominates the second given object ({@code y}) with respect to active condition attributes
 	 * of the given information table.
-	 * TODO: complete javadoc
 	 * 
-	 * @param x
-	 * @param y
-	 * @param informationTable
-	 * @return
+	 * @param x index of the first object
+	 * @param y index of the second object
+	 * @param informationTable information table containing evaluations of the first and the second object
+	 * @return {@code true} if the first given object ({@code x}) dominates the second given object ({@code y}) with respect to
+	 *         active condition attributes of the given information table, {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given information table is {@code null}
+	 * @throws IndexOutOfBoundsException if index {@code x} or {@code y} does not correspond to any object from the given information table
 	 */
 	public static boolean dominates(int x, int y, InformationTable informationTable) {
 		throw new UnsupportedOperationException("Not implemented yet!"); //TODO: implement MSz
@@ -43,12 +48,15 @@ public final class DominanceChecker {
 	/**
 	 * Checks if the first given object ({@code x}) is dominated by the second given object ({@code y}) with respect to active condition attributes
 	 * of the given information table.
-	 * TODO: complete javadoc
 	 * 
-	 * @param x
-	 * @param y
-	 * @param informationTable
-	 * @return
+	 * @param x index of the first object
+	 * @param y index of the second object
+	 * @param informationTable information table containing evaluations of the first and the second object
+	 * @return {@code true} if the first given object ({@code x}) is dominated by the second given object ({@code y}) with respect to
+	 *         active condition attributes of the given information table, {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given information table is {@code null}
+	 * @throws IndexOutOfBoundsException if index {@code x} or {@code y} does not correspond to any object from the given information table
 	 */
 	public static boolean isDominatedBy(int x, int y, InformationTable informationTable) {
 		throw new UnsupportedOperationException("Not implemented yet!"); //TODO: implement MSz
