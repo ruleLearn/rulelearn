@@ -247,8 +247,7 @@ class SimpleClassificationResultTest {
 		SimpleDecision decision1 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.GAIN), 0);
 		SimpleDecision decision2 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, EnumerationField.DEFAULT_VALUE, AttributePreferenceType.COST), 0);
 		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(decision1);
-		//TODO is this really OK?
-		assertTrue(classificationResult1.isConsistentWith(decision2) == TernaryLogicValue.TRUE);
+		assertFalse(classificationResult1.isConsistentWith(decision2) == TernaryLogicValue.TRUE);
 	}
 	
 	/**
