@@ -106,7 +106,7 @@ class SimpleClassificationResultTest {
 	}
 	
 	/**
-	 * Test {@link SimpleClassificationResult#getSuggestedDecision()}. * 
+	 * Test {@link SimpleClassificationResult#getSuggestedDecision()}. 
 	 */
 	@Test
 	void testGetSuggestedDecisionIntegerField04() {
@@ -145,6 +145,17 @@ class SimpleClassificationResultTest {
 	void testIsConsistentWithIntegerField03() {
 		SimpleDecision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), 0);
 		SimpleDecision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), 0);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(decision1);
+		assertFalse(classificationResult1.isConsistentWith(decision2) == TernaryLogicValue.TRUE);
+	}
+	
+	/**
+	 * Test {@link SimpleClassificationResult#isConsistentWith(org.rulelearn.types.EvaluationField)}.
+	 */
+	@Test
+	void testIsConsistentWithIntegerField04() {
+		SimpleDecision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), 0);
+		SimpleDecision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), 1);
 		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(decision1);
 		assertFalse(classificationResult1.isConsistentWith(decision2) == TernaryLogicValue.TRUE);
 	}
@@ -212,6 +223,27 @@ class SimpleClassificationResultTest {
 	}
 	
 	/**
+	 * Test {@link SimpleClassificationResult#getSuggestedDecision()}. 
+	 */
+	@Test
+	void testGetSuggestedDecisionEnumerationField04() {
+		ElementList domain = null;
+		String [] values = {"1", "2", "3"};
+		try {
+			domain = new ElementList(values);
+		}
+		catch (NoSuchAlgorithmException ex) {
+			System.out.println(ex);
+		}
+		
+		SimpleDecision decision1 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, 0, AttributePreferenceType.GAIN), 0);
+		SimpleDecision decision2 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, 0, AttributePreferenceType.GAIN), 1);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(decision1);
+		SimpleClassificationResult classificationResult2 = new SimpleClassificationResult(decision2);
+		assertFalse(classificationResult1.getSuggestedDecision().equals(classificationResult2.getSuggestedDecision()));
+	}
+	
+	/**
 	 * Test {@link SimpleClassificationResult#isConsistentWith(org.rulelearn.types.EvaluationField)}. 
 	 */
 	@Test
@@ -266,6 +298,26 @@ class SimpleClassificationResultTest {
 		
 		SimpleDecision decision1 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, 0, AttributePreferenceType.GAIN), 0);
 		SimpleDecision decision2 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, 1, AttributePreferenceType.GAIN), 0);
+		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(decision1);
+		assertFalse(classificationResult1.isConsistentWith(decision2) == TernaryLogicValue.TRUE);
+	}
+	
+	/**
+	 * Test {@link SimpleClassificationResult#isConsistentWith(org.rulelearn.types.EvaluationField)}.
+	 */
+	@Test
+	void testIsConsistentWithEnumerationField04() {
+		ElementList domain = null;
+		String [] values = {"1", "2", "3"};
+		try {
+			domain = new ElementList(values);
+		}
+		catch (NoSuchAlgorithmException ex) {
+			System.out.println(ex);
+		}
+		
+		SimpleDecision decision1 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, 0, AttributePreferenceType.GAIN), 0);
+		SimpleDecision decision2 = new SimpleDecision(EnumerationFieldFactory.getInstance().create(domain, 0, AttributePreferenceType.GAIN), 1);
 		SimpleClassificationResult classificationResult1 = new SimpleClassificationResult(decision1);
 		assertFalse(classificationResult1.isConsistentWith(decision2) == TernaryLogicValue.TRUE);
 	}
