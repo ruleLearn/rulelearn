@@ -16,8 +16,17 @@
 
 package org.rulelearn.classification;
 
+import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.types.Field;
+
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
 import static org.rulelearn.core.Precondition.notNull;
+
+import java.util.List;
+
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 
@@ -96,6 +105,39 @@ public class ClassificationResultSet {
 		return this.informationTable;
 	}
 
+	/**
+	 * Gets an information table with all classification results included. The information table 
+	 * is constructed from constructed from scratch (i.e., it is a new copy of the information table,
+	 * for which classification results are stored).
+	 * 
+	 * @return the informationTable information with all classification results included
+	 */
+	public InformationTable getInformationTableWithClassificationResults() {
+		InformationTable newInformationTable = null;
+		Attribute[] attributes = this.informationTable.getAttributes();
+		int numObjects = this.informationTable.getNumberOfObjects(), numAttributes = attributes.length;
+		List<Field[]> objects = new ObjectArrayList<Field []>();
+		IntSet decisionAttributesIndices = null;
+		
+		this.calculateAllClassificationResults();
+		for(int i = 0; i < numObjects; i++) {
+			decisionAttributesIndices = this.classificationResults[i].getSuggestedDecision().getAttributeIndices();
+			Field[] object = new Field[numAttributes];
+			for(int j = 0; j < numAttributes; j++) {
+				if (decisionAttributesIndices.contains(j)) {
+					object[j] = this.classificationResults[i].getSuggestedDecision().getEvaluation(j);
+				}
+				else {
+					object[j] = this.informationTable.getField(i, j);
+				}
+			}
+			objects.add(object);
+		}
+		newInformationTable = new InformationTable(attributes, objects);
+		
+		return newInformationTable;
+	}
+	
 	/**
 	 * Gets classifier used to classify all objects from the stored information table.
 	 * 

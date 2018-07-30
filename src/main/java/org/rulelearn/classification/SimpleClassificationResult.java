@@ -48,8 +48,9 @@ public class SimpleClassificationResult extends ClassificationResult {
 	/**
 	 * Gets evaluation of an object on the decision attribute (i.e., decision) suggested by a classifier.
 	 * 
-	 * @return evaluation of an object on the decision attribute (i.e., decision) suggested by a classifier.
+	 * @return evaluation of an object on the decision attribute (i.e., decision) suggested by a classifier
 	 */
+	@Override
 	public SimpleDecision getSuggestedDecision() {
 		return suggestedDecision;
 	}

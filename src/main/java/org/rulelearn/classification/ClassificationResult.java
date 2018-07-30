@@ -37,4 +37,11 @@ public abstract class ClassificationResult {
 	 * @throws NullPointerException if given decision is {@code null} 
 	 */
 	public abstract TernaryLogicValue isConsistentWith(Decision decision);
+	
+	/**
+	 * Gets evaluation of an object on the decision attribute or decision attributes (i.e., decision) suggested by a classifier.
+	 * 
+	 * @return evaluation of an object on the decision attribute or decision attributes (i.e., decision) suggested by a classifier
+	 */
+	public abstract Decision getSuggestedDecision();
 }
