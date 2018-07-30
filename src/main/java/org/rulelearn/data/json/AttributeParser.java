@@ -24,6 +24,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
+import static org.rulelearn.core.Precondition.notNull;
+
 /**
  * Parser of attributes {@link Attribute} stored in JSON format.
  *
@@ -51,18 +53,14 @@ public class AttributeParser {
 	 * @return array with attributes {@link Attribute}
 	 */
 	public Attribute[] parseAttributes (Reader reader) {
-		Attribute[] attributes = null;
-		
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		Gson gson = gsonBuilder.create();
 		
 		JsonReader jsonReader = new JsonReader(reader);
-		if (jsonReader != null) {
-			attributes = gson.fromJson(jsonReader, Attribute[].class);
-		}
+		notNull(jsonReader, "Could not initialize JsonReader.");
 		
-		return attributes;
+		return gson.fromJson(jsonReader, Attribute[].class);
 	}
 	
 }

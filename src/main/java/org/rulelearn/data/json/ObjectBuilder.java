@@ -107,7 +107,6 @@ public class ObjectBuilder {
 				}
 			}
 		}
-		
 		return object;
 	}
 }
