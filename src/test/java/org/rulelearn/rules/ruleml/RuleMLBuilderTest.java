@@ -223,7 +223,7 @@ class RuleMLBuilderTest {
 		when(this.ruleCharacteristicsMock.getConfidence()).thenReturn(1.0);
 		when(this.ruleCharacteristicsMock.getCoverage()).thenReturn(1);
 		when(this.ruleCharacteristicsMock.getEpsilon()).thenReturn(-1.0);
-		when(this.ruleCharacteristicsMock.getEpsilonPrim()).thenReturn(1.0);
+		when(this.ruleCharacteristicsMock.getEpsilonPrime()).thenReturn(1.0);
 		when(this.ruleCharacteristicsMock.getFConfirmation()).thenReturn(1.0);
 		when(this.ruleCharacteristicsMock.getLConfirmation()).thenReturn(1.0);
 		when(this.ruleCharacteristicsMock.getNegativeCoverage()).thenReturn(1);

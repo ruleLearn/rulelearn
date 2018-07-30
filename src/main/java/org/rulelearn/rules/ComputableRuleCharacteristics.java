@@ -181,7 +181,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	 * @return value of rule consistency measure $\epsilon'$ calculated for the decision rule in the context of the information table
 	 */
 	@Override
-	public double getEpsilonPrim() {
+	public double getEpsilonPrime() {
 		if (epsilonPrim == UNKNOWN_DOUBLE_VALUE) {
 			//TODO: calculate measure
 		}
