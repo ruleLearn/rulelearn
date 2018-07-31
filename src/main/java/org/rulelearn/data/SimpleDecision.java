@@ -153,6 +153,15 @@ public class SimpleDecision extends Decision {
 	public EvaluationField getEvaluation(int attributeIndex) {
 		return attributeIndex == this.attributeIndex ? this.evaluation : null;
 	}
+	
+	/**
+	 * Gets the evaluation contributing to the decision (i.e., with respect to the attribute contributing to this decision).
+	 * 
+	 * @return evaluation contributing to the decision
+	 */
+	public EvaluationField getEvaluation() {
+		return this.evaluation;
+	}
 
 	/**
 	 * {@inheritDoc}
