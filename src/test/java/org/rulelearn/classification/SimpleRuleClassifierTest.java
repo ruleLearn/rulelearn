@@ -32,6 +32,7 @@ import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.IdentificationAttribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableBuilder;
+import org.rulelearn.data.SimpleDecision;
 import org.rulelearn.data.json.AttributeDeserializer;
 import org.rulelearn.data.json.EvaluationAttributeSerializer;
 import org.rulelearn.data.json.IdentificationAttributeSerializer;
@@ -128,12 +129,14 @@ class SimpleRuleClassifierTest {
 				InformationTable iT = iTB.build();
 				
 				SimpleRuleClassifier classifier = new SimpleRuleClassifier(rules.get(1), new SimpleClassificationResult(
-						EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 2, 
-																AttributePreferenceType.COST)));
-				assertEquals(classifier.classify(0, iT).getSuggestedDecision(), EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 2, 
-						AttributePreferenceType.COST));
-				assertEquals(classifier.classify(1, iT).getSuggestedDecision(), EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 2, 
-						AttributePreferenceType.COST));
+						new SimpleDecision(EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 2, 
+																AttributePreferenceType.COST), 10)));
+				assertEquals(classifier.classify(0, iT).getSuggestedDecision(), 
+						new SimpleDecision(EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 2, 
+						AttributePreferenceType.COST), 10));
+				assertEquals(classifier.classify(1, iT).getSuggestedDecision(), 
+						new SimpleDecision(EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 2, 
+						AttributePreferenceType.COST), 10));
 			}
 			else {
 				fail("Unable to load RuleML file.");
