@@ -42,7 +42,7 @@ public class RuleCharacteristics {
 	/**
 	 * Default value of all floating-point characteristics, indicating that given characteristic is unknown, i.e., it has not been set or calculated yet.
 	 */
-	public static final double UNKNOWN_DOUBLE_VALUE = Double.MIN_VALUE;
+	public static final double UNKNOWN_DOUBLE_VALUE = Double.POSITIVE_INFINITY;
 	
 	//initialization of all characteristics as unknown
 	/**
@@ -95,7 +95,7 @@ public class RuleCharacteristics {
 	 */
 	protected double lConfirmation = UNKNOWN_DOUBLE_VALUE;
 	/**
-	 * Value of rule confirmation measure $c_1$ calculated for a decision rule in the context of an information table.
+	 * Value of rule confirmation measure $c<sub>1</sub>$ calculated for a decision rule in the context of an information table.
 	 */
 	protected double c1Confirmation = UNKNOWN_DOUBLE_VALUE;
 	/**
@@ -335,9 +335,13 @@ public class RuleCharacteristics {
 	 * In order to forget stored value of this rule confirmation measure, one can invoke this method with {@link #UNKNOWN_DOUBLE_VALUE}.
 	 * 
 	 * @param fConfirmation value of rule confirmation measure $f$ calculated for a decision rule in the context of an information table
+	 * @throws InvalidValueException if given value of rule confirmation measure 'f' is outside interval [-1,1]
 	 */
 	public void setFConfirmation(double fConfirmation) {
-		this.fConfirmation = fConfirmation; //TODO: analyze if any checking is necessary here
+		if (fConfirmation != UNKNOWN_DOUBLE_VALUE) { //do validation
+			withinMinus1Plus1Interval(fConfirmation, "Value of rule confirmation measure 'f' has to be within interval [-1,1].");
+		}
+		this.fConfirmation = fConfirmation;
 	}
 
 	/**
@@ -403,29 +407,35 @@ public class RuleCharacteristics {
 	 * In order to forget stored value of this rule confirmation measure, one can invoke this method with {@link #UNKNOWN_DOUBLE_VALUE}.
 	 * 
 	 * @param lConfirmation value of rule confirmation measure $l$ calculated for a decision rule in the context of an information table
+	 * @throws InvalidValueException if given value of rule confirmation measure 'l' is greater than 1
 	 */
 	public void setLConfirmation(double lConfirmation) {
-		this.lConfirmation = lConfirmation; //TODO: analyze if any checking is necessary here
+		if (lConfirmation != UNKNOWN_DOUBLE_VALUE) { //do validation
+			if (lConfirmation > 1) {
+				throw new InvalidValueException("Value of rule confirmation measure 'l' cannot exceed 1.");
+			}
+		}
+		this.lConfirmation = lConfirmation;
 	}
 
 	/**
-	 * Gets value of rule confirmation measure $c_1$ calculated for a decision rule in the context of an information table.
+	 * Gets value of rule confirmation measure $c<sub>1</sub>$ calculated for a decision rule in the context of an information table.
 	 * 
-	 * @return value of rule confirmation measure $c_1$ calculated for a decision rule in the context of an information table
-	 * @throws UnknownValueException if value of rule confirmation measure $c_1$ is unknown (not stored in these characteristics)
+	 * @return value of rule confirmation measure $c<sub>1</sub>$ calculated for a decision rule in the context of an information table
+	 * @throws UnknownValueException if value of rule confirmation measure $c<sub>1</sub>$ is unknown (not stored in these characteristics)
 	 */
 	public double getC1Confirmation() {
 		return known(c1Confirmation, UNKNOWN_DOUBLE_VALUE, "Value of rule confirmation measure 'c_1' is unknown.");
 	}
 
 	/**
-	 * Sets value of rule confirmation measure $c_1$ calculated for a decision rule in the context of an information table.
+	 * Sets value of rule confirmation measure $c<sub>1</sub>$ calculated for a decision rule in the context of an information table.
 	 * In order to forget stored value of this rule confirmation measure, one can invoke this method with {@link #UNKNOWN_DOUBLE_VALUE}.
 	 * 
-	 * @param c1Confirmation value of rule confirmation measure $c_1$ calculated for a decision rule in the context of an information table
+	 * @param c1Confirmation value of rule confirmation measure $c<sub>1</sub>$ calculated for a decision rule in the context of an information table
 	 */
 	public void setC1Confirmation(double c1Confirmation) {
-		this.c1Confirmation = c1Confirmation; //TODO: analyze if any checking is necessary here
+		this.c1Confirmation = c1Confirmation; //no additional validation possible in the general case, with any values of measure's parameters alpha and beta
 	}
 	
 	/**

@@ -677,8 +677,64 @@ class RuleCharacteristicsTest {
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setFConfirmation(double)}.
 	 */
 	@Test
-	void testSetFConfirmation() {
-		//TODO: implement tests
+	void testSetFConfirmation01a() {
+		try {
+			ruleCharacteristics.setFConfirmation(-1.001);
+			fail("Should not set invalid fConfirmation.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setFConfirmation(double)}.
+	 */
+	@Test
+	void testSetFConfirmation01b() {
+		try {
+			ruleCharacteristics.setFConfirmation(1.001);
+			fail("Should not set invalid fConfirmation.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setFConfirmation(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getFConfirmation()}.
+	 */
+	@Test
+	void testSetFConfirmation02() {
+		ruleCharacteristics.setFConfirmation(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		
+		try {
+			ruleCharacteristics.getFConfirmation();
+			fail("Should not get unknown fConfirmation.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setFConfirmation(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getFConfirmation()}.
+	 */
+	@Test
+	void testSetFConfirmation03() {
+		double fConfirmation = -1;
+		ruleCharacteristics.setFConfirmation(fConfirmation);
+		assertEquals(ruleCharacteristics.getFConfirmation(), fConfirmation);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setFConfirmation(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getFConfirmation()}.
+	 */
+	@Test
+	void testSetFConfirmation04() {
+		double fConfirmation = 1;
+		ruleCharacteristics.setFConfirmation(fConfirmation);
+		assertEquals(ruleCharacteristics.getFConfirmation(), fConfirmation);
 	}
 
 	/**
@@ -698,8 +754,64 @@ class RuleCharacteristicsTest {
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setAConfirmation(double)}.
 	 */
 	@Test
-	void testSetAConfirmation() {
-		//TODO: implement tests
+	void testSetAConfirmation01a() {
+		try {
+			ruleCharacteristics.setAConfirmation(-1.001);
+			fail("Should not set invalid aConfirmation.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setAConfirmation(double)}.
+	 */
+	@Test
+	void testSetAConfirmation01b() {
+		try {
+			ruleCharacteristics.setAConfirmation(1.001);
+			fail("Should not set invalid aConfirmation.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setAConfirmation(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getAConfirmation()}.
+	 */
+	@Test
+	void testSetAConfirmation02() {
+		ruleCharacteristics.setAConfirmation(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		
+		try {
+			ruleCharacteristics.getAConfirmation();
+			fail("Should not get unknown aConfirmation.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setAConfirmation(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getAConfirmation()}.
+	 */
+	@Test
+	void testSetAConfirmation03() {
+		double aConfirmation = -1;
+		ruleCharacteristics.setAConfirmation(aConfirmation);
+		assertEquals(ruleCharacteristics.getAConfirmation(), aConfirmation);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setAConfirmation(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getAConfirmation()}.
+	 */
+	@Test
+	void testSetAConfirmation04() {
+		double aConfirmation = 1;
+		ruleCharacteristics.setAConfirmation(aConfirmation);
+		assertEquals(ruleCharacteristics.getAConfirmation(), aConfirmation);
 	}
 
 	/**
@@ -719,8 +831,64 @@ class RuleCharacteristicsTest {
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setZConfirmation(double)}.
 	 */
 	@Test
-	void testSetZConfirmation() {
-		//TODO: implement tests
+	void testSetZConfirmation01a() {
+		try {
+			ruleCharacteristics.setZConfirmation(-1.001);
+			fail("Should not set invalid zConfirmation.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setZConfirmation(double)}.
+	 */
+	@Test
+	void testSetZConfirmation01b() {
+		try {
+			ruleCharacteristics.setZConfirmation(1.001);
+			fail("Should not set invalid zConfirmation.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setZConfirmation(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getZConfirmation()}.
+	 */
+	@Test
+	void testSetZConfirmation02() {
+		ruleCharacteristics.setZConfirmation(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		
+		try {
+			ruleCharacteristics.getZConfirmation();
+			fail("Should not get unknown zConfirmation.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setZConfirmation(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getZConfirmation()}.
+	 */
+	@Test
+	void testSetZConfirmation03() {
+		double zConfirmation = -1;
+		ruleCharacteristics.setZConfirmation(zConfirmation);
+		assertEquals(ruleCharacteristics.getZConfirmation(), zConfirmation);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setZConfirmation(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getZConfirmation()}.
+	 */
+	@Test
+	void testSetZConfirmation04() {
+		double zConfirmation = 1;
+		ruleCharacteristics.setZConfirmation(zConfirmation);
+		assertEquals(ruleCharacteristics.getZConfirmation(), zConfirmation);
 	}
 
 	/**
@@ -740,8 +908,51 @@ class RuleCharacteristicsTest {
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setLConfirmation(double)}.
 	 */
 	@Test
-	void testSetLConfirmation() {
-		//TODO: implement tests
+	void testSetLConfirmation01() {
+		try {
+			ruleCharacteristics.setLConfirmation(1.001);
+			fail("Should not set invalid lConfirmation.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setLConfirmation(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getLConfirmation()}.
+	 */
+	@Test
+	void testSetLConfirmation02() {
+		ruleCharacteristics.setLConfirmation(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		
+		try {
+			ruleCharacteristics.getLConfirmation();
+			fail("Should not get unknown lConfirmation.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setLConfirmation(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getLConfirmation()}.
+	 */
+	@Test
+	void testSetLConfirmation03() {
+		double lConfirmation = -2;
+		ruleCharacteristics.setLConfirmation(lConfirmation);
+		assertEquals(ruleCharacteristics.getLConfirmation(), lConfirmation);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setLConfirmation(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getLConfirmation()}.
+	 */
+	@Test
+	void testSetLConfirmation04() {
+		double lConfirmation = 1;
+		ruleCharacteristics.setLConfirmation(lConfirmation);
+		assertEquals(ruleCharacteristics.getLConfirmation(), lConfirmation);
 	}
 
 	/**
@@ -761,8 +972,20 @@ class RuleCharacteristicsTest {
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setC1Confirmation(double)}.
 	 */
 	@Test
-	void testSetC1Confirmation() {
-		//TODO: implement tests
+	void testSetC1Confirmation01() {
+		double c1Confirmation = -2;
+		ruleCharacteristics.setC1Confirmation(c1Confirmation);
+		assertEquals(ruleCharacteristics.getC1Confirmation(), c1Confirmation);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setC1Confirmation(double)}.
+	 */
+	@Test
+	void testSetC1Confirmation02() {
+		double c1Confirmation = 2;
+		ruleCharacteristics.setC1Confirmation(c1Confirmation);
+		assertEquals(ruleCharacteristics.getC1Confirmation(), c1Confirmation);
 	}
 
 	/**
@@ -782,8 +1005,64 @@ class RuleCharacteristicsTest {
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setSConfirmation(double)}.
 	 */
 	@Test
-	void testSetSConfirmation() {
-		//TODO: implement tests
+	void testSetSConfirmation01a() {
+		try {
+			ruleCharacteristics.setSConfirmation(-1.001);
+			fail("Should not set invalid sConfirmation.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setSConfirmation(double)}.
+	 */
+	@Test
+	void testSetSConfirmation01b() {
+		try {
+			ruleCharacteristics.setSConfirmation(1.001);
+			fail("Should not set invalid sConfirmation.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setSConfirmation(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getSConfirmation()}.
+	 */
+	@Test
+	void testSetSConfirmation02() {
+		ruleCharacteristics.setSConfirmation(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		
+		try {
+			ruleCharacteristics.getSConfirmation();
+			fail("Should not get unknown sConfirmation.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setSConfirmation(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getSConfirmation()}.
+	 */
+	@Test
+	void testSetSConfirmation03() {
+		double sConfirmation = -1;
+		ruleCharacteristics.setSConfirmation(sConfirmation);
+		assertEquals(ruleCharacteristics.getSConfirmation(), sConfirmation);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setSConfirmation(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getSConfirmation()}.
+	 */
+	@Test
+	void testSetSConfirmation04() {
+		double sConfirmation = 1;
+		ruleCharacteristics.setSConfirmation(sConfirmation);
+		assertEquals(ruleCharacteristics.getSConfirmation(), sConfirmation);
 	}
 
 }

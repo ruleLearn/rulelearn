@@ -49,6 +49,15 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	protected int negativeNotCoveredObjectsCount = UNKNOWN_INT_VALUE;
 	
 	/**
+	 * Parameter of confirmation measure $c<sub>1</sub>$.
+	 */
+	protected double alpha = 0.5;
+	/**
+	 * Parameter of confirmation measure $c<sub>1</sub>$.
+	 */
+	protected double beta = 0.5;
+	
+	/**
 	 * Creates these rule characteristics, for the given rule and information table.
 	 * 
 	 * @param rule decision rule against which these characteristics are calculated
