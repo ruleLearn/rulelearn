@@ -24,6 +24,8 @@ import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.RealFieldFactory;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 import static org.mockito.Mockito.*;
 
 /**
@@ -282,6 +284,30 @@ class CompositeDecisionTest {
 		CompositeDecision compositeDecision = new CompositeDecision(evaluations, attributeIndices);
 		
 		assertEquals(compositeDecision.getNumberOfEvaluations(), 3);
+	}
+	
+	/**
+	 * Test for {@link CompositeDecision#getAttributeIndices()} method.
+	 */
+	@Test
+	void testGetAttributeIndices() {
+		EvaluationField[] evaluations = {
+				IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN),
+				IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.COST),
+				RealFieldFactory.getInstance().create(3.5, AttributePreferenceType.GAIN)};
+		int attrIndex1 = 3;
+		int attrIndex2 = 6;
+		int attrIndex3 = 7;
+		int[] attributeIndices = {attrIndex1, attrIndex2, attrIndex3};
+		
+		CompositeDecision compositeDecision = new CompositeDecision(evaluations, attributeIndices);
+		
+		IntSet attrIndices = compositeDecision.getAttributeIndices();
+		
+		assertEquals(attrIndices.size(), attributeIndices.length);
+		assertTrue(attrIndices.contains(attrIndex1));
+		assertTrue(attrIndices.contains(attrIndex2));
+		assertTrue(attrIndices.contains(attrIndex3));
 	}
 
 	/**

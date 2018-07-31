@@ -25,6 +25,8 @@ import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerFieldFactory;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 /**
  * Tests for {@link SimpleDecision}.
  *
@@ -175,6 +177,22 @@ class SimpleDecisionTest {
 		SimpleDecision decision = new SimpleDecision(evaluation, attributeIndex);
 		
 		assertEquals(decision.getNumberOfEvaluations(), 1);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.SimpleDecision#getAttributeIndices()}.
+	 */
+	@Test
+	void testGetAttributeIndices() {
+		EvaluationField evaluation = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		int attributeIndex = 2;
+		
+		SimpleDecision decision = new SimpleDecision(evaluation, attributeIndex);
+		
+		IntSet attributeIndices = decision.getAttributeIndices();
+		
+		assertEquals(attributeIndices.size(), 1);
+		assertEquals(attributeIndices.toIntArray()[0], attributeIndex);
 	}
 
 	/**
