@@ -24,6 +24,7 @@ import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerFieldFactory;
+import org.rulelearn.types.RealFieldFactory;
 
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -156,7 +157,7 @@ class SimpleDecisionTest {
 	 * Test method for {@link org.rulelearn.data.SimpleDecision#getEvaluation(int)}.
 	 */
 	@Test
-	void testGetEvaluation() {
+	void testGetEvaluationInt() {
 		EvaluationField evaluation = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
 		EvaluationField expectedEvaluation = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
 		int attributeIndex = 0;
@@ -164,6 +165,19 @@ class SimpleDecisionTest {
 		SimpleDecision decision = new SimpleDecision(evaluation, attributeIndex);
 		
 		assertEquals(decision.getEvaluation(attributeIndex), expectedEvaluation);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.SimpleDecision#getEvaluation()}.
+	 */
+	@Test
+	void testGetEvaluation() {
+		EvaluationField evaluation = RealFieldFactory.getInstance().create(-1, AttributePreferenceType.GAIN);
+		EvaluationField expectedEvaluation = RealFieldFactory.getInstance().create(-1, AttributePreferenceType.GAIN);
+		
+		SimpleDecision decision = new SimpleDecision(evaluation, 3);
+		
+		assertEquals(decision.getEvaluation(), expectedEvaluation);
 	}
 
 	/**

@@ -106,7 +106,7 @@ public class EnumerationFieldFactory {
 				return ((UnknownSimpleField)otherField).reverseIsEqualTo(this); //missing value => delegate comparison to the other field
 			} else {
 				try {
-					return (this.value == ((EnumerationField)otherField).value ? 
+					return (this.value == ((NoneEnumerationField)otherField).value ? 
 							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 				} catch (ClassCastException exception) {
 					return TernaryLogicValue.UNCOMPARABLE;
