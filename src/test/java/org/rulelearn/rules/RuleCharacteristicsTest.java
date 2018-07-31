@@ -48,6 +48,7 @@ class RuleCharacteristicsTest {
 	void testGetSupport() {
 		try {
 			ruleCharacteristics.getSupport();
+			fail("Should not get unknown support.");
 		} catch (UnknownValueException exception) {
 			//exception is correctly thrown => do nothing
 		}
@@ -111,6 +112,7 @@ class RuleCharacteristicsTest {
 	void testGetStrength() {
 		try {
 			ruleCharacteristics.getStrength();
+			fail("Should not get unknown strength.");
 		} catch (UnknownValueException exception) {
 			//exception is correctly thrown => do nothing
 		}
@@ -185,15 +187,121 @@ class RuleCharacteristicsTest {
 	 */
 	@Test
 	void testGetConfidence() {
-		//TODO: implement tests
+		try {
+			ruleCharacteristics.getConfidence();
+			fail("Should not get unknown cinfidence.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
 	}
-
+	
 	/**
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setConfidence(double)}.
 	 */
 	@Test
-	void testSetConfidence() {
-		//TODO: implement tests
+	void testSetConfidence01a() {
+		try {
+			ruleCharacteristics.setConfidence(-0.001);
+			fail("Should not set invalid confidence.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setConfidence(double)}.
+	 */
+	@Test
+	void testSetConfidence01b() {
+		try {
+			ruleCharacteristics.setConfidence(1.001);
+			fail("Should not set invalid confidence.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setConfidence(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getConfidence()}.
+	 */
+	@Test
+	void testSetConfidence02() {
+		ruleCharacteristics.setConfidence(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		
+		try {
+			ruleCharacteristics.getConfidence();
+			fail("Should not get unknown confidence.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setConfidence(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getConfidence()}.
+	 */
+	@Test
+	void testSetConfidence03() {
+		double confidence = 0;
+		ruleCharacteristics.setConfidence(confidence);
+		assertEquals(ruleCharacteristics.getConfidence(), confidence);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setConfidence(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getConfidence()}.
+	 */
+	@Test
+	void testSetConfidence04() {
+		double confidence = 1;
+		ruleCharacteristics.setConfidence(confidence);
+		assertEquals(ruleCharacteristics.getConfidence(), confidence);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setConfidence(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getConfidence()}.
+	 */
+	@Test
+	void testSetConfidence05() {
+		int support = 10;
+		int coverage = 20;
+		ruleCharacteristics.setSupport(support);
+		ruleCharacteristics.setCoverage(coverage);
+		assertEquals(ruleCharacteristics.getConfidence(), (double)support / (double)coverage);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setConfidence(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getConfidence()}.
+	 */
+	@Test
+	void testSetConfidence06() {
+		int support = 10; //coverage remains unknown
+		ruleCharacteristics.setSupport(support);
+		try {
+			ruleCharacteristics.getConfidence();
+			fail("Should not get unknown confidence.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setConfidence(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getConfidence()}.
+	 */
+	@Test
+	void testSetConfidence07() {
+		int coverage = 20; //support remains unknown
+		ruleCharacteristics.setCoverage(coverage);
+		try {
+			ruleCharacteristics.getConfidence();
+			fail("Should not get unknown confidence.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
 	}
 
 	/**
@@ -201,15 +309,76 @@ class RuleCharacteristicsTest {
 	 */
 	@Test
 	void testGetCoverageFactor() {
-		//TODO: implement tests
+		try {
+			ruleCharacteristics.getCoverageFactor();
+			fail("Should not get unknown coverage factor.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
 	}
-
+	
 	/**
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setCoverageFactor(double)}.
 	 */
 	@Test
-	void testSetCoverageFactor() {
-		//TODO: implement tests
+	void testSetCoverageFactor01a() {
+		try {
+			ruleCharacteristics.setCoverageFactor(-0.001);
+			fail("Should not set invalid coverage factor.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setCoverageFactor(double)}.
+	 */
+	@Test
+	void testSetCoverageFactor01b() {
+		try {
+			ruleCharacteristics.setCoverageFactor(1.001);
+			fail("Should not set invalid coverage factor.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setCoverageFactor(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getCoverageFactor()}.
+	 */
+	@Test
+	void testSetCoverageFactor02() {
+		ruleCharacteristics.setCoverageFactor(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		
+		try {
+			ruleCharacteristics.getCoverageFactor();
+			fail("Should not get unknown coverage factor.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setCoverageFactor(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getCoverageFactor(double)}.
+	 */
+	@Test
+	void testSetCoverageFactor03() {
+		double coverageFactor = 0;
+		ruleCharacteristics.setCoverageFactor(coverageFactor);
+		assertEquals(ruleCharacteristics.getCoverageFactor(), coverageFactor);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setCoverageFactor(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getCoverageFactor(double)}.
+	 */
+	@Test
+	void testSetCoverageFactor04() {
+		double coverageFactor = 1;
+		ruleCharacteristics.setCoverageFactor(coverageFactor);
+		assertEquals(ruleCharacteristics.getCoverageFactor(), coverageFactor);
 	}
 
 	/**
@@ -217,15 +386,62 @@ class RuleCharacteristicsTest {
 	 */
 	@Test
 	void testGetCoverage() {
-		//TODO: implement tests
+		try {
+			ruleCharacteristics.getCoverage();
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
 	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setCoverage(int)}.
 	 */
 	@Test
-	void testSetCoverage() {
-		//TODO: implement tests
+	void testSetCoverage01() {
+		try {
+			ruleCharacteristics.setCoverage(-1);
+			fail("Should not set invalid coverage.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setCoverage(int)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getCoverage()}.
+	 */
+	@Test
+	void testSetCoverage02() {
+		ruleCharacteristics.setCoverage(RuleCharacteristics.UNKNOWN_INT_VALUE);
+		
+		try {
+			ruleCharacteristics.getCoverage();
+			fail("Should not get unknown coverage.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setCoverage(int)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getCoverage()}.
+	 */
+	@Test
+	void testSetCoverage03() {
+		int coverage = 0;
+		ruleCharacteristics.setCoverage(coverage);
+		assertEquals(ruleCharacteristics.getCoverage(), coverage);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setCoverage(int)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getCoverage()}.
+	 */
+	@Test
+	void testSetCoverage04() {
+		int coverage = 2;
+		ruleCharacteristics.setCoverage(coverage);
+		assertEquals(ruleCharacteristics.getCoverage(), coverage);
 	}
 
 	/**
@@ -233,15 +449,63 @@ class RuleCharacteristicsTest {
 	 */
 	@Test
 	void testGetNegativeCoverage() {
-		//TODO: implement tests
+		try {
+			ruleCharacteristics.getNegativeCoverage();
+			fail("Should not get unknown negative coverage.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
 	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setNegativeCoverage(int)}.
 	 */
 	@Test
-	void testSetNegativeCoverage() {
-		//TODO: implement tests
+	void testSetNegativeCoverage01() {
+		try {
+			ruleCharacteristics.setNegativeCoverage(-1);
+			fail("Should not set invalid negative coverage.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setNegativeCoverage(int)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getNegativeCoverage()}.
+	 */
+	@Test
+	void testSetNegativeCoverage02() {
+		ruleCharacteristics.setNegativeCoverage(RuleCharacteristics.UNKNOWN_INT_VALUE);
+		
+		try {
+			ruleCharacteristics.getNegativeCoverage();
+			fail("Should not get unknown negative coverage.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setNegativeCoverage(int)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getNegativeCoverage()}.
+	 */
+	@Test
+	void testSetNegativeCoverage03() {
+		int negativeCoverage = 0;
+		ruleCharacteristics.setNegativeCoverage(negativeCoverage);
+		assertEquals(ruleCharacteristics.getNegativeCoverage(), negativeCoverage);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setNegativeCoverage(int)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getNegativeCoverage()}.
+	 */
+	@Test
+	void testSetNegativeCoverage04() {
+		int negativeCoverage = 2;
+		ruleCharacteristics.setNegativeCoverage(negativeCoverage);
+		assertEquals(ruleCharacteristics.getNegativeCoverage(), negativeCoverage);
 	}
 
 	/**
@@ -249,31 +513,151 @@ class RuleCharacteristicsTest {
 	 */
 	@Test
 	void testGetEpsilon() {
-		//TODO: implement tests
+		try {
+			ruleCharacteristics.getEpsilon();
+			fail("Should not get unknown epsilon.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
 	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setEpsilon(double)}.
 	 */
 	@Test
-	void testSetEpsilon() {
-		//TODO: implement tests
+	void testSetEpsilon01a() {
+		try {
+			ruleCharacteristics.setEpsilon(-0.001);
+			fail("Should not set invalid epsilon.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setEpsilon(double)}.
+	 */
+	@Test
+	void testSetEpsilon01b() {
+		try {
+			ruleCharacteristics.setEpsilon(1.001);
+			fail("Should not set invalid epsilon.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setEpsilon(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getEpsilon()}.
+	 */
+	@Test
+	void testSetEpsilon02() {
+		ruleCharacteristics.setEpsilon(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		
+		try {
+			ruleCharacteristics.getEpsilon();
+			fail("Should not get unknown epsilon.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setEpsilon(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getEpsilon()}.
+	 */
+	@Test
+	void testSetEpsilon03() {
+		double epsilon = 0;
+		ruleCharacteristics.setEpsilon(epsilon);
+		assertEquals(ruleCharacteristics.getEpsilon(), epsilon);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setEpsilon(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getEpsilon()}.
+	 */
+	@Test
+	void testSetEpsilon04() {
+		double epsilon = 1;
+		ruleCharacteristics.setEpsilon(epsilon);
+		assertEquals(ruleCharacteristics.getEpsilon(), epsilon);
 	}
 
 	/**
-	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#getEpsilonPrim()}.
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#getEpsilonPrime()}.
 	 */
 	@Test
-	void testGetEpsilonPrim() {
-		//TODO: implement tests
+	void testGetEpsilonPrime() {
+		try {
+			ruleCharacteristics.getEpsilonPrime();
+			fail("Should not get unknown epsilon'.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
 	}
 
 	/**
-	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setEpsilonPrim(double)}.
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setEpsilonPrime(double)}.
 	 */
 	@Test
-	void testSetEpsilonPrim() {
-		//TODO: implement tests
+	void testSetEpsilonPrime01() {
+		try {
+			ruleCharacteristics.setEpsilonPrime(-0.001);
+			fail("Should not set invalid epsilon'.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setEpsilonPrime(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getEpsilonPrime()}.
+	 */
+	@Test
+	void testSetEpsilonPrime02() {
+		ruleCharacteristics.setEpsilonPrime(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		
+		try {
+			ruleCharacteristics.getEpsilonPrime();
+			fail("Should not get unknown epsilon'.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setEpsilonPrime(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getEpsilonPrime()}.
+	 */
+	@Test
+	void testSetEpsilonPrime03() {
+		double epsilonPrime = 0;
+		ruleCharacteristics.setEpsilonPrime(epsilonPrime);
+		assertEquals(ruleCharacteristics.getEpsilonPrime(), epsilonPrime);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setEpsilonPrime(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getEpsilonPrime()}.
+	 */
+	@Test
+	void testSetEpsilonPrime04() {
+		double epsilonPrime = 1;
+		ruleCharacteristics.setEpsilonPrime(epsilonPrime);
+		assertEquals(ruleCharacteristics.getEpsilonPrime(), epsilonPrime);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setEpsilonPrime(double)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getEpsilonPrime()}.
+	 */
+	@Test
+	void testSetEpsilonPrime05() {
+		double epsilonPrime = 2;
+		ruleCharacteristics.setEpsilonPrime(epsilonPrime);
+		assertEquals(ruleCharacteristics.getEpsilonPrime(), epsilonPrime);
 	}
 
 	/**
@@ -281,7 +665,12 @@ class RuleCharacteristicsTest {
 	 */
 	@Test
 	void testGetFConfirmation() {
-		//TODO: implement tests
+		try {
+			ruleCharacteristics.getFConfirmation();
+			fail("Should not get unknown f confirmation.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
 	}
 
 	/**
@@ -297,7 +686,12 @@ class RuleCharacteristicsTest {
 	 */
 	@Test
 	void testGetAConfirmation() {
-		//TODO: implement tests
+		try {
+			ruleCharacteristics.getAConfirmation();
+			fail("Should not get unknown a confirmation.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
 	}
 
 	/**
@@ -313,7 +707,12 @@ class RuleCharacteristicsTest {
 	 */
 	@Test
 	void testGetZConfirmation() {
-		//TODO: implement tests
+		try {
+			ruleCharacteristics.getZConfirmation();
+			fail("Should not get unknown z confirmation.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
 	}
 
 	/**
@@ -329,7 +728,12 @@ class RuleCharacteristicsTest {
 	 */
 	@Test
 	void testGetLConfirmation() {
-		//TODO: implement tests
+		try {
+			ruleCharacteristics.getLConfirmation();
+			fail("Should not get unknown l confirmation.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
 	}
 
 	/**
@@ -345,7 +749,12 @@ class RuleCharacteristicsTest {
 	 */
 	@Test
 	void testGetC1Confirmation() {
-		//TODO: implement tests
+		try {
+			ruleCharacteristics.getC1Confirmation();
+			fail("Should not get unknown c1 confirmation.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
 	}
 
 	/**
@@ -361,7 +770,12 @@ class RuleCharacteristicsTest {
 	 */
 	@Test
 	void testGetSConfirmation() {
-		//TODO: implement tests
+		try {
+			ruleCharacteristics.getSConfirmation();
+			fail("Should not get unknown s confirmation.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
 	}
 
 	/**

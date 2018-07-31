@@ -87,7 +87,7 @@ class ComputableRuleCharacteristicsTest {
 	}
 
 	/**
-	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getEpsilonPrim()}.
+	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getEpsilonPrime()}.
 	 */
 	@Test
 	void testGetEpsilonPrim() {

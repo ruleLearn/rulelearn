@@ -279,7 +279,7 @@ public class RuleCharacteristics {
 	 * @throws UnknownValueException if value of rule consistency measure $\epsilon$ is unknown (not stored in these characteristics)
 	 */
 	public double getEpsilon() {
-		return known(epsilon, UNKNOWN_DOUBLE_VALUE, "Value of rule consistency measure 'epsilon' is unknown.");
+		return known(epsilon, UNKNOWN_DOUBLE_VALUE, "Value of rule consistency measure epsilon is unknown.");
 	}
 
 	/**
@@ -291,7 +291,7 @@ public class RuleCharacteristics {
 	 */
 	public void setEpsilon(double epsilon) {
 		if (epsilon != UNKNOWN_DOUBLE_VALUE) {
-			within01Interval(epsilon, "Value of rule consistency measure 'epsilon' has to be within [0,1] interval."); //assert that characteristic satisfies constraint(s)
+			within01Interval(epsilon, "Value of rule consistency measure epsilon has to be within [0,1] interval."); //assert that characteristic satisfies constraint(s)
 		}
 		this.epsilon = epsilon;
 	}
@@ -302,8 +302,8 @@ public class RuleCharacteristics {
 	 * @return value of rule consistency measure $\epsilon'$ calculated for a decision rule in the context of an information table
 	 * @throws UnknownValueException if value of rule consistency measure $\epsilon'$ is unknown (not stored in these characteristics)
 	 */
-	public double getEpsilonPrim() {
-		return known(epsilonPrim, UNKNOWN_DOUBLE_VALUE, "Value of rule consistency measure 'epsilon' is unknown.");
+	public double getEpsilonPrime() {
+		return known(epsilonPrim, UNKNOWN_DOUBLE_VALUE, "Value of rule consistency measure epsilon' is unknown.");
 	}
 	
 	/**
@@ -313,9 +313,9 @@ public class RuleCharacteristics {
 	 * @param epsilonPrim value of rule consistency measure $\epsilon'$ calculated for a decision rule in the context of an information table
 	 * @throws InvalidValueException if given value of rule consistency measure $\epsilon'$ is lower than zero 
 	 */
-	public void setEpsilonPrim(double epsilonPrim) {
+	public void setEpsilonPrime(double epsilonPrim) {
 		if (epsilonPrim != UNKNOWN_DOUBLE_VALUE) {
-			nonNegative(epsilonPrim, "Value of rule consistency measure 'epsilon'' has to be >= 0."); //assert that characteristic satisfies constraint(s)
+			nonNegative(epsilonPrim, "Value of rule consistency measure epsilon' has to be >= 0."); //assert that characteristic satisfies constraint(s)
 		}
 		this.epsilonPrim = epsilonPrim;
 	}
