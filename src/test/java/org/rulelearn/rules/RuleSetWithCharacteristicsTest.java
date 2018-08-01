@@ -62,7 +62,7 @@ class RuleSetWithCharacteristicsTest {
 	 * Test method for {@link RuleSetWithCharacteristics#RuleSetWithCharacteristics(Rule[], RuleCharacteristics[])}.
 	 */
 	@Test
-	void testRuleSetWithCharacteristics3() {
+	void testRuleSetWithCharacteristics03() {
 		Rule[] rules = new Rule[0];
 		RuleCharacteristics[] ruleCharacteristics = new RuleCharacteristics[1];
 		try {
@@ -76,11 +76,26 @@ class RuleSetWithCharacteristicsTest {
 	 * Test method for {@link RuleSetWithCharacteristics#RuleSetWithCharacteristics(Rule[], RuleCharacteristics[])}.
 	 */
 	@Test
-	void testRuleSetWithCharacteristics4() {
-		Rule[] rules = new Rule[2];
-		RuleCharacteristics[] ruleCharacteristics = new RuleCharacteristics[2];
+	void testRuleSetWithCharacteristics04() {
 		try {
-			new RuleSetWithCharacteristics(rules, ruleCharacteristics);
+			Rule[] rules = new Rule[2];
+			Rule rule0 = Mockito.mock(Rule.class);
+			rules[0] = rule0;
+			Rule rule1 = Mockito.mock(Rule.class);
+			rules[1] = rule1;
+			
+			RuleCharacteristics[] ruleCharacteristics = new RuleCharacteristics[2];
+			RuleCharacteristics ruleCharacteristics0 = Mockito.mock(RuleCharacteristics.class);
+			ruleCharacteristics[0] = ruleCharacteristics0;
+			RuleCharacteristics ruleCharacteristics1 = Mockito.mock(RuleCharacteristics.class);
+			ruleCharacteristics[1] = ruleCharacteristics1;
+			
+			RuleSetWithCharacteristics ruleSetWithCharacteristics = new RuleSetWithCharacteristics(rules, ruleCharacteristics);
+			
+			assertTrue(ruleSetWithCharacteristics.getRule(0) == rule0);
+			assertTrue(ruleSetWithCharacteristics.getRule(1) == rule1);
+			assertTrue(ruleSetWithCharacteristics.getRuleCharacteristics(0) == ruleCharacteristics0);
+			assertTrue(ruleSetWithCharacteristics.getRuleCharacteristics(1) == ruleCharacteristics1);
 		} catch (Exception exception) {
 			fail("Could not construct rule set with characteristics.");
 		}
@@ -133,10 +148,21 @@ class RuleSetWithCharacteristicsTest {
 	 */
 	@Test
 	void testRuleSetWithCharacteristicsBoolean04() {
-		Rule[] rules = new Rule[2];
-		RuleCharacteristics[] ruleCharacteristics = new RuleCharacteristics[2];
 		try {
-			new RuleSetWithCharacteristics(rules, ruleCharacteristics, true);
+			Rule rule0 = Mockito.mock(Rule.class);
+			Rule rule1 = Mockito.mock(Rule.class);
+			Rule[] rules = new Rule[] {rule0, rule1};
+			
+			RuleCharacteristics ruleCharacteristics0 = Mockito.mock(RuleCharacteristics.class);
+			RuleCharacteristics ruleCharacteristics1 = Mockito.mock(RuleCharacteristics.class);
+			RuleCharacteristics[] ruleCharacteristics = new RuleCharacteristics[] {ruleCharacteristics0, ruleCharacteristics1};
+			
+			RuleSetWithCharacteristics ruleSetWithCharacteristics = new RuleSetWithCharacteristics(rules, ruleCharacteristics, true);
+			
+			assertTrue(ruleSetWithCharacteristics.getRule(0) == rule0);
+			assertTrue(ruleSetWithCharacteristics.getRule(1) == rule1);
+			assertTrue(ruleSetWithCharacteristics.getRuleCharacteristics(0) == ruleCharacteristics0);
+			assertTrue(ruleSetWithCharacteristics.getRuleCharacteristics(1) == ruleCharacteristics1);
 		} catch (Exception exception) {
 			fail("Could not construct rule set with characteristics.");
 		}
@@ -213,17 +239,15 @@ class RuleSetWithCharacteristicsTest {
 	 */
 	@Test
 	void testGetRuleCharacteristics() {
-		Rule[] rules = new Rule[2];
-		rules[0] = Mockito.mock(Rule.class);
-		rules[1] = Mockito.mock(Rule.class);
+		Rule[] rules = new Rule[] {Mockito.mock(Rule.class), Mockito.mock(Rule.class)};
 		
-		RuleCharacteristics[] ruleCharacteristics = new RuleCharacteristics[2];
-		ruleCharacteristics[0] = Mockito.mock(RuleCharacteristics.class);
+		RuleCharacteristics ruleCharacteristics0 = Mockito.mock(RuleCharacteristics.class);
 		RuleCharacteristics ruleCharacteristics1 = Mockito.mock(RuleCharacteristics.class);
-		ruleCharacteristics[1] = ruleCharacteristics1;
+		RuleCharacteristics[] ruleCharacteristics = new RuleCharacteristics[] {ruleCharacteristics0, ruleCharacteristics1};
 		
 		RuleSetWithCharacteristics ruleSetWithCharacteristics = new RuleSetWithCharacteristics(rules, ruleCharacteristics, true);
 		
+		assertTrue(ruleSetWithCharacteristics.getRuleCharacteristics(0) == ruleCharacteristics0);
 		assertTrue(ruleSetWithCharacteristics.getRuleCharacteristics(1) == ruleCharacteristics1);
 	}
 
