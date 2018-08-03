@@ -148,6 +148,15 @@ public class IntegerFieldFactory {
 		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			return this.isEqualTo(otherField);
 		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @return {@inheritDoc}
+		 */
+		public AttributePreferenceType getPreferenceType() {
+			return AttributePreferenceType.NONE;
+		}
 	}
 	
 	/**
@@ -215,6 +224,15 @@ public class IntegerFieldFactory {
 					return TernaryLogicValue.UNCOMPARABLE;
 				}
 			}
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @return {@inheritDoc}
+		 */
+		public AttributePreferenceType getPreferenceType() {
+			return AttributePreferenceType.GAIN;
 		}
 
 	}
@@ -285,6 +303,16 @@ public class IntegerFieldFactory {
 					return TernaryLogicValue.UNCOMPARABLE;
 				}
 			}
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @return {@inheritDoc}
+		 */
+		@Override
+		public AttributePreferenceType getPreferenceType() {
+			return AttributePreferenceType.COST;
 		}
 	}
 }
