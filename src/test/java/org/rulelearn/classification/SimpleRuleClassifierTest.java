@@ -131,9 +131,11 @@ class SimpleRuleClassifierTest {
 				SimpleRuleClassifier classifier = new SimpleRuleClassifier(rules.get(1), new SimpleClassificationResult(
 						new SimpleDecision(EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 2, 
 																AttributePreferenceType.COST), 10)));
+				//System.out.println(classifier.classify(0, iT).getSuggestedDecision().getEvaluation());
 				assertEquals(classifier.classify(0, iT).getSuggestedDecision(), 
-						new SimpleDecision(EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 2, 
+						new SimpleDecision(EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 1, 
 						AttributePreferenceType.COST), 10));
+				//System.out.println(classifier.classify(1, iT).getSuggestedDecision().getEvaluation());
 				assertEquals(classifier.classify(1, iT).getSuggestedDecision(), 
 						new SimpleDecision(EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 2, 
 						AttributePreferenceType.COST), 10));

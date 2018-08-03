@@ -16,6 +16,7 @@
 
 package org.rulelearn.classification;
 
+import org.rulelearn.core.CentralTendencyCalculator;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.SimpleDecision;
@@ -104,7 +105,12 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 				if (upLimit.isEqualTo(downLimit) == TernaryLogicValue.TRUE) {
 					result = new SimpleClassificationResult(new SimpleDecision(upLimit, decision.getAttributeWithContext().getAttributeIndex()));
 				}	
-				// TODO should we take a median of the calculated classification interval?
+				else {
+					SimpleField mean = CentralTendencyCalculator.mean(upLimit, downLimit);
+					if (mean != null) {
+						result = new SimpleClassificationResult(new SimpleDecision(mean, decision.getAttributeWithContext().getAttributeIndex()));
+					}
+				}
 			}
 			else {
 				result = new SimpleClassificationResult(new SimpleDecision(upLimit, decision.getAttributeWithContext().getAttributeIndex()));

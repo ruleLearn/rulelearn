@@ -145,6 +145,16 @@ public class EnumerationFieldFactory {
 		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			return this.isEqualTo(otherField);
 		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @return {@inheritDoc}
+		 */
+		@Override
+		public AttributePreferenceType getPreferenceType() {
+			return AttributePreferenceType.NONE;
+		}
 	}
 	
 	/**
@@ -223,6 +233,16 @@ public class EnumerationFieldFactory {
 					return TernaryLogicValue.UNCOMPARABLE;
 				}
 			}
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @return {@inheritDoc}
+		 */
+		@Override
+		public AttributePreferenceType getPreferenceType() {
+			return AttributePreferenceType.GAIN;
 		}
 
 	}
@@ -304,6 +324,16 @@ public class EnumerationFieldFactory {
 					return TernaryLogicValue.UNCOMPARABLE;
 				}
 			}
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @return {@inheritDoc}
+		 */
+		@Override
+		public AttributePreferenceType getPreferenceType() {
+			return AttributePreferenceType.COST;
 		}
 	}
 }
