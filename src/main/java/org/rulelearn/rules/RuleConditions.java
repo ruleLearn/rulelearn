@@ -130,6 +130,7 @@ public class RuleConditions {
 	/**
 	 * Gets an elementary condition building this list of elementary conditions and indexed by the given value.
 	 * 
+	 * @param index index of a condition on this list of conditions
 	 * @return an elementary condition building this list of elementary conditions and indexed by the given value
 	 */
 	public Condition<?> getCondition(int index) {

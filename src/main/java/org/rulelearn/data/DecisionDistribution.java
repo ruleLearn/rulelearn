@@ -18,6 +18,7 @@ package org.rulelearn.data;
 
 import static org.rulelearn.core.Precondition.notNull;
 
+import java.util.Objects;
 import java.util.Set;
 
 //import org.rulelearn.approximations.Union;
@@ -131,6 +132,32 @@ public class DecisionDistribution {
 	public void increaseCount(Decision decision) {
 		int count = this.decision2CountMap.containsKey(decision) ? this.decision2CountMap.getInt(decision) : 0;
 		this.decision2CountMap.put(decision, ++count);
+	}
+	
+	/**
+	 * Gets hash code of this decision distribution.
+	 * 
+	 * @return calculated hash code of this decision distribution
+	 */
+	public int hashCode() {
+		return  Objects.hash(this.getClass(), this.decision2CountMap);
+	}
+	
+	/**
+	 * Tests if this decision distribution is equal to the given object. Returns {@code true} if the given object is also a decision distribution,
+	 * and the two distributions concern the same decisions with the same cardinalities.
+	 * 
+	 * @param otherObject other object that this decision distribution should be compared with
+	 * @return {@code true} if this decision distribution is equal to the given objects,
+	 *         {@code false} otherwise
+	 */
+	public boolean equals(Object otherObject) {
+		if (otherObject instanceof DecisionDistribution &&
+			this.decision2CountMap.equals(((DecisionDistribution)otherObject).decision2CountMap)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }

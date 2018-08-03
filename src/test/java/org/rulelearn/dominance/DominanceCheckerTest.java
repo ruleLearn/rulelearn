@@ -37,14 +37,38 @@ import org.rulelearn.types.RealFieldFactory;
  */
 class DominanceCheckerTest {
 	
+	/**
+	 * Supplementary method for creating {@link IntegerField} instances.
+	 * 
+	 * @param value value passed to {@link IntegerFieldFactory#create(int, AttributePreferenceType)} method.
+	 * @param preferenceType preference type passed to {@link IntegerFieldFactory#create(int, AttributePreferenceType)} method.
+	 * @return created {@link IntegerField} instance.
+	 */
 	private IntegerField intField(int value, AttributePreferenceType preferenceType) {
 		return IntegerFieldFactory.getInstance().create(value, preferenceType);
 	}
 	
+	/**
+	 * Supplementary method for creating {@link RealField} instances.
+	 * 
+	 * @param value value passed to {@link RealFieldFactory#create(double, AttributePreferenceType)} method.
+	 * @param preferenceType preference type passed to {@link RealFieldFactory#create(double, AttributePreferenceType)} method.
+	 * @return created {@link RealField} instance.
+	 */
 	private RealField realField(double value, AttributePreferenceType preferenceType) {
 		return RealFieldFactory.getInstance().create(value, preferenceType);
 	}
 	
+	/**
+	 * Creates a mock of an {@link InformationTable}.
+	 * 
+	 * @param x index of a first object
+	 * @param y index of a second object
+	 * @param xEvaluations array with evaluations of the first object
+	 * @param yEvaluations array with evaluations of the second object
+	 * 
+	 * @return mock of an {@link InformationTable}
+	 */
 	private InformationTable createInformationTableMock(int x, int y, EvaluationField[] xEvaluations, EvaluationField[] yEvaluations) {
 		@SuppressWarnings("unchecked")
 		Table<EvaluationField> evaluations = (Table<EvaluationField>)Mockito.mock(Table.class);
