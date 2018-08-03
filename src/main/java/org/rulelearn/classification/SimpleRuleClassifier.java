@@ -106,7 +106,7 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 					result = new SimpleClassificationResult(new SimpleDecision(upLimit, decision.getAttributeWithContext().getAttributeIndex()));
 				}	
 				else {
-					SimpleField mean = CentralTendencyCalculator.mean(upLimit, downLimit);
+					SimpleField mean = CentralTendencyCalculator.calculateMean(upLimit, downLimit);
 					if (mean != null) {
 						result = new SimpleClassificationResult(new SimpleDecision(mean, decision.getAttributeWithContext().getAttributeIndex()));
 					}

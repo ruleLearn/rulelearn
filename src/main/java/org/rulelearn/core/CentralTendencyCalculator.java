@@ -43,25 +43,25 @@ public class CentralTendencyCalculator {
 	 * @param b second averaged field
 	 * @return mean (average) value of two fields or {@code null} when it is impossible to calculate mean value
 	 */
-	public static SimpleField mean(SimpleField a, SimpleField b) {
+	public static SimpleField calculateMean(SimpleField a, SimpleField b) {
 		SimpleField mean = null;
 		
 		if ((a instanceof KnownSimpleField) && (b instanceof KnownSimpleField)) {
 			if ((a instanceof EnumerationField) && (b instanceof EnumerationField)) {
-				mean = CentralTendencyCalculator.mean((EnumerationField)a, (EnumerationField)b);
+				mean = CentralTendencyCalculator.calculateMean((EnumerationField)a, (EnumerationField)b);
 			}
 			else if ((a instanceof IntegerField) && (b instanceof IntegerField)) {
-				mean = CentralTendencyCalculator.mean((IntegerField)a, (IntegerField)b);
+				mean = CentralTendencyCalculator.calculateMean((IntegerField)a, (IntegerField)b);
 			}
 			else if ((a instanceof RealField) && (b instanceof RealField)) {
-				mean = CentralTendencyCalculator.mean((RealField)a, (RealField)b);
+				mean = CentralTendencyCalculator.calculateMean((RealField)a, (RealField)b);
 			}
 		}
 		else if ((a instanceof KnownSimpleField) && (b instanceof UnknownSimpleField)) {
-			mean = CentralTendencyCalculator.mean((KnownSimpleField)a, (UnknownSimpleField)b);
+			mean = CentralTendencyCalculator.calculateMean((KnownSimpleField)a, (UnknownSimpleField)b);
 		}
 		else if ((a instanceof UnknownSimpleField) && (b instanceof KnownSimpleField)) {
-			mean = CentralTendencyCalculator.mean((UnknownSimpleField)a, (KnownSimpleField)b);
+			mean = CentralTendencyCalculator.calculateMean((UnknownSimpleField)a, (KnownSimpleField)b);
 		}
 		else if ((a instanceof KnownSimpleField) && (b == null)) {
 			mean = a;
@@ -80,7 +80,7 @@ public class CentralTendencyCalculator {
 	 * @param b unknown field
 	 * @return mean (average) value of known field and unknown field
 	 */
-	public static KnownSimpleField mean(KnownSimpleField a, UnknownSimpleField b) {
+	public static KnownSimpleField calculateMean(KnownSimpleField a, UnknownSimpleField b) {
 		return a;
 	}
 	
@@ -91,7 +91,7 @@ public class CentralTendencyCalculator {
 	 * @param b known field
 	 * @return mean (average) value of unknown field and known field
 	 */
-	public static KnownSimpleField mean(UnknownSimpleField a, KnownSimpleField b) {
+	public static KnownSimpleField calculateMean(UnknownSimpleField a, KnownSimpleField b) {
 		return b;
 	}
 	
@@ -103,7 +103,7 @@ public class CentralTendencyCalculator {
 	 * @param b second averaged field
 	 * @return mean (average) value of two fields or {@code null} when it is impossible to calculate mean value
 	 */
-	public static IntegerField mean(IntegerField a, IntegerField b) {
+	public static IntegerField calculateMean(IntegerField a, IntegerField b) {
 		IntegerField mean = null;
 		if (a == null ) {
 			if (b != null) {
@@ -132,7 +132,7 @@ public class CentralTendencyCalculator {
 	 * @param b second averaged field
 	 * @return mean (average) value of two fields or {@code null} when it is impossible to calculate mean value
 	 */
-	public static RealField mean(RealField a, RealField b) {
+	public static RealField calculateMean(RealField a, RealField b) {
 		RealField mean = null;
 		if (a == null ) {
 			if (b != null) {
@@ -162,7 +162,7 @@ public class CentralTendencyCalculator {
 	 * @param b second averaged field
 	 * @return mean (average) value of two fields or {@code null} when it is impossible to calculate mean value
 	 */
-	public static EnumerationField mean(EnumerationField a, EnumerationField b) {
+	public static EnumerationField calculateMean(EnumerationField a, EnumerationField b) {
 		EnumerationField mean = null;
 		if (a == null ) {
 			if (b != null) {

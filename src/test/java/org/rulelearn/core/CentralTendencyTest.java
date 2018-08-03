@@ -196,177 +196,177 @@ class CentralTendencyTest {
 	}
 	
 	/**
-	 * Test {@link CentralTendencyCalculator#mean(SimpleField, SimpleField)} for {@link IntegerField} type fields.
+	 * Test {@link CentralTendencyCalculator#calculateMean(SimpleField, SimpleField)} for {@link IntegerField} type fields.
 	 */
 	@Test
 	void testSimpleFieldAsIntegerCentralTendency() {
 		this.setUnknownFields();
 		this.setSimpleFieldsToIntegers();
-		assertEquals(3, ((IntegerField)CentralTendencyCalculator.mean(sField0n, sField1n)).getValue());
-		assertEquals(3, ((IntegerField)CentralTendencyCalculator.mean(sField0c, sField1c)).getValue());
-		assertEquals(3, ((IntegerField)CentralTendencyCalculator.mean(sField0g, sField1g)).getValue());
-		assertEquals(3, ((IntegerField)CentralTendencyCalculator.mean(sField1n, sField0n)).getValue());
-		assertEquals(3, ((IntegerField)CentralTendencyCalculator.mean(sField1c, sField0c)).getValue());
-		assertEquals(3, ((IntegerField)CentralTendencyCalculator.mean(sField1g, sField0g)).getValue());
-		assertEquals(4, ((IntegerField)CentralTendencyCalculator.mean(uFieldMV15, sField1n)).getValue());
-		assertEquals(4, ((IntegerField)CentralTendencyCalculator.mean(uFieldMV2, sField1c)).getValue());
-		assertEquals(2, ((IntegerField)CentralTendencyCalculator.mean(uFieldMV15, sField0g)).getValue());
-		assertEquals(2, ((IntegerField)CentralTendencyCalculator.mean(uFieldMV2, sField0n)).getValue());
-		assertEquals(4, ((IntegerField)CentralTendencyCalculator.mean(sField1n, uFieldMV15)).getValue());
-		assertEquals(4, ((IntegerField)CentralTendencyCalculator.mean(sField1n, uFieldMV2)).getValue());
-		assertEquals(2, ((IntegerField)CentralTendencyCalculator.mean(sField0g, uFieldMV15)).getValue());
-		assertEquals(2, ((IntegerField)CentralTendencyCalculator.mean(sField0n, uFieldMV2)).getValue());
-		assertEquals(4, ((IntegerField)CentralTendencyCalculator.mean(sField, sField1c)).getValue());
-		assertEquals(2, ((IntegerField)CentralTendencyCalculator.mean(sField0g, sField)).getValue());
-		assertEquals(2, ((IntegerField)CentralTendencyCalculator.mean(uField0, kField1)).getValue());
-		assertEquals(2, ((IntegerField)CentralTendencyCalculator.mean(kField0, uField1)).getValue());
+		assertEquals(3, ((IntegerField)CentralTendencyCalculator.calculateMean(sField0n, sField1n)).getValue());
+		assertEquals(3, ((IntegerField)CentralTendencyCalculator.calculateMean(sField0c, sField1c)).getValue());
+		assertEquals(3, ((IntegerField)CentralTendencyCalculator.calculateMean(sField0g, sField1g)).getValue());
+		assertEquals(3, ((IntegerField)CentralTendencyCalculator.calculateMean(sField1n, sField0n)).getValue());
+		assertEquals(3, ((IntegerField)CentralTendencyCalculator.calculateMean(sField1c, sField0c)).getValue());
+		assertEquals(3, ((IntegerField)CentralTendencyCalculator.calculateMean(sField1g, sField0g)).getValue());
+		assertEquals(4, ((IntegerField)CentralTendencyCalculator.calculateMean(uFieldMV15, sField1n)).getValue());
+		assertEquals(4, ((IntegerField)CentralTendencyCalculator.calculateMean(uFieldMV2, sField1c)).getValue());
+		assertEquals(2, ((IntegerField)CentralTendencyCalculator.calculateMean(uFieldMV15, sField0g)).getValue());
+		assertEquals(2, ((IntegerField)CentralTendencyCalculator.calculateMean(uFieldMV2, sField0n)).getValue());
+		assertEquals(4, ((IntegerField)CentralTendencyCalculator.calculateMean(sField1n, uFieldMV15)).getValue());
+		assertEquals(4, ((IntegerField)CentralTendencyCalculator.calculateMean(sField1n, uFieldMV2)).getValue());
+		assertEquals(2, ((IntegerField)CentralTendencyCalculator.calculateMean(sField0g, uFieldMV15)).getValue());
+		assertEquals(2, ((IntegerField)CentralTendencyCalculator.calculateMean(sField0n, uFieldMV2)).getValue());
+		assertEquals(4, ((IntegerField)CentralTendencyCalculator.calculateMean(sField, sField1c)).getValue());
+		assertEquals(2, ((IntegerField)CentralTendencyCalculator.calculateMean(sField0g, sField)).getValue());
+		assertEquals(2, ((IntegerField)CentralTendencyCalculator.calculateMean(uField0, kField1)).getValue());
+		assertEquals(2, ((IntegerField)CentralTendencyCalculator.calculateMean(kField0, uField1)).getValue());
 	}
 	
 	/**
-	 * Test {@link CentralTendencyCalculator#mean(SimpleField, SimpleField)} for {@link RealField} type fields.
+	 * Test {@link CentralTendencyCalculator#calculateMean(SimpleField, SimpleField)} for {@link RealField} type fields.
 	 */
 	@Test
 	void testSimpleFieldAsRealCentralTendency() {
 		this.setUnknownFields();
 		this.setSimpleFieldsToReal();
-		assertEquals(3, ((RealField)CentralTendencyCalculator.mean(sField0n, sField1n)).getValue());
-		assertEquals(3, ((RealField)CentralTendencyCalculator.mean(sField0c, sField1c)).getValue());
-		assertEquals(3, ((RealField)CentralTendencyCalculator.mean(sField0g, sField1g)).getValue());
-		assertEquals(3, ((RealField)CentralTendencyCalculator.mean(sField1n, sField0n)).getValue());
-		assertEquals(3, ((RealField)CentralTendencyCalculator.mean(sField1c, sField0c)).getValue());
-		assertEquals(3, ((RealField)CentralTendencyCalculator.mean(sField1g, sField0g)).getValue());
-		assertEquals(4, ((RealField)CentralTendencyCalculator.mean(uFieldMV15, sField1n)).getValue());
-		assertEquals(4, ((RealField)CentralTendencyCalculator.mean(uFieldMV2, sField1c)).getValue());
-		assertEquals(2, ((RealField)CentralTendencyCalculator.mean(uFieldMV15, sField0g)).getValue());
-		assertEquals(2, ((RealField)CentralTendencyCalculator.mean(uFieldMV2, sField0n)).getValue());
-		assertEquals(4, ((RealField)CentralTendencyCalculator.mean(sField1n, uFieldMV15)).getValue());
-		assertEquals(4, ((RealField)CentralTendencyCalculator.mean(sField1n, uFieldMV2)).getValue());
-		assertEquals(2, ((RealField)CentralTendencyCalculator.mean(sField0g, uFieldMV15)).getValue());
-		assertEquals(2, ((RealField)CentralTendencyCalculator.mean(sField0n, uFieldMV2)).getValue());
-		assertEquals(4, ((RealField)CentralTendencyCalculator.mean(sField, sField1c)).getValue());
-		assertEquals(2, ((RealField)CentralTendencyCalculator.mean(sField0g, sField)).getValue());
-		assertEquals(2, ((RealField)CentralTendencyCalculator.mean(uField0, kField1)).getValue());
-		assertEquals(2, ((RealField)CentralTendencyCalculator.mean(kField0, uField1)).getValue());
+		assertEquals(3, ((RealField)CentralTendencyCalculator.calculateMean(sField0n, sField1n)).getValue());
+		assertEquals(3, ((RealField)CentralTendencyCalculator.calculateMean(sField0c, sField1c)).getValue());
+		assertEquals(3, ((RealField)CentralTendencyCalculator.calculateMean(sField0g, sField1g)).getValue());
+		assertEquals(3, ((RealField)CentralTendencyCalculator.calculateMean(sField1n, sField0n)).getValue());
+		assertEquals(3, ((RealField)CentralTendencyCalculator.calculateMean(sField1c, sField0c)).getValue());
+		assertEquals(3, ((RealField)CentralTendencyCalculator.calculateMean(sField1g, sField0g)).getValue());
+		assertEquals(4, ((RealField)CentralTendencyCalculator.calculateMean(uFieldMV15, sField1n)).getValue());
+		assertEquals(4, ((RealField)CentralTendencyCalculator.calculateMean(uFieldMV2, sField1c)).getValue());
+		assertEquals(2, ((RealField)CentralTendencyCalculator.calculateMean(uFieldMV15, sField0g)).getValue());
+		assertEquals(2, ((RealField)CentralTendencyCalculator.calculateMean(uFieldMV2, sField0n)).getValue());
+		assertEquals(4, ((RealField)CentralTendencyCalculator.calculateMean(sField1n, uFieldMV15)).getValue());
+		assertEquals(4, ((RealField)CentralTendencyCalculator.calculateMean(sField1n, uFieldMV2)).getValue());
+		assertEquals(2, ((RealField)CentralTendencyCalculator.calculateMean(sField0g, uFieldMV15)).getValue());
+		assertEquals(2, ((RealField)CentralTendencyCalculator.calculateMean(sField0n, uFieldMV2)).getValue());
+		assertEquals(4, ((RealField)CentralTendencyCalculator.calculateMean(sField, sField1c)).getValue());
+		assertEquals(2, ((RealField)CentralTendencyCalculator.calculateMean(sField0g, sField)).getValue());
+		assertEquals(2, ((RealField)CentralTendencyCalculator.calculateMean(uField0, kField1)).getValue());
+		assertEquals(2, ((RealField)CentralTendencyCalculator.calculateMean(kField0, uField1)).getValue());
 	}
 	
 	/**
-	 * Test {@link CentralTendencyCalculator#mean(SimpleField, SimpleField)} for {@link EnumerationField} type fields.
+	 * Test {@link CentralTendencyCalculator#calculateMean(SimpleField, SimpleField)} for {@link EnumerationField} type fields.
 	 */
 	@Test
 	void testSimpleFieldAsEnumerationCentralTendency() {
 		this.setUnknownFields();
 		this.setSimpleFieldsToEnumeration();
-		assertEquals(3, ((EnumerationField)CentralTendencyCalculator.mean(sField0n, sField1n)).getValue());
-		assertEquals(3, ((EnumerationField)CentralTendencyCalculator.mean(sField0c, sField1c)).getValue());
-		assertEquals(3, ((EnumerationField)CentralTendencyCalculator.mean(sField0g, sField1g)).getValue());
-		assertEquals(3, ((EnumerationField)CentralTendencyCalculator.mean(sField1n, sField0n)).getValue());
-		assertEquals(3, ((EnumerationField)CentralTendencyCalculator.mean(sField1c, sField0c)).getValue());
-		assertEquals(3, ((EnumerationField)CentralTendencyCalculator.mean(sField1g, sField0g)).getValue());
-		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.mean(uFieldMV15, sField1n)).getValue());
-		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.mean(uFieldMV2, sField1c)).getValue());
-		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.mean(uFieldMV15, sField0g)).getValue());
-		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.mean(uFieldMV2, sField0n)).getValue());
-		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.mean(sField1n, uFieldMV15)).getValue());
-		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.mean(sField1n, uFieldMV2)).getValue());
-		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.mean(sField0g, uFieldMV15)).getValue());
-		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.mean(sField0n, uFieldMV2)).getValue());
-		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.mean(sField, sField1c)).getValue());
-		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.mean(sField0g, sField)).getValue());
-		assertNull(((EnumerationField)CentralTendencyCalculator.mean(sField0n, sField1c)));
-		assertNull(((EnumerationField)CentralTendencyCalculator.mean(sField0n, sField0c)));
-		assertNull(((EnumerationField)CentralTendencyCalculator.mean(sField1n, sField0g)));
-		assertNull(((EnumerationField)CentralTendencyCalculator.mean(sField2c, sField1c)));
-		assertNull(((EnumerationField)CentralTendencyCalculator.mean(sField0n, sField2n)));
-		assertNull(((EnumerationField)CentralTendencyCalculator.mean(sField1g, sField2g)));
-		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.mean(uField0, kField1)).getValue());
-		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.mean(kField0, uField1)).getValue());
+		assertEquals(3, ((EnumerationField)CentralTendencyCalculator.calculateMean(sField0n, sField1n)).getValue());
+		assertEquals(3, ((EnumerationField)CentralTendencyCalculator.calculateMean(sField0c, sField1c)).getValue());
+		assertEquals(3, ((EnumerationField)CentralTendencyCalculator.calculateMean(sField0g, sField1g)).getValue());
+		assertEquals(3, ((EnumerationField)CentralTendencyCalculator.calculateMean(sField1n, sField0n)).getValue());
+		assertEquals(3, ((EnumerationField)CentralTendencyCalculator.calculateMean(sField1c, sField0c)).getValue());
+		assertEquals(3, ((EnumerationField)CentralTendencyCalculator.calculateMean(sField1g, sField0g)).getValue());
+		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.calculateMean(uFieldMV15, sField1n)).getValue());
+		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.calculateMean(uFieldMV2, sField1c)).getValue());
+		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.calculateMean(uFieldMV15, sField0g)).getValue());
+		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.calculateMean(uFieldMV2, sField0n)).getValue());
+		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.calculateMean(sField1n, uFieldMV15)).getValue());
+		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.calculateMean(sField1n, uFieldMV2)).getValue());
+		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.calculateMean(sField0g, uFieldMV15)).getValue());
+		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.calculateMean(sField0n, uFieldMV2)).getValue());
+		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.calculateMean(sField, sField1c)).getValue());
+		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.calculateMean(sField0g, sField)).getValue());
+		assertNull(((EnumerationField)CentralTendencyCalculator.calculateMean(sField0n, sField1c)));
+		assertNull(((EnumerationField)CentralTendencyCalculator.calculateMean(sField0n, sField0c)));
+		assertNull(((EnumerationField)CentralTendencyCalculator.calculateMean(sField1n, sField0g)));
+		assertNull(((EnumerationField)CentralTendencyCalculator.calculateMean(sField2c, sField1c)));
+		assertNull(((EnumerationField)CentralTendencyCalculator.calculateMean(sField0n, sField2n)));
+		assertNull(((EnumerationField)CentralTendencyCalculator.calculateMean(sField1g, sField2g)));
+		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.calculateMean(uField0, kField1)).getValue());
+		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.calculateMean(kField0, uField1)).getValue());
 	}
 	
 	/**
-	 * Test {@link CentralTendencyCalculator#mean(IntegerField, IntegerField)}.
+	 * Test {@link CentralTendencyCalculator#calculateMean(IntegerField, IntegerField)}.
 	 */
 	@Test
 	void testIntegerFieldCentralTendency() {
 		this.setUnknownFields();
 		this.setIntegerFields();
-		assertEquals(3, CentralTendencyCalculator.mean(iField0n, iField1n).getValue());
-		assertEquals(3, CentralTendencyCalculator.mean(iField0c, iField1c).getValue());
-		assertEquals(3, CentralTendencyCalculator.mean(iField0g, iField1g).getValue());
-		assertEquals(3, CentralTendencyCalculator.mean(iField1n, iField0n).getValue());
-		assertEquals(3, CentralTendencyCalculator.mean(iField1c, iField0c).getValue());
-		assertEquals(3, CentralTendencyCalculator.mean(iField1g, iField0g).getValue());
-		assertEquals(4, ((IntegerField)CentralTendencyCalculator.mean(uFieldMV15, iField1n)).getValue());
-		assertEquals(4, ((IntegerField)CentralTendencyCalculator.mean(uFieldMV2, iField1c)).getValue());
-		assertEquals(2, ((IntegerField)CentralTendencyCalculator.mean(uFieldMV15, iField0g)).getValue());
-		assertEquals(2, ((IntegerField)CentralTendencyCalculator.mean(uFieldMV2, iField0n)).getValue());
-		assertEquals(4, ((IntegerField)CentralTendencyCalculator.mean(iField1n, uFieldMV15)).getValue());
-		assertEquals(4, ((IntegerField)CentralTendencyCalculator.mean(iField1n, uFieldMV2)).getValue());
-		assertEquals(2, ((IntegerField)CentralTendencyCalculator.mean(iField0g, uFieldMV15)).getValue());
-		assertEquals(2, ((IntegerField)CentralTendencyCalculator.mean(iField0n, uFieldMV2)).getValue());
-		assertEquals(4, ((IntegerField)CentralTendencyCalculator.mean(iField, iField1c)).getValue());
-		assertEquals(2, ((IntegerField)CentralTendencyCalculator.mean(iField0g, iField)).getValue());
-		assertNull(((IntegerField)CentralTendencyCalculator.mean(iField0n, iField1c)));
-		assertNull(((IntegerField)CentralTendencyCalculator.mean(iField0n, iField0c)));
-		assertNull(((IntegerField)CentralTendencyCalculator.mean(iField1n, iField0g)));
+		assertEquals(3, CentralTendencyCalculator.calculateMean(iField0n, iField1n).getValue());
+		assertEquals(3, CentralTendencyCalculator.calculateMean(iField0c, iField1c).getValue());
+		assertEquals(3, CentralTendencyCalculator.calculateMean(iField0g, iField1g).getValue());
+		assertEquals(3, CentralTendencyCalculator.calculateMean(iField1n, iField0n).getValue());
+		assertEquals(3, CentralTendencyCalculator.calculateMean(iField1c, iField0c).getValue());
+		assertEquals(3, CentralTendencyCalculator.calculateMean(iField1g, iField0g).getValue());
+		assertEquals(4, ((IntegerField)CentralTendencyCalculator.calculateMean(uFieldMV15, iField1n)).getValue());
+		assertEquals(4, ((IntegerField)CentralTendencyCalculator.calculateMean(uFieldMV2, iField1c)).getValue());
+		assertEquals(2, ((IntegerField)CentralTendencyCalculator.calculateMean(uFieldMV15, iField0g)).getValue());
+		assertEquals(2, ((IntegerField)CentralTendencyCalculator.calculateMean(uFieldMV2, iField0n)).getValue());
+		assertEquals(4, ((IntegerField)CentralTendencyCalculator.calculateMean(iField1n, uFieldMV15)).getValue());
+		assertEquals(4, ((IntegerField)CentralTendencyCalculator.calculateMean(iField1n, uFieldMV2)).getValue());
+		assertEquals(2, ((IntegerField)CentralTendencyCalculator.calculateMean(iField0g, uFieldMV15)).getValue());
+		assertEquals(2, ((IntegerField)CentralTendencyCalculator.calculateMean(iField0n, uFieldMV2)).getValue());
+		assertEquals(4, ((IntegerField)CentralTendencyCalculator.calculateMean(iField, iField1c)).getValue());
+		assertEquals(2, ((IntegerField)CentralTendencyCalculator.calculateMean(iField0g, iField)).getValue());
+		assertNull(((IntegerField)CentralTendencyCalculator.calculateMean(iField0n, iField1c)));
+		assertNull(((IntegerField)CentralTendencyCalculator.calculateMean(iField0n, iField0c)));
+		assertNull(((IntegerField)CentralTendencyCalculator.calculateMean(iField1n, iField0g)));
 	}
 	
 	/**
-	 * Test {@link CentralTendencyCalculator#mean(RealField, RealField)}.
+	 * Test {@link CentralTendencyCalculator#calculateMean(RealField, RealField)}.
 	 */
 	@Test
 	void testRealFieldCentralTendency() {
 		this.setUnknownFields();
 		this.setRealFields();
-		assertEquals(3.0, CentralTendencyCalculator.mean(rField0n, rField1n).getValue());
-		assertEquals(3.0, CentralTendencyCalculator.mean(rField0c, rField1c).getValue());
-		assertEquals(3.0, CentralTendencyCalculator.mean(rField0g, rField1g).getValue());
-		assertEquals(3.0, CentralTendencyCalculator.mean(rField1n, rField0n).getValue());
-		assertEquals(3.0, CentralTendencyCalculator.mean(rField1c, rField0c).getValue());
-		assertEquals(3.0, CentralTendencyCalculator.mean(rField1g, rField0g).getValue());
-		assertEquals(4.0, ((RealField)CentralTendencyCalculator.mean(uFieldMV15, rField1n)).getValue());
-		assertEquals(4.0, ((RealField)CentralTendencyCalculator.mean(uFieldMV2, rField1c)).getValue());
-		assertEquals(2.0, ((RealField)CentralTendencyCalculator.mean(uFieldMV15, rField0g)).getValue());
-		assertEquals(2.0, ((RealField)CentralTendencyCalculator.mean(uFieldMV2, rField0n)).getValue());
-		assertEquals(4.0, ((RealField)CentralTendencyCalculator.mean(rField1n, uFieldMV15)).getValue());
-		assertEquals(4.0, ((RealField)CentralTendencyCalculator.mean(rField1n, uFieldMV2)).getValue());
-		assertEquals(2.0, ((RealField)CentralTendencyCalculator.mean(rField0g, uFieldMV15)).getValue());
-		assertEquals(2.0, ((RealField)CentralTendencyCalculator.mean(rField0n, uFieldMV2)).getValue());
-		assertEquals(4.0, ((RealField)CentralTendencyCalculator.mean(rField, rField1c)).getValue());
-		assertEquals(2.0, ((RealField)CentralTendencyCalculator.mean(rField0g, rField)).getValue());
-		assertNull(((RealField)CentralTendencyCalculator.mean(rField0n, rField1c)));
-		assertNull(((RealField)CentralTendencyCalculator.mean(rField0n, rField0c)));
-		assertNull(((RealField)CentralTendencyCalculator.mean(rField1n, rField0g)));
+		assertEquals(3.0, CentralTendencyCalculator.calculateMean(rField0n, rField1n).getValue());
+		assertEquals(3.0, CentralTendencyCalculator.calculateMean(rField0c, rField1c).getValue());
+		assertEquals(3.0, CentralTendencyCalculator.calculateMean(rField0g, rField1g).getValue());
+		assertEquals(3.0, CentralTendencyCalculator.calculateMean(rField1n, rField0n).getValue());
+		assertEquals(3.0, CentralTendencyCalculator.calculateMean(rField1c, rField0c).getValue());
+		assertEquals(3.0, CentralTendencyCalculator.calculateMean(rField1g, rField0g).getValue());
+		assertEquals(4.0, ((RealField)CentralTendencyCalculator.calculateMean(uFieldMV15, rField1n)).getValue());
+		assertEquals(4.0, ((RealField)CentralTendencyCalculator.calculateMean(uFieldMV2, rField1c)).getValue());
+		assertEquals(2.0, ((RealField)CentralTendencyCalculator.calculateMean(uFieldMV15, rField0g)).getValue());
+		assertEquals(2.0, ((RealField)CentralTendencyCalculator.calculateMean(uFieldMV2, rField0n)).getValue());
+		assertEquals(4.0, ((RealField)CentralTendencyCalculator.calculateMean(rField1n, uFieldMV15)).getValue());
+		assertEquals(4.0, ((RealField)CentralTendencyCalculator.calculateMean(rField1n, uFieldMV2)).getValue());
+		assertEquals(2.0, ((RealField)CentralTendencyCalculator.calculateMean(rField0g, uFieldMV15)).getValue());
+		assertEquals(2.0, ((RealField)CentralTendencyCalculator.calculateMean(rField0n, uFieldMV2)).getValue());
+		assertEquals(4.0, ((RealField)CentralTendencyCalculator.calculateMean(rField, rField1c)).getValue());
+		assertEquals(2.0, ((RealField)CentralTendencyCalculator.calculateMean(rField0g, rField)).getValue());
+		assertNull(((RealField)CentralTendencyCalculator.calculateMean(rField0n, rField1c)));
+		assertNull(((RealField)CentralTendencyCalculator.calculateMean(rField0n, rField0c)));
+		assertNull(((RealField)CentralTendencyCalculator.calculateMean(rField1n, rField0g)));
 	}
 	
 	/**
-	 * Test {@link CentralTendencyCalculator#mean(EnumerationField, EnumerationField)}.
+	 * Test {@link CentralTendencyCalculator#calculateMean(EnumerationField, EnumerationField)}.
 	 */
 	@Test
 	void testEnumerationFieldCentralTendency() {
 		this.setUnknownFields();
 		this.setEnumerationFields();
-		assertEquals(3, CentralTendencyCalculator.mean(eField0n, eField1n).getValue());
-		assertEquals(3, CentralTendencyCalculator.mean(eField0c, eField1c).getValue());
-		assertEquals(3, CentralTendencyCalculator.mean(eField0g, eField1g).getValue());
-		assertEquals(3, CentralTendencyCalculator.mean(eField1n, eField0n).getValue());
-		assertEquals(3, CentralTendencyCalculator.mean(eField1c, eField0c).getValue());
-		assertEquals(3, CentralTendencyCalculator.mean(eField1g, eField0g).getValue());
-		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.mean(uFieldMV15, eField1n)).getValue());
-		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.mean(uFieldMV2, eField1c)).getValue());
-		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.mean(uFieldMV15, eField0g)).getValue());
-		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.mean(uFieldMV2, eField0n)).getValue());
-		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.mean(eField1n, uFieldMV15)).getValue());
-		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.mean(eField1n, uFieldMV2)).getValue());
-		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.mean(eField0g, uFieldMV15)).getValue());
-		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.mean(eField0n, uFieldMV2)).getValue());
-		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.mean(eField, eField1c)).getValue());
-		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.mean(eField0g, eField)).getValue());
-		assertNull(((EnumerationField)CentralTendencyCalculator.mean(eField0n, eField1c)));
-		assertNull(((EnumerationField)CentralTendencyCalculator.mean(eField0n, eField0c)));
-		assertNull(((EnumerationField)CentralTendencyCalculator.mean(eField1n, eField0g)));
-		assertNull(((EnumerationField)CentralTendencyCalculator.mean(eField2c, eField1c)));
-		assertNull(((EnumerationField)CentralTendencyCalculator.mean(eField0n, eField2n)));
-		assertNull(((EnumerationField)CentralTendencyCalculator.mean(eField1g, eField2g)));
+		assertEquals(3, CentralTendencyCalculator.calculateMean(eField0n, eField1n).getValue());
+		assertEquals(3, CentralTendencyCalculator.calculateMean(eField0c, eField1c).getValue());
+		assertEquals(3, CentralTendencyCalculator.calculateMean(eField0g, eField1g).getValue());
+		assertEquals(3, CentralTendencyCalculator.calculateMean(eField1n, eField0n).getValue());
+		assertEquals(3, CentralTendencyCalculator.calculateMean(eField1c, eField0c).getValue());
+		assertEquals(3, CentralTendencyCalculator.calculateMean(eField1g, eField0g).getValue());
+		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.calculateMean(uFieldMV15, eField1n)).getValue());
+		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.calculateMean(uFieldMV2, eField1c)).getValue());
+		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.calculateMean(uFieldMV15, eField0g)).getValue());
+		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.calculateMean(uFieldMV2, eField0n)).getValue());
+		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.calculateMean(eField1n, uFieldMV15)).getValue());
+		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.calculateMean(eField1n, uFieldMV2)).getValue());
+		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.calculateMean(eField0g, uFieldMV15)).getValue());
+		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.calculateMean(eField0n, uFieldMV2)).getValue());
+		assertEquals(4, ((EnumerationField)CentralTendencyCalculator.calculateMean(eField, eField1c)).getValue());
+		assertEquals(2, ((EnumerationField)CentralTendencyCalculator.calculateMean(eField0g, eField)).getValue());
+		assertNull(((EnumerationField)CentralTendencyCalculator.calculateMean(eField0n, eField1c)));
+		assertNull(((EnumerationField)CentralTendencyCalculator.calculateMean(eField0n, eField0c)));
+		assertNull(((EnumerationField)CentralTendencyCalculator.calculateMean(eField1n, eField0g)));
+		assertNull(((EnumerationField)CentralTendencyCalculator.calculateMean(eField2c, eField1c)));
+		assertNull(((EnumerationField)CentralTendencyCalculator.calculateMean(eField0n, eField2n)));
+		assertNull(((EnumerationField)CentralTendencyCalculator.calculateMean(eField1g, eField2g)));
 	}
 
 }
