@@ -41,7 +41,7 @@ import org.rulelearn.types.UnknownSimpleFieldMV2;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-class CentralTendencyTest {
+class CentralTendencyCalculatorTest {
 
 	private SimpleField sField, sField0n, sField0c, sField0g;
 	private SimpleField sField1n, sField1c, sField1g;
@@ -155,6 +155,19 @@ class CentralTendencyTest {
 	/**
 	 * Set up.
 	 */
+	private void setMoreIntegerFields() {
+		this.iField = null;
+		this.iField0n = IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.NONE);
+		this.iField0c = IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN);
+		this.iField0g = IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.COST);
+		this.iField1n = IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.NONE);
+		this.iField1c = IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.GAIN);
+		this.iField1g = IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.COST);
+	}
+	
+	/**
+	 * Set up.
+	 */
 	private void setRealFields() {
 		this.rField = null;
 		this.rField0n = RealFieldFactory.getInstance().create(2.0, AttributePreferenceType.NONE);
@@ -196,7 +209,7 @@ class CentralTendencyTest {
 	}
 	
 	/**
-	 * Test {@link CentralTendencyCalculator#calculateMean(SimpleField, SimpleField)} for {@link IntegerField} type fields.
+	 * Test method for {@link CentralTendencyCalculator#calculateMean(SimpleField, SimpleField)} on {@link IntegerField} type fields.
 	 */
 	@Test
 	void testSimpleFieldAsIntegerCentralTendency() {
@@ -223,7 +236,7 @@ class CentralTendencyTest {
 	}
 	
 	/**
-	 * Test {@link CentralTendencyCalculator#calculateMean(SimpleField, SimpleField)} for {@link RealField} type fields.
+	 * Test method for {@link CentralTendencyCalculator#calculateMean(SimpleField, SimpleField)} on {@link RealField} type fields.
 	 */
 	@Test
 	void testSimpleFieldAsRealCentralTendency() {
@@ -250,7 +263,7 @@ class CentralTendencyTest {
 	}
 	
 	/**
-	 * Test {@link CentralTendencyCalculator#calculateMean(SimpleField, SimpleField)} for {@link EnumerationField} type fields.
+	 * Test method for {@link CentralTendencyCalculator#calculateMean(SimpleField, SimpleField)} on {@link EnumerationField} type fields.
 	 */
 	@Test
 	void testSimpleFieldAsEnumerationCentralTendency() {
@@ -283,7 +296,7 @@ class CentralTendencyTest {
 	}
 	
 	/**
-	 * Test {@link CentralTendencyCalculator#calculateMean(IntegerField, IntegerField)}.
+	 * Test method for {@link CentralTendencyCalculator#calculateMean(IntegerField, IntegerField)}.
 	 */
 	@Test
 	void testIntegerFieldCentralTendency() {
@@ -311,7 +324,35 @@ class CentralTendencyTest {
 	}
 	
 	/**
-	 * Test {@link CentralTendencyCalculator#calculateMean(RealField, RealField)}.
+	 * Another test method for {@link CentralTendencyCalculator#calculateMean(IntegerField, IntegerField)}.
+	 */
+	@Test
+	void testMoreIntegerFieldCentralTendency() {
+		this.setUnknownFields();
+		this.setMoreIntegerFields();
+		assertEquals(3, CentralTendencyCalculator.calculateMean(iField0n, iField1n).getValue());
+		assertEquals(3, CentralTendencyCalculator.calculateMean(iField0c, iField1c).getValue());
+		assertEquals(3, CentralTendencyCalculator.calculateMean(iField0g, iField1g).getValue());
+		assertEquals(3, CentralTendencyCalculator.calculateMean(iField1n, iField0n).getValue());
+		assertEquals(3, CentralTendencyCalculator.calculateMean(iField1c, iField0c).getValue());
+		assertEquals(3, CentralTendencyCalculator.calculateMean(iField1g, iField0g).getValue());
+		assertEquals(4, ((IntegerField)CentralTendencyCalculator.calculateMean(uFieldMV15, iField1n)).getValue());
+		assertEquals(4, ((IntegerField)CentralTendencyCalculator.calculateMean(uFieldMV2, iField1c)).getValue());
+		assertEquals(3, ((IntegerField)CentralTendencyCalculator.calculateMean(uFieldMV15, iField0g)).getValue());
+		assertEquals(3, ((IntegerField)CentralTendencyCalculator.calculateMean(uFieldMV2, iField0n)).getValue());
+		assertEquals(4, ((IntegerField)CentralTendencyCalculator.calculateMean(iField1n, uFieldMV15)).getValue());
+		assertEquals(4, ((IntegerField)CentralTendencyCalculator.calculateMean(iField1n, uFieldMV2)).getValue());
+		assertEquals(3, ((IntegerField)CentralTendencyCalculator.calculateMean(iField0g, uFieldMV15)).getValue());
+		assertEquals(3, ((IntegerField)CentralTendencyCalculator.calculateMean(iField0n, uFieldMV2)).getValue());
+		assertEquals(4, ((IntegerField)CentralTendencyCalculator.calculateMean(iField, iField1c)).getValue());
+		assertEquals(3, ((IntegerField)CentralTendencyCalculator.calculateMean(iField0g, iField)).getValue());
+		assertNull(((IntegerField)CentralTendencyCalculator.calculateMean(iField0n, iField1c)));
+		assertNull(((IntegerField)CentralTendencyCalculator.calculateMean(iField0n, iField0c)));
+		assertNull(((IntegerField)CentralTendencyCalculator.calculateMean(iField1n, iField0g)));
+	}
+	
+	/**
+	 * Test method for {@link CentralTendencyCalculator#calculateMean(RealField, RealField)}.
 	 */
 	@Test
 	void testRealFieldCentralTendency() {
@@ -339,7 +380,7 @@ class CentralTendencyTest {
 	}
 	
 	/**
-	 * Test {@link CentralTendencyCalculator#calculateMean(EnumerationField, EnumerationField)}.
+	 * Test method for {@link CentralTendencyCalculator#calculateMean(EnumerationField, EnumerationField)}.
 	 */
 	@Test
 	void testEnumerationFieldCentralTendency() {
