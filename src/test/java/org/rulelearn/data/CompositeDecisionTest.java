@@ -105,7 +105,6 @@ class CompositeDecisionTest {
 		CompositeDecision compositeDecision = new CompositeDecision(evaluations, attributeIndices);
 		CompositeDecision otherCompositeDecision = new CompositeDecision(evaluations, attributeIndices);
 		
-		assertNotNull(compositeDecision.hashCode());
 		assertEquals(compositeDecision.hashCode(), compositeDecision.hashCode());
 		assertEquals(otherCompositeDecision.hashCode(), compositeDecision.hashCode());
 	}

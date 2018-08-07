@@ -48,7 +48,6 @@ class SimpleDecisionTest {
 		SimpleDecision decision = new SimpleDecision(evaluation, attributeIndex);
 		SimpleDecision otherDecision = new SimpleDecision(otherEvaluation, attributeIndex);
 		
-		assertNotNull(decision.hashCode());
 		assertEquals(decision.hashCode(), decision.hashCode());
 		assertEquals(decision.hashCode(), otherDecision.hashCode());
 	}

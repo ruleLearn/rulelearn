@@ -140,7 +140,7 @@ public class DecisionDistribution {
 	 * @return calculated hash code of this decision distribution
 	 */
 	public int hashCode() {
-		return  Objects.hash(this.getClass(), this.decision2CountMap);
+		return Objects.hash(this.getClass(), this.decision2CountMap);
 	}
 	
 	/**
