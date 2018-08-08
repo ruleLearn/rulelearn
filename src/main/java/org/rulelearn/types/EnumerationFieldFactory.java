@@ -106,7 +106,7 @@ public class EnumerationFieldFactory {
 				return ((UnknownSimpleField)otherField).reverseIsEqualTo(this); //missing value => delegate comparison to the other field
 			} else {
 				try {
-					return (this.value == ((EnumerationField)otherField).value ? 
+					return (this.value == ((NoneEnumerationField)otherField).value ? 
 							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 				} catch (ClassCastException exception) {
 					return TernaryLogicValue.UNCOMPARABLE;
@@ -144,6 +144,16 @@ public class EnumerationFieldFactory {
 		@Override
 		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			return this.isEqualTo(otherField);
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @return {@inheritDoc}
+		 */
+		@Override
+		public AttributePreferenceType getPreferenceType() {
+			return AttributePreferenceType.NONE;
 		}
 	}
 	
@@ -217,12 +227,22 @@ public class EnumerationFieldFactory {
 				return ((UnknownSimpleField)otherField).reverseIsEqualTo(this); //missing value => delegate comparison to the other field
 			} else {
 				try {
-					return (this.value == ((EnumerationField)otherField).value ? 
+					return (this.value == ((GainEnumerationField)otherField).value ? 
 							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 				} catch (ClassCastException exception) {
 					return TernaryLogicValue.UNCOMPARABLE;
 				}
 			}
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @return {@inheritDoc}
+		 */
+		@Override
+		public AttributePreferenceType getPreferenceType() {
+			return AttributePreferenceType.GAIN;
 		}
 
 	}
@@ -298,12 +318,22 @@ public class EnumerationFieldFactory {
 				return ((UnknownSimpleField)otherField).reverseIsEqualTo(this); //missing value => delegate comparison to the other field
 			} else {
 				try {
-					return (this.value == ((EnumerationField)otherField).value ?
+					return (this.value == ((CostEnumerationField)otherField).value ?
 							TernaryLogicValue.TRUE : TernaryLogicValue.FALSE);
 				} catch (ClassCastException exception) {
 					return TernaryLogicValue.UNCOMPARABLE;
 				}
 			}
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @return {@inheritDoc}
+		 */
+		@Override
+		public AttributePreferenceType getPreferenceType() {
+			return AttributePreferenceType.COST;
 		}
 	}
 }

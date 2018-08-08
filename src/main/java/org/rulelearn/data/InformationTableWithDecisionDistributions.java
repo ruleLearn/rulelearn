@@ -70,7 +70,7 @@ public class InformationTableWithDecisionDistributions extends InformationTable 
 	 * 
 	 * @throws NullPointerException see {@link InformationTable#InformationTable(Attribute[], List, boolean)}
 	 * @throws InvalidValueException see {@link InformationTable#InformationTable(Attribute[], List, boolean)}
-	 * @throws InvalidValueException if given information table does not have any active decision attribute
+	 * @throws InvalidValueException if the given array of attributes does not contain any active decision attribute
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT)
 	public InformationTableWithDecisionDistributions(Attribute[] attributes, List<Field[]> listOfFields, boolean accelerateByReadOnlyParams) {

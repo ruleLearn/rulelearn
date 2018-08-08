@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package org.rulelearn.rules.ruleml;
+package org.rulelearn.rules;
 
 /**
- * Exception occurring during parsing of decision rules.
+ * Exception occurring when the semantics of rule is different than expected (i.e., it might be correct but is not concordant with the expected semantics).
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+ *
  */
-public class RuleParseException extends Exception {
-    
-	private static final long serialVersionUID = -7154009383040306887L;
+public class UnknownRuleSemanticsException extends RuntimeException {
 
-	public RuleParseException() {
+	private static final long serialVersionUID = 5034172542445366932L;
+	
+	public UnknownRuleSemanticsException() {
         super();
     }
 
@@ -35,16 +36,16 @@ public class RuleParseException extends Exception {
      * 
      * @param message exception message
      */
-    public RuleParseException(String message) {
+    public UnknownRuleSemanticsException(String message) {
         super(message);
     }
 
     /**
      * Creates an exception without a message but with a pointer to a cause.
      * 
-     * @param cause a throwable exception, which caused the {@link RuleParseException}
+     * @param cause a throwable exception, which caused the {@link UnknownRuleSemanticsException}
      */
-    public RuleParseException(Throwable cause) {
+    public UnknownRuleSemanticsException(Throwable cause) {
         super(cause);
     }
 
@@ -52,10 +53,10 @@ public class RuleParseException extends Exception {
      * Creates an exception with a message and a pointer to a cause.
      * 
      * @param message exception message
-     * @param cause a throwable exception, which caused the {@link RuleParseException}
+     * @param cause a throwable exception, which caused the {@link UnknownRuleSemanticsException}
      */
-    public RuleParseException(String message, Throwable cause) {
+    public UnknownRuleSemanticsException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
 }

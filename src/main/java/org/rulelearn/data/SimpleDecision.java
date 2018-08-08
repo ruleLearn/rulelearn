@@ -22,8 +22,15 @@ import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 import static org.rulelearn.core.Precondition.notNull;
+import static org.rulelearn.core.Precondition.nonNegative;
+
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 import java.util.Objects;
 import java.util.function.BiPredicate;
+
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
@@ -49,11 +56,14 @@ public class SimpleDecision extends Decision {
 	 * 
 	 * @param evaluation evaluation of a single object on an active decision attribute of an information table
 	 * @param attributeIndex index of an active decision attribute of an information table
+	 * 
+	 * @throws NullPointerException if given evaluation is {@code null}
+	 * @throws InvalidValueException if given attribute's index is negative
 	 */
 	public SimpleDecision(EvaluationField evaluation, int attributeIndex) {
 		super();
 		this.evaluation = notNull(evaluation, "Evaluation of constructed simple decision is null.");
-		this.attributeIndex = attributeIndex;
+		this.attributeIndex = nonNegative(attributeIndex, "Attribute index should be non-negative.");
 	}
 	
 	/**
@@ -146,6 +156,15 @@ public class SimpleDecision extends Decision {
 	@Override
 	public EvaluationField getEvaluation(int attributeIndex) {
 		return attributeIndex == this.attributeIndex ? this.evaluation : null;
+	}
+	
+	/**
+	 * Gets the evaluation contributing to the decision (i.e., with respect to the attribute contributing to this decision).
+	 * 
+	 * @return evaluation contributing to the decision
+	 */
+	public EvaluationField getEvaluation() {
+		return this.evaluation;
 	}
 
 	/**

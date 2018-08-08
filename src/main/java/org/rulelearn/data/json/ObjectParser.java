@@ -16,6 +16,8 @@
 
 package org.rulelearn.data.json;
 
+import static org.rulelearn.core.Precondition.notNull;
+
 import java.io.Reader;
 
 import org.rulelearn.data.Attribute;
@@ -107,16 +109,11 @@ public class ObjectParser {
 	 * @return parsed JSON structure {@link JsonElement}
 	 */
 	protected JsonElement getJSON (Reader reader) {
-		JsonReader jsonReader = null;
-		JsonElement json = null;
+		JsonReader jsonReader = new JsonReader(reader);
+		notNull(jsonReader, "Could not initialize JsonReader.");
+		JsonParser jsonParser = new JsonParser();
 		
-		jsonReader = new JsonReader(reader);
-		if (jsonReader != null) {
-			JsonParser jsonParser = new JsonParser();
-			json = jsonParser.parse(jsonReader);
-		}
-		
-		return json;
+		return jsonParser.parse(jsonReader);
 	}
 	
 	/**

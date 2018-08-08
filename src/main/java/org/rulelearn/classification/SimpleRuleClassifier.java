@@ -16,8 +16,10 @@
 
 package org.rulelearn.classification;
 
+import org.rulelearn.core.CentralTendencyCalculator;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.data.SimpleDecision;
 import org.rulelearn.rules.RuleSet;
 import org.rulelearn.rules.SimpleCondition;
 import org.rulelearn.rules.SimpleConditionAtLeast;
@@ -45,6 +47,16 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 	}
 	
 	/**
+	 * Gets default classification result returned by this classifier if it is unable to calculate such a result.
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public SimpleClassificationResult getDefaultClassificationResult() {
+		return (SimpleClassificationResult)defaultClassificationResult;
+	}
+	
+	/**
 	 * Classifies an object from an information table using rules stored in this classifier.
 	 * 
 	 * @param objectIndex {@inheritDoc}
@@ -56,7 +68,7 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 	 */
 	@Override
 	public SimpleClassificationResult classify(int objectIndex, InformationTable informationTable) {
-		SimpleClassificationResult result = (SimpleClassificationResult)this.getDefaultClassificationResult();
+		SimpleClassificationResult result = this.getDefaultClassificationResult();
 		
 		// calculate classification interval [downLimit, upLimit]
 		SimpleCondition decision = null;
@@ -87,21 +99,25 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 				}
 			}
 		}
-		
 		// set the result
 		if (upLimit != null) {
 			if (downLimit != null) {
 				if (upLimit.isEqualTo(downLimit) == TernaryLogicValue.TRUE) {
-					result = new SimpleClassificationResult(upLimit);
+					result = new SimpleClassificationResult(new SimpleDecision(upLimit, decision.getAttributeWithContext().getAttributeIndex()));
 				}	
-				// TODO should we take a median of the calculated classification interval?
+				else {
+					SimpleField mean = CentralTendencyCalculator.calculateMean(upLimit, downLimit);
+					if (mean != null) {
+						result = new SimpleClassificationResult(new SimpleDecision(mean, decision.getAttributeWithContext().getAttributeIndex()));
+					}
+				}
 			}
 			else {
-				result = new SimpleClassificationResult(upLimit);
+				result = new SimpleClassificationResult(new SimpleDecision(upLimit, decision.getAttributeWithContext().getAttributeIndex()));
 			}
 		}
 		else if (downLimit != null) {
-			result = new SimpleClassificationResult(downLimit);
+			result = new SimpleClassificationResult(new SimpleDecision(downLimit, decision.getAttributeWithContext().getAttributeIndex()));
 		}
 		
 		return result;
@@ -118,11 +134,9 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 	@Override
 	public SimpleClassificationResult[] classifyAll(InformationTable informationTable) {
 		SimpleClassificationResult[] classificationResults = new SimpleClassificationResult[informationTable.getNumberOfObjects()];
-		
 		for (int i = 0; i < classificationResults.length; i++) {
 			classificationResults[i] = this.classify(i, informationTable);
 		}
-		
 		return classificationResults;
 	}
 

@@ -18,46 +18,45 @@ package org.rulelearn.data.json;
 
 import java.lang.reflect.Type;
 
-import org.rulelearn.data.IdentificationAttribute;
+import org.rulelearn.data.Attribute;
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.Field;
-import org.rulelearn.types.TextIdentificationField;
-import org.rulelearn.types.UUIDIdentificationField;
+import org.rulelearn.types.UnknownSimpleField;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 /**
- * Serializer {@link com.google.gson.JsonSerializer} for identification attributes {@link org.rulelearn.data.IdentificationAttribute}.
+ * Serializer {@link com.google.gson.JsonSerializer} for information tables {@link org.rulelearn.data.InformationTable}. 
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
-public class IdentificationAttributeSerializer implements JsonSerializer<IdentificationAttribute> {
+public class InformationTableSerializer implements JsonSerializer<InformationTable> {
 
 	/* (non-Javadoc)
 	 * @see com.google.gson.JsonSerializer#serialize(java.lang.Object, java.lang.reflect.Type, com.google.gson.JsonSerializationContext)
 	 */
 	@Override
-	public JsonElement serialize(IdentificationAttribute src, Type typeOfSrc, JsonSerializationContext context) {
-		JsonObject json = new JsonObject();
-		
-		json.addProperty("name", src.getName());
-		json.addProperty("active", src.isActive());
-		
-		Field valueType = src.getValueType();
-		
-		if (valueType instanceof TextIdentificationField) {
-			json.addProperty("identifierType", "text");
-		} else if (valueType instanceof UUIDIdentificationField) {
-			json.addProperty("identifierType", "uuid");
-		} else {
-			json.addProperty("identifierType", "text"); //default
+	public JsonElement serialize(InformationTable src, Type typeOfSrc, JsonSerializationContext context) {
+		int numObjects = src.getNumberOfObjects(), numAttributes = src.getNumberOfAttributes();
+		Attribute[] attributes = src.getAttributes();
+		JsonArray jsonInformationTable = new JsonArray(src.getNumberOfObjects());
+
+		for (int i = 0; i < numObjects; i++) {
+			JsonObject jsonObjectDescription = new JsonObject();
+			for (int j = 0; j < numAttributes; j++) {
+				Field field = src.getField(i, j);
+				if (!(field instanceof UnknownSimpleField)) {
+					jsonObjectDescription.addProperty(attributes[j].getName(), field.toString());
+				}
+			}
+			jsonInformationTable.add(jsonObjectDescription);
 		}
-		
-		return json;
+		return jsonInformationTable;
 	}
-	
+
 }
