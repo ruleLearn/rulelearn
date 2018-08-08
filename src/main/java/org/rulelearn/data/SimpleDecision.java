@@ -24,9 +24,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import static org.rulelearn.core.Precondition.notNull;
 import static org.rulelearn.core.Precondition.nonNegative;
 
-import it.unimi.dsi.fastutil.ints.IntArraySet;
-import it.unimi.dsi.fastutil.ints.IntSet;
-
 import java.util.Objects;
 import java.util.function.BiPredicate;
 
