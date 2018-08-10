@@ -101,7 +101,7 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 			int i = 0;
 			while (unionObjectIndicesIterator.hasNext()) {
 				i = unionObjectIndicesIterator.nextInt();
-				canBeAdded = false;
+				canBeAdded = true;
 				for (Decision decision : dominanceCDD.getPositiveInvDConeDecisionClassDistribution(i).getDecisions()) {
 					// check whether some objects not concordant with union (i.e. not in the set and not uncomparable) are present in a positive inverted dominance cone based on the object
 					//if (union.isConcordantWithDecision(decision) == TernaryLogicValue.FALSE) {
@@ -124,7 +124,7 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 			int i = 0;
 			while (unionObjectIndicesIterator.hasNext()) {
 				i = unionObjectIndicesIterator.nextInt();
-				canBeAdded = false;
+				canBeAdded = true;
 				for (Decision decision : dominanceCDD.getNegativeDConeDecisionClassDistribution(i).getDecisions()) {
 					// check whether some objects not concordant with union (i.e. not in the set and not uncomparable) are present in a negative dominance cone based on the object
 					//if (union.isConcordantWithDecision(decision) == TernaryLogicValue.FALSE) {
