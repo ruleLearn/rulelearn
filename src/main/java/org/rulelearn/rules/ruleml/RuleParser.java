@@ -260,7 +260,6 @@ public class RuleParser {
 			Condition<? extends EvaluationField> decision = decisions.get(0);
 			// TODO check correctness
 			// TODO include types of rules in RuleML
-			// TODO (MSz): should rule semantics depend on attribute's preference type, not on the type of decision condition?
 			if (decision.getAttributeWithContext().getAttributePreferenceType() == AttributePreferenceType.NONE) {
 				rule = new Rule(RuleType.CERTAIN, RuleSemantics.EQUAL, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
 			}
@@ -268,7 +267,7 @@ public class RuleParser {
 				if (decision instanceof SimpleConditionAtLeast) {
 					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
 				}
-				else {
+				else { // TODO (MSz): verify if this else is safe (what if equality decision)
 					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
 				}
 			}
@@ -276,7 +275,7 @@ public class RuleParser {
 				if (decision instanceof SimpleConditionAtLeast) {
 					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
 				}
-				else {
+				else { // TODO (MSz): verify if this else is safe (what if equality decision)
 					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
 				}
 			}

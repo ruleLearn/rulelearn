@@ -49,7 +49,7 @@ class PreconditionTest {
 	 */
 	@Test
 	void testNotNull02() {
-		Object object = new Integer(0);
+		Object object = Integer.valueOf(0);
 
 		assertEquals(Precondition.notNull(object, "Test message."), object);
 	}
@@ -117,7 +117,7 @@ class PreconditionTest {
 	 */
 	@Test
 	void testNonEmptyTArrayString02() {
-		Object[] array = {new Integer(0)};
+		Object[] array = {Integer.valueOf(0)};
 		assertEquals(Precondition.nonEmpty(array, "Test message."), array);
 	}
 
@@ -141,7 +141,7 @@ class PreconditionTest {
 	@Test
 	void testNonEmptyTString02() {
 		ArrayList<Integer> collection = new ArrayList<Integer>();
-		collection.add(new Integer(0));
+		collection.add(Integer.valueOf(0));
 		assertEquals(Precondition.nonEmpty(collection, "Test message."), collection);
 	}
 

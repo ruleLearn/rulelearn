@@ -28,7 +28,10 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 /**
- * Distribution of decisions in the set of considered objects (information table).
+ * Distribution (histogram) of decisions in the set of considered objects (information table). For any decision observed in an information table,
+ * this distribution offers information regarding how many objects share this decision. For example, if there are 7 objects in an information table,
+ * three of them have decision 1, and four of them have decision 2, then this distribution will map decision 1 to value 3, and decision 2 to value 4.
+ * So, this distribution is a kind of a map, where each key corresponds to a decision, and each value corresponds to the number of occurrences of the considered decision.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -51,6 +54,7 @@ public class DecisionDistribution {
 	 * 
 	 * @param informationTable information table for which decision distribution should be constructed; this table should contain decisions for subsequent objects
 	 * @throws NullPointerException if given information table is {@code null}
+	 * @throws NullPointerException if given information table does contain decision for some object
 	 */
 	public DecisionDistribution(InformationTable informationTable) {
 		notNull(informationTable, "Information table for calculation of distribution of decisions is null.");
@@ -63,7 +67,8 @@ public class DecisionDistribution {
 	}
 	
 	/**
-	 * Checks whether a given decision is present in the distribution (i.e., object/objects having a given value of decision are present in the distribution).
+	 * Checks whether a given decision is present in this distribution (i.e., object/objects having given decision are present in the information table for which this distribution
+	 * has been constructed).
 	 * 
 	 * @param decision decision of interest; should not be {@code null}
 	 * @return true if a given decision is present in the distribution
@@ -71,23 +76,6 @@ public class DecisionDistribution {
 	public boolean isPresent(Decision decision) {
 		return this.decision2CountMap.containsKey(decision);
 	}
-	
-	/**
-	 * Checks whether a given union is present in the distribution (i.e., object/objects having a value of decision concordant with the union are present in the distribution).
-	 * 
-	 * @param union union of interest; should not be {@code null}
-	 * @return true if a value of decision concordant with the given union is present in the distribution
-	 */
-	/*public boolean isPresent(Union union) {
-		boolean concordant = false;
-		for (Decision decision : this.decision2CountMap.keySet()) {
-			if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
-				concordant = true;
-				break;
-			}
-		}
-		return concordant;
-	}*/
 	
 	/**
 	 * Gets all decisions, which are present in the distribution.
@@ -109,27 +97,13 @@ public class DecisionDistribution {
 	}
 	
 	/**
-	 * Gets number of objects having the decision concordant with a given union.
-	 * 
-	 * @param union union of interest; should not be {@code null}
-	 * @return number of objects having the decision value concordant with a given union 
-	 */
-	/*public int getCount(Union union) {
-		int count = 0;
-		for (Decision decision : this.decision2CountMap.keySet()) {
-			if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
-				count += this.decision2CountMap.getInt(decision);
-			}
-		}
-		return count;
-	}*/
-	
-	/**
 	 * Increases by one the number of objects having given decision.
 	 * 
 	 * @param decision decision of interest; should not be {@code null}
+	 * @throws NullPointerException if given decision is {@code null}
 	 */
 	public void increaseCount(Decision decision) {
+		notNull(decision, "Could not increase count of a null decision.");
 		int count = this.decision2CountMap.containsKey(decision) ? this.decision2CountMap.getInt(decision) : 0;
 		this.decision2CountMap.put(decision, ++count);
 	}

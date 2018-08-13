@@ -149,6 +149,21 @@ class DecisionDistributionTest {
 	}
 	
 	/**
+	 * Test method for {@link org.rulelearn.data.DecisionDistribution#increaseCount(org.rulelearn.data.Decision)}.
+	 * Tests if an exception is thrown when trying to increase count of a {@code null} decision.
+	 */
+	@Test
+	void testIncreaseCount04() {
+		DecisionDistribution decisionDistribution = new DecisionDistribution();
+		try {
+			decisionDistribution.increaseCount(null);
+			fail("Should not increase count of a null decision.");
+		} catch (NullPointerException exception) {
+			//OK
+		}
+	}
+	
+	/**
 	 * Test method for {@link org.rulelearn.data.DecisionDistribution#equals(Object)}.
 	 */
 	@Test

@@ -301,7 +301,7 @@ class TableTest {
 		assertSame(array[1][1], copiedArray[1][1]);	
 		
 		array[1][1] = null;
-		assertNotNull(copiedArray[1][1]);	
+		assertNotNull(copiedArray[1][1]);
 	}
 
 }
