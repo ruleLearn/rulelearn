@@ -103,7 +103,7 @@ junitPlatform {
 		}
 		tags {
 			// include 'fast'
-			// exclude 'slow'
+			exclude 'integration'
 		}
 		// includeClassNamePattern '.*Test'
 	}
