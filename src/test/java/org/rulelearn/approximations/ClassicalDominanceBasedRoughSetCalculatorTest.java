@@ -43,7 +43,7 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
  */
 class ClassicalDominanceBasedRoughSetCalculatorTest {
 	
-	private ClassicalDominanceBasedRoughSetCalculator cDRSACalculator;
+	private ClassicalDominanceBasedRoughSetCalculator cDRSAcalculator;
 	
 	@Mock
 	private InformationTableWithDecisionDistributions infromationTableMock;
@@ -66,7 +66,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	
 	@BeforeEach
 	void setUp() {
-		this.cDRSACalculator = new ClassicalDominanceBasedRoughSetCalculator();
+		this.cDRSAcalculator = new ClassicalDominanceBasedRoughSetCalculator();
 	}
 	
 	/**
@@ -196,9 +196,9 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	 */
 	@Test
 	void testConstruction() {
-		assertTrue(cDRSACalculator.areDominanceRelationsReflexive());
-		this.cDRSACalculator = new ClassicalDominanceBasedRoughSetCalculator(false);
-		assertFalse(cDRSACalculator.areDominanceRelationsReflexive());
+		assertTrue(cDRSAcalculator.areDominanceRelationsReflexive());
+		this.cDRSAcalculator = new ClassicalDominanceBasedRoughSetCalculator(false);
+		assertFalse(cDRSAcalculator.areDominanceRelationsReflexive());
 	}
 	
 	/**
@@ -209,7 +209,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	@Test
 	void testCalculateLowerApproximationForAtLeastUnion() {
 		this.setUpAtLeastUnionForCalculationOfLowerApproximation();
-		assertEquals(0, cDRSACalculator.calculateLowerApproximation(this.unionMock).size());
+		assertEquals(0, cDRSAcalculator.calculateLowerApproximation(this.unionMock).size());
 	}
 	
 	/**
@@ -220,7 +220,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	@Test
 	void testCalculateUpperApproximationForAtLeastUnion01() {
 		this.setUpAtLeastUnionForCalculationOfUpperApproximation();
-		assertEquals(2, cDRSACalculator.calculateUpperApproximation(this.unionMock).size());
+		assertEquals(2, cDRSAcalculator.calculateUpperApproximation(this.unionMock).size());
 	}
 	
 	/**
@@ -231,7 +231,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	@Test
 	void testCalculateUpperApproximationForAtLeastUnion02() {
 		this.setUpAtLeastUnionForCalculationOfUpperApproximation();
-		IntSortedSet upperApproximationIndices = cDRSACalculator.calculateUpperApproximation(this.unionMock);
+		IntSortedSet upperApproximationIndices = cDRSAcalculator.calculateUpperApproximation(this.unionMock);
 		assertTrue(upperApproximationIndices.contains(1));
 		assertTrue(upperApproximationIndices.contains(2));
 	}
@@ -244,7 +244,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	@Test
 	void testCalculateLowerApproximationForAtMostUnion01() {
 		this.setUpAtMostUnionForCalculationOfLowerApproximation();
-		assertEquals(1, cDRSACalculator.calculateLowerApproximation(this.unionMock).size());
+		assertEquals(1, cDRSAcalculator.calculateLowerApproximation(this.unionMock).size());
 	}
 	
 	/**
@@ -255,7 +255,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	@Test
 	void testCalculateLowerApproximationForAtMostUnion02() {
 		this.setUpAtMostUnionForCalculationOfLowerApproximation();
-		assertTrue(cDRSACalculator.calculateLowerApproximation(this.unionMock).contains(0));
+		assertTrue(cDRSAcalculator.calculateLowerApproximation(this.unionMock).contains(0));
 	}
 	
 	/**
@@ -266,7 +266,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	@Test
 	void testCalculateUpperApproximationForAtMostUnion01() {
 		this.setUpAtMostUnionForCalculationOfUpperApproximation();
-		assertEquals(3, cDRSACalculator.calculateUpperApproximation(this.unionMock).size());
+		assertEquals(3, cDRSAcalculator.calculateUpperApproximation(this.unionMock).size());
 	}
 	
 	/**
@@ -277,7 +277,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	@Test
 	void testCalculateUpperApproximationForAtMostUnion02() {
 		this.setUpAtMostUnionForCalculationOfUpperApproximation();
-		IntSortedSet upperApproximationIndices = cDRSACalculator.calculateUpperApproximation(this.unionMock);
+		IntSortedSet upperApproximationIndices = cDRSAcalculator.calculateUpperApproximation(this.unionMock);
 		assertTrue(upperApproximationIndices.contains(0));
 		assertTrue(upperApproximationIndices.contains(1));
 		assertTrue(upperApproximationIndices.contains(2));
