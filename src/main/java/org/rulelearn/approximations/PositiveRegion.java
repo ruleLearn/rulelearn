@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
  * 
  * @deprecated not used
  */
-public class PositiveRegion {
+@Deprecated public class PositiveRegion {
 	
 	/**
 	 * Empty set of object indices.

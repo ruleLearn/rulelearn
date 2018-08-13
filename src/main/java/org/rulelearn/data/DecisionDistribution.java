@@ -29,7 +29,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 /**
  * Distribution (histogram) of decisions in the set of considered objects (information table). For any decision observed in an information table,
- * this distributions offers information regarding how many objects share this decision. For example, if there are 7 objects in an information table,
+ * this distribution offers information regarding how many objects share this decision. For example, if there are 7 objects in an information table,
  * three of them have decision 1, and four of them have decision 2, then this distribution will map decision 1 to value 3, and decision 2 to value 4.
  * So, this distribution is a kind of a map, where each key corresponds to a decision, and each value corresponds to the number of occurrences of the considered decision.
  *
