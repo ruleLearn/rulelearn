@@ -19,7 +19,6 @@ package org.rulelearn.approximations;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -31,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
- * VCDominanceBasedRoughSetCalculatorTest
+ * Tests for {@link VCDominanceBasedRoughSetCalculator}.
  *
  * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
  * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
@@ -42,7 +41,7 @@ class VCDominanceBasedRoughSetCalculatorTest {
 	private double lowerApproximationConsistencyThreshold = 0.0;
 		
 	@Mock
-	private InformationTableWithDecisionDistributions infromationTableMock;
+	private InformationTableWithDecisionDistributions informationTableMock;
 	@Mock
 	private IntSortedSet unionObjectsMock, complementaryUnionLowerApproximationMock;
 	@Mock
@@ -77,8 +76,8 @@ class VCDominanceBasedRoughSetCalculatorTest {
 	 */
 	void setUpAtLeastUnionForCalculationOfUpperApproximation() {
 		// mock information table
-		when(this.unionMock.getInformationTable()).thenReturn(this.infromationTableMock);
-		when(this.infromationTableMock.getNumberOfObjects()).thenReturn(3);
+		when(this.unionMock.getInformationTable()).thenReturn(this.informationTableMock);
+		when(this.informationTableMock.getNumberOfObjects()).thenReturn(3);
 		// mock complementary union
 		when(this.unionMock.getComplementaryUnion()).thenReturn(this.complementaryUnionMock);
 		// mock complementary union lower approximation
@@ -107,8 +106,8 @@ class VCDominanceBasedRoughSetCalculatorTest {
 	 */
 	void setUpAtMostUnionForCalculationOfUpperApproximation() {
 		// mock information table
-		when(this.unionMock.getInformationTable()).thenReturn(this.infromationTableMock);
-		when(this.infromationTableMock.getNumberOfObjects()).thenReturn(3);
+		when(this.unionMock.getInformationTable()).thenReturn(this.informationTableMock);
+		when(this.informationTableMock.getNumberOfObjects()).thenReturn(3);
 		// mock complementary union
 		when(this.unionMock.getComplementaryUnion()).thenReturn(this.complementaryUnionMock);
 		// mock complementary union lower approximation
@@ -131,8 +130,6 @@ class VCDominanceBasedRoughSetCalculatorTest {
 	
 	/**
 	 * Test for method {@link org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator#calculateLowerApproximation(Union)}.
-	 * 
-	 * Test at this point is only performed for one decision class.
 	 */
 	@Test
 	void testCalculateLowerApproximationForAtLeastUnion() {
@@ -142,8 +139,6 @@ class VCDominanceBasedRoughSetCalculatorTest {
 	
 	/**
 	 * Test for method {@link org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator#calculateUpperApproximation(Union)}.
-	 * 
-	 * Test at this point is only performed for one decision class.
 	 */
 	@Test
 	void testCalculateUpperApproximationForAtLeastUnion01() {
@@ -153,8 +148,6 @@ class VCDominanceBasedRoughSetCalculatorTest {
 	
 	/**
 	 * Test for method {@link org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator#calculateUpperApproximation(Union)}.
-	 * 
-	 * Test at this point is only performed for one decision class.
 	 */
 	@Test
 	void testCalculateUpperApproximationForAtLeastUnion02() {
@@ -166,8 +159,6 @@ class VCDominanceBasedRoughSetCalculatorTest {
 	
 	/**
 	 * Test for method {@link org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator#calculateLowerApproximation(Union)}.
-	 * 
-	 * Test at this point is only performed for one decision class.
 	 */
 	@Test
 	void testCalculateLowerApproximationForAtMostUnion01() {
@@ -177,8 +168,6 @@ class VCDominanceBasedRoughSetCalculatorTest {
 	
 	/**
 	 * Test for method {@link org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator#calculateLowerApproximation(Union)}.
-	 * 
-	 * Test at this point is only performed for one decision class.
 	 */
 	@Test
 	void testCalculateLowerApproximationForAtMostUnion02() {
@@ -188,8 +177,6 @@ class VCDominanceBasedRoughSetCalculatorTest {
 	
 	/**
 	 * Test for method {@link org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator#calculateUpperApproximation(Union)}.
-	 * 
-	 * Test at this point is only performed for one decision class.
 	 */
 	@Test
 	void testCalculateUpperApproximationForAtMostUnion01() {
@@ -199,8 +186,6 @@ class VCDominanceBasedRoughSetCalculatorTest {
 	
 	/**
 	 * Test for method {@link org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator#calculateUpperApproximation(Union)}.
-	 * 
-	 * Test at this point is only performed for one decision class.
 	 */
 	@Test
 	void testCalculateUpperApproximationForAtMostUnion02() {
