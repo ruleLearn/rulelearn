@@ -36,14 +36,14 @@ import org.rulelearn.dominance.DominanceConesDecisionDistributions;
 import org.rulelearn.measures.ConsistencyMeasureType;
 
 /**
- * Tests for {@link RoughMembershipMeasure}.
+ * Tests for {@link EpsilonConsistencyMeasure}.
  *
  * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
  * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
  */
-class RoughMembershipMeasureTest {
+class EpsilonConsistencyMeasureTest {
 
-	private RoughMembershipMeasure measure;
+private EpsilonConsistencyMeasure measure;
 	
 	@Mock
 	private InformationTableWithDecisionDistributions informationTableMock;
@@ -63,20 +63,23 @@ class RoughMembershipMeasureTest {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		this.measure = new RoughMembershipMeasure();
+		this.measure = new EpsilonConsistencyMeasure();
 		// mock unions
 		when(this.unionAtLeast2Mock.getUnionType()).thenReturn(UnionType.AT_LEAST);
 		when(this.unionAtLeast3Mock.getUnionType()).thenReturn(UnionType.AT_LEAST);
 		when(this.unionAtMost1Mock.getUnionType()).thenReturn(UnionType.AT_MOST);
-		when(this.unionAtLeast2Mock.isDecisionPositive(class1)).thenReturn(false);
-		when(this.unionAtLeast2Mock.isDecisionPositive(class2)).thenReturn(true);
-		when(this.unionAtLeast2Mock.isDecisionPositive(class3)).thenReturn(true);
-		when(this.unionAtLeast3Mock.isDecisionPositive(class1)).thenReturn(false);
-		when(this.unionAtLeast3Mock.isDecisionPositive(class2)).thenReturn(false);
-		when(this.unionAtLeast3Mock.isDecisionPositive(class3)).thenReturn(true);
-		when(this.unionAtMost1Mock.isDecisionPositive(class1)).thenReturn(true);
-		when(this.unionAtMost1Mock.isDecisionPositive(class2)).thenReturn(false);
-		when(this.unionAtMost1Mock.isDecisionPositive(class3)).thenReturn(false);
+		when(this.unionAtLeast2Mock.getComplementarySetSize()).thenReturn(1);
+		when(this.unionAtLeast3Mock.getComplementarySetSize()).thenReturn(2);
+		when(this.unionAtMost1Mock.getComplementarySetSize()).thenReturn(7);
+		when(this.unionAtLeast2Mock.isDecisionNegative(class1)).thenReturn(true);
+		when(this.unionAtLeast2Mock.isDecisionNegative(class2)).thenReturn(false);
+		when(this.unionAtLeast2Mock.isDecisionNegative(class3)).thenReturn(false);
+		when(this.unionAtLeast3Mock.isDecisionNegative(class1)).thenReturn(true);
+		when(this.unionAtLeast3Mock.isDecisionNegative(class2)).thenReturn(true);
+		when(this.unionAtLeast3Mock.isDecisionNegative(class3)).thenReturn(false);
+		when(this.unionAtMost1Mock.isDecisionNegative(class1)).thenReturn(false);
+		when(this.unionAtMost1Mock.isDecisionNegative(class2)).thenReturn(true);
+		when(this.unionAtMost1Mock.isDecisionNegative(class3)).thenReturn(true);
 		// mock information table
 		when(this.unionAtLeast2Mock.getInformationTable()).thenReturn(this.informationTableMock);
 		when(this.unionAtLeast3Mock.getInformationTable()).thenReturn(this.informationTableMock);
@@ -112,34 +115,34 @@ class RoughMembershipMeasureTest {
 	}
 
 	/**
-	 * Test for method {@link org.rulelearn.measures.dominance.RoughMembershipMeasure#getType()}.
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#getType()}.
 	 */
 	@Test
 	void testGetType() {
-		assertEquals(ConsistencyMeasureType.GAIN, this.measure.getType());
+		assertEquals(ConsistencyMeasureType.COST, this.measure.getType());
+	}
+
+	/**
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#calculateConsistency(int, Union)}.
+	 */
+	@Test
+	void testEpsilonOnObject3withRespectToUnionAtLeast3() {
+		assertEquals(1.0, this.measure.calculateConsistency(2, this.unionAtLeast3Mock));
 	}
 	
 	/**
-	 * Test for method {@link org.rulelearn.measures.dominance.RoughMembershipMeasure#calculateConsistency(int, Union)}.
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#calculateConsistency(int, Union)}.
 	 */
 	@Test
-	void testRoughMembershipOnObject3withRespectToUnionAtLeast3() {
-		assertEquals(((double)4)/6, this.measure.calculateConsistency(2, this.unionAtLeast3Mock));
+	void testEpsilonOnObject4withRespectToUnionAtLeast2() {
+		assertEquals(1.0, this.measure.calculateConsistency(3, this.unionAtLeast2Mock));
 	}
 	
 	/**
-	 * Test for method {@link org.rulelearn.measures.dominance.RoughMembershipMeasure#calculateConsistency(int, Union)}.
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#calculateConsistency(int, Union)}.
 	 */
 	@Test
-	void testRoughMembershipOnObject4withRespectToUnionAtLeast2() {
-		assertEquals(((double)4)/5, this.measure.calculateConsistency(3, this.unionAtLeast2Mock));
-	}
-	
-	/**
-	 * Test for method {@link org.rulelearn.measures.dominance.RoughMembershipMeasure#calculateConsistency(int, Union)}.
-	 */
-	@Test
-	void testRoughMembershipOnObject5withRespectToUnionAtMost1() {
-		assertEquals(((double)1)/3, this.measure.calculateConsistency(4, this.unionAtMost1Mock));
+	void testEpsilonOnObject5withRespectToUnionAtMost1() {
+		assertEquals(((double)2)/7, this.measure.calculateConsistency(4, this.unionAtMost1Mock));
 	}
 }
