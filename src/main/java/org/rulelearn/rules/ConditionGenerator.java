@@ -16,36 +16,12 @@
 
 package org.rulelearn.rules;
 
-import java.util.List;
-
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.rulelearn.approximations.Union;
-import org.rulelearn.data.InformationTable;
-
 /**
- * Integration tests for VCDomLEM algorithm.
+ * Contract of a condition generator used to find next best condition to be added to constructed rule.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-@Tag("integration")
-class VCDomLemTest {
-
-	/**
-	 * Tests upward unions and certain rules.
-	 */
-	@Test
-	public void testUpwardUnionCertain() {
-		InformationTable informationTable;
-		Union[] unions; //upward/downward unions
-		RuleType type; //certain/possible
-		double[] consistencyThresholds;
-		List<RuleConditionsEvaluator> evaluators;
-		
-		//RuleSemantics semantics;
-		//conditionsSelectionMethod //mix
-		//negativeExamplesTreatment
-	}
+public interface ConditionGenerator extends ConditionEvaluationContext {
 
 }

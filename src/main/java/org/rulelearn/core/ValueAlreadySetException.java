@@ -14,38 +14,30 @@
  * limitations under the License.
  */
 
-package org.rulelearn.rules;
-
-import java.util.List;
-
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.rulelearn.approximations.Union;
-import org.rulelearn.data.InformationTable;
+package org.rulelearn.core;
 
 /**
- * Integration tests for VCDomLEM algorithm.
+ * Exception thrown when an attempt is made to change a value that is already set and cannot be changed.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-@Tag("integration")
-class VCDomLemTest {
+public class ValueAlreadySetException extends RuntimeException {
+	
+	/**
+	 * Generated serial version UID.
+	 */
+	private static final long serialVersionUID = 1508356870407928326L;
 
 	/**
-	 * Tests upward unions and certain rules.
+	 * Constructs this exception with message of failure reason.
+	 * 
+	 * @param message message of this exception
 	 */
-	@Test
-	public void testUpwardUnionCertain() {
-		InformationTable informationTable;
-		Union[] unions; //upward/downward unions
-		RuleType type; //certain/possible
-		double[] consistencyThresholds;
-		List<RuleConditionsEvaluator> evaluators;
-		
-		//RuleSemantics semantics;
-		//conditionsSelectionMethod //mix
-		//negativeExamplesTreatment
+	public ValueAlreadySetException(String message) {
+		super(message);
 	}
 
 }
+
+

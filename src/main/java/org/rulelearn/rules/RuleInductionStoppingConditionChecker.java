@@ -16,36 +16,20 @@
 
 package org.rulelearn.rules;
 
-import java.util.List;
-
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.rulelearn.approximations.Union;
-import org.rulelearn.data.InformationTable;
-
 /**
- * Integration tests for VCDomLEM algorithm.
+ * Interface to be implemented by checkers verifying {@link RuleConditions} against different stopping conditions, like satisfying consistency measure threshold or reaching a given number of conditions.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-@Tag("integration")
-class VCDomLemTest {
-
+public interface RuleInductionStoppingConditionChecker {
+	
 	/**
-	 * Tests upward unions and certain rules.
+	 * Checks if this stopping condition in satisfied by given rule conditions.
+	 *  
+	 * @param ruleConditions rule conditions to be checked
+	 * @return {@code true} if this stopping condition in satisfied by given rule conditions, {@code false} otherwise
 	 */
-	@Test
-	public void testUpwardUnionCertain() {
-		InformationTable informationTable;
-		Union[] unions; //upward/downward unions
-		RuleType type; //certain/possible
-		double[] consistencyThresholds;
-		List<RuleConditionsEvaluator> evaluators;
-		
-		//RuleSemantics semantics;
-		//conditionsSelectionMethod //mix
-		//negativeExamplesTreatment
-	}
+	public boolean isConditionSatisified(RuleConditions ruleConditions);
 
 }
