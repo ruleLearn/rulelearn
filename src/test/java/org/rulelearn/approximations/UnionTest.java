@@ -17,6 +17,7 @@
 package org.rulelearn.approximations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
@@ -27,11 +28,13 @@ import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
+import org.rulelearn.data.CompositeDecision;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.IdentificationAttribute;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.data.SimpleDecision;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerFieldFactory;
 
 /**
@@ -196,7 +199,7 @@ class UnionTest {
 	void testUnionUnion05() {
 		UnionType unionType = UnionType.AT_LEAST;
 		int attributeIndex = 1;
-		Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), attributeIndex);
+		Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE), attributeIndex);
 		InformationTableWithDecisionDistributions informationTableMock = Mockito.mock(InformationTableWithDecisionDistributions.class);
 		
 		EvaluationAttribute attributeMock = Mockito.mock(EvaluationAttribute.class);
@@ -342,7 +345,7 @@ class UnionTest {
 	void testUnionUnionBoolean05() {
 		UnionType unionType = UnionType.AT_MOST;
 		int attributeIndex = 1;
-		Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST), attributeIndex);
+		Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE), attributeIndex);
 		InformationTableWithDecisionDistributions informationTableMock = Mockito.mock(InformationTableWithDecisionDistributions.class);
 		
 		EvaluationAttribute attributeMock = Mockito.mock(EvaluationAttribute.class);
@@ -391,7 +394,46 @@ class UnionTest {
 		}
 	}
 	
-	private Union getTestUnion() {
+	/**
+	 * Internal structure for storing constructed union along with its construction parameters.
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	private class UnionWithConstructorParameters {
+		private Union union;
+		private UnionType unionType;
+		private Decision limitingDecision;
+		private InformationTableWithDecisionDistributions informationTable;
+		private DominanceBasedRoughSetCalculator roughSetCalculator;
+		
+		/**
+		 * Constructs this structure.
+		 * 
+		 * @param union constructed union
+		 * @param unionType type of constructed union
+		 * @param limitingDecision limiting decision of constructed union
+		 * @param informationTable information table for which union has been constructed
+		 * @param roughSetCalculator rough set calculator used to construct union
+		 */
+		private UnionWithConstructorParameters(Union union, UnionType unionType, Decision limitingDecision,
+				InformationTableWithDecisionDistributions informationTable,
+				DominanceBasedRoughSetCalculator roughSetCalculator) {
+			super();
+			this.union = union;
+			this.unionType = unionType;
+			this.limitingDecision = limitingDecision;
+			this.informationTable = informationTable;
+			this.roughSetCalculator = roughSetCalculator;
+		}
+	}
+	
+	/**
+	 * Gets test union, useful for testing protected methods.
+	 * 
+	 * @return structure holding constructed test union and parameters used to construct that union
+	 */
+	private UnionWithConstructorParameters getTestUnion() {
 		UnionType unionType = UnionType.AT_LEAST;
 		int attributeIndex = 1;
 		Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), attributeIndex);
@@ -405,15 +447,222 @@ class UnionTest {
 		
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
-		return new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock);
+		return new UnionWithConstructorParameters(
+				new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock),
+				unionType,
+				limitingDecision,
+				informationTableMock,
+				roughSetCalculatorMock);
+	}
+	
+	/**
+	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 * Tests {@link CompositeDecision} decision.
+	 */
+	@Test
+	void testValidateLimitingDecision01() {
+		int attributeIndex1 = 1;
+		int attributeIndex2 = 2;
+		
+		Decision limitingDecision = new CompositeDecision(
+				new EvaluationField[] {	
+						IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN),
+						IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.COST)
+				},
+				new int[] {
+						attributeIndex1,
+						attributeIndex2
+				});
+		//Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), attributeIndex);
+		InformationTableWithDecisionDistributions informationTableMock = Mockito.mock(InformationTableWithDecisionDistributions.class);
+		
+		EvaluationAttribute attributeMock1 = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock1.isActive()).thenReturn(true);
+		Mockito.when(attributeMock1.getType()).thenReturn(AttributeType.DECISION);
+		Mockito.when(attributeMock1.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
+		Mockito.when(informationTableMock.getAttribute(attributeIndex1)).thenReturn(attributeMock1);
+		
+		IdentificationAttribute attributeMock2 = Mockito.mock(IdentificationAttribute.class); //!
+		Mockito.when(informationTableMock.getAttribute(attributeIndex2)).thenReturn(attributeMock2);
+		
+		Union union = Mockito.mock(Union.class);
+		Mockito.when(union.validateLimitingDecision(limitingDecision, informationTableMock)).thenCallRealMethod();
+		
+		try {
+			union.validateLimitingDecision(limitingDecision, informationTableMock);
+			fail("Should not validate limiting decision having contribution from an attribute which is not an evaluation attribute.");
+		} catch (InvalidTypeException exception) {
+			//OK
+		}
 	}
 	
 	/**
 	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
 	 */
 	@Test
-	void testValidateLimitingDecision() {
-		//TODO: implement test
+	void testValidateLimitingDecision02() {
+		int attributeIndex1 = 1;
+		int attributeIndex2 = 2;
+		
+		Decision limitingDecision = new CompositeDecision(
+				new EvaluationField[] {	
+						IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN),
+						IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.COST)
+				},
+				new int[] {
+						attributeIndex1,
+						attributeIndex2
+				});
+		//Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), attributeIndex);
+		InformationTableWithDecisionDistributions informationTableMock = Mockito.mock(InformationTableWithDecisionDistributions.class);
+		
+		EvaluationAttribute attributeMock1 = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock1.isActive()).thenReturn(true);
+		Mockito.when(attributeMock1.getType()).thenReturn(AttributeType.DECISION);
+		Mockito.when(attributeMock1.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
+		Mockito.when(informationTableMock.getAttribute(attributeIndex1)).thenReturn(attributeMock1);
+		
+		EvaluationAttribute attributeMock2 = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock2.isActive()).thenReturn(false);
+		Mockito.when(attributeMock2.getType()).thenReturn(AttributeType.DECISION);
+		Mockito.when(informationTableMock.getAttribute(attributeIndex2)).thenReturn(attributeMock2);
+		
+		Union union = Mockito.mock(Union.class);
+		Mockito.when(union.validateLimitingDecision(limitingDecision, informationTableMock)).thenCallRealMethod();
+		
+		try {
+			union.validateLimitingDecision(limitingDecision, informationTableMock);
+			fail("Should not validate limiting decision having contribution from an attribute which is not active.");
+		} catch (InvalidValueException exception) {
+			//OK
+		}
+	}
+	
+	/**
+	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 */
+	@Test
+	void testValidateLimitingDecision03() {
+		int attributeIndex1 = 1;
+		int attributeIndex2 = 2;
+		
+		Decision limitingDecision = new CompositeDecision(
+				new EvaluationField[] {	
+						IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN),
+						IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.COST)
+				},
+				new int[] {
+						attributeIndex1,
+						attributeIndex2
+				});
+		//Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), attributeIndex);
+		InformationTableWithDecisionDistributions informationTableMock = Mockito.mock(InformationTableWithDecisionDistributions.class);
+		
+		EvaluationAttribute attributeMock1 = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock1.isActive()).thenReturn(true);
+		Mockito.when(attributeMock1.getType()).thenReturn(AttributeType.DECISION);
+		Mockito.when(attributeMock1.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
+		Mockito.when(informationTableMock.getAttribute(attributeIndex1)).thenReturn(attributeMock1);
+		
+		EvaluationAttribute attributeMock2 = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock2.isActive()).thenReturn(true);
+		Mockito.when(attributeMock2.getType()).thenReturn(AttributeType.CONDITION);
+		Mockito.when(informationTableMock.getAttribute(attributeIndex2)).thenReturn(attributeMock2);
+		
+		Union union = Mockito.mock(Union.class);
+		Mockito.when(union.validateLimitingDecision(limitingDecision, informationTableMock)).thenCallRealMethod();
+		
+		try {
+			union.validateLimitingDecision(limitingDecision, informationTableMock);
+			fail("Should not validate limiting decision having contribution from an attribute which is not decision one.");
+		} catch (InvalidValueException exception) {
+			//OK
+		}
+	}
+	
+	/**
+	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 */
+	@Test
+	void testValidateLimitingDecision04() {
+		int attributeIndex1 = 1;
+		int attributeIndex2 = 2;
+		
+		Decision limitingDecision = new CompositeDecision(
+				new EvaluationField[] {	
+						IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE),
+						IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.NONE)
+				},
+				new int[] {
+						attributeIndex1,
+						attributeIndex2
+				});
+		//Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), attributeIndex);
+		InformationTableWithDecisionDistributions informationTableMock = Mockito.mock(InformationTableWithDecisionDistributions.class);
+		
+		EvaluationAttribute attributeMock1 = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock1.isActive()).thenReturn(true);
+		Mockito.when(attributeMock1.getType()).thenReturn(AttributeType.DECISION);
+		Mockito.when(attributeMock1.getPreferenceType()).thenReturn(AttributePreferenceType.NONE);
+		Mockito.when(informationTableMock.getAttribute(attributeIndex1)).thenReturn(attributeMock1);
+		
+		EvaluationAttribute attributeMock2 = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock2.isActive()).thenReturn(true);
+		Mockito.when(attributeMock2.getType()).thenReturn(AttributeType.DECISION);
+		Mockito.when(attributeMock2.getPreferenceType()).thenReturn(AttributePreferenceType.NONE);
+		Mockito.when(informationTableMock.getAttribute(attributeIndex2)).thenReturn(attributeMock2);
+		
+		Union union = Mockito.mock(Union.class);
+		Mockito.when(union.validateLimitingDecision(limitingDecision, informationTableMock)).thenCallRealMethod();
+		
+		try {
+			union.validateLimitingDecision(limitingDecision, informationTableMock);
+			fail("Should not validate limiting decision if none of the attributes contributing to that decision is ordinal.");
+		} catch (InvalidValueException exception) {
+			//OK
+		}
+	}
+	
+	/**
+	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 */
+	@Test
+	void testValidateLimitingDecision05() {
+		int attributeIndex1 = 1;
+		int attributeIndex2 = 2;
+		
+		Decision limitingDecision = new CompositeDecision(
+				new EvaluationField[] {	
+						IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE),
+						IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.COST)
+				},
+				new int[] {
+						attributeIndex1,
+						attributeIndex2
+				});
+		//Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), attributeIndex);
+		InformationTableWithDecisionDistributions informationTableMock = Mockito.mock(InformationTableWithDecisionDistributions.class);
+		
+		EvaluationAttribute attributeMock1 = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock1.isActive()).thenReturn(true);
+		Mockito.when(attributeMock1.getType()).thenReturn(AttributeType.DECISION);
+		Mockito.when(attributeMock1.getPreferenceType()).thenReturn(AttributePreferenceType.NONE);
+		Mockito.when(informationTableMock.getAttribute(attributeIndex1)).thenReturn(attributeMock1);
+		
+		EvaluationAttribute attributeMock2 = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock2.isActive()).thenReturn(true);
+		Mockito.when(attributeMock2.getType()).thenReturn(AttributeType.DECISION);
+		Mockito.when(attributeMock2.getPreferenceType()).thenReturn(AttributePreferenceType.COST);
+		Mockito.when(informationTableMock.getAttribute(attributeIndex2)).thenReturn(attributeMock2);
+		
+		Union union = Mockito.mock(Union.class);
+		Mockito.when(union.validateLimitingDecision(limitingDecision, informationTableMock)).thenCallRealMethod();
+		
+		try {
+			assertTrue(union.validateLimitingDecision(limitingDecision, informationTableMock));
+		} catch (Exception exception) {
+			fail("Should validate correct decision.");
+		}
 	}
 
 	/**
@@ -445,7 +694,18 @@ class UnionTest {
 	 */
 	@Test
 	void testGetUnionType() {
-		//TODO: implement test
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestUnion();
+		assertEquals(unionWithConstructorParameters.union.getUnionType(), unionWithConstructorParameters.unionType);
+	}
+	
+	/**
+	 * Test method for {@link Union#getLimitingDecision()}.
+	 * This method is inherited from superclass.
+	 */
+	@Test
+	void testGetLimitingDecision() {
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestUnion();
+		assertEquals(unionWithConstructorParameters.union.getLimitingDecision(), unionWithConstructorParameters.limitingDecision);
 	}
 
 	/**
@@ -453,7 +713,8 @@ class UnionTest {
 	 */
 	@Test
 	void testGetRoughSetCalculator() {
-		//TODO: implement test
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestUnion();
+		assertEquals(unionWithConstructorParameters.union.getRoughSetCalculator(), unionWithConstructorParameters.roughSetCalculator);
 	}
 
 	/**
@@ -485,7 +746,8 @@ class UnionTest {
 	 */
 	@Test
 	void testGetInformationTable() {
-		//TODO: implement test
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestUnion();
+		assertEquals(unionWithConstructorParameters.union.getInformationTable(), unionWithConstructorParameters.informationTable);
 	}
 
 	/**

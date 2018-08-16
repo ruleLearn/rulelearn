@@ -146,12 +146,13 @@ public class Union extends ApproximatedSet {
 	 * 
 	 * @param limitingDecision decision that serves as a limit for this union; e.g., decision "3" is a limit for union "at least 3" and "at most 3"
 	 * @param informationTable information table with considered objects, some of which belong to this union
+	 * @return {@code true} if given decision is valid in the context of the given information table, throws exception otherwise
 	 * 
 	 * @throws InvalidTypeException if any of the attributes contributing to given limiting decision is not an evaluation attribute
 	 * @throws InvalidValueException if any of the attributes contributing to given limiting decision is not an active decision attribute
 	 * @throws InvalidValueException if none of the attributes contributing to given limiting decision is ordinal (i.e., has gain- or cost-type preference)
 	 */
-	protected void validateLimitingDecision(Decision limitingDecision, InformationTableWithDecisionDistributions informationTable) {
+	protected boolean validateLimitingDecision(Decision limitingDecision, InformationTableWithDecisionDistributions informationTable) {
 		IntSet attributeIndices = limitingDecision.getAttributeIndices();
 		IntIterator attributeIndicesIterator  = attributeIndices.iterator();
 		int attributeIndex;
@@ -169,8 +170,7 @@ public class Union extends ApproximatedSet {
 				evaluationAttribute = (EvaluationAttribute) attribute;
 				if (evaluationAttribute.isActive() && evaluationAttribute.getType() == AttributeType.DECISION) { //active decision attribute
 					if (evaluationAttribute.getPreferenceType() != AttributePreferenceType.NONE) { //gain/cost-type attribute
-						activeDecisionCriterionFound = true;
-						break;
+						activeDecisionCriterionFound = true; //mark finding, but do not break the loop, as it should be also checked if next attributes are correct
 					}
 				} else {
 					throw new InvalidValueException("Attribute no. "+attributeIndex+" contributing to union's limiting decision is not an active decision attribute.");
@@ -183,6 +183,8 @@ public class Union extends ApproximatedSet {
 		if (!activeDecisionCriterionFound) {
 			throw new InvalidValueException("Cannot create union of ordered decision classes - none of the attributes contributing to union's limiting decision is ordinal.");
 		}
+		
+		return true;
 	}
 	
 	/**
