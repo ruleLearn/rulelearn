@@ -104,7 +104,7 @@ public class Union extends ApproximatedSet {
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidValueException if any of the attributes contributing to given limiting decision is not an evaluation attribute
 	 * @throws InvalidValueException if any of the attributes contributing to given limiting decision is not an active decision attribute
-	 * @throws InvalidValueException if none of the attributes contributing to given limiting decision is ordinal
+	 * @throws InvalidValueException if none of the attributes contributing to given limiting decision is ordinal (i.e., has gain- or cost-type preference)
 	 */
 	public Union(UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator) {
 		super(informationTable, limitingDecision, roughSetCalculator);

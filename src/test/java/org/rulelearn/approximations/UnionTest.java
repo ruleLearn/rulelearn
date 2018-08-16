@@ -16,9 +16,13 @@
 
 package org.rulelearn.approximations;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.rulelearn.approximations.Union.UnionType;
+import org.rulelearn.data.Decision;
+import org.rulelearn.data.InformationTableWithDecisionDistributions;
 
 /**
  * Tests for {@link Union}.
@@ -88,8 +92,18 @@ class UnionTest {
 	 * Test method for {@link org.rulelearn.approximations.Union#Union(org.rulelearn.approximations.Union.UnionType, org.rulelearn.data.Decision, org.rulelearn.data.InformationTableWithDecisionDistributions, org.rulelearn.approximations.DominanceBasedRoughSetCalculator)}.
 	 */
 	@Test
-	void testUnionUnionTypeDecisionInformationTableWithDecisionDistributionsDominanceBasedRoughSetCalculator() {
-		//TODO: implement test
+	void testUnionUnion() {
+		UnionType unionType = null;
+		Decision limitingDecision = Mockito.mock(Decision.class);
+		InformationTableWithDecisionDistributions informationTable = Mockito.mock(InformationTableWithDecisionDistributions.class);
+		DominanceBasedRoughSetCalculator roughSetCalculator = Mockito.mock(DominanceBasedRoughSetCalculator.class);
+		
+		try {
+			new Union(unionType, limitingDecision, informationTable, roughSetCalculator);
+			fail("Should not construct union with null union type.");
+		} catch (NullPointerException exception) {
+			//OK
+		}
 	}
 
 	/**
