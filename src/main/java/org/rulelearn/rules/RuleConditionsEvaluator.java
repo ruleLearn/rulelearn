@@ -16,20 +16,24 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.measures.Measure;
+
 /**
  * Evaluates {@link RuleConditions} object.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface RuleConditionsEvaluator {
+public interface RuleConditionsEvaluator extends Measure {
 	
 	/**
-	 * TODO
+	 * Evaluates given rule conditions.
 	 * 
-	 * @param ruleConditions TODO
-	 * @return TODO
+	 * @param ruleConditions rule conditions to be evaluated
+	 * @return evaluation of given rule conditions
+	 * 
+	 * @throws NullPointerException if given rule conditions are {@code null}
 	 */
-	public abstract double evaluate(RuleConditions ruleConditions);
+	public double evaluate(RuleConditions ruleConditions);
 
 }

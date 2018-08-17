@@ -16,7 +16,7 @@
 
 package org.rulelearn.rules;
 
-import org.rulelearn.types.EvaluationField;
+import org.rulelearn.measures.Measure;
 
 /**
  * Evaluates {@link Condition} that can be removed from {@link RuleConditions}.
@@ -24,24 +24,34 @@ import org.rulelearn.types.EvaluationField;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface ConditionRemovalEvaluator {
+public interface ConditionRemovalEvaluator extends Measure {
 	
 	/**
-	 * TODO
+	 * Evaluates given condition in the context of given rule conditions.
+	 * This evaluation concerns modified rule conditions, that would be obtained by removal of given condition. 
 	 * 
-	 * @param ruleConditions TODO
-	 * @param condition TODO
-	 * @return TODO
+	 * @param ruleConditions rule conditions being the context of evaluation of given condition
+	 * @param condition condition that should be present in given rule conditions
+	 * 
+	 * @return evaluation of a hypothetical rule conditions obtained from the given ones by removing given condition
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public abstract double evaluate(RuleConditions ruleConditions, Condition<EvaluationField> condition);
+	public default double evaluate(RuleConditions ruleConditions, Condition<?> condition) {
+		return this.evaluate(ruleConditions, ruleConditions.getConditionIndex(condition));
+	}
 	
 	/**
-	 * TODO
+	 * Evaluates condition in the context of given rule conditions.
+	 * This evaluation concerns modified rule conditions, that would be obtained by removal of concerned condition. 
 	 * 
-	 * @param ruleConditions TODO
-	 * @param conditionIndex TODO
-	 * @return TODO
+	 * @param ruleConditions rule conditions being the context of evaluation of condition with given index
+	 * @param conditionIndex index of concerned condition in given rule conditions
+	 * 
+	 * @return evaluation of a hypothetical rule conditions obtained from the given ones by removing condition with given index
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws IndexOutOfBoundsException if given condition index does not index any condition in given rule conditions
 	 */
-	public abstract double evaluate(RuleConditions ruleConditions, int conditionIndex);
+	public double evaluate(RuleConditions ruleConditions, int conditionIndex);
 
 }

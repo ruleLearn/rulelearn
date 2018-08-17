@@ -17,6 +17,8 @@
 package org.rulelearn.rules;
 
 import java.util.List;
+
+import org.rulelearn.core.Precondition;
 import org.rulelearn.data.InformationTable;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -135,6 +137,18 @@ public class RuleConditions {
 	 */
 	public Condition<?> getCondition(int index) {
 		return this.conditions.get(index);
+	}
+	
+	/**
+	 * Gets index of the first occurrence of the specified condition in this list of conditions.
+	 *  
+	 * @param condition condition whose index should be found
+	 * @return index of the given condition, or -1 if given condition has not been found
+	 * 
+	 * @throws NullPointerException if given condition is {@code null}
+	 */
+	public int getConditionIndex(Condition<?> condition) {
+		return this.conditions.indexOf(Precondition.notNull(condition, "Condition is null."));
 	}
 	
 	/**

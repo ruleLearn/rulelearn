@@ -16,8 +16,6 @@
 
 package org.rulelearn.rules;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.rulelearn.approximations.Union;

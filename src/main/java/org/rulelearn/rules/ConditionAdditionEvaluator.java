@@ -16,6 +16,7 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.measures.Measure;
 import org.rulelearn.types.EvaluationField;
 
 /**
@@ -24,15 +25,18 @@ import org.rulelearn.types.EvaluationField;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface ConditionAdditionEvaluator {
+public interface ConditionAdditionEvaluator extends Measure {
 	
 	/**
-	 * TODO
+	 * Evaluates given condition in the context of given rule conditions.
+	 * This evaluation concerns modified rule conditions, that would be obtained by adding given condition. 
 	 * 
-	 * @param ruleConditions TODO
-	 * @param condition TODO
-	 * @return TODO
+	 * @param ruleConditions rule conditions being the context of evaluation of given condition
+	 * @param condition condition to be evaluated
+	 * 
+	 * @return evaluation of a hypothetical rule conditions obtained from the given ones by adding given condition
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public abstract double evaluate(RuleConditions ruleConditions, Condition<EvaluationField> condition);
+	public double evaluate(RuleConditions ruleConditions, Condition<EvaluationField> condition);
 
 }

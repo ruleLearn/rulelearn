@@ -17,22 +17,25 @@
 package org.rulelearn.rules;
 
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.measures.Measure;
 
 /**
- * Evaluates {@link Rule} object.
+ * Evaluates a {@link Rule} in the context of an {@link InformationTable}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface RuleEvaluator {
+public interface RuleEvaluator extends Measure {
 	
 	/**
-	 * TODO
+	 * Evaluates given decision rule in the context of given information table.
 	 * 
-	 * @param rule TODO
-	 * @param informationTable TODO
-	 * @return TODO
+	 * @param rule decision rule being evaluated
+	 * @param informationTable information table used to evaluate given decision rule
+	 * 
+	 * @return evaluation of the given rule in the context of the given information table
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public abstract double evaluate(Rule rule, InformationTable informationTable);
+	public double evaluate(Rule rule, InformationTable informationTable);
 	
 }

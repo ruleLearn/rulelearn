@@ -30,8 +30,10 @@ public interface RuleChecker {
 	 * Checks if given rule is acceptable in the context of a given set (list) of rules.
 	 *  
 	 * @param ruleSet set of rules
-	 * @param rule rule to check
+	 * @param rule rule to be verified against given set of rules
+	 * 
 	 * @return {@code true} if given rule is acceptable in the context of a given set (list) of rules, {@code false} otherwise
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public boolean check(List<Rule> ruleSet, Rule rule);
 

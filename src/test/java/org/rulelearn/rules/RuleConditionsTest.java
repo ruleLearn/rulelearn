@@ -80,7 +80,7 @@ class RuleConditionsTest {
 	}
 
 	/**
-	 * Test method for {@link org.rulelearn.rules.RuleConditions#objectIsPositive(int)}.
+	 * Test method for {@link RuleConditions#objectIsPositive(int)}.
 	 */
 	@Test
 	void testObjectIsPositive() {
@@ -99,7 +99,7 @@ class RuleConditionsTest {
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.rules.RuleConditions#addCondition(org.rulelearn.rules.Condition)}.
+	 * Test method for {@link RuleConditions#addCondition(Condition)}.
 	 */
 	@Test
 	void testAddCondition01() {
@@ -117,7 +117,7 @@ class RuleConditionsTest {
 	}
 
 	/**
-	 * Test method for {@link org.rulelearn.rules.RuleConditions#addCondition(org.rulelearn.rules.Condition)}.
+	 * Test method for {@link RuleConditions#addCondition(Condition)}.
 	 */
 	@Test
 	void testAddCondition02() {
@@ -134,7 +134,7 @@ class RuleConditionsTest {
 	}
 
 	/**
-	 * Test method for {@link org.rulelearn.rules.RuleConditions#removeCondition(int)}.
+	 * Test method for {@link RuleConditions#removeCondition(int)}.
 	 */
 	@Test
 	void testRemoveCondition01() {
@@ -152,7 +152,7 @@ class RuleConditionsTest {
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.rules.RuleConditions#removeCondition(int)}.
+	 * Test method for {@link RuleConditions#removeCondition(int)}.
 	 */
 	@Test
 	void testRemoveCondition02() {
@@ -179,7 +179,7 @@ class RuleConditionsTest {
 	}
 
 	/**
-	 * Test method for {@link org.rulelearn.rules.RuleConditions#getConditions()}.
+	 * Test method for {@link RuleConditions#getConditions()}.
 	 */
 	@Test
 	void testGetConditions01() {
@@ -191,7 +191,7 @@ class RuleConditionsTest {
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.rules.RuleConditions#getConditions())}.
+	 * Test method for {@link RuleConditions#getConditions())}.
 	 */
 	@Test
 	void testGetConditions02() {
@@ -217,7 +217,7 @@ class RuleConditionsTest {
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.rules.RuleConditions#getCondition(int)}.
+	 * Test method for {@link RuleConditions#getCondition(int)}.
 	 */
 	@Test
 	void testGetCondition01() {
@@ -234,7 +234,7 @@ class RuleConditionsTest {
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.rules.RuleConditions#getCondition(int)}.
+	 * Test method for {@link RuleConditions#getCondition(int)}.
 	 */
 	@Test
 	void testGetCondition02() {
@@ -253,7 +253,27 @@ class RuleConditionsTest {
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.rules.RuleConditions#size()}.
+	 * Test method for {@link RuleConditions#getConditionIndex(Condition)}.
+	 */
+	@Test
+	void testGetConditionIndex() {
+		InformationTable informationTable = Mockito.mock(InformationTable.class);
+		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
+		
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects);
+		ruleConditions.addCondition(Mockito.mock(Condition.class));
+		ruleConditions.addCondition(Mockito.mock(Condition.class));
+		
+		EvaluationAttributeWithContext attributeMock = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeMock.getAttributeIndex()).thenReturn(2);
+		SimpleConditionAtLeast simpleCondition = new SimpleConditionAtLeast(attributeMock, IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.COST));
+		ruleConditions.addCondition(simpleCondition);
+		
+		assertEquals(ruleConditions.getConditionIndex(simpleCondition), 2);
+	}
+	
+	/**
+	 * Test method for {@link RuleConditions#size()}.
 	 */
 	@Test
 	void testSize() {
@@ -270,7 +290,7 @@ class RuleConditionsTest {
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.rules.RuleConditions#containsCondition()}.
+	 * Test method for {@link RuleConditions#containsCondition()}.
 	 */
 	@Test
 	void testContainsCondition() {

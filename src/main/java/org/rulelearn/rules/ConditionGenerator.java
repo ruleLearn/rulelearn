@@ -16,6 +16,8 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.types.EvaluationField;
+
 /**
  * Contract of a condition generator used to find next best condition to be added to constructed rule.
  *
@@ -24,4 +26,13 @@ package org.rulelearn.rules;
  */
 public interface ConditionGenerator extends ConditionEvaluationContext {
 
+	/**
+	 * Gets best condition that can be added to given rule conditions.
+	 * 
+	 * @param ruleConditions rule conditions for which best condition should be obtained
+	 * @return best condition that can be added to given rule conditions.
+	 * 
+	 * @throws NullPointerException if given rule conditions are {@code null}
+	 */
+	public Condition<EvaluationField> getBestCondition(RuleConditions ruleConditions);
 }
