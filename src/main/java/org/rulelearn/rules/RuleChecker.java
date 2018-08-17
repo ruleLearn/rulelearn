@@ -19,7 +19,7 @@ package org.rulelearn.rules;
 import java.util.List;
 
 /**
- * Checks given rule in the context of a set (list) of rules.
+ * Checks if given rule is acceptable in the context of a given set (list) of rules.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -27,9 +27,10 @@ import java.util.List;
 public interface RuleChecker {
 	
 	/**
-	 * Checks given rule in the context of a given set (list) of rules.
+	 * Checks if given rule is acceptable in the context of a given set (list) of rules.
 	 *  
 	 * @param ruleSet set of rules
+	 * @param rule rule to check
 	 * @return {@code true} if given rule is acceptable in the context of a given set (list) of rules, {@code false} otherwise
 	 */
 	public boolean check(List<Rule> ruleSet, Rule rule);

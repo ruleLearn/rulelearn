@@ -16,35 +16,23 @@
 
 package org.rulelearn.rules;
 
-import java.util.List;
-
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.rulelearn.approximations.Union;
 import org.rulelearn.data.InformationTable;
 
 /**
- * Integration tests for VCDomLEM algorithm.
+ * Evaluates {@link Rule} object.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-@Tag("integration")
-class VCDomLemTest {
-
+public interface RuleEvaluator {
+	
 	/**
-	 * Tests upward unions and certain rules.
+	 * TODO
+	 * 
+	 * @param rule TODO
+	 * @param informationTable TODO
+	 * @return TODO
 	 */
-	@Test
-	public void testUpwardUnionCertain() {
-		InformationTable informationTable;
-		Union[] unions; //upward/downward unions
-		RuleType type; //certain/possible
-		double[] consistencyThresholds;
-		
-		//RuleSemantics semantics;
-		//conditionsSelectionMethod //mix
-		//negativeExamplesTreatment
-	}
-
+	public abstract double evaluate(Rule rule, InformationTable informationTable);
+	
 }

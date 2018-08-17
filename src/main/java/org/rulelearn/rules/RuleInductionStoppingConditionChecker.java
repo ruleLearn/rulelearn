@@ -30,6 +30,6 @@ public interface RuleInductionStoppingConditionChecker {
 	 * @param ruleConditions rule conditions to be checked
 	 * @return {@code true} if this stopping condition in satisfied by given rule conditions, {@code false} otherwise
 	 */
-	public boolean isConditionSatisified(RuleConditions ruleConditions);
+	public boolean isStoppingConditionSatisified(RuleConditions ruleConditions);
 
 }

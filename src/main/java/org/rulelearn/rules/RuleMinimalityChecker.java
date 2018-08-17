@@ -32,15 +32,15 @@ import org.rulelearn.measures.ConsistencyMeasure;
  */
 public class RuleMinimalityChecker implements RuleChecker {
 	
-	ConsistencyMeasure<ApproximatedSet> consistencyMeasure;
+	List<ConsistencyMeasure<ApproximatedSet>> consistencyMeasures;
 	
 	/**
 	 * Constructs this checker.
 	 * 
-	 * @param consistencyMeasure consistency measure used to calculate consistency of decision rules
+	 * @param consistencyMeasures consistency measure used to calculate consistency of decision rules
 	 */
-	public RuleMinimalityChecker(ConsistencyMeasure<ApproximatedSet> consistencyMeasure) {
-		this.consistencyMeasure = consistencyMeasure;
+	public RuleMinimalityChecker(List<ConsistencyMeasure<ApproximatedSet>> consistencyMeasures) {
+		this.consistencyMeasures = consistencyMeasures;
 	}
 
 	/**
@@ -48,6 +48,7 @@ public class RuleMinimalityChecker implements RuleChecker {
 	 * TODO
 	 * 
 	 * @param ruleSet {@inheritDoc}
+	 * @param rule {@inheritDoc}
 	 * @return {@inheritDoc}
 	 */
 	@Override

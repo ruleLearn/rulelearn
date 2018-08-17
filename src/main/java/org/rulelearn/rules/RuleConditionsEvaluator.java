@@ -16,51 +16,20 @@
 
 package org.rulelearn.rules;
 
-import org.rulelearn.core.Precondition;
-import org.rulelearn.core.ValueAlreadySetException;
-import org.rulelearn.types.EvaluationField;
-
 /**
- * Evaluates rule conditions using a real number.
+ * Evaluates {@link RuleConditions} object.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class RuleConditionsEvaluator {
-	
-	/**
-	 * Evaluation context.
-	 */
-	ConditionEvaluationContext context;
+public interface RuleConditionsEvaluator {
 	
 	/**
 	 * TODO
-	 * @param ruleConditions TODO
-	 * @param condition TODO
-	 * @return TODO
-	 */
-	public abstract double evaluate(RuleConditions ruleConditions, Condition<EvaluationField> condition);
-	
-	/**
-	 * TODO
+	 * 
 	 * @param ruleConditions TODO
 	 * @return TODO
 	 */
 	public abstract double evaluate(RuleConditions ruleConditions);
-	
-	/**
-	 * Sets condition evaluation context. This is possible only once.
-	 * 
-	 * @param context context to set
-	 * @throws ValueAlreadySetException if context is already set
-	 * @throws NullPointerException if given context is {@code null}
-	 */
-	public void setEvaluationContext(ConditionEvaluationContext context) {
-		if (this.context != null) {
-			throw new ValueAlreadySetException("Condition evaluation context already set.");
-		}
-		
-		this.context = Precondition.notNull(context, "Condition evaluation context is null.");
-	}
 
 }
