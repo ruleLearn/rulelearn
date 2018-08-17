@@ -20,7 +20,7 @@ import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Union.UnionType;
 import org.rulelearn.data.Decision;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
-import org.rulelearn.measures.ConsistencyMeasureType;
+import org.rulelearn.measures.MeasureType;
 import org.rulelearn.measures.ConsistencyMeasure;
 
 /**
@@ -77,8 +77,8 @@ public class EpsilonConsistencyMeasure implements ConsistencyMeasure<Union> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ConsistencyMeasureType getType() {
-		return ConsistencyMeasureType.COST;
+	public MeasureType getType() {
+		return MeasureType.COST;
 	}
 
 }

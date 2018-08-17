@@ -36,6 +36,8 @@ import it.unimi.dsi.fastutil.ints.IntSortedSets;
 
 import static org.rulelearn.core.Precondition.notNull;
 
+import org.rulelearn.core.InvalidTypeException;
+
 /**
  * Union of ordered decision classes, i.e., set of objects whose decision is not worse or not better than given limiting decision.
  * Objects from the information table such that:<br>
@@ -102,9 +104,9 @@ public class Union extends ApproximatedSet {
 	 * @param roughSetCalculator dominance-based rough set calculator used to calculate approximations and boundary of this union
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
-	 * @throws InvalidValueException if any of the attributes contributing to given limiting decision is not an evaluation attribute
+	 * @throws InvalidTypeException if any of the attributes contributing to given limiting decision is not an evaluation attribute
 	 * @throws InvalidValueException if any of the attributes contributing to given limiting decision is not an active decision attribute
-	 * @throws InvalidValueException if none of the attributes contributing to given limiting decision is ordinal
+	 * @throws InvalidValueException if none of the attributes contributing to given limiting decision is ordinal (i.e., has gain- or cost-type preference)
 	 */
 	public Union(UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator) {
 		super(informationTable, limitingDecision, roughSetCalculator);
@@ -115,16 +117,42 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
+	 * Constructs union of ordered decision classes of given type (at least or at most), using given limiting decision (concerning the least or the most preferred decision class). Calculates objects
+	 * belonging to this union and neutral objects. Stores given information table and given rough set calculator. Takes into account the flag concerning inclusion of objects
+	 * having decision equal to the limiting decision of this union. 
+	 * 
+	 * @param unionType see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param limitingDecision see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param informationTable see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param roughSetCalculator see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param includeLimitingDecision tells if objects having decision equal to the limiting decision of this union should be included in this union
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws InvalidTypeException see {@link #validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}
+	 * @throws InvalidValueException see {@link #validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}
+	 */
+	protected Union(UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator, boolean includeLimitingDecision) {
+		super(informationTable, limitingDecision, roughSetCalculator);
+		this.unionType = notNull(unionType, "Union type is null.");
+		validateLimitingDecision(limitingDecision, informationTable);
+		
+		this.includeLimitingDecision = includeLimitingDecision; //set flag concerning inclusion of limiting decision
+		
+		this.findObjects();
+	}
+	
+	/**
 	 * Validates given limiting decision, taking into account given information table.
 	 * 
 	 * @param limitingDecision decision that serves as a limit for this union; e.g., decision "3" is a limit for union "at least 3" and "at most 3"
 	 * @param informationTable information table with considered objects, some of which belong to this union
+	 * @return {@code true} if given decision is valid in the context of the given information table, throws exception otherwise
 	 * 
-	 * @throws InvalidValueException if any of the attributes contributing to given limiting decision is not an evaluation attribute
+	 * @throws InvalidTypeException if any of the attributes contributing to given limiting decision is not an evaluation attribute
 	 * @throws InvalidValueException if any of the attributes contributing to given limiting decision is not an active decision attribute
-	 * @throws InvalidValueException if none of the attributes contributing to given limiting decision is ordinal
+	 * @throws InvalidValueException if none of the attributes contributing to given limiting decision is ordinal (i.e., has gain- or cost-type preference)
 	 */
-	protected void validateLimitingDecision(Decision limitingDecision, InformationTableWithDecisionDistributions informationTable) {
+	protected boolean validateLimitingDecision(Decision limitingDecision, InformationTableWithDecisionDistributions informationTable) {
 		IntSet attributeIndices = limitingDecision.getAttributeIndices();
 		IntIterator attributeIndicesIterator  = attributeIndices.iterator();
 		int attributeIndex;
@@ -142,44 +170,21 @@ public class Union extends ApproximatedSet {
 				evaluationAttribute = (EvaluationAttribute) attribute;
 				if (evaluationAttribute.isActive() && evaluationAttribute.getType() == AttributeType.DECISION) { //active decision attribute
 					if (evaluationAttribute.getPreferenceType() != AttributePreferenceType.NONE) { //gain/cost-type attribute
-						activeDecisionCriterionFound = true;
-						break;
+						activeDecisionCriterionFound = true; //mark finding, but do not break the loop, as it should be also checked if next attributes are correct
 					}
 				} else {
 					throw new InvalidValueException("Attribute no. "+attributeIndex+" contributing to union's limiting decision is not an active decision attribute.");
 				}
 			} else {
-				throw new InvalidValueException("Attribute no. "+attributeIndex+" contributing to union's limiting decision is not an evaluation attribute.");
+				throw new InvalidTypeException("Attribute no. "+attributeIndex+" contributing to union's limiting decision is not an evaluation attribute.");
 			}
 		} //while
 		
 		if (!activeDecisionCriterionFound) {
 			throw new InvalidValueException("Cannot create union of ordered decision classes - none of the attributes contributing to union's limiting decision is ordinal.");
 		}
-	}
-	
-	/**
-	 * Constructs union of ordered decision classes of given type (at least or at most), using given limiting decision (concerning the least or the most preferred decision class). Calculates objects
-	 * belonging to this union and neutral objects. Stores given information table and given rough set calculator. Takes into account the flag concerning inclusion of objects
-	 * having decision equal to the limiting decision of this union. 
-	 * 
-	 * @param unionType see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param limitingDecision see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param informationTable see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param roughSetCalculator see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param includeLimitingDecision tells if objects having decision equal to the limiting decision of this union should be included in this union
-	 * 
-	 * @throws NullPointerException if any of the parameters is {@code null}
-	 * @throws InvalidValueException see {@link #validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}
-	 */
-	protected Union(UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator, boolean includeLimitingDecision) {
-		super(informationTable, limitingDecision, roughSetCalculator);
-		this.unionType = notNull(unionType, "Union type is null.");
-		validateLimitingDecision(limitingDecision, informationTable);
 		
-		this.includeLimitingDecision = includeLimitingDecision; //set flag concerning inclusion of limiting decision
-		
-		this.findObjects();
+		return true;
 	}
 	
 	/**

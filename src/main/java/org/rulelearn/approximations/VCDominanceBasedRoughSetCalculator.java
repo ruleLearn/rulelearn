@@ -49,13 +49,12 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	 * Threshold on consistency measure {@link ConsistencyMeasure} applied when calculating lower approximation of union of decision classes. 
 	 */
 	protected double lowerApproximationConsistencyThreshold;
-
 	
 	/**
 	 * Constructs calculator for specified consistency measure and threshold value used to limit consitency of objects included in 
 	 * extended lower approximation of a union of decision classes. 
 	 * 
-	 * @param lowerApproximationConsistencyMeasure consistency measures applied when calculating lower approximation
+	 * @param lowerApproximationConsistencyMeasure consistency measure applied when calculating lower approximation
 	 * @param lowerApproximationConsistencyThreshold threshold for object consistency measures applied when calculating lower approximation
 	 * 
 	 * @throws NullPointerException if lower approximation consistency measure is {@code null}
@@ -67,7 +66,25 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 		this.lowerApproximationConsistencyMeasure = lowerApproximationConsistencyMeasure;
 		this.lowerApproximationConsistencyThreshold = lowerApproximationConsistencyThreshold;
 	}
-	
+		
+	/**
+	 * Gets consistency measure applied when calculating lower approximation.
+	 * 
+	 * @return consistency measure applied when calculating lower approximation
+	 */
+	public ConsistencyMeasure<Union> getLowerApproximationConsistencyMeasure() {
+		return lowerApproximationConsistencyMeasure;
+	}
+
+	/**
+	 * Gets threshold for object consistency measures applied when calculating lower approximation.
+	 * 
+	 * @return threshold for object consistency measures applied when calculating lower approximation
+	 */
+	public double getLowerApproximationConsistencyThreshold() {
+		return lowerApproximationConsistencyThreshold;
+	}
+
 	/**
 	 * Calculates extended (variable consistency) lower approximation of a union of decision classes.
 	 * 
@@ -100,10 +117,10 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 		IntSortedSet upperApproximationObjects = new IntLinkedOpenHashSet();
 		int objectsCount = union.getInformationTable().getNumberOfObjects();
 		
-		IntSortedSet compLowerApproximationObjects = union.getComplementaryUnion().getLowerApproximation();
+		IntSortedSet compementaryLowerApproximationObjects = union.getComplementaryUnion().getLowerApproximation();
 		for (int i = 0; i < objectsCount; i++) {
 			// check whether object i is in lower approximation of complement union
-			if (!compLowerApproximationObjects.contains(i)) {
+			if (!compementaryLowerApproximationObjects.contains(i)) {
 				upperApproximationObjects.add(i);
 			}
 		}

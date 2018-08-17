@@ -26,7 +26,7 @@ import org.rulelearn.approximations.ApproximatedSet;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface ConsistencyMeasure<T extends ApproximatedSet> {
+public interface ConsistencyMeasure<T extends ApproximatedSet> extends Measure {
 	
 	/**
 	 * Calculates consistency of the given object with respect to the given set of objects.
@@ -47,22 +47,15 @@ public interface ConsistencyMeasure<T extends ApproximatedSet> {
 	 */
 	public default boolean isConsistencyThresholdReached(int objectIndex, T set, double threshold) {
 		boolean reached = false;
-		if (this.getType() == ConsistencyMeasureType.GAIN) {
+		if (this.getType() == MeasureType.GAIN) {
 			if (this.calculateConsistency(objectIndex, set) >= threshold)
 				reached = true;
 		}
-		else if (this.getType() == ConsistencyMeasureType.COST) {
+		else if (this.getType() == MeasureType.COST) {
 			if (this.calculateConsistency(objectIndex, set) <= threshold)
 				reached = true;
 		}
 		return reached;
 	}
-	
-	/**
-	 * Gets type of this consistency measure.
-	 * 
-	 * @return see {@link ConsistencyMeasureType}
-	 */
-	public ConsistencyMeasureType getType();
 	
 }

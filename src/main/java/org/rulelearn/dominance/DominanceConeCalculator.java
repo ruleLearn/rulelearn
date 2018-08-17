@@ -35,6 +35,8 @@ public enum DominanceConeCalculator {
 	
 	/**
 	 * Calculates, for object having index x, set of indices of objects in its positive dominance cone w.r.t. (straight) dominance relation D.
+	 * Formally, D^+(x)={y \in U : y D x}, i.e., positive dominance cone of object x w.r.t. dominance relation D contains objects
+	 * such that each of them dominates x.
 	 * 
 	 * @param x index of an object from the information table
 	 * @param informationTable information table containing object indexed by {@code x}
@@ -55,6 +57,8 @@ public enum DominanceConeCalculator {
 	
 	/**
 	 * Calculates, for object having index x, set of indices of objects in its negative dominance cone w.r.t. (straight) dominance relation D.
+	 * Formally, D^-(x)={y \in U : x D y}, i.e., negative dominance cone of object x w.r.t. dominance relation D contains objects
+	 * such that x dominates each of them.
 	 * 
 	 * @param x index of an object from the information table
 	 * @param informationTable information table containing object indexed by {@code x}
@@ -75,6 +79,8 @@ public enum DominanceConeCalculator {
 	
 	/**
 	 * Calculates, for object having index x, set of indices of objects in its positive dominance cone w.r.t. (inverse) dominance relation InvD.
+	 * Formally, InvD^+(x)={y \in U : x InvD y}, i.e., positive dominance cone of object x w.r.t. (inverse) dominance relation InvD contains objects
+	 * such that x is dominated by each of them.
 	 * 
 	 * @param x index of an object from the information table
 	 * @param informationTable information table containing object indexed by {@code x}
@@ -95,6 +101,8 @@ public enum DominanceConeCalculator {
 	
 	/**
 	 * Calculates, for object having index x, set of indices of objects in its negative dominance cone w.r.t. (inverse) dominance relation InvD.
+	 * Formally, InvD^-(x)={y \in U : y InvD x}, i.e., negative dominance cone of object x w.r.t. (inverse) dominance relation InvD contains objects
+	 * such that each of them is dominated by x.
 	 * 
 	 * @param x index of an object from the information table
 	 * @param informationTable information table containing object indexed by {@code x}

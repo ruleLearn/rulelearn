@@ -43,10 +43,10 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
  */
 class ClassicalDominanceBasedRoughSetCalculatorTest {
 	
-	private ClassicalDominanceBasedRoughSetCalculator cDRSACalculator;
+	private ClassicalDominanceBasedRoughSetCalculator cDRSAcalculator;
 	
 	@Mock
-	private InformationTableWithDecisionDistributions infromationTableMock;
+	private InformationTableWithDecisionDistributions informationTableMock;
 	@Mock
 	private IntSortedSet unionObjectsMock;
 	@Mock
@@ -66,7 +66,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	
 	@BeforeEach
 	void setUp() {
-		this.cDRSACalculator = new ClassicalDominanceBasedRoughSetCalculator();
+		this.cDRSAcalculator = new ClassicalDominanceBasedRoughSetCalculator();
 	}
 	
 	/**
@@ -84,9 +84,9 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 		when(this.unionObjectIndicesIteratorMock.hasNext()).thenReturn(true, false);
 		when(this.unionObjectIndicesIteratorMock.nextInt()).thenReturn(1);
 		// mock information table
-		when(this.unionMock.getInformationTable()).thenReturn(this.infromationTableMock);
-		when(this.infromationTableMock.getDominanceConesDecisionDistributions()).thenReturn(this.dominanceCDDMock);
-		// mock class distribution in positive inverted cone based on inconsistent object 2
+		when(this.unionMock.getInformationTable()).thenReturn(this.informationTableMock);
+		when(this.informationTableMock.getDominanceConesDecisionDistributions()).thenReturn(this.dominanceCDDMock);
+		// mock class distribution in positive inverted dominance cone based on inconsistent object 2
 		when(this.dominanceCDDMock.getPositiveInvDConeDecisionClassDistribution(1)).thenReturn(coneDecisionClassDistribution2);
 		when(this.coneDecisionClassDistribution2.getDecisions()).thenReturn(this.decisionClassDistributionSet2);
 		when(this.decisionClassDistributionSet2.iterator()).thenReturn(decisionClassDistributionIterator2);
@@ -104,22 +104,22 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 		when(this.unionMock.isDecisionPositive(class1)).thenReturn(false);
 		when(this.unionMock.isDecisionPositive(class2)).thenReturn(true);
 		// mock information table
-		when(this.unionMock.getInformationTable()).thenReturn(this.infromationTableMock);
-		when(this.infromationTableMock.getNumberOfObjects()).thenReturn(3);
-		when(this.infromationTableMock.getDominanceConesDecisionDistributions()).thenReturn(this.dominanceCDDMock);
-		// mock class distribution in negative cone based on inconsistent object 1
+		when(this.unionMock.getInformationTable()).thenReturn(this.informationTableMock);
+		when(this.informationTableMock.getNumberOfObjects()).thenReturn(3);
+		when(this.informationTableMock.getDominanceConesDecisionDistributions()).thenReturn(this.dominanceCDDMock);
+		// mock class distribution in negative dominance cone based on inconsistent object 1
 		when(this.dominanceCDDMock.getNegativeDConeDecisionClassDistribution(0)).thenReturn(coneDecisionClassDistribution1);
 		when(this.coneDecisionClassDistribution1.getDecisions()).thenReturn(this.decisionClassDistributionSet1);
 		when(this.decisionClassDistributionSet1.iterator()).thenReturn(decisionClassDistributionIterator1);
 		when(this.decisionClassDistributionIterator1.hasNext()).thenReturn(true, false);
 		when(this.decisionClassDistributionIterator1.next()).thenReturn(class1);
-		// mock class distribution in negative cone based on inconsistent object 2
+		// mock class distribution in negative dominance cone based on inconsistent object 2
 		when(this.dominanceCDDMock.getNegativeDConeDecisionClassDistribution(1)).thenReturn(coneDecisionClassDistribution2);
 		when(this.coneDecisionClassDistribution2.getDecisions()).thenReturn(this.decisionClassDistributionSet2);
 		when(this.decisionClassDistributionSet2.iterator()).thenReturn(decisionClassDistributionIterator2);
 		when(this.decisionClassDistributionIterator2.hasNext()).thenReturn(true, true, false);
 		when(this.decisionClassDistributionIterator2.next()).thenReturn(class1, class2);
-		// mock class distribution in negative cone based on inconsistent object 3
+		// mock class distribution in negative dominance cone based on inconsistent object 3
 		when(this.dominanceCDDMock.getNegativeDConeDecisionClassDistribution(2)).thenReturn(coneDecisionClassDistribution3);
 		when(this.coneDecisionClassDistribution3.getDecisions()).thenReturn(this.decisionClassDistributionSet3);
 		when(this.decisionClassDistributionSet3.iterator()).thenReturn(decisionClassDistributionIterator3);
@@ -142,8 +142,8 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 		when(this.unionObjectIndicesIteratorMock.hasNext()).thenReturn(true, true, false);
 		when(this.unionObjectIndicesIteratorMock.nextInt()).thenReturn(0, 2);
 		// mock information table
-		when(this.unionMock.getInformationTable()).thenReturn(this.infromationTableMock);
-		when(this.infromationTableMock.getDominanceConesDecisionDistributions()).thenReturn(this.dominanceCDDMock);
+		when(this.unionMock.getInformationTable()).thenReturn(this.informationTableMock);
+		when(this.informationTableMock.getDominanceConesDecisionDistributions()).thenReturn(this.dominanceCDDMock);
 		// mock class distribution in negative cones based on consistent object 1 and inconsistent object 3	
 		when(this.dominanceCDDMock.getNegativeDConeDecisionClassDistribution(0)).thenReturn(coneDecisionClassDistribution1);
 		when(this.coneDecisionClassDistribution1.getDecisions()).thenReturn(this.decisionClassDistributionSet1);
@@ -167,9 +167,9 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 		when(this.unionMock.isDecisionPositive(class1)).thenReturn(true);
 		when(this.unionMock.isDecisionPositive(class2)).thenReturn(false);
 		// mock information table
-		when(this.unionMock.getInformationTable()).thenReturn(this.infromationTableMock);
-		when(this.infromationTableMock.getNumberOfObjects()).thenReturn(3);
-		when(this.infromationTableMock.getDominanceConesDecisionDistributions()).thenReturn(this.dominanceCDDMock);
+		when(this.unionMock.getInformationTable()).thenReturn(this.informationTableMock);
+		when(this.informationTableMock.getNumberOfObjects()).thenReturn(3);
+		when(this.informationTableMock.getDominanceConesDecisionDistributions()).thenReturn(this.dominanceCDDMock);
 		// mock class distribution in positive inverted cone based on inconsistent object 1
 		when(this.dominanceCDDMock.getPositiveInvDConeDecisionClassDistribution(0)).thenReturn(coneDecisionClassDistribution1);
 		when(this.coneDecisionClassDistribution1.getDecisions()).thenReturn(this.decisionClassDistributionSet1);
@@ -196,9 +196,9 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	 */
 	@Test
 	void testConstruction() {
-		assertTrue(cDRSACalculator.areDominanceRelationsReflexive());
-		this.cDRSACalculator = new ClassicalDominanceBasedRoughSetCalculator(false);
-		assertFalse(cDRSACalculator.areDominanceRelationsReflexive());
+		assertTrue(cDRSAcalculator.areDominanceRelationsReflexive());
+		this.cDRSAcalculator = new ClassicalDominanceBasedRoughSetCalculator(false);
+		assertFalse(cDRSAcalculator.areDominanceRelationsReflexive());
 	}
 	
 	/**
@@ -209,7 +209,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	@Test
 	void testCalculateLowerApproximationForAtLeastUnion() {
 		this.setUpAtLeastUnionForCalculationOfLowerApproximation();
-		assertEquals(0, cDRSACalculator.calculateLowerApproximation(this.unionMock).size());
+		assertEquals(0, cDRSAcalculator.calculateLowerApproximation(this.unionMock).size());
 	}
 	
 	/**
@@ -220,7 +220,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	@Test
 	void testCalculateUpperApproximationForAtLeastUnion01() {
 		this.setUpAtLeastUnionForCalculationOfUpperApproximation();
-		assertEquals(2, cDRSACalculator.calculateUpperApproximation(this.unionMock).size());
+		assertEquals(2, cDRSAcalculator.calculateUpperApproximation(this.unionMock).size());
 	}
 	
 	/**
@@ -231,7 +231,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	@Test
 	void testCalculateUpperApproximationForAtLeastUnion02() {
 		this.setUpAtLeastUnionForCalculationOfUpperApproximation();
-		IntSortedSet upperApproximationIndices = cDRSACalculator.calculateUpperApproximation(this.unionMock);
+		IntSortedSet upperApproximationIndices = cDRSAcalculator.calculateUpperApproximation(this.unionMock);
 		assertTrue(upperApproximationIndices.contains(1));
 		assertTrue(upperApproximationIndices.contains(2));
 	}
@@ -244,7 +244,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	@Test
 	void testCalculateLowerApproximationForAtMostUnion01() {
 		this.setUpAtMostUnionForCalculationOfLowerApproximation();
-		assertEquals(1, cDRSACalculator.calculateLowerApproximation(this.unionMock).size());
+		assertEquals(1, cDRSAcalculator.calculateLowerApproximation(this.unionMock).size());
 	}
 	
 	/**
@@ -255,7 +255,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	@Test
 	void testCalculateLowerApproximationForAtMostUnion02() {
 		this.setUpAtMostUnionForCalculationOfLowerApproximation();
-		assertTrue(cDRSACalculator.calculateLowerApproximation(this.unionMock).contains(0));
+		assertTrue(cDRSAcalculator.calculateLowerApproximation(this.unionMock).contains(0));
 	}
 	
 	/**
@@ -266,7 +266,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	@Test
 	void testCalculateUpperApproximationForAtMostUnion01() {
 		this.setUpAtMostUnionForCalculationOfUpperApproximation();
-		assertEquals(3, cDRSACalculator.calculateUpperApproximation(this.unionMock).size());
+		assertEquals(3, cDRSAcalculator.calculateUpperApproximation(this.unionMock).size());
 	}
 	
 	/**
@@ -277,7 +277,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	@Test
 	void testCalculateUpperApproximationForAtMostUnion02() {
 		this.setUpAtMostUnionForCalculationOfUpperApproximation();
-		IntSortedSet upperApproximationIndices = cDRSACalculator.calculateUpperApproximation(this.unionMock);
+		IntSortedSet upperApproximationIndices = cDRSAcalculator.calculateUpperApproximation(this.unionMock);
 		assertTrue(upperApproximationIndices.contains(0));
 		assertTrue(upperApproximationIndices.contains(1));
 		assertTrue(upperApproximationIndices.contains(2));
