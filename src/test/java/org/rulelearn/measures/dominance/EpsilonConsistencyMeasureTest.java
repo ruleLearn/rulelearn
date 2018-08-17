@@ -43,7 +43,7 @@ import org.rulelearn.measures.ConsistencyMeasureType;
  */
 class EpsilonConsistencyMeasureTest {
 
-private EpsilonConsistencyMeasure measure;
+	private EpsilonConsistencyMeasure measure;
 	
 	@Mock
 	private InformationTableWithDecisionDistributions informationTableMock;
@@ -52,7 +52,7 @@ private EpsilonConsistencyMeasure measure;
 	@Mock
 	private Union unionAtLeast2Mock, unionAtLeast3Mock, unionAtMost1Mock;
 	@Mock
-	DominanceConesDecisionDistributions dominanceCDDMock;
+	private DominanceConesDecisionDistributions dominanceCDDMock;
 	@Mock
 	private DecisionDistribution coneDecisionClassDistribution3, coneDecisionClassDistribution4, coneDecisionClassDistribution5;
 	@Mock
