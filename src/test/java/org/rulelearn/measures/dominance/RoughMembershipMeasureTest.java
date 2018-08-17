@@ -33,7 +33,7 @@ import org.rulelearn.data.Decision;
 import org.rulelearn.data.DecisionDistribution;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
-import org.rulelearn.measures.ConsistencyMeasureType;
+import org.rulelearn.measures.MeasureType;
 
 /**
  * Tests for {@link RoughMembershipMeasure}.
@@ -116,7 +116,7 @@ class RoughMembershipMeasureTest {
 	 */
 	@Test
 	void testGetType() {
-		assertEquals(ConsistencyMeasureType.GAIN, this.measure.getType());
+		assertEquals(MeasureType.GAIN, this.measure.getType());
 	}
 	
 	/**

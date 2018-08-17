@@ -54,7 +54,7 @@ class ConsistencyMeasureTest {
 	 */
 	@Test
 	void testIsConsistencyThresholdReachedForGainTypeMeasure() {
-		when(measure.getType()).thenReturn(ConsistencyMeasureType.GAIN);
+		when(measure.getType()).thenReturn(MeasureType.GAIN);
 		// test the same value as threshold
 		when(measure.calculateConsistency(this.objectIndex, this.set)).thenReturn(this.threshold);
 		assertTrue(this.measure.isConsistencyThresholdReached(this.objectIndex, this.set, this.threshold));
@@ -71,7 +71,7 @@ class ConsistencyMeasureTest {
 	 */
 	@Test
 	void testIsConsistencyThresholdReachedForCostTypeMeasure() {
-		when(measure.getType()).thenReturn(ConsistencyMeasureType.COST);
+		when(measure.getType()).thenReturn(MeasureType.COST);
 		// test the same value as threshold
 		when(measure.calculateConsistency(this.objectIndex, this.set)).thenReturn(this.threshold);
 		assertTrue(this.measure.isConsistencyThresholdReached(this.objectIndex, this.set, this.threshold));

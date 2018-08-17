@@ -17,19 +17,18 @@
 package org.rulelearn.measures;
 
 /**
- * Type of a rule/object consistency measure.
+ * Contract for all classes representing measures.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public enum ConsistencyMeasureType {
+public interface Measure {
+
+	/**
+	 * Gets type of this measure.
+	 * 
+	 * @return see {@link MeasureType}
+	 */
+	public MeasureType getType();
 	
-	/**
-	 * Type of a gain-type consistency measure.
-	 */
-	GAIN,
-	/**
-	 * Type of a cost-type consistency measure.
-	 */
-	COST
 }

@@ -33,7 +33,7 @@ import org.rulelearn.data.Decision;
 import org.rulelearn.data.DecisionDistribution;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
-import org.rulelearn.measures.ConsistencyMeasureType;
+import org.rulelearn.measures.MeasureType;
 
 /**
  * Tests for {@link EpsilonConsistencyMeasure}.
@@ -119,7 +119,7 @@ class EpsilonConsistencyMeasureTest {
 	 */
 	@Test
 	void testGetType() {
-		assertEquals(ConsistencyMeasureType.COST, this.measure.getType());
+		assertEquals(MeasureType.COST, this.measure.getType());
 	}
 
 	/**
