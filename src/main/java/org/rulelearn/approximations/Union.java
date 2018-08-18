@@ -236,7 +236,8 @@ public class Union extends ApproximatedSet {
 	/**
 	 * Gets complementary union of decision classes that complements this union w.r.t. set of all objects U.
 	 * E.g., if there are five decision classes: 1, 2, 3, 4, 5, and this union concerns classes 3-5 (&gt;=3),
-	 * then the complementary union concerns classes 1-2 (&lt;=2).
+	 * then the complementary union concerns classes 1-2 (&lt;=2). If complementary union has not been previously set
+	 * using {@link #setComplementaryUnion(Union)} method, it is first calculated.
 	 * 
 	 * @return complementary union of decision classes 
 	 */

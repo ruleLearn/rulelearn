@@ -18,6 +18,7 @@ package org.rulelearn.approximations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -644,6 +645,7 @@ class UnionTest {
 	
 	/**
 	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 * Tests {@link CompositeDecision} decision.
 	 */
 	@Test
 	void testValidateLimitingDecision02() {
@@ -686,6 +688,7 @@ class UnionTest {
 	
 	/**
 	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 * Tests {@link CompositeDecision} decision.
 	 */
 	@Test
 	void testValidateLimitingDecision03() {
@@ -728,6 +731,7 @@ class UnionTest {
 	
 	/**
 	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 * Tests {@link CompositeDecision} decision.
 	 */
 	@Test
 	void testValidateLimitingDecision04() {
@@ -771,6 +775,7 @@ class UnionTest {
 	
 	/**
 	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 * Tests {@link CompositeDecision} decision.
 	 */
 	@Test
 	void testValidateLimitingDecision05() {
@@ -816,15 +821,38 @@ class UnionTest {
 	 */
 	@Test
 	void testSetComplementaryUnion() {
-		//TODO: implement test
+		Union union =  getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		Union complementaryUnion = Mockito.mock(Union.class);
+		Union complementaryUnion2 = Mockito.mock(Union.class);
+		
+		assertTrue(union.setComplementaryUnion(complementaryUnion));
+		assertEquals(union.complementaryUnion, complementaryUnion);
+		
+		assertFalse(union.setComplementaryUnion(complementaryUnion2));
+		assertEquals(union.complementaryUnion, complementaryUnion); //still the same complementary union
 	}
 
 	/**
 	 * Test method for {@link Union#getComplementaryUnion()}.
 	 */
 	@Test
-	void testGetComplementaryUnion() {
-		//TODO: implement test
+	void testGetComplementaryUnion01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		Union complementaryUnion = Mockito.mock(Union.class);
+		union.setComplementaryUnion(complementaryUnion);
+		
+		assertEquals(union.complementaryUnion, complementaryUnion);
+		assertEquals(union.getComplementaryUnion(), complementaryUnion);
+	}
+	
+	/**
+	 * Test method for {@link Union#getComplementaryUnion()}.
+	 */
+	@Test
+	void testGetComplementaryUnion02() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		assertEquals(union.complementaryUnion, null);
+		assertNotNull(union.getComplementaryUnion()); //tests if complementary union is calculated on demand
 	}
 
 	/**
