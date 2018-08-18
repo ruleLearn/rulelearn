@@ -376,5 +376,14 @@ public abstract class ApproximatedSet {
 	 * @return the size of the set of objects that is complementary to the set of (positive) objects belonging to this approximated set
 	 */
 	public abstract int getComplementarySetSize();
+
+	/**
+	 * Tells if this approximated set includes objects whose decision is equal to the limiting decision.
+	 * 
+	 * @return {@code true} if this approximated set includes objects whose decision is equal to the limiting decision, {@code false} otherwise
+	 */
+	public boolean isIncludeLimitingDecision() {
+		return includeLimitingDecision;
+	}
 	
 }

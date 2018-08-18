@@ -251,6 +251,7 @@ public class Union extends ApproximatedSet {
 	
 	/**
 	 * Calculates complementary union of decision classes that complements this union w.r.t. set of all objects U.
+	 * Calculated union has the same limiting decision, but does not include objects with that decision. Moreover, it has opposite union type.
 	 * 
 	 * @return complementary union of decision classes
 	 */

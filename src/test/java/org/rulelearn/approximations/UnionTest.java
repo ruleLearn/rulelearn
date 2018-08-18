@@ -44,7 +44,7 @@ import org.rulelearn.types.KnownSimpleField;
 import org.rulelearn.types.UnknownSimpleFieldMV15;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
 
-//TODO: extract common code block into separate method
+//TODO: extract common code blocks into separate method
 /**
  * Tests for {@link Union}.
  *
@@ -58,7 +58,53 @@ class UnionTest {
 	 */
 	@Test
 	void testFindObjects() {
-		//TODO: implement test
+		AttributePreferenceType attributePreferenceType = AttributePreferenceType.GAIN;
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(attributePreferenceType, true);
+		Union union = unionWithConstructorParameters.union;
+		SimpleDecision limitingDecision = (SimpleDecision)unionWithConstructorParameters.limitingDecision;
+		int limitingDecisionValue = ((IntegerField)limitingDecision.getEvaluation()).getValue();
+		int attributeIndex = limitingDecision.getAttributeIndices().toArray(new int[1])[0];
+		
+		Mockito.when(union.getInformationTable().getNumberOfObjects()).thenReturn(7);
+		
+		Mockito.when(union.getInformationTable().getDecision(0)).thenReturn(
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue, attributePreferenceType), attributeIndex)); //in union
+		Mockito.when(union.getInformationTable().getDecision(1)).thenReturn(
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue + 1, attributePreferenceType), attributeIndex));  //in union
+		Mockito.when(union.getInformationTable().getDecision(2)).thenReturn(
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue - 1, attributePreferenceType), attributeIndex));
+		Mockito.when(union.getInformationTable().getDecision(3)).thenReturn(
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue + 2, attributePreferenceType), attributeIndex));  //in union
+		Mockito.when(union.getInformationTable().getDecision(4)).thenReturn(
+				new SimpleDecision(new UnknownSimpleFieldMV15(), attributeIndex)); //uncomparable decision
+		Mockito.when(union.getInformationTable().getDecision(5)).thenReturn(
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue - 2, attributePreferenceType), attributeIndex));
+		Mockito.when(union.getInformationTable().getDecision(6)).thenReturn(
+				new SimpleDecision(new UnknownSimpleFieldMV2(), attributeIndex)); //in union
+		
+		union.findObjects();
+		
+		assertEquals(union.objects.size(), 4);
+		assertTrue(union.objects.contains(0));
+		assertTrue(union.objects.contains(1));
+		assertTrue(union.objects.contains(3));
+		assertTrue(union.objects.contains(6));
+		assertEquals(union.neutralObjects.size(), 1);
+		assertTrue(union.neutralObjects.contains(4));
+		
+		try {
+			union.objects.add(10);
+			fail("Should not modify list of positive objects.");
+		} catch (UnsupportedOperationException exception) {
+			//OK
+		}
+		
+		try {
+			union.neutralObjects.add(10);
+			fail("Should not modify list of neutral objects.");
+		} catch (UnsupportedOperationException exception) {
+			//OK
+		}
 	}
 
 	/**
@@ -850,18 +896,37 @@ class UnionTest {
 	 */
 	@Test
 	void testGetComplementaryUnion02() {
-		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true);
+		Union union = unionWithConstructorParameters.union;
 		assertEquals(union.complementaryUnion, null);
-		assertNotNull(union.getComplementaryUnion()); //tests if complementary union is calculated on demand
+		Union complementaryUnion = union.getComplementaryUnion();
+		assertNotNull(complementaryUnion); //tests if complementary union is calculated on demand
+		assertEquals(complementaryUnion.getLimitingDecision(), union.getLimitingDecision());
+		assertEquals(complementaryUnion.getUnionType(), UnionType.AT_MOST);
+		assertFalse(complementaryUnion.isIncludeLimitingDecision());
 	}
-
+	
 	/**
-	 * Test method for {@link Union#calculateComplementaryUnion()}.
+	 * Test method for {@link Union#getComplementaryUnion()}.
 	 */
 	@Test
-	void testCalculateComplementaryUnion() {
-		//TODO: implement test
+	void testGetComplementaryUnion03() {
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.COST, true);
+		Union union = unionWithConstructorParameters.union;
+		assertEquals(union.complementaryUnion, null);
+		Union complementaryUnion = union.getComplementaryUnion();
+		assertNotNull(complementaryUnion); //tests if complementary union is calculated on demand
+		assertEquals(complementaryUnion.getLimitingDecision(), union.getLimitingDecision());
+		assertEquals(complementaryUnion.getUnionType(), UnionType.AT_LEAST);
+		assertFalse(complementaryUnion.isIncludeLimitingDecision());
 	}
+
+//	/**
+//	 * Test method for {@link Union#calculateComplementaryUnion()}.
+//	 */
+//	@Test
+//	void testCalculateComplementaryUnion() {
+//	}
 
 	/**
 	 * Test method for {@link Union#getUnionType()}.
