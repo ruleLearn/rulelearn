@@ -244,6 +244,7 @@ public class Union extends ApproximatedSet {
 	public Union getComplementaryUnion() {
 		if (this.complementaryUnion == null) {
 			this.complementaryUnion = calculateComplementaryUnion();
+			this.complementaryUnion.setComplementaryUnion(this); //set this union as complementary to the returned one
 		}
 		
 		return this.complementaryUnion;

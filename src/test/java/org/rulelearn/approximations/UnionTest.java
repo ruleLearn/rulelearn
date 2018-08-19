@@ -35,6 +35,7 @@ import org.rulelearn.data.CompositeDecision;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.IdentificationAttribute;
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.data.SimpleDecision;
 import org.rulelearn.types.EvaluationField;
@@ -52,35 +53,45 @@ import org.rulelearn.types.UnknownSimpleFieldMV2;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 class UnionTest {
-
+	
+	/**
+	 * Configures mock of information table referenced in given union.
+	 * 
+	 * @param union union referencing information table mock that should be configured
+	 */
+	private void configureInformationTableMock(Union union) {
+		SimpleDecision limitingDecision = (SimpleDecision)union.getLimitingDecision();
+		int limitingDecisionValue = ((IntegerField)limitingDecision.getEvaluation()).getValue();
+		AttributePreferenceType attributePreferenceType = ((IntegerField)limitingDecision.getEvaluation()).getPreferenceType();
+		int attributeIndex = limitingDecision.getAttributeIndices().toArray(new int[1])[0];
+		
+		InformationTable informationTableMock = union.getInformationTable();
+		
+		Mockito.when(informationTableMock.getNumberOfObjects()).thenReturn(7); //reconfigure information table mock
+		
+		Mockito.when(informationTableMock.getDecision(0)).thenReturn(
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue, attributePreferenceType), attributeIndex));
+		Mockito.when(informationTableMock.getDecision(1)).thenReturn(
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue + 1, attributePreferenceType), attributeIndex));
+		Mockito.when(informationTableMock.getDecision(2)).thenReturn(
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue - 1, attributePreferenceType), attributeIndex));
+		Mockito.when(informationTableMock.getDecision(3)).thenReturn(
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue + 2, attributePreferenceType), attributeIndex));
+		Mockito.when(informationTableMock.getDecision(4)).thenReturn(
+				new SimpleDecision(new UnknownSimpleFieldMV15(), attributeIndex)); //uncomparable decision
+		Mockito.when(informationTableMock.getDecision(5)).thenReturn(
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue - 2, attributePreferenceType), attributeIndex));
+		Mockito.when(informationTableMock.getDecision(6)).thenReturn(
+				new SimpleDecision(new UnknownSimpleFieldMV2(), attributeIndex)); //in union
+	}
+	
 	/**
 	 * Test method for {@link Union#findObjects()}.
 	 */
 	@Test
-	void testFindObjects() {
-		AttributePreferenceType attributePreferenceType = AttributePreferenceType.GAIN;
-		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(attributePreferenceType, true);
-		Union union = unionWithConstructorParameters.union;
-		SimpleDecision limitingDecision = (SimpleDecision)unionWithConstructorParameters.limitingDecision;
-		int limitingDecisionValue = ((IntegerField)limitingDecision.getEvaluation()).getValue();
-		int attributeIndex = limitingDecision.getAttributeIndices().toArray(new int[1])[0];
-		
-		Mockito.when(union.getInformationTable().getNumberOfObjects()).thenReturn(7);
-		
-		Mockito.when(union.getInformationTable().getDecision(0)).thenReturn(
-				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue, attributePreferenceType), attributeIndex)); //in union
-		Mockito.when(union.getInformationTable().getDecision(1)).thenReturn(
-				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue + 1, attributePreferenceType), attributeIndex));  //in union
-		Mockito.when(union.getInformationTable().getDecision(2)).thenReturn(
-				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue - 1, attributePreferenceType), attributeIndex));
-		Mockito.when(union.getInformationTable().getDecision(3)).thenReturn(
-				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue + 2, attributePreferenceType), attributeIndex));  //in union
-		Mockito.when(union.getInformationTable().getDecision(4)).thenReturn(
-				new SimpleDecision(new UnknownSimpleFieldMV15(), attributeIndex)); //uncomparable decision
-		Mockito.when(union.getInformationTable().getDecision(5)).thenReturn(
-				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue - 2, attributePreferenceType), attributeIndex));
-		Mockito.when(union.getInformationTable().getDecision(6)).thenReturn(
-				new SimpleDecision(new UnknownSimpleFieldMV2(), attributeIndex)); //in union
+	void testFindObjects01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
 		
 		union.findObjects();
 		
@@ -101,6 +112,40 @@ class UnionTest {
 		
 		try {
 			union.neutralObjects.add(10);
+			fail("Should not modify list of neutral objects.");
+		} catch (UnsupportedOperationException exception) {
+			//OK
+		}
+		
+	}
+	
+	/**
+	 * Test method for {@link Union#findObjects()}.
+	 */
+	@Test
+	void testFindObjects02() {
+		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		
+		union.findObjects();
+		
+		assertEquals(union.objects.size(), 4);
+		assertTrue(union.objects.contains(0));
+		assertTrue(union.objects.contains(2));
+		assertTrue(union.objects.contains(5));
+		assertTrue(union.objects.contains(6));
+		assertEquals(union.neutralObjects.size(), 1);
+		assertTrue(union.neutralObjects.contains(4));
+		
+		try {
+			union.objects.add(5);
+			fail("Should not modify list of positive objects.");
+		} catch (UnsupportedOperationException exception) {
+			//OK
+		}
+		
+		try {
+			union.neutralObjects.add(5);
 			fail("Should not modify list of neutral objects.");
 		} catch (UnsupportedOperationException exception) {
 			//OK
@@ -251,8 +296,24 @@ class UnionTest {
 	 * Test method for {@link Union#getComplementarySetSize()}.
 	 */
 	@Test
-	void testGetComplementarySetSize() {
-		//TODO: implement test
+	void testGetComplementarySetSize01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertEquals(union.getComplementarySetSize(), 2);
+	}
+	
+	/**
+	 * Test method for {@link Union#getComplementarySetSize()}.
+	 */
+	@Test
+	void testGetComplementarySetSize02() {
+		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertEquals(union.getComplementarySetSize(), 2);
 	}
 
 	/**
@@ -1293,24 +1354,108 @@ class UnionTest {
 	 * Test method for {@link Union#isObjectPositive(int)}.
 	 */
 	@Test
-	void testIsObjectPositive() {
-		//TODO: implement test
+	void testIsObjectPositive01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertTrue(union.isObjectPositive(0));
+		assertTrue(union.isObjectPositive(1));
+		assertFalse(union.isObjectPositive(2));
+		assertTrue(union.isObjectPositive(3));
+		assertFalse(union.isObjectPositive(4));
+		assertFalse(union.isObjectPositive(5));
+		assertTrue(union.isObjectPositive(6));
+	}
+	
+	/**
+	 * Test method for {@link Union#isObjectPositive(int)}.
+	 */
+	@Test
+	void testIsObjectPositive02() {
+		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertTrue(union.isObjectPositive(0));
+		assertFalse(union.isObjectPositive(1));
+		assertTrue(union.isObjectPositive(2));
+		assertFalse(union.isObjectPositive(3));
+		assertFalse(union.isObjectPositive(4));
+		assertTrue(union.isObjectPositive(5));
+		assertTrue(union.isObjectPositive(6));
 	}
 
 	/**
 	 * Test method for {@link Union#isObjectNeutral(int)}.
 	 */
 	@Test
-	void testIsObjectNeutral() {
-		//TODO: implement test
+	void testIsObjectNeutral01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertFalse(union.isObjectNeutral(0));
+		assertFalse(union.isObjectNeutral(1));
+		assertFalse(union.isObjectNeutral(2));
+		assertFalse(union.isObjectNeutral(3));
+		assertTrue(union.isObjectNeutral(4));
+		assertFalse(union.isObjectNeutral(5));
+		assertFalse(union.isObjectNeutral(6));
+	}
+	
+	/**
+	 * Test method for {@link Union#isObjectNeutral(int)}.
+	 */
+	@Test
+	void testIsObjectNeutral02() {
+		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertFalse(union.isObjectNeutral(0));
+		assertFalse(union.isObjectNeutral(1));
+		assertFalse(union.isObjectNeutral(2));
+		assertFalse(union.isObjectNeutral(3));
+		assertTrue(union.isObjectNeutral(4));
+		assertFalse(union.isObjectNeutral(5));
+		assertFalse(union.isObjectNeutral(6));
 	}
 
 	/**
 	 * Test method for {@link Union#isObjectNegative(int)}.
 	 */
 	@Test
-	void testIsObjectNegative() {
-		//TODO: implement test
+	void testIsObjectNegative01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertFalse(union.isObjectNegative(0));
+		assertFalse(union.isObjectNegative(1));
+		assertTrue(union.isObjectNegative(2));
+		assertFalse(union.isObjectNegative(3));
+		assertFalse(union.isObjectNegative(4));
+		assertTrue(union.isObjectNegative(5));
+		assertFalse(union.isObjectNegative(6));
+	}
+	
+	/**
+	 * Test method for {@link Union#isObjectNegative(int)}.
+	 */
+	@Test
+	void testIsObjectNegative02() {
+		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertFalse(union.isObjectNegative(0));
+		assertTrue(union.isObjectNegative(1));
+		assertFalse(union.isObjectNegative(2));
+		assertTrue(union.isObjectNegative(3));
+		assertFalse(union.isObjectNegative(4));
+		assertFalse(union.isObjectNegative(5));
+		assertFalse(union.isObjectNegative(6));
 	}
 
 }
