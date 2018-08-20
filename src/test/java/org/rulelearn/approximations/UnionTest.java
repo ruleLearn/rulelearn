@@ -17,14 +17,20 @@
 package org.rulelearn.approximations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rulelearn.approximations.Union.UnionType;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
@@ -32,11 +38,22 @@ import org.rulelearn.data.CompositeDecision;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.IdentificationAttribute;
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.data.SimpleDecision;
+import org.rulelearn.data.Table;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
+import org.rulelearn.types.KnownSimpleField;
+import org.rulelearn.types.UnknownSimpleFieldMV15;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
 
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSortedSet;
+
+//TODO: extract common code blocks into separate method
 /**
  * Tests for {@link Union}.
  *
@@ -44,37 +61,324 @@ import org.rulelearn.types.IntegerFieldFactory;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 class UnionTest {
-
+	
+	/**
+	 * Configures mock of information table referenced in given union.
+	 * 
+	 * @param union union referencing information table mock that should be configured
+	 */
+	private void configureInformationTableMock(Union union) {
+		SimpleDecision limitingDecision = (SimpleDecision)union.getLimitingDecision();
+		int limitingDecisionValue = ((IntegerField)limitingDecision.getEvaluation()).getValue();
+		AttributePreferenceType attributePreferenceType = ((IntegerField)limitingDecision.getEvaluation()).getPreferenceType();
+		int attributeIndex = limitingDecision.getAttributeIndices().toArray(new int[1])[0];
+		
+		InformationTable informationTableMock = union.getInformationTable();
+		
+		Mockito.when(informationTableMock.getNumberOfObjects()).thenReturn(7); //reconfigure information table mock
+		
+		Mockito.when(informationTableMock.getDecision(0)).thenReturn(
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue, attributePreferenceType), attributeIndex));
+		Mockito.when(informationTableMock.getDecision(1)).thenReturn(
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue + 1, attributePreferenceType), attributeIndex));
+		Mockito.when(informationTableMock.getDecision(2)).thenReturn(
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue - 1, attributePreferenceType), attributeIndex));
+		Mockito.when(informationTableMock.getDecision(3)).thenReturn(
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue + 2, attributePreferenceType), attributeIndex));
+		Mockito.when(informationTableMock.getDecision(4)).thenReturn(
+				new SimpleDecision(new UnknownSimpleFieldMV15(), attributeIndex)); //uncomparable decision
+		Mockito.when(informationTableMock.getDecision(5)).thenReturn(
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(limitingDecisionValue - 2, attributePreferenceType), attributeIndex));
+		Mockito.when(informationTableMock.getDecision(6)).thenReturn(
+				new SimpleDecision(new UnknownSimpleFieldMV2(), attributeIndex)); //in union
+	}
+	
 	/**
 	 * Test method for {@link Union#findObjects()}.
 	 */
 	@Test
-	void testFindObjects() {
-		//TODO: implement test
+	void testFindObjects01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		
+		union.findObjects();
+		
+		assertEquals(union.objects.size(), 4);
+		assertTrue(union.objects.contains(0));
+		assertTrue(union.objects.contains(1));
+		assertTrue(union.objects.contains(3));
+		assertTrue(union.objects.contains(6));
+		assertEquals(union.neutralObjects.size(), 1);
+		assertTrue(union.neutralObjects.contains(4));
+		
+		try {
+			union.objects.add(10);
+			fail("Should not modify list of positive objects.");
+		} catch (UnsupportedOperationException exception) {
+			//OK
+		}
+		
+		try {
+			union.neutralObjects.add(10);
+			fail("Should not modify list of neutral objects.");
+		} catch (UnsupportedOperationException exception) {
+			//OK
+		}
+		
+	}
+	
+	/**
+	 * Test method for {@link Union#findObjects()}.
+	 */
+	@Test
+	void testFindObjects02() {
+		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		
+		union.findObjects();
+		
+		assertEquals(union.objects.size(), 4);
+		assertTrue(union.objects.contains(0));
+		assertTrue(union.objects.contains(2));
+		assertTrue(union.objects.contains(5));
+		assertTrue(union.objects.contains(6));
+		assertEquals(union.neutralObjects.size(), 1);
+		assertTrue(union.neutralObjects.contains(4));
+		
+		try {
+			union.objects.add(5);
+			fail("Should not modify list of positive objects.");
+		} catch (UnsupportedOperationException exception) {
+			//OK
+		}
+		
+		try {
+			union.neutralObjects.add(5);
+			fail("Should not modify list of neutral objects.");
+		} catch (UnsupportedOperationException exception) {
+			//OK
+		}
 	}
 
 	/**
 	 * Test method for {@link Union#calculateLowerApproximation()}.
 	 */
 	@Test
-	void testCalculateLowerApproximation() {
-		//TODO: implement test
+	void testCalculateLowerApproximation01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		
+		//configure rough set calculator mock
+		DominanceBasedRoughSetCalculator roughSetCalculator = union.getRoughSetCalculator();
+		
+		IntSortedSet lowerApproximation = new IntLinkedOpenHashSet();
+		lowerApproximation.add(3);
+		lowerApproximation.add(4);
+		lowerApproximation.add(7);
+		lowerApproximation.add(12);
+		lowerApproximation.add(15);
+		
+		Mockito.when(roughSetCalculator.calculateLowerApproximation(union)).thenReturn(lowerApproximation);
+		
+		assertEquals(union.calculateLowerApproximation(), lowerApproximation);
+	}
+	
+	/**
+	 * Test method for {@link Union#calculateLowerApproximation()}.
+	 */
+	@Test
+	void testCalculateLowerApproximation02() {
+		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.COST, true).union;
+		
+		//configure rough set calculator mock
+		DominanceBasedRoughSetCalculator roughSetCalculator = union.getRoughSetCalculator();
+		
+		IntSortedSet lowerApproximation = new IntLinkedOpenHashSet();
+		lowerApproximation.add(1);
+		lowerApproximation.add(5);
+		lowerApproximation.add(6);
+		lowerApproximation.add(13);
+		lowerApproximation.add(18);
+		
+		Mockito.when(roughSetCalculator.calculateLowerApproximation(union)).thenReturn(lowerApproximation);
+		
+		assertEquals(union.calculateLowerApproximation(), lowerApproximation);
 	}
 
 	/**
 	 * Test method for {@link Union#calculateUpperApproximation()}.
 	 */
 	@Test
-	void testCalculateUpperApproximation() {
-		//TODO: implement test
+	void testCalculateUpperApproximation01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		
+		//configure rough set calculator mock
+		DominanceBasedRoughSetCalculator roughSetCalculator = union.getRoughSetCalculator();
+		
+		IntSortedSet upperApproximation = new IntLinkedOpenHashSet();
+		upperApproximation.add(3);
+		upperApproximation.add(4);
+		upperApproximation.add(7);
+		upperApproximation.add(12);
+		upperApproximation.add(15);
+		
+		Mockito.when(roughSetCalculator.calculateUpperApproximation(union)).thenReturn(upperApproximation);
+		
+		assertEquals(union.calculateUpperApproximation(), upperApproximation);
+	}
+	
+	/**
+	 * Test method for {@link Union#calculateUpperApproximation()}.
+	 */
+	@Test
+	void testCalculateUpperApproximation02() {
+		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.COST, true).union;
+		
+		//configure rough set calculator mock
+		DominanceBasedRoughSetCalculator roughSetCalculator = union.getRoughSetCalculator();
+		
+		IntSortedSet upperApproximation = new IntLinkedOpenHashSet();
+		upperApproximation.add(1);
+		upperApproximation.add(5);
+		upperApproximation.add(6);
+		upperApproximation.add(13);
+		upperApproximation.add(18);
+		
+		Mockito.when(roughSetCalculator.calculateUpperApproximation(union)).thenReturn(upperApproximation);
+		
+		assertEquals(union.calculateUpperApproximation(), upperApproximation);
+	}
+	
+	/**
+	 * Configures given mock of an {@link InformationTable}.
+	 * 
+	 * @param information table that should be configured
+	 * @param evaluationsList list with arrays of evaluations such that each array stores subsequent evaluations of a single object of the given information table
+	 */
+	private void configureInformationTableMockEvaluations(InformationTable informationTableMock, List<EvaluationField[]> evaluationsList) {
+		@SuppressWarnings("unchecked")
+		Table<EvaluationField> evaluations = (Table<EvaluationField>)Mockito.mock(Table.class);
+		
+		for (int i = 0; i < evaluationsList.size(); i++) {
+			Mockito.when(evaluations.getFields(i)).thenReturn(evaluationsList.get(i));
+		}
+		
+		Mockito.when(informationTableMock.getNumberOfObjects()).thenReturn(evaluationsList.size());
+		Mockito.when(informationTableMock.getActiveConditionAttributeFields()).thenReturn(evaluations);
+	}
+	
+	/**
+	 * Supplementary method for creating {@link IntegerField} instances.
+	 * 
+	 * @param value value passed to {@link IntegerFieldFactory#create(int, AttributePreferenceType)} method.
+	 * @param preferenceType preference type passed to {@link IntegerFieldFactory#create(int, AttributePreferenceType)} method.
+	 * @return created {@link IntegerField} instance.
+	 */
+	private IntegerField intField(int value, AttributePreferenceType preferenceType) {
+		return IntegerFieldFactory.getInstance().create(value, preferenceType);
+	}
+	
+	/**
+	 * Configures given mock of an information table, injected in tested union.
+	 */
+	private void configureInformationTableMock01(InformationTable informationTable) {
+		List<EvaluationField[]> evaluationsList = new ArrayList<EvaluationField[]>();
+		
+		evaluationsList.add(new EvaluationField[] {intField(3, AttributePreferenceType.GAIN), intField(3, AttributePreferenceType.GAIN)}); //0 //positiveInvDCone={0,2,3,5}
+		evaluationsList.add(new EvaluationField[] {intField(2, AttributePreferenceType.GAIN), intField(2, AttributePreferenceType.GAIN)}); //1
+		evaluationsList.add(new EvaluationField[] {intField(5, AttributePreferenceType.GAIN), intField(3, AttributePreferenceType.GAIN)}); //2
+		//negativeDCone={0,1,2,4}
+		evaluationsList.add(new EvaluationField[] {intField(7, AttributePreferenceType.GAIN), intField(5, AttributePreferenceType.GAIN)}); //3
+		evaluationsList.add(new EvaluationField[] {intField(1, AttributePreferenceType.GAIN), intField(3, AttributePreferenceType.GAIN)}); //4
+		evaluationsList.add(new EvaluationField[] {new UnknownSimpleFieldMV2(), intField(5, AttributePreferenceType.GAIN)}); //5
+		evaluationsList.add(new EvaluationField[] {intField(6, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV15()}); //6 //positiveInvDCone={3,5,6}
+		evaluationsList.add(new EvaluationField[] {intField(4, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV15()}); //7 //positiveInvDCone={2,3,5,6,7}
+		//negativeDCone={0,1,4,5,7,8}
+		evaluationsList.add(new EvaluationField[] {intField(1, AttributePreferenceType.GAIN), intField(4, AttributePreferenceType.GAIN)}); //8
+		
+		this.configureInformationTableMockEvaluations(informationTable, evaluationsList);
 	}
 
 	/**
-	 * Test method for {@link Union#calculatePositiveRegion(it.unimi.dsi.fastutil.ints.IntSortedSet)}.
+	 * Test method for {@link Union#calculatePositiveRegion(IntSortedSet)}.
+	 * Tests union "at least".
 	 */
 	@Test
-	void testCalculatePositiveRegion() {
-		//TODO: implement test
+	void testCalculatePositiveRegion01() {
+		Union union = this.getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock01(union.getInformationTable());
+		
+		IntSortedSet lowerApproximation = new IntLinkedOpenHashSet();
+		lowerApproximation.add(0);
+		lowerApproximation.add(7);
+		
+		IntSet positiveRegion = union.calculatePositiveRegion(lowerApproximation); //calculatePositiveInvDCone
+		assertEquals(positiveRegion.size(), 6);
+		assertTrue(positiveRegion.contains(0)); //from positive invD cone of object 0 
+		assertTrue(positiveRegion.contains(2)); //from positive invD cone of objects 0 and 7
+		assertTrue(positiveRegion.contains(3)); //from positive invD cone of objects 0 and 7
+		assertTrue(positiveRegion.contains(5)); //from positive invD cone of objects 0 and 7
+		assertTrue(positiveRegion.contains(6)); //from positive invD cone of object 7
+		assertTrue(positiveRegion.contains(7)); //from positive invD cone of object 7
+	}
+	
+	/**
+	 * Test method for {@link Union#calculatePositiveRegion(IntSortedSet)}.
+	 * Tests union "at least".
+	 */
+	@Test
+	void testCalculatePositiveRegion02() {
+		Union union = this.getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock01(union.getInformationTable());
+		
+		IntSortedSet lowerApproximation = new IntLinkedOpenHashSet();
+		lowerApproximation.add(6);
+		
+		IntSet positiveRegion = union.calculatePositiveRegion(lowerApproximation); //calculatePositiveInvDCone
+		assertEquals(positiveRegion.size(), 3);
+		assertTrue(positiveRegion.contains(3)); //from positive invD cone of object 6
+		assertTrue(positiveRegion.contains(5)); //from positive invD cone of object 6
+		assertTrue(positiveRegion.contains(6)); //from positive invD cone of object 6
+	}
+	
+	/**
+	 * Test method for {@link Union#calculatePositiveRegion(IntSortedSet)}.
+	 * Tests union "at most".
+	 */
+	@Test
+	void testCalculatePositiveRegion03() {
+		Union union = this.getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock01(union.getInformationTable());
+		
+		IntSortedSet lowerApproximation = new IntLinkedOpenHashSet();
+		lowerApproximation.add(2);
+		lowerApproximation.add(7);
+		
+		IntSet positiveRegion = union.calculatePositiveRegion(lowerApproximation); //calculateNegativeDCone
+		assertEquals(positiveRegion.size(), 7);
+		assertTrue(positiveRegion.contains(0)); //from negative D cones of objects 2 and 7 
+		assertTrue(positiveRegion.contains(1)); //from negative D cones of objects 2 and 7
+		assertTrue(positiveRegion.contains(2)); //from negative D cone of object 2
+		assertTrue(positiveRegion.contains(4)); //from negative D cones of objects 2 and 7
+		assertTrue(positiveRegion.contains(5)); //from negative D cone of object 7
+		assertTrue(positiveRegion.contains(7)); //from negative D cone of object 7
+		assertTrue(positiveRegion.contains(8)); //from negative D cone of object 7
+	}
+	
+	/**
+	 * Test method for {@link Union#calculatePositiveRegion(IntSortedSet)}.
+	 * Tests union "at most".
+	 */
+	@Test
+	void testCalculatePositiveRegion04() {
+		Union union = this.getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock01(union.getInformationTable());
+		
+		IntSortedSet lowerApproximation = new IntLinkedOpenHashSet();
+		lowerApproximation.add(6);
+		
+		IntSet positiveRegion = union.calculatePositiveRegion(lowerApproximation); //calculateNegativeDCone
+		assertEquals(positiveRegion.size(), 8);
+		assertFalse(positiveRegion.contains(3)); //does not belong to negative D cone of object 6 
 	}
 
 	/**
@@ -82,23 +386,163 @@ class UnionTest {
 	 */
 	@Test
 	void testCalculateNegativeRegion() {
-		//TODO: implement test
+		Union union = Mockito.mock(Union.class);
+		Union complementaryUnionMock = Mockito.mock(Union.class);
+		
+		IntSortedSet positiveRegion = new IntLinkedOpenHashSet();
+		positiveRegion.add(0);
+		positiveRegion.add(1); //
+		positiveRegion.add(2);
+		positiveRegion.add(4);
+		positiveRegion.add(6); //
+		Mockito.when(union.getPositiveRegion()).thenReturn(positiveRegion);
+		
+		IntSortedSet complementaryUnionPositiveRegion = new IntLinkedOpenHashSet();
+		complementaryUnionPositiveRegion.add(1); //
+		complementaryUnionPositiveRegion.add(3);
+		complementaryUnionPositiveRegion.add(5);
+		complementaryUnionPositiveRegion.add(6); //
+		complementaryUnionPositiveRegion.add(7);
+		
+		Mockito.when(complementaryUnionMock.getPositiveRegion()).thenReturn(complementaryUnionPositiveRegion);
+		Mockito.when(union.getComplementaryUnion()).thenReturn(complementaryUnionMock);
+		
+		Mockito.when(union.calculateNegativeRegion()).thenCallRealMethod();
+		
+		IntSet negativeRegion = union.calculateNegativeRegion();
+		
+		assertEquals(negativeRegion.size(), 3);
 	}
 
 	/**
 	 * Test method for {@link Union#isConcordantWithDecision(Decision)}.
 	 */
 	@Test
-	void testIsConcordantWithDecision() {
-		//TODO: implement test
+	void testIsConcordantWithDecision01() {
+		AttributePreferenceType[] attributePreferenceTypes = new AttributePreferenceType[] {AttributePreferenceType.GAIN, AttributePreferenceType.COST};
+		
+		UnionWithConstructorParameters unionWithConstructorParameters;
+		UnionWithConstructorParameters strictUnionWithConstructorParameters;
+		Union union;
+		Union strictUnion;
+		SimpleDecision limitingDecision;
+		
+		for (int i = 0; i < attributePreferenceTypes.length; i++) {
+			unionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], true);
+			union = unionWithConstructorParameters.union;
+			
+			strictUnionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], false);
+			strictUnion = strictUnionWithConstructorParameters.union;
+			
+			limitingDecision = (SimpleDecision)unionWithConstructorParameters.limitingDecision; //ensure type of limiting decision is SimpleDecision
+			
+			int attributeIndex = limitingDecision.getAttributeIndices().toArray(new int[limitingDecision.getNumberOfEvaluations()])[0]; //get attribute index
+			AttributePreferenceType preferenceType = ((KnownSimpleField)limitingDecision.getEvaluation(attributeIndex)).getPreferenceType(); //get preference type
+			int limitingDecisionValue = ((IntegerField)limitingDecision.getEvaluation()).getValue(); //get value
+	
+			int equalValue = limitingDecisionValue;
+			Decision equalDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(equalValue, preferenceType), attributeIndex);
+			
+			int betterValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue + 1 : limitingDecisionValue - 1); //take better value for tested decision
+			Decision betterDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(betterValue, preferenceType), attributeIndex);
+			
+			int worseValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue - 1 : limitingDecisionValue + 1); //take worse value for tested decision
+			Decision worseDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(worseValue, preferenceType), attributeIndex);
+			
+			Decision comparableDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), attributeIndex); //take missing value of type mv_2 for tested decision
+			
+			Decision uncomparableDecision = new SimpleDecision(new UnknownSimpleFieldMV15(), attributeIndex); //take missing value of type mv_{1.5} for tested decision
+	
+			assertEquals(union.isConcordantWithDecision(equalDecision), TernaryLogicValue.TRUE);
+			assertEquals(union.isConcordantWithDecision(betterDecision), TernaryLogicValue.TRUE);
+			assertEquals(union.isConcordantWithDecision(worseDecision), TernaryLogicValue.FALSE);
+			assertEquals(union.isConcordantWithDecision(comparableDecision), TernaryLogicValue.TRUE);
+			assertEquals(union.isConcordantWithDecision(uncomparableDecision), TernaryLogicValue.UNCOMPARABLE);
+			
+			assertEquals(strictUnion.isConcordantWithDecision(equalDecision), TernaryLogicValue.FALSE);
+			assertEquals(strictUnion.isConcordantWithDecision(betterDecision), TernaryLogicValue.TRUE);
+			assertEquals(strictUnion.isConcordantWithDecision(worseDecision), TernaryLogicValue.FALSE);
+			assertEquals(strictUnion.isConcordantWithDecision(comparableDecision), TernaryLogicValue.FALSE);
+			assertEquals(strictUnion.isConcordantWithDecision(uncomparableDecision), TernaryLogicValue.UNCOMPARABLE);
+		}
+	}
+	
+	/**
+	 * Test method for {@link Union#isConcordantWithDecision(Decision)}.
+	 * Tests union "at most".
+	 */
+	@Test
+	void testIsConcordantWithDecision02() {
+		AttributePreferenceType[] attributePreferenceTypes = new AttributePreferenceType[] {AttributePreferenceType.GAIN, AttributePreferenceType.COST};
+		
+		UnionWithConstructorParameters unionWithConstructorParameters;
+		UnionWithConstructorParameters strictUnionWithConstructorParameters;
+		Union union;
+		Union strictUnion;
+		SimpleDecision limitingDecision;
+		
+		for (int i = 0; i < attributePreferenceTypes.length; i++) {
+			unionWithConstructorParameters = getTestAtMostUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], true);
+			union = unionWithConstructorParameters.union;
+			
+			strictUnionWithConstructorParameters = getTestAtMostUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], false);
+			strictUnion = strictUnionWithConstructorParameters.union;
+			
+			limitingDecision = (SimpleDecision)unionWithConstructorParameters.limitingDecision; //ensure type of limiting decision is SimpleDecision
+			
+			int attributeIndex = limitingDecision.getAttributeIndices().toArray(new int[limitingDecision.getNumberOfEvaluations()])[0]; //get attribute index
+			AttributePreferenceType preferenceType = ((KnownSimpleField)limitingDecision.getEvaluation(attributeIndex)).getPreferenceType(); //get preference type
+			int limitingDecisionValue = ((IntegerField)limitingDecision.getEvaluation()).getValue(); //get value
+	
+			int equalValue = limitingDecisionValue;
+			Decision equalDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(equalValue, preferenceType), attributeIndex);
+			
+			int betterValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue + 1 : limitingDecisionValue - 1); //take better value for tested decision
+			Decision betterDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(betterValue, preferenceType), attributeIndex);
+			
+			int worseValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue - 1 : limitingDecisionValue + 1); //take worse value for tested decision
+			Decision worseDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(worseValue, preferenceType), attributeIndex);
+			
+			Decision comparableDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), attributeIndex); //take missing value of type mv_2 for tested decision
+			
+			Decision uncomparableDecision = new SimpleDecision(new UnknownSimpleFieldMV15(), attributeIndex); //take missing value of type mv_{1.5} for tested decision
+	
+			assertEquals(union.isConcordantWithDecision(equalDecision), TernaryLogicValue.TRUE);
+			assertEquals(union.isConcordantWithDecision(betterDecision), TernaryLogicValue.FALSE);
+			assertEquals(union.isConcordantWithDecision(worseDecision), TernaryLogicValue.TRUE);
+			assertEquals(union.isConcordantWithDecision(comparableDecision), TernaryLogicValue.TRUE);
+			assertEquals(union.isConcordantWithDecision(uncomparableDecision), TernaryLogicValue.UNCOMPARABLE);
+			
+			assertEquals(strictUnion.isConcordantWithDecision(equalDecision), TernaryLogicValue.FALSE);
+			assertEquals(strictUnion.isConcordantWithDecision(betterDecision), TernaryLogicValue.FALSE);
+			assertEquals(strictUnion.isConcordantWithDecision(worseDecision), TernaryLogicValue.TRUE);
+			assertEquals(strictUnion.isConcordantWithDecision(comparableDecision), TernaryLogicValue.FALSE);
+			assertEquals(strictUnion.isConcordantWithDecision(uncomparableDecision), TernaryLogicValue.UNCOMPARABLE);
+		}
 	}
 
 	/**
 	 * Test method for {@link Union#getComplementarySetSize()}.
 	 */
 	@Test
-	void testGetComplementarySetSize() {
-		//TODO: implement test
+	void testGetComplementarySetSize01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertEquals(union.getComplementarySetSize(), 2);
+	}
+	
+	/**
+	 * Test method for {@link Union#getComplementarySetSize()}.
+	 */
+	@Test
+	void testGetComplementarySetSize02() {
+		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertEquals(union.getComplementarySetSize(), 2);
 	}
 
 	/**
@@ -402,6 +846,7 @@ class UnionTest {
 	 */
 	private class UnionWithConstructorParameters {
 		private Union union;
+		@SuppressWarnings("unused")
 		private UnionType unionType;
 		private Decision limitingDecision;
 		private InformationTableWithDecisionDistributions informationTable;
@@ -429,26 +874,65 @@ class UnionTest {
 	}
 	
 	/**
-	 * Gets test union, useful for testing protected methods.
+	 * Gets test "at least" union with {@link SimpleDecision} limiting decision, useful for testing protected methods.
+	 * This decision has one {@link IntegerField} contributing evaluation.
 	 * 
+	 * @param preferenceType attribute preference type; should be {@link AttributePreferenceType#GAIN} or {@link AttributePreferenceType#COST}
 	 * @return structure holding constructed test union and parameters used to construct that union
 	 */
-	private UnionWithConstructorParameters getTestUnion() {
+	private UnionWithConstructorParameters getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType preferenceType, boolean includeLimitingDecision) {
 		UnionType unionType = UnionType.AT_LEAST;
+		
+		int value = 10;
 		int attributeIndex = 1;
-		Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), attributeIndex);
+		Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(value, preferenceType), attributeIndex);
+		
 		InformationTableWithDecisionDistributions informationTableMock = Mockito.mock(InformationTableWithDecisionDistributions.class);
 		
 		EvaluationAttribute attributeMock = Mockito.mock(EvaluationAttribute.class);
 		Mockito.when(attributeMock.isActive()).thenReturn(true);
 		Mockito.when(attributeMock.getType()).thenReturn(AttributeType.DECISION);
-		Mockito.when(attributeMock.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
+		Mockito.when(attributeMock.getPreferenceType()).thenReturn(preferenceType);
 		Mockito.when(informationTableMock.getAttribute(attributeIndex)).thenReturn(attributeMock);
+		Mockito.when(informationTableMock.getNumberOfObjects()).thenReturn(0); //avoids looping in findObjects() method
 		
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		return new UnionWithConstructorParameters(
-				new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock),
+				new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, includeLimitingDecision),
+				unionType,
+				limitingDecision,
+				informationTableMock,
+				roughSetCalculatorMock);
+	}
+	
+	/**
+	 * Gets test "at least" union with {@link SimpleDecision} limiting decision, useful for testing protected methods.
+	 * This decision has one {@link IntegerField} contributing evaluation.
+	 * 
+	 * @param preferenceType attribute preference type; should be {@link AttributePreferenceType#GAIN} or {@link AttributePreferenceType#COST}
+	 * @return structure holding constructed test union and parameters used to construct that union
+	 */
+	private UnionWithConstructorParameters getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType preferenceType, boolean includeLimitingDecision) {
+		UnionType unionType = UnionType.AT_MOST;
+		
+		int value = 5;
+		int attributeIndex = 2;
+		Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(value, preferenceType), attributeIndex);
+		
+		InformationTableWithDecisionDistributions informationTableMock = Mockito.mock(InformationTableWithDecisionDistributions.class);
+		
+		EvaluationAttribute attributeMock = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock.isActive()).thenReturn(true);
+		Mockito.when(attributeMock.getType()).thenReturn(AttributeType.DECISION);
+		Mockito.when(attributeMock.getPreferenceType()).thenReturn(preferenceType);
+		Mockito.when(informationTableMock.getAttribute(attributeIndex)).thenReturn(attributeMock);
+		Mockito.when(informationTableMock.getNumberOfObjects()).thenReturn(0); //avoids looping in findObjects() method
+		
+		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
+		
+		return new UnionWithConstructorParameters(
+				new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, includeLimitingDecision),
 				unionType,
 				limitingDecision,
 				informationTableMock,
@@ -498,6 +982,7 @@ class UnionTest {
 	
 	/**
 	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 * Tests {@link CompositeDecision} decision.
 	 */
 	@Test
 	void testValidateLimitingDecision02() {
@@ -540,6 +1025,7 @@ class UnionTest {
 	
 	/**
 	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 * Tests {@link CompositeDecision} decision.
 	 */
 	@Test
 	void testValidateLimitingDecision03() {
@@ -582,6 +1068,7 @@ class UnionTest {
 	
 	/**
 	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 * Tests {@link CompositeDecision} decision.
 	 */
 	@Test
 	void testValidateLimitingDecision04() {
@@ -625,6 +1112,7 @@ class UnionTest {
 	
 	/**
 	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 * Tests {@link CompositeDecision} decision.
 	 */
 	@Test
 	void testValidateLimitingDecision05() {
@@ -669,33 +1157,100 @@ class UnionTest {
 	 * Test method for {@link Union#setComplementaryUnion(Union)}.
 	 */
 	@Test
-	void testSetComplementaryUnion() {
-		//TODO: implement test
+	void testSetComplementaryUnion01() {
+		Union union =  getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		Union complementaryUnion = Mockito.mock(Union.class);
+		Union complementaryUnion2 = Mockito.mock(Union.class);
+		
+		assertTrue(union.setComplementaryUnion(complementaryUnion));
+		assertEquals(union.complementaryUnion, complementaryUnion);
+		
+		assertFalse(union.setComplementaryUnion(complementaryUnion2));
+		assertEquals(union.complementaryUnion, complementaryUnion); //still the same complementary union
+	}
+	
+	/**
+	 * Test method for {@link Union#setComplementaryUnion(Union)}.
+	 */
+	@Test
+	void testSetComplementaryUnion02() {
+		Union union =  getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		Union complementaryUnion = Mockito.mock(Union.class);
+		Union complementaryUnion2 = Mockito.mock(Union.class);
+		
+		assertTrue(union.setComplementaryUnion(complementaryUnion));
+		assertEquals(union.complementaryUnion, complementaryUnion);
+		
+		assertFalse(union.setComplementaryUnion(complementaryUnion2));
+		assertEquals(union.complementaryUnion, complementaryUnion); //still the same complementary union
 	}
 
 	/**
 	 * Test method for {@link Union#getComplementaryUnion()}.
 	 */
 	@Test
-	void testGetComplementaryUnion() {
-		//TODO: implement test
+	void testGetComplementaryUnion01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		Union complementaryUnion = Mockito.mock(Union.class);
+		union.setComplementaryUnion(complementaryUnion);
+		
+		assertEquals(union.complementaryUnion, complementaryUnion);
+		assertEquals(union.getComplementaryUnion(), complementaryUnion);
 	}
-
+	
 	/**
-	 * Test method for {@link Union#calculateComplementaryUnion()}.
+	 * Test method for {@link Union#getComplementaryUnion()}.
 	 */
 	@Test
-	void testCalculateComplementaryUnion() {
-		//TODO: implement test
+	void testGetComplementaryUnion02() {
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true);
+		Union union = unionWithConstructorParameters.union;
+		assertEquals(union.complementaryUnion, null);
+		Union complementaryUnion = union.getComplementaryUnion();
+		assertNotNull(complementaryUnion); //tests if complementary union is calculated on demand
+		assertEquals(complementaryUnion.getLimitingDecision(), union.getLimitingDecision());
+		assertEquals(complementaryUnion.getUnionType(), UnionType.AT_MOST);
+		assertFalse(complementaryUnion.isIncludeLimitingDecision());
 	}
+	
+	/**
+	 * Test method for {@link Union#getComplementaryUnion()}.
+	 */
+	@Test
+	void testGetComplementaryUnion03() {
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.COST, true);
+		Union union = unionWithConstructorParameters.union;
+		assertEquals(union.complementaryUnion, null);
+		Union complementaryUnion = union.getComplementaryUnion();
+		assertNotNull(complementaryUnion); //tests if complementary union is calculated on demand
+		assertEquals(complementaryUnion.getLimitingDecision(), union.getLimitingDecision());
+		assertEquals(complementaryUnion.getUnionType(), UnionType.AT_LEAST);
+		assertFalse(complementaryUnion.isIncludeLimitingDecision());
+	}
+
+//	/**
+//	 * Test method for {@link Union#calculateComplementaryUnion()}.
+//	 */
+//	@Test
+//	void testCalculateComplementaryUnion() {
+//	}
 
 	/**
 	 * Test method for {@link Union#getUnionType()}.
 	 */
 	@Test
-	void testGetUnionType() {
-		UnionWithConstructorParameters unionWithConstructorParameters = getTestUnion();
-		assertEquals(unionWithConstructorParameters.union.getUnionType(), unionWithConstructorParameters.unionType);
+	void testGetUnionType01() {
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true);
+		assertEquals(unionWithConstructorParameters.union.getUnionType(), UnionType.AT_LEAST);
+	}
+	
+	/**
+	 * Test method for {@link Union#getUnionType()}.
+	 */
+	@Test
+	void testGetUnionType02() {
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.COST, false);
+		assertEquals(unionWithConstructorParameters.union.getUnionType(), UnionType.AT_MOST);
 	}
 	
 	/**
@@ -704,7 +1259,7 @@ class UnionTest {
 	 */
 	@Test
 	void testGetLimitingDecision() {
-		UnionWithConstructorParameters unionWithConstructorParameters = getTestUnion();
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true);
 		assertEquals(unionWithConstructorParameters.union.getLimitingDecision(), unionWithConstructorParameters.limitingDecision);
 	}
 
@@ -713,32 +1268,332 @@ class UnionTest {
 	 */
 	@Test
 	void testGetRoughSetCalculator() {
-		UnionWithConstructorParameters unionWithConstructorParameters = getTestUnion();
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, false);
 		assertEquals(unionWithConstructorParameters.union.getRoughSetCalculator(), unionWithConstructorParameters.roughSetCalculator);
 	}
 
 	/**
 	 * Test method for {@link Union#isDecisionPositive(Decision)}.
+	 * Tests union "at least".
 	 */
 	@Test
-	void testIsDecisionPositive() {
-		//TODO: implement test
+	void testIsDecisionPositive01() {
+		AttributePreferenceType[] attributePreferenceTypes = new AttributePreferenceType[] {AttributePreferenceType.GAIN, AttributePreferenceType.COST};
+		
+		UnionWithConstructorParameters unionWithConstructorParameters;
+		UnionWithConstructorParameters strictUnionWithConstructorParameters;
+		Union union;
+		Union strictUnion;
+		SimpleDecision limitingDecision;
+		
+		for (int i = 0; i < attributePreferenceTypes.length; i++) {
+			unionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], true);
+			union = unionWithConstructorParameters.union;
+			
+			strictUnionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], false);
+			strictUnion = strictUnionWithConstructorParameters.union;
+			
+			limitingDecision = (SimpleDecision)unionWithConstructorParameters.limitingDecision; //ensure type of limiting decision is SimpleDecision
+			
+			int attributeIndex = limitingDecision.getAttributeIndices().toArray(new int[limitingDecision.getNumberOfEvaluations()])[0]; //get attribute index
+			AttributePreferenceType preferenceType = ((KnownSimpleField)limitingDecision.getEvaluation(attributeIndex)).getPreferenceType(); //get preference type
+			int limitingDecisionValue = ((IntegerField)limitingDecision.getEvaluation()).getValue(); //get value
+	
+			int equalValue = limitingDecisionValue;
+			Decision equalDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(equalValue, preferenceType), attributeIndex);
+			
+			int betterValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue + 1 : limitingDecisionValue - 1); //take better value for tested decision
+			Decision betterDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(betterValue, preferenceType), attributeIndex);
+			
+			int worseValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue - 1 : limitingDecisionValue + 1); //take worse value for tested decision
+			Decision worseDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(worseValue, preferenceType), attributeIndex);
+			
+			Decision comparableDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), attributeIndex); //take missing value of type mv_2 for tested decision
+			
+			Decision uncomparableDecision = new SimpleDecision(new UnknownSimpleFieldMV15(), attributeIndex); //take missing value of type mv_{1.5} for tested decision
+	
+			assertTrue(union.isDecisionPositive(equalDecision));
+			assertTrue(union.isDecisionPositive(betterDecision));
+			assertFalse(union.isDecisionPositive(worseDecision));
+			assertTrue(union.isDecisionPositive(comparableDecision));
+			assertFalse(union.isDecisionPositive(uncomparableDecision));
+			
+			assertFalse(strictUnion.isDecisionPositive(equalDecision));
+			assertTrue(strictUnion.isDecisionPositive(betterDecision));
+			assertFalse(strictUnion.isDecisionPositive(worseDecision));
+			assertFalse(strictUnion.isDecisionPositive(comparableDecision));
+			assertFalse(strictUnion.isDecisionPositive(uncomparableDecision));
+		}
+	}
+	
+	/**
+	 * Test method for {@link Union#isDecisionPositive(Decision)}.
+	 * Tests union "at most".
+	 */
+	@Test
+	void testIsDecisionPositive02() {
+		AttributePreferenceType[] attributePreferenceTypes = new AttributePreferenceType[] {AttributePreferenceType.GAIN, AttributePreferenceType.COST};
+		
+		UnionWithConstructorParameters unionWithConstructorParameters;
+		UnionWithConstructorParameters strictUnionWithConstructorParameters;
+		Union union;
+		Union strictUnion;
+		SimpleDecision limitingDecision;
+		
+		for (int i = 0; i < attributePreferenceTypes.length; i++) {
+			unionWithConstructorParameters = getTestAtMostUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], true);
+			union = unionWithConstructorParameters.union;
+			
+			strictUnionWithConstructorParameters = getTestAtMostUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], false);
+			strictUnion = strictUnionWithConstructorParameters.union;
+			
+			limitingDecision = (SimpleDecision)unionWithConstructorParameters.limitingDecision; //ensure type of limiting decision is SimpleDecision
+			
+			int attributeIndex = limitingDecision.getAttributeIndices().toArray(new int[limitingDecision.getNumberOfEvaluations()])[0]; //get attribute index
+			AttributePreferenceType preferenceType = ((KnownSimpleField)limitingDecision.getEvaluation(attributeIndex)).getPreferenceType(); //get preference type
+			int limitingDecisionValue = ((IntegerField)limitingDecision.getEvaluation()).getValue(); //get value
+	
+			int equalValue = limitingDecisionValue;
+			Decision equalDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(equalValue, preferenceType), attributeIndex);
+			
+			int betterValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue + 1 : limitingDecisionValue - 1); //take better value for tested decision
+			Decision betterDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(betterValue, preferenceType), attributeIndex);
+			
+			int worseValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue - 1 : limitingDecisionValue + 1); //take worse value for tested decision
+			Decision worseDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(worseValue, preferenceType), attributeIndex);
+			
+			Decision comparableDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), attributeIndex); //take missing value of type mv_2 for tested decision
+			
+			Decision uncomparableDecision = new SimpleDecision(new UnknownSimpleFieldMV15(), attributeIndex); //take missing value of type mv_{1.5} for tested decision
+			
+			assertTrue(union.isDecisionPositive(equalDecision));
+			assertFalse(union.isDecisionPositive(betterDecision));
+			assertTrue(union.isDecisionPositive(worseDecision));
+			assertTrue(union.isDecisionPositive(comparableDecision));
+			assertFalse(union.isDecisionPositive(uncomparableDecision));
+			
+			assertFalse(strictUnion.isDecisionPositive(equalDecision));
+			assertFalse(strictUnion.isDecisionPositive(betterDecision));
+			assertTrue(strictUnion.isDecisionPositive(worseDecision));
+			assertFalse(strictUnion.isDecisionPositive(comparableDecision));
+			assertFalse(strictUnion.isDecisionPositive(uncomparableDecision));
+		}
 	}
 
 	/**
 	 * Test method for {@link Union#isDecisionNegative(Decision)}.
+	 * Tests union "at least".
 	 */
 	@Test
-	void testIsDecisionNegative() {
-		//TODO: implement test
+	void testIsDecisionNegative01() {
+		AttributePreferenceType[] attributePreferenceTypes = new AttributePreferenceType[] {AttributePreferenceType.GAIN, AttributePreferenceType.COST};
+		
+		UnionWithConstructorParameters unionWithConstructorParameters;
+		UnionWithConstructorParameters strictUnionWithConstructorParameters;
+		Union union;
+		Union strictUnion;
+		SimpleDecision limitingDecision;
+		
+		for (int i = 0; i < attributePreferenceTypes.length; i++) {
+			unionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], true);
+			union = unionWithConstructorParameters.union;
+			
+			strictUnionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], false);
+			strictUnion = strictUnionWithConstructorParameters.union;
+			
+			limitingDecision = (SimpleDecision)unionWithConstructorParameters.limitingDecision; //ensure type of limiting decision is SimpleDecision
+			
+			int attributeIndex = limitingDecision.getAttributeIndices().toArray(new int[limitingDecision.getNumberOfEvaluations()])[0]; //get attribute index
+			AttributePreferenceType preferenceType = ((KnownSimpleField)limitingDecision.getEvaluation(attributeIndex)).getPreferenceType(); //get preference type
+			int limitingDecisionValue = ((IntegerField)limitingDecision.getEvaluation()).getValue(); //get value
+	
+			int equalValue = limitingDecisionValue;
+			Decision equalDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(equalValue, preferenceType), attributeIndex);
+			
+			int betterValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue + 1 : limitingDecisionValue - 1); //take better value for tested decision
+			Decision betterDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(betterValue, preferenceType), attributeIndex);
+			
+			int worseValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue - 1 : limitingDecisionValue + 1); //take worse value for tested decision
+			Decision worseDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(worseValue, preferenceType), attributeIndex);
+			
+			Decision comparableDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), attributeIndex); //take missing value of type mv_2 for tested decision
+			
+			Decision uncomparableDecision = new SimpleDecision(new UnknownSimpleFieldMV15(), attributeIndex); //take missing value of type mv_{1.5} for tested decision
+	
+			assertFalse(union.isDecisionNegative(equalDecision));
+			assertFalse(union.isDecisionNegative(betterDecision));
+			assertTrue(union.isDecisionNegative(worseDecision));
+			assertFalse(union.isDecisionNegative(comparableDecision));
+			assertFalse(union.isDecisionNegative(uncomparableDecision));
+			
+			assertTrue(strictUnion.isDecisionNegative(equalDecision));
+			assertFalse(strictUnion.isDecisionNegative(betterDecision));
+			assertTrue(strictUnion.isDecisionNegative(worseDecision));
+			assertTrue(strictUnion.isDecisionNegative(comparableDecision));
+			assertFalse(strictUnion.isDecisionNegative(uncomparableDecision));
+		}
+	}
+		
+	/**
+	 * Test method for {@link Union#isDecisionNegative(Decision)}.
+	 * Tests union "at most".
+	 */
+	@Test
+	void testIsDecisionNegative02() {
+		AttributePreferenceType[] attributePreferenceTypes = new AttributePreferenceType[] {AttributePreferenceType.GAIN, AttributePreferenceType.COST};
+		
+		UnionWithConstructorParameters unionWithConstructorParameters;
+		UnionWithConstructorParameters strictUnionWithConstructorParameters;
+		Union union;
+		Union strictUnion;
+		SimpleDecision limitingDecision;
+		
+		for (int i = 0; i < attributePreferenceTypes.length; i++) {
+			unionWithConstructorParameters = getTestAtMostUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], true);
+			union = unionWithConstructorParameters.union;
+			
+			strictUnionWithConstructorParameters = getTestAtMostUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], false);
+			strictUnion = strictUnionWithConstructorParameters.union;
+			
+			limitingDecision = (SimpleDecision)unionWithConstructorParameters.limitingDecision; //ensure type of limiting decision is SimpleDecision
+			
+			int attributeIndex = limitingDecision.getAttributeIndices().toArray(new int[limitingDecision.getNumberOfEvaluations()])[0]; //get attribute index
+			AttributePreferenceType preferenceType = ((KnownSimpleField)limitingDecision.getEvaluation(attributeIndex)).getPreferenceType(); //get preference type
+			int limitingDecisionValue = ((IntegerField)limitingDecision.getEvaluation()).getValue(); //get value
+	
+			int equalValue = limitingDecisionValue;
+			Decision equalDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(equalValue, preferenceType), attributeIndex);
+			
+			int betterValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue + 1 : limitingDecisionValue - 1); //take better value for tested decision
+			Decision betterDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(betterValue, preferenceType), attributeIndex);
+			
+			int worseValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue - 1 : limitingDecisionValue + 1); //take worse value for tested decision
+			Decision worseDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(worseValue, preferenceType), attributeIndex);
+			
+			Decision comparableDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), attributeIndex); //take missing value of type mv_2 for tested decision
+			
+			Decision uncomparableDecision = new SimpleDecision(new UnknownSimpleFieldMV15(), attributeIndex); //take missing value of type mv_{1.5} for tested decision
+	
+			assertFalse(union.isDecisionNegative(equalDecision));
+			assertTrue(union.isDecisionNegative(betterDecision));
+			assertFalse(union.isDecisionNegative(worseDecision));
+			assertFalse(union.isDecisionNegative(comparableDecision));
+			assertFalse(union.isDecisionNegative(uncomparableDecision));
+			
+			assertTrue(strictUnion.isDecisionNegative(equalDecision));
+			assertTrue(strictUnion.isDecisionNegative(betterDecision));
+			assertFalse(strictUnion.isDecisionNegative(worseDecision));
+			assertTrue(strictUnion.isDecisionNegative(comparableDecision));
+			assertFalse(strictUnion.isDecisionNegative(uncomparableDecision));
+		}
 	}
 
 	/**
 	 * Test method for {@link Union#isDecisionNeutral(Decision)}.
+	 * Tests union "at least".
 	 */
 	@Test
-	void testIsDecisionNeutral() {
-		//TODO: implement test
+	void testIsDecisionNeutral01() {
+		AttributePreferenceType[] attributePreferenceTypes = new AttributePreferenceType[] {AttributePreferenceType.GAIN, AttributePreferenceType.COST};
+		
+		UnionWithConstructorParameters unionWithConstructorParameters;
+		UnionWithConstructorParameters strictUnionWithConstructorParameters;
+		Union union;
+		Union strictUnion;
+		SimpleDecision limitingDecision;
+		
+		for (int i = 0; i < attributePreferenceTypes.length; i++) {
+			unionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], true);
+			union = unionWithConstructorParameters.union;
+			
+			strictUnionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], false);
+			strictUnion = strictUnionWithConstructorParameters.union;
+			
+			limitingDecision = (SimpleDecision)unionWithConstructorParameters.limitingDecision; //ensure type of limiting decision is SimpleDecision
+			
+			int attributeIndex = limitingDecision.getAttributeIndices().toArray(new int[limitingDecision.getNumberOfEvaluations()])[0]; //get attribute index
+			AttributePreferenceType preferenceType = ((KnownSimpleField)limitingDecision.getEvaluation(attributeIndex)).getPreferenceType(); //get preference type
+			int limitingDecisionValue = ((IntegerField)limitingDecision.getEvaluation()).getValue(); //get value
+	
+			int equalValue = limitingDecisionValue;
+			Decision equalDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(equalValue, preferenceType), attributeIndex);
+			
+			int betterValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue + 1 : limitingDecisionValue - 1); //take better value for tested decision
+			Decision betterDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(betterValue, preferenceType), attributeIndex);
+			
+			int worseValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue - 1 : limitingDecisionValue + 1); //take worse value for tested decision
+			Decision worseDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(worseValue, preferenceType), attributeIndex);
+			
+			Decision comparableDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), attributeIndex); //take missing value of type mv_2 for tested decision
+			
+			Decision uncomparableDecision = new SimpleDecision(new UnknownSimpleFieldMV15(), attributeIndex); //take missing value of type mv_{1.5} for tested decision
+	
+			assertFalse(union.isDecisionNeutral(equalDecision));
+			assertFalse(union.isDecisionNeutral(betterDecision));
+			assertFalse(union.isDecisionNeutral(worseDecision));
+			assertFalse(union.isDecisionNeutral(comparableDecision));
+			assertTrue(union.isDecisionNeutral(uncomparableDecision));
+			
+			assertFalse(strictUnion.isDecisionNeutral(equalDecision));
+			assertFalse(strictUnion.isDecisionNeutral(betterDecision));
+			assertFalse(strictUnion.isDecisionNeutral(worseDecision));
+			assertFalse(strictUnion.isDecisionNeutral(comparableDecision));
+			assertTrue(strictUnion.isDecisionNeutral(uncomparableDecision));
+		}
+	}
+	
+	/**
+	 * Test method for {@link Union#isDecisionNeutral(Decision)}.
+	 * Tests union "at most".
+	 */
+	@Test
+	void testIsDecisionNeutral02() {
+		AttributePreferenceType[] attributePreferenceTypes = new AttributePreferenceType[] {AttributePreferenceType.GAIN, AttributePreferenceType.COST};
+		
+		UnionWithConstructorParameters unionWithConstructorParameters;
+		UnionWithConstructorParameters strictUnionWithConstructorParameters;
+		Union union;
+		Union strictUnion;
+		SimpleDecision limitingDecision;
+		
+		for (int i = 0; i < attributePreferenceTypes.length; i++) {
+			unionWithConstructorParameters = getTestAtMostUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], true);
+			union = unionWithConstructorParameters.union;
+			
+			strictUnionWithConstructorParameters = getTestAtMostUnionWithSimpleLimitingDecision(attributePreferenceTypes[i], false);
+			strictUnion = strictUnionWithConstructorParameters.union;
+			
+			limitingDecision = (SimpleDecision)unionWithConstructorParameters.limitingDecision; //ensure type of limiting decision is SimpleDecision
+			
+			int attributeIndex = limitingDecision.getAttributeIndices().toArray(new int[limitingDecision.getNumberOfEvaluations()])[0]; //get attribute index
+			AttributePreferenceType preferenceType = ((KnownSimpleField)limitingDecision.getEvaluation(attributeIndex)).getPreferenceType(); //get preference type
+			int limitingDecisionValue = ((IntegerField)limitingDecision.getEvaluation()).getValue(); //get value
+	
+			int equalValue = limitingDecisionValue;
+			Decision equalDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(equalValue, preferenceType), attributeIndex);
+			
+			int betterValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue + 1 : limitingDecisionValue - 1); //take better value for tested decision
+			Decision betterDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(betterValue, preferenceType), attributeIndex);
+			
+			int worseValue = (preferenceType == AttributePreferenceType.GAIN ? limitingDecisionValue - 1 : limitingDecisionValue + 1); //take worse value for tested decision
+			Decision worseDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(worseValue, preferenceType), attributeIndex);
+			
+			Decision comparableDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), attributeIndex); //take missing value of type mv_2 for tested decision
+			
+			Decision uncomparableDecision = new SimpleDecision(new UnknownSimpleFieldMV15(), attributeIndex); //take missing value of type mv_{1.5} for tested decision
+	
+			assertFalse(union.isDecisionNeutral(equalDecision));
+			assertFalse(union.isDecisionNeutral(betterDecision));
+			assertFalse(union.isDecisionNeutral(worseDecision));
+			assertFalse(union.isDecisionNeutral(comparableDecision));
+			assertTrue(union.isDecisionNeutral(uncomparableDecision));
+			
+			assertFalse(strictUnion.isDecisionNeutral(equalDecision));
+			assertFalse(strictUnion.isDecisionNeutral(betterDecision));
+			assertFalse(strictUnion.isDecisionNeutral(worseDecision));
+			assertFalse(strictUnion.isDecisionNeutral(comparableDecision));
+			assertTrue(strictUnion.isDecisionNeutral(uncomparableDecision));
+		}
 	}
 
 	/**
@@ -746,7 +1601,7 @@ class UnionTest {
 	 */
 	@Test
 	void testGetInformationTable() {
-		UnionWithConstructorParameters unionWithConstructorParameters = getTestUnion();
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, false);
 		assertEquals(unionWithConstructorParameters.union.getInformationTable(), unionWithConstructorParameters.informationTable);
 	}
 
@@ -754,24 +1609,108 @@ class UnionTest {
 	 * Test method for {@link Union#isObjectPositive(int)}.
 	 */
 	@Test
-	void testIsObjectPositive() {
-		//TODO: implement test
+	void testIsObjectPositive01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertTrue(union.isObjectPositive(0));
+		assertTrue(union.isObjectPositive(1));
+		assertFalse(union.isObjectPositive(2));
+		assertTrue(union.isObjectPositive(3));
+		assertFalse(union.isObjectPositive(4));
+		assertFalse(union.isObjectPositive(5));
+		assertTrue(union.isObjectPositive(6));
+	}
+	
+	/**
+	 * Test method for {@link Union#isObjectPositive(int)}.
+	 */
+	@Test
+	void testIsObjectPositive02() {
+		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertTrue(union.isObjectPositive(0));
+		assertFalse(union.isObjectPositive(1));
+		assertTrue(union.isObjectPositive(2));
+		assertFalse(union.isObjectPositive(3));
+		assertFalse(union.isObjectPositive(4));
+		assertTrue(union.isObjectPositive(5));
+		assertTrue(union.isObjectPositive(6));
 	}
 
 	/**
 	 * Test method for {@link Union#isObjectNeutral(int)}.
 	 */
 	@Test
-	void testIsObjectNeutral() {
-		//TODO: implement test
+	void testIsObjectNeutral01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertFalse(union.isObjectNeutral(0));
+		assertFalse(union.isObjectNeutral(1));
+		assertFalse(union.isObjectNeutral(2));
+		assertFalse(union.isObjectNeutral(3));
+		assertTrue(union.isObjectNeutral(4));
+		assertFalse(union.isObjectNeutral(5));
+		assertFalse(union.isObjectNeutral(6));
+	}
+	
+	/**
+	 * Test method for {@link Union#isObjectNeutral(int)}.
+	 */
+	@Test
+	void testIsObjectNeutral02() {
+		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertFalse(union.isObjectNeutral(0));
+		assertFalse(union.isObjectNeutral(1));
+		assertFalse(union.isObjectNeutral(2));
+		assertFalse(union.isObjectNeutral(3));
+		assertTrue(union.isObjectNeutral(4));
+		assertFalse(union.isObjectNeutral(5));
+		assertFalse(union.isObjectNeutral(6));
 	}
 
 	/**
 	 * Test method for {@link Union#isObjectNegative(int)}.
 	 */
 	@Test
-	void testIsObjectNegative() {
-		//TODO: implement test
+	void testIsObjectNegative01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertFalse(union.isObjectNegative(0));
+		assertFalse(union.isObjectNegative(1));
+		assertTrue(union.isObjectNegative(2));
+		assertFalse(union.isObjectNegative(3));
+		assertFalse(union.isObjectNegative(4));
+		assertTrue(union.isObjectNegative(5));
+		assertFalse(union.isObjectNegative(6));
+	}
+	
+	/**
+	 * Test method for {@link Union#isObjectNegative(int)}.
+	 */
+	@Test
+	void testIsObjectNegative02() {
+		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock(union);
+		union.findObjects();
+		
+		assertFalse(union.isObjectNegative(0));
+		assertTrue(union.isObjectNegative(1));
+		assertFalse(union.isObjectNegative(2));
+		assertTrue(union.isObjectNegative(3));
+		assertFalse(union.isObjectNegative(4));
+		assertFalse(union.isObjectNegative(5));
+		assertFalse(union.isObjectNegative(6));
 	}
 
 }

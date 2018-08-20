@@ -173,9 +173,9 @@ public abstract class ApproximatedSet {
 //	public abstract IntSortedSet getUncomparableObjects();
 
 	/**
-	 * Gets set of indices of objects belonging to the lower approximation of this approximated set.
+	 * Gets unmodifiable set of indices of objects belonging to the lower approximation of this approximated set.
 	 * 
-	 * @return set of indices of objects belonging to the lower approximation of this approximated set
+	 * @return unmodifiable set of indices of objects belonging to the lower approximation of this approximated set
 	 */
 	public IntSortedSet getLowerApproximation() {
 		if (this.lowerApproximation == null) {
@@ -192,9 +192,9 @@ public abstract class ApproximatedSet {
 	protected abstract IntSortedSet calculateLowerApproximation();
 	
 	/**
-	 * Gets set of indices of objects belonging to the upper approximation of this approximated set.
+	 * Gets unmodifiable set of indices of objects belonging to the upper approximation of this approximated set.
 	 * 
-	 * @return set of indices of objects belonging to the upper approximation of this approximated set
+	 * @return unmodifiable set of indices of objects belonging to the upper approximation of this approximated set
 	 */
 	public IntSortedSet getUpperApproximation() {
 		if (this.upperApproximation == null) {
@@ -211,9 +211,9 @@ public abstract class ApproximatedSet {
 	protected abstract IntSortedSet calculateUpperApproximation();
 	
 	/**
-	 * Gets set of indices of objects belonging to the boundary of this approximated set.
+	 * Gets unmodifiable set of indices of objects belonging to the boundary of this approximated set.
 	 * 
-	 * @return set of indices of objects belonging to the boundary of this approximated set
+	 * @return unmodifiable set of indices of objects belonging to the boundary of this approximated set
 	 */
 	public IntSortedSet getBoundary() {
 		if (this.boundary == null) {
@@ -240,12 +240,12 @@ public abstract class ApproximatedSet {
 	}
 	
 	/**
-	 * Gets set of indices of objects belonging to the positive region of this approximated set.
+	 * Gets unmodifiable set of indices of objects belonging to the positive region of this approximated set.
 	 * This region is composed of objects belonging to the lower approximation of this set plus
 	 * objects belonging to so-called granules (equivalence classes or dominance cones)
 	 * defined with respect to the objects from the lower approximation.
 	 * 
-	 * @return set of indices of objects belonging to the positive region of this approximated set
+	 * @return unmodifiable set of indices of objects belonging to the positive region of this approximated set
 	 */
 	public IntSet getPositiveRegion() {
 		if (this.positiveRegion == null) { //positive region not calculated yet
@@ -268,10 +268,10 @@ public abstract class ApproximatedSet {
 	protected abstract IntSet calculatePositiveRegion(IntSortedSet lowerApproximation);
 	
 	/**
-	 * Gets set of indices of objects belonging to the negative region of this approximated set.
+	 * Gets unmodifiable set of indices of objects belonging to the negative region of this approximated set.
 	 * The negative region is a (set) difference between positive region of the complement of this approximated set and positive region of this approximated set.
 	 * 
-	 * @return set of indices of objects belonging to the negative region of this approximated set
+	 * @return unmodifiable set of indices of objects belonging to the negative region of this approximated set
 	 */
 	public IntSet getNegativeRegion() {
 		if (this.negativeRegion == null) { //negative region not calculated yet
@@ -291,10 +291,10 @@ public abstract class ApproximatedSet {
 	protected abstract IntSet calculateNegativeRegion();
 	
 	/**
-	 * Gets set of indices of objects belonging to the boundary region of this approximated set, i.e., the set of objects that are neither
+	 * Gets unmodifiable set of indices of objects belonging to the boundary region of this approximated set, i.e., the set of objects that are neither
 	 * in the positive region nor in the negative region of this approximated set.
 	 * 
-	 * @return set of indices of objects belonging to the boundary region of this approximated set
+	 * @return unmodifiable set of indices of objects belonging to the boundary region of this approximated set
 	 */
 	public IntSet getBoundaryRegion() {
 		if (this.boundaryRegion == null) { //boundary region not calculated yet
@@ -376,5 +376,14 @@ public abstract class ApproximatedSet {
 	 * @return the size of the set of objects that is complementary to the set of (positive) objects belonging to this approximated set
 	 */
 	public abstract int getComplementarySetSize();
+
+	/**
+	 * Tells if this approximated set includes objects whose decision is equal to the limiting decision.
+	 * 
+	 * @return {@code true} if this approximated set includes objects whose decision is equal to the limiting decision, {@code false} otherwise
+	 */
+	public boolean isIncludeLimitingDecision() {
+		return includeLimitingDecision;
+	}
 	
 }
