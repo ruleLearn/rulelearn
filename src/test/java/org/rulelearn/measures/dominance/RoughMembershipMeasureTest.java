@@ -36,10 +36,14 @@ import org.rulelearn.dominance.DominanceConesDecisionDistributions;
 import org.rulelearn.measures.MeasureType;
 
 /**
- * Tests for {@link RoughMembershipMeasure}.
+ * Tests for {@link RoughMembershipMeasure}. Test is based on illustrative example represented in figure (note that all criteria, including decision criterion, are gain-type): 
+ * <img src="./doc-files/consistencyOfObjects.png"/>
+ * 
+ * The same example may be also found as Example 3.3.1. (Figure 3.5) in J. Błaszczyńsk, Rule Models for Ordinal Classification in Variable Consistency Rough Set Approaches, PhD thesis, 
+ * Poznan University of Technology, Poznań, Poland, 2010.
  *
- * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
- * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
+ * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+ * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 class RoughMembershipMeasureTest {
 

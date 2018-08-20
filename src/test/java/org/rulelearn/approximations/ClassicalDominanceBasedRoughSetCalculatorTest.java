@@ -37,6 +37,8 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
  * Tests for {@link ClassicalDominanceBasedRoughSetCalculator}.
+ * 
+ * Test is based on illustrative example represented in figure: <img src="./doc-files/approximationsOfUnions.png"/>.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
