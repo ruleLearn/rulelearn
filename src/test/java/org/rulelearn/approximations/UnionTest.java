@@ -22,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rulelearn.approximations.Union.UnionType;
@@ -38,12 +41,17 @@ import org.rulelearn.data.IdentificationAttribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.data.SimpleDecision;
+import org.rulelearn.data.Table;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.KnownSimpleField;
 import org.rulelearn.types.UnknownSimpleFieldMV15;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
+
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 //TODO: extract common code blocks into separate method
 /**
@@ -156,33 +164,254 @@ class UnionTest {
 	 * Test method for {@link Union#calculateLowerApproximation()}.
 	 */
 	@Test
-	void testCalculateLowerApproximation() {
-		//TODO: implement test
+	void testCalculateLowerApproximation01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		
+		//configure rough set calculator mock
+		DominanceBasedRoughSetCalculator roughSetCalculator = union.getRoughSetCalculator();
+		
+		IntSortedSet lowerApproximation = new IntLinkedOpenHashSet();
+		lowerApproximation.add(3);
+		lowerApproximation.add(4);
+		lowerApproximation.add(7);
+		lowerApproximation.add(12);
+		lowerApproximation.add(15);
+		
+		Mockito.when(roughSetCalculator.calculateLowerApproximation(union)).thenReturn(lowerApproximation);
+		
+		assertEquals(union.calculateLowerApproximation(), lowerApproximation);
+	}
+	
+	/**
+	 * Test method for {@link Union#calculateLowerApproximation()}.
+	 */
+	@Test
+	void testCalculateLowerApproximation02() {
+		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.COST, true).union;
+		
+		//configure rough set calculator mock
+		DominanceBasedRoughSetCalculator roughSetCalculator = union.getRoughSetCalculator();
+		
+		IntSortedSet lowerApproximation = new IntLinkedOpenHashSet();
+		lowerApproximation.add(1);
+		lowerApproximation.add(5);
+		lowerApproximation.add(6);
+		lowerApproximation.add(13);
+		lowerApproximation.add(18);
+		
+		Mockito.when(roughSetCalculator.calculateLowerApproximation(union)).thenReturn(lowerApproximation);
+		
+		assertEquals(union.calculateLowerApproximation(), lowerApproximation);
 	}
 
 	/**
 	 * Test method for {@link Union#calculateUpperApproximation()}.
 	 */
 	@Test
-	void testCalculateUpperApproximation() {
-		//TODO: implement test
+	void testCalculateUpperApproximation01() {
+		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		
+		//configure rough set calculator mock
+		DominanceBasedRoughSetCalculator roughSetCalculator = union.getRoughSetCalculator();
+		
+		IntSortedSet upperApproximation = new IntLinkedOpenHashSet();
+		upperApproximation.add(3);
+		upperApproximation.add(4);
+		upperApproximation.add(7);
+		upperApproximation.add(12);
+		upperApproximation.add(15);
+		
+		Mockito.when(roughSetCalculator.calculateUpperApproximation(union)).thenReturn(upperApproximation);
+		
+		assertEquals(union.calculateUpperApproximation(), upperApproximation);
+	}
+	
+	/**
+	 * Test method for {@link Union#calculateUpperApproximation()}.
+	 */
+	@Test
+	void testCalculateUpperApproximation02() {
+		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.COST, true).union;
+		
+		//configure rough set calculator mock
+		DominanceBasedRoughSetCalculator roughSetCalculator = union.getRoughSetCalculator();
+		
+		IntSortedSet upperApproximation = new IntLinkedOpenHashSet();
+		upperApproximation.add(1);
+		upperApproximation.add(5);
+		upperApproximation.add(6);
+		upperApproximation.add(13);
+		upperApproximation.add(18);
+		
+		Mockito.when(roughSetCalculator.calculateUpperApproximation(union)).thenReturn(upperApproximation);
+		
+		assertEquals(union.calculateUpperApproximation(), upperApproximation);
+	}
+	
+	/**
+	 * Configures given mock of an {@link InformationTable}.
+	 * 
+	 * @param information table that should be configured
+	 * @param evaluationsList list with arrays of evaluations such that each array stores subsequent evaluations of a single object of the given information table
+	 */
+	private void configureInformationTableMockEvaluations(InformationTable informationTableMock, List<EvaluationField[]> evaluationsList) {
+		@SuppressWarnings("unchecked")
+		Table<EvaluationField> evaluations = (Table<EvaluationField>)Mockito.mock(Table.class);
+		
+		for (int i = 0; i < evaluationsList.size(); i++) {
+			Mockito.when(evaluations.getFields(i)).thenReturn(evaluationsList.get(i));
+		}
+		
+		Mockito.when(informationTableMock.getNumberOfObjects()).thenReturn(evaluationsList.size());
+		Mockito.when(informationTableMock.getActiveConditionAttributeFields()).thenReturn(evaluations);
+	}
+	
+	/**
+	 * Supplementary method for creating {@link IntegerField} instances.
+	 * 
+	 * @param value value passed to {@link IntegerFieldFactory#create(int, AttributePreferenceType)} method.
+	 * @param preferenceType preference type passed to {@link IntegerFieldFactory#create(int, AttributePreferenceType)} method.
+	 * @return created {@link IntegerField} instance.
+	 */
+	private IntegerField intField(int value, AttributePreferenceType preferenceType) {
+		return IntegerFieldFactory.getInstance().create(value, preferenceType);
+	}
+	
+	/**
+	 * Configures given mock of an information table, injected in tested union.
+	 */
+	private void configureInformationTableMock01(InformationTable informationTable) {
+		List<EvaluationField[]> evaluationsList = new ArrayList<EvaluationField[]>();
+		
+		evaluationsList.add(new EvaluationField[] {intField(3, AttributePreferenceType.GAIN), intField(3, AttributePreferenceType.GAIN)}); //0 //positiveInvDCone={0,2,3,5}
+		evaluationsList.add(new EvaluationField[] {intField(2, AttributePreferenceType.GAIN), intField(2, AttributePreferenceType.GAIN)}); //1
+		evaluationsList.add(new EvaluationField[] {intField(5, AttributePreferenceType.GAIN), intField(3, AttributePreferenceType.GAIN)}); //2
+		//negativeDCone={0,1,2,4}
+		evaluationsList.add(new EvaluationField[] {intField(7, AttributePreferenceType.GAIN), intField(5, AttributePreferenceType.GAIN)}); //3
+		evaluationsList.add(new EvaluationField[] {intField(1, AttributePreferenceType.GAIN), intField(3, AttributePreferenceType.GAIN)}); //4
+		evaluationsList.add(new EvaluationField[] {new UnknownSimpleFieldMV2(), intField(5, AttributePreferenceType.GAIN)}); //5
+		evaluationsList.add(new EvaluationField[] {intField(6, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV15()}); //6 //positiveInvDCone={3,5,6}
+		evaluationsList.add(new EvaluationField[] {intField(4, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV15()}); //7 //positiveInvDCone={2,3,5,6,7}
+		//negativeDCone={0,1,4,5,7,8}
+		evaluationsList.add(new EvaluationField[] {intField(1, AttributePreferenceType.GAIN), intField(4, AttributePreferenceType.GAIN)}); //8
+		
+		this.configureInformationTableMockEvaluations(informationTable, evaluationsList);
 	}
 
 	/**
-	 * Test method for {@link Union#calculatePositiveRegion(it.unimi.dsi.fastutil.ints.IntSortedSet)}.
+	 * Test method for {@link Union#calculatePositiveRegion(IntSortedSet)}.
+	 * Tests union "at least".
 	 */
 	@Test
-	void testCalculatePositiveRegion() {
-		//TODO: implement test
+	void testCalculatePositiveRegion01() {
+		Union union = this.getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock01(union.getInformationTable());
+		
+		IntSortedSet lowerApproximation = new IntLinkedOpenHashSet();
+		lowerApproximation.add(0);
+		lowerApproximation.add(7);
+		
+		IntSet positiveRegion = union.calculatePositiveRegion(lowerApproximation); //calculatePositiveInvDCone
+		assertEquals(positiveRegion.size(), 6);
+		assertTrue(positiveRegion.contains(0)); //from positive invD cone of object 0 
+		assertTrue(positiveRegion.contains(2)); //from positive invD cone of objects 0 and 7
+		assertTrue(positiveRegion.contains(3)); //from positive invD cone of objects 0 and 7
+		assertTrue(positiveRegion.contains(5)); //from positive invD cone of objects 0 and 7
+		assertTrue(positiveRegion.contains(6)); //from positive invD cone of object 7
+		assertTrue(positiveRegion.contains(7)); //from positive invD cone of object 7
+	}
+	
+	/**
+	 * Test method for {@link Union#calculatePositiveRegion(IntSortedSet)}.
+	 * Tests union "at least".
+	 */
+	@Test
+	void testCalculatePositiveRegion02() {
+		Union union = this.getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock01(union.getInformationTable());
+		
+		IntSortedSet lowerApproximation = new IntLinkedOpenHashSet();
+		lowerApproximation.add(6);
+		
+		IntSet positiveRegion = union.calculatePositiveRegion(lowerApproximation); //calculatePositiveInvDCone
+		assertEquals(positiveRegion.size(), 3);
+		assertTrue(positiveRegion.contains(3)); //from positive invD cone of object 6
+		assertTrue(positiveRegion.contains(5)); //from positive invD cone of object 6
+		assertTrue(positiveRegion.contains(6)); //from positive invD cone of object 6
+	}
+	
+	/**
+	 * Test method for {@link Union#calculatePositiveRegion(IntSortedSet)}.
+	 * Tests union "at most".
+	 */
+	@Test
+	void testCalculatePositiveRegion03() {
+		Union union = this.getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock01(union.getInformationTable());
+		
+		IntSortedSet lowerApproximation = new IntLinkedOpenHashSet();
+		lowerApproximation.add(2);
+		lowerApproximation.add(7);
+		
+		IntSet positiveRegion = union.calculatePositiveRegion(lowerApproximation); //calculateNegativeDCone
+		assertEquals(positiveRegion.size(), 7);
+		assertTrue(positiveRegion.contains(0)); //from negative D cones of objects 2 and 7 
+		assertTrue(positiveRegion.contains(1)); //from negative D cones of objects 2 and 7
+		assertTrue(positiveRegion.contains(2)); //from negative D cone of object 2
+		assertTrue(positiveRegion.contains(4)); //from negative D cones of objects 2 and 7
+		assertTrue(positiveRegion.contains(5)); //from negative D cone of object 7
+		assertTrue(positiveRegion.contains(7)); //from negative D cone of object 7
+		assertTrue(positiveRegion.contains(8)); //from negative D cone of object 7
+	}
+	
+	/**
+	 * Test method for {@link Union#calculatePositiveRegion(IntSortedSet)}.
+	 * Tests union "at most".
+	 */
+	@Test
+	void testCalculatePositiveRegion04() {
+		Union union = this.getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		this.configureInformationTableMock01(union.getInformationTable());
+		
+		IntSortedSet lowerApproximation = new IntLinkedOpenHashSet();
+		lowerApproximation.add(6);
+		
+		IntSet positiveRegion = union.calculatePositiveRegion(lowerApproximation); //calculateNegativeDCone
+		assertEquals(positiveRegion.size(), 8);
+		assertFalse(positiveRegion.contains(3)); //does not belong to negative D cone of object 6 
 	}
 
 	/**
 	 * Test method for {@link Union#calculateNegativeRegion()}.
-	 * Tests union "at least".
 	 */
 	@Test
 	void testCalculateNegativeRegion() {
-		//TODO: implement test
+		Union union = Mockito.mock(Union.class);
+		Union complementaryUnionMock = Mockito.mock(Union.class);
+		
+		IntSortedSet positiveRegion = new IntLinkedOpenHashSet();
+		positiveRegion.add(0);
+		positiveRegion.add(1); //
+		positiveRegion.add(2);
+		positiveRegion.add(4);
+		positiveRegion.add(6); //
+		Mockito.when(union.getPositiveRegion()).thenReturn(positiveRegion);
+		
+		IntSortedSet complementaryUnionPositiveRegion = new IntLinkedOpenHashSet();
+		complementaryUnionPositiveRegion.add(1); //
+		complementaryUnionPositiveRegion.add(3);
+		complementaryUnionPositiveRegion.add(5);
+		complementaryUnionPositiveRegion.add(6); //
+		complementaryUnionPositiveRegion.add(7);
+		
+		Mockito.when(complementaryUnionMock.getPositiveRegion()).thenReturn(complementaryUnionPositiveRegion);
+		Mockito.when(union.getComplementaryUnion()).thenReturn(complementaryUnionMock);
+		
+		Mockito.when(union.calculateNegativeRegion()).thenCallRealMethod();
+		
+		IntSet negativeRegion = union.calculateNegativeRegion();
+		
+		assertEquals(negativeRegion.size(), 3);
 	}
 
 	/**
@@ -617,6 +846,7 @@ class UnionTest {
 	 */
 	private class UnionWithConstructorParameters {
 		private Union union;
+		@SuppressWarnings("unused")
 		private UnionType unionType;
 		private Decision limitingDecision;
 		private InformationTableWithDecisionDistributions informationTable;
@@ -927,8 +1157,24 @@ class UnionTest {
 	 * Test method for {@link Union#setComplementaryUnion(Union)}.
 	 */
 	@Test
-	void testSetComplementaryUnion() {
+	void testSetComplementaryUnion01() {
 		Union union =  getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		Union complementaryUnion = Mockito.mock(Union.class);
+		Union complementaryUnion2 = Mockito.mock(Union.class);
+		
+		assertTrue(union.setComplementaryUnion(complementaryUnion));
+		assertEquals(union.complementaryUnion, complementaryUnion);
+		
+		assertFalse(union.setComplementaryUnion(complementaryUnion2));
+		assertEquals(union.complementaryUnion, complementaryUnion); //still the same complementary union
+	}
+	
+	/**
+	 * Test method for {@link Union#setComplementaryUnion(Union)}.
+	 */
+	@Test
+	void testSetComplementaryUnion02() {
+		Union union =  getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
 		Union complementaryUnion = Mockito.mock(Union.class);
 		Union complementaryUnion2 = Mockito.mock(Union.class);
 		
@@ -993,9 +1239,18 @@ class UnionTest {
 	 * Test method for {@link Union#getUnionType()}.
 	 */
 	@Test
-	void testGetUnionType() {
+	void testGetUnionType01() {
 		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true);
-		assertEquals(unionWithConstructorParameters.union.getUnionType(), unionWithConstructorParameters.unionType);
+		assertEquals(unionWithConstructorParameters.union.getUnionType(), UnionType.AT_LEAST);
+	}
+	
+	/**
+	 * Test method for {@link Union#getUnionType()}.
+	 */
+	@Test
+	void testGetUnionType02() {
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.COST, false);
+		assertEquals(unionWithConstructorParameters.union.getUnionType(), UnionType.AT_MOST);
 	}
 	
 	/**
