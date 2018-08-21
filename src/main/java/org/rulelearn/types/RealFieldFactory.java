@@ -148,6 +148,16 @@ public class RealFieldFactory {
 		public TernaryLogicValue isAtMostAsGoodAs(Field otherField) {
 			return this.isEqualTo(otherField);
 		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @return {@inheritDoc}
+		 */
+		@Override
+		public AttributePreferenceType getPreferenceType() {
+			return AttributePreferenceType.NONE;
+		}
 	}
 	
 	/**
@@ -218,6 +228,16 @@ public class RealFieldFactory {
 					return TernaryLogicValue.UNCOMPARABLE;
 				}
 			}
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @return {@inheritDoc}
+		 */
+		@Override
+		public AttributePreferenceType getPreferenceType() {
+			return AttributePreferenceType.GAIN;
 		}
 
 	}
@@ -290,6 +310,16 @@ public class RealFieldFactory {
 					return TernaryLogicValue.UNCOMPARABLE;
 				}
 			}
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @return {@inheritDoc}
+		 */
+		@Override
+		public AttributePreferenceType getPreferenceType() {
+			return AttributePreferenceType.COST;
 		}
 
 	}	

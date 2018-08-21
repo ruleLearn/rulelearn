@@ -16,18 +16,20 @@
 
 package org.rulelearn.data;
 
+import java.util.Arrays;
+
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.types.Field;
 
 /**
  * Table storing data, i.e., fields corresponding to objects and attributes.
- * Each field is identified by object's index and attribute's index. 
+ * Each field is identified by object's index and attribute's index.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class Table {
+public class Table<T extends Field> {
 	
 	/**
 	 * All attributes for which this table stores values.
@@ -36,7 +38,7 @@ public class Table {
 	/**
 	 * All fields stored in this table, indexed by object's index and attribute's index.
 	 */
-	protected Field[][] fields;
+	protected T[][] fields;
 	/**
 	 *  Mapper from object's index to its unique id.
 	 */
@@ -53,7 +55,7 @@ public class Table {
 	 *        to unique object's id, which is meaningful in general
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public Table(Attribute[] attributes, Field[][] fields, Index2IdMapper mapper) {
+	public Table(Attribute[] attributes, T[][] fields, Index2IdMapper mapper) {
 		this(attributes, fields, mapper, false);
 	}
 	
@@ -75,7 +77,7 @@ public class Table {
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT)
-	public Table(Attribute[] attributes, Field[][] fields, Index2IdMapper mapper, boolean accelerateByReadOnlyParams) {
+	public Table(Attribute[] attributes, T[][] fields, Index2IdMapper mapper, boolean accelerateByReadOnlyParams) {
 		if (attributes == null) {
 			throw new NullPointerException("Attributes are null.");
 		}
@@ -91,11 +93,17 @@ public class Table {
 		if (accelerateByReadOnlyParams) {
 			this.fields = fields;
 		} else {
-			this.fields = new Field[fields.length][];
+			this.fields = fields.clone();
 			
-			for (int i = 0; i < this.fields.length; i++) {
+			for (int i = 0; i < fields.length; i++) {
 				this.fields[i] = fields[i].clone();
 			}
+			
+//			this.fields = new Field[fields.length][];
+//			
+//			for (int i = 0; i < this.fields.length; i++) {
+//				this.fields[i] = fields[i].clone();
+//			}
 		}
 		
 		this.mapper = mapper;
@@ -111,7 +119,7 @@ public class Table {
 	 * @throws IndexOutOfBoundsException if given object index does not correspond to any object for which this table stores fields
 	 * @throws IndexOutOfBoundsException if given attribute index does not correspond to any attribute for which this table stores fields
 	 */
-	public Field getField(int objectIndex, int attributeIndex) {
+	public T getField(int objectIndex, int attributeIndex) {
 		return this.fields[objectIndex][attributeIndex];
 	}
 		
@@ -123,7 +131,7 @@ public class Table {
 	 * 
 	 * @throws IndexOutOfBoundsException if given object index does not correspond to any object for which this table stores fields
 	 */
-	public Field[] getFields(int objectIndex) {
+	public T[] getFields(int objectIndex) {
 		return this.getFields(objectIndex, false);
 	}
 	
@@ -141,7 +149,7 @@ public class Table {
 	 * @throws IndexOutOfBoundsException if given object index does not correspond to any object for which this table stores fields
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
-	public Field[] getFields(int objectIndex, boolean accelerateByReadOnlyResult) {
+	public T[] getFields(int objectIndex, boolean accelerateByReadOnlyResult) {
 		return accelerateByReadOnlyResult ? this.fields[objectIndex] : this.fields[objectIndex].clone();
 	}
 	
@@ -155,7 +163,7 @@ public class Table {
 	 * @throws NullPointerException if given array with object indices is {@code null}
 	 * @throws IndexOutOfBoundsException if any of the given indices does not match the number of considered objects
 	 */
-	public Table select(int[] objectIndices) {
+	public Table<T> select(int[] objectIndices) {
 		return this.select(objectIndices, false);
 	}
 	
@@ -172,16 +180,18 @@ public class Table {
 	 * @throws NullPointerException if given array with object indices is {@code null}
 	 * @throws IndexOutOfBoundsException if any of the given indices does not match the number of considered objects
 	 */
-	public Table select(int[] objectIndices, boolean accelerateByReadOnlyResult) {
+	public Table<T> select(int[] objectIndices, boolean accelerateByReadOnlyResult) {
 		int[] newObjectIndex2Id = new int[objectIndices.length]; //data for new mapper
-		Field[][] newFields = new Field[objectIndices.length][];
+		//T[][] newFields = (T[][]) new Field[objectIndices.length][];
+		T[][] newFields = Arrays.copyOf(this.fields, objectIndices.length); //take a target-length-part of the original array (to assure correct array type)
+		//TODO: optimize
 		
 		for (int i = 0; i < objectIndices.length; i++) {
-			newFields[i] = this.fields[objectIndices[i]]; //just copy reference to an array with fields
+			newFields[i] = this.fields[objectIndices[i]]; //just copy reference to an array with fields (overriding wrong reference)
 			newObjectIndex2Id[i] = this.mapper.getId(objectIndices[i]); //re-map object's id
 		}
 		
-		return new Table(this.attributes, newFields, new Index2IdMapper(newObjectIndex2Id), accelerateByReadOnlyResult);
+		return new Table<T>(this.attributes, newFields, new Index2IdMapper(newObjectIndex2Id), accelerateByReadOnlyResult);
 	}
 	
 	/**

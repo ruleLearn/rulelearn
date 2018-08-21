@@ -64,7 +64,7 @@ public class Rule {
      * Array with conditions building decision part of this rule.
      * If there is more than one decision, they are treated as connected by the OR operator.
      */
-    protected Condition<? extends EvaluationField>[] decisions = null;
+    protected Condition<? extends EvaluationField>[] decisions = null; //TODO: change to set/2-d array of conditions (i.e., Condition<? extends EvaluationField>[][])
     
     /**
      * Value appended to the beginning of a rule while transforming the rule to text form.
@@ -129,7 +129,7 @@ public class Rule {
     	this.semantics = decision.getRuleSemantics(); //may throw exception
     	this.inherentDecision = decision.getLimitingEvaluation();
     	this.conditions = notNull(conditions, "Rule's conditions are null.").toArray(new Condition<?>[0]);
-    	this.decisions = new SimpleCondition[1];
+    	this.decisions = new Condition<?>[1];
     	this.decisions[0] = notNull(decision, "Rule's decision is null.");
     }
 

@@ -17,9 +17,8 @@
 package org.rulelearn.classification;
 
 import org.rulelearn.core.TernaryLogicValue;
-import org.rulelearn.types.EvaluationField;
-import org.rulelearn.types.SimpleField;
-import org.rulelearn.types.UnknownSimpleField;
+import org.rulelearn.data.Decision;
+import org.rulelearn.data.SimpleDecision;
 import static org.rulelearn.core.Precondition.notNull;
 
 /**
@@ -33,14 +32,14 @@ public class SimpleClassificationResult extends ClassificationResult {
 	/**
 	 * Evaluation of an object on the decision attribute (i.e., decision) suggested by a classifier.
 	 */
-	protected SimpleField suggestedDecision;
+	protected SimpleDecision suggestedDecision;
 	
 	/**
 	 * Constructs this classification result.
 	 * 
 	 * @param suggestedDecision evaluation of an object on the decision attribute (i.e., decision) suggested by a classifier
 	 */
-	public SimpleClassificationResult(SimpleField suggestedDecision) {
+	public SimpleClassificationResult(SimpleDecision suggestedDecision) {
 		super();
 		this.suggestedDecision = notNull(suggestedDecision, "Decision suggested by a classifier is null.");
 	}
@@ -49,12 +48,12 @@ public class SimpleClassificationResult extends ClassificationResult {
 	/**
 	 * Gets evaluation of an object on the decision attribute (i.e., decision) suggested by a classifier.
 	 * 
-	 * @return evaluation of an object on the decision attribute (i.e., decision) suggested by a classifier.
+	 * @return evaluation of an object on the decision attribute (i.e., decision) suggested by a classifier
 	 */
-	public SimpleField getSuggestedDecision() {
+	@Override
+	public SimpleDecision getSuggestedDecision() {
 		return suggestedDecision;
 	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -65,14 +64,10 @@ public class SimpleClassificationResult extends ClassificationResult {
 	 * @throws NullPointerException {@inheritDoc}
 	 */
 	@Override
-	public TernaryLogicValue isConsistentWith(EvaluationField decision) {
+	public TernaryLogicValue isConsistentWith(Decision decision) {
 		notNull(decision, "Original decision, compared with the decision suggested by a classifier, is null.");
 		
-		if (this.suggestedDecision instanceof UnknownSimpleField) {
-			return TernaryLogicValue.UNCOMPARABLE;
-		} else {
-			return this.suggestedDecision.equals(decision) ? TernaryLogicValue.TRUE : TernaryLogicValue.FALSE;
-		}
+		return this.suggestedDecision.isEqualTo(decision);
 	}
 
 }

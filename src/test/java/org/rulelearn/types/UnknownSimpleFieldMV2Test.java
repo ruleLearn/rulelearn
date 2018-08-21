@@ -248,6 +248,7 @@ class UnknownSimpleFieldMV2Test {
 	/**
 	 * Tests {@link UnknownSimpleFieldMV2#equals(Object)} method.
 	 */
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
 		UnknownSimpleField mvField1 = new UnknownSimpleFieldMV2();
