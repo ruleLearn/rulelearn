@@ -17,7 +17,7 @@
 package org.rulelearn.rules;
 
 /**
- * Context in which potential rule's condition is evaluated to check whether it should be added to constructed decision rule.
+ * Contract of a context in which potential rule's condition is evaluated to check whether it should be added to a constructed decision rule.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

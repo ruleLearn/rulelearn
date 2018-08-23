@@ -21,7 +21,7 @@ import java.util.List;
 import org.rulelearn.core.InvalidSizeException;
 
 /**
- * Prunes {@link RuleConditions} by removing redundant conditions.
+ * Contract of a pruner used to remove redundant conditions from rule conditions {@link RuleConditions}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

@@ -19,7 +19,7 @@ package org.rulelearn.rules;
 import org.rulelearn.types.EvaluationField;
 
 /**
- * Contract of a condition generator used to find next best condition to be added to constructed rule.
+ * Contract of a condition generator used to find next best condition {@link Condition} to be added to constructed rule.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

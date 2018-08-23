@@ -23,7 +23,7 @@ import org.rulelearn.core.InvalidSizeException;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
- * Prunes a set of {@link RuleConditions} by removing redundant {@link RuleConditions} objects.
+ * Contract of a pruner used to remove redundant rule conditions {@link RuleConditions} from a set (list) of rule conditions.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

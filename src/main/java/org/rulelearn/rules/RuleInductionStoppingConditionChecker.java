@@ -17,7 +17,7 @@
 package org.rulelearn.rules;
 
 /**
- * Interface to be implemented by checkers verifying {@link RuleConditions} against different stopping conditions, like satisfying consistency measure threshold or reaching a given number of conditions.
+ * Contract of a checker verifying rule conditions {@link RuleConditions} against different stopping conditions, like satisfying consistency measure threshold or reaching a given number of conditions.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

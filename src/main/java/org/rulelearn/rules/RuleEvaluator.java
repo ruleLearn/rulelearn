@@ -20,7 +20,7 @@ import org.rulelearn.data.InformationTable;
 import org.rulelearn.measures.Measure;
 
 /**
- * Evaluates a {@link Rule} in the context of an {@link InformationTable}.
+ * Contract of an evaluator of a rule {@link Rule} in the context of an information table {@link InformationTable}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

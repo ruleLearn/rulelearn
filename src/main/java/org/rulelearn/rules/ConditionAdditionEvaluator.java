@@ -20,7 +20,7 @@ import org.rulelearn.measures.Measure;
 import org.rulelearn.types.EvaluationField;
 
 /**
- * Evaluates {@link Condition} that can be added to {@link RuleConditions}.
+ * Contract of an evaluator of a condition {@link Condition} used to evaluate it before it may be added to rule conditions {@link RuleConditions}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
