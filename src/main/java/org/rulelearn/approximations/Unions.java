@@ -16,10 +16,17 @@
 
 package org.rulelearn.approximations;
 
+import static org.rulelearn.core.Precondition.notNull;
+
+import java.util.ArrayList;
+
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.data.Decision;
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
+
+//TODO: set complementary unions, if possible
 
 /**
  * Container for all upward and downward unions that can be defined with respect to an information table.
@@ -50,8 +57,8 @@ public class Unions extends ApproximatedSets {
 	Union[] downwardUnions = null;
 	
 	/**
-	 * Ordered (from the worst to the best) array of all distinct decisions, which can be found in information table.
-	 * Each decision class is present only once.
+	 * Ordered (from the worst to the best) array of all unique (distinct) decisions, which can be found in information table.
+	 * Each decision is present only once.
 	 * The order is such that each decision in the array is worse than decisions to the right
 	 * being comparable to this decision, and better than decisions to the left being comparable to this decision.
 	 * If two decisions are incomparable, then their respective order is not constrained and may be any.
@@ -63,30 +70,86 @@ public class Unions extends ApproximatedSets {
 	 * 
 	 * @param informationTable information table for which all approximated sets stored in this container are defined
 	 * @param roughSetCalculator rough set calculator used to calculate approximations of all approximated sets stored in this container
+	 * 
+	 * @throws NullPointerException if given information table does not store decisions for subsequent objects
 	 */
 	public Unions(InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator) {
 		super(informationTable, roughSetCalculator);
+		
+		//calculate limiting decisions
+		limitingDecisions = informationTable.calculateOrderedUniqueDecisions();
+		
+		if (limitingDecisions == null) {
+			throw new NullPointerException("Information table does not store decisions for subsequent objects.");
+		}
+		
+		//create all upward and downward unions
+		constructUpwardUnions();
+		constructDownwardUnions();
 	}
 	
 	/**
-	 * Calculates ordered (from the worst to the best) array of all distinct decisions, which can be found in memory container.
-	 */
-	protected void calculateLimitingDecisions() {
-		//TODO: implement
-	}
-	
-	/**
-	 * Creates array of all upward unions, sorted from the most to the least specific union.
+	 * Creates array of all meaningful (i.e., not containing all objects) upward unions, sorted from the most to the least specific union.
 	 */
 	void constructUpwardUnions() {
-		//TODO: implement
+		ArrayList<Union> upwardUnionsList = new ArrayList<Union>(); //use a list, as the number of upward unions is unknown, in general
+		
+		int numberOfLimitingDecisions = limitingDecisions.length;
+		boolean nonPositiveDecisionFound;
+
+		//iterate from the best to the worst limiting decision (check all decisions!)
+		for (int i = numberOfLimitingDecisions - 1; i >= 0; i--) { //!
+			nonPositiveDecisionFound = false;
+			
+			for (int j = 0; j < numberOfLimitingDecisions; j++) { //iterate in inverse order to maximize the chance of quickly finding non-positive decision
+				if (!Union.isDecisionPositive(limitingDecisions[j], Union.UnionType.AT_LEAST, limitingDecisions[i], this.getInformationTable())) {
+					nonPositiveDecisionFound = true;
+					break;
+				}
+			} //for (j)
+			
+			if (nonPositiveDecisionFound) { //upward union with limiting decision equal to limitingDecisions[i] does not contain all objects (is meaningful)
+				upwardUnionsList.add(new Union(Union.UnionType.AT_LEAST, limitingDecisions[i], this.getInformationTable(), this.getRoughSetCalculator()));
+			}
+		} //for (i)
+		
+		//copy unions from the temporary list to the array stored in this object
+		this.upwardUnions = new Union[upwardUnionsList.size()];
+		for (int i = 0; i < this.upwardUnions.length; i++) {
+			this.upwardUnions[i] = upwardUnionsList.get(i);
+		} //for (i)
 	}
 	
 	/**
-	 * Creates array of all downward unions, sorted from the most to the least specific union.
+	 * Creates array of all meaningful (i.e., not containing all objects) downward unions, sorted from the most to the least specific union.
 	 */
 	void constructDownwardUnions() {
-		//TODO: implement
+		ArrayList<Union> downwardUnionsList = new ArrayList<Union>(); //use a list, as the number of downward unions is unknown, in general
+		
+		int numberOfLimitingDecisions = limitingDecisions.length;
+		boolean nonPositiveDecisionFound;
+
+		//iterate from the worst to the best decision (check all decisions!)
+		for (int i = 0; i < numberOfLimitingDecisions; i++) { //!
+			nonPositiveDecisionFound = false;
+			
+			for (int j = numberOfLimitingDecisions - 1; j >= 0; j--) { //iterate in inverse order to maximize the chance of quickly finding non-positive decision
+				if (!Union.isDecisionPositive(limitingDecisions[j], Union.UnionType.AT_MOST, limitingDecisions[i], this.getInformationTable())) {
+					nonPositiveDecisionFound = true;
+					break;
+				}
+			} //for (j)
+			
+			if (nonPositiveDecisionFound) { //downward union with limiting decision equal to limitingDecisions[i] does not contain all objects (is meaningful)
+				downwardUnionsList.add(new Union(Union.UnionType.AT_MOST, limitingDecisions[i], this.getInformationTable(), this.getRoughSetCalculator()));
+			}
+		} //for (i)
+		
+		//copy unions from the temporary list to the array stored in this object
+		this.downwardUnions = new Union[downwardUnionsList.size()];
+		for (int i = 0; i < this.downwardUnions.length; i++) {
+			this.downwardUnions[i] = downwardUnionsList.get(i);
+		} //for (i)
 	}
 	
 	/**
@@ -175,6 +238,7 @@ public class Unions extends ApproximatedSets {
 	 * If any two decisions are incomparable, then their respective order may be arbitrary.
 	 * 
 	 * @return ordered (from the worst to the best) array of all distinct decisions, which can be found in information table
+	 * @see InformationTable#calculateOrderedUniqueDecisions()
 	 */
 	public Decision[] getLimitingDecisions() {
 		return limitingDecisions.clone();
@@ -193,6 +257,7 @@ public class Unions extends ApproximatedSets {
 	 *        at the cost of returning a read-only array, or should return a safe array (that can be
 	 *        modified outside this object), at the cost of returning the result slower
 	 * @return ordered (from the worst to the best) array of all distinct decisions, which can be found in information table
+	 * @see InformationTable#calculateOrderedUniqueDecisions()
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
 	public Decision[] getLimitingDecisions(boolean accelerateByReadOnlyResult) {
@@ -200,16 +265,36 @@ public class Unions extends ApproximatedSets {
 	}
 	
 	/**
-	 * Gets upward/downward union of decision classes (depending on union type), defined for given decision.
+	 * Gets upward/downward union of decision classes (depending on union type), defined for given limiting decision.
 	 * 
 	 * @param unionType type of the union sought-after
 	 * @param limitingDecision limiting decision of the union sought-after
 	 * 
 	 * @return upward/downward union of decision classes (depending on union type),
 	 *         with given limiting decision, or {@code null} if the union sought-after is not present in this container
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public Union getUnion(Union.UnionType unionType, Decision limitingDecision) {
-		return null; //TODO: implement
+		notNull(unionType, "Cannot find union with null union type.");
+		notNull(limitingDecision, "Cannot find union with null limiting decision.");
+		
+		Union unions[];
+		
+		if (unionType == Union.UnionType.AT_LEAST) {
+			unions = upwardUnions;
+		} else if (unionType == Union.UnionType.AT_MOST) {
+			unions = downwardUnions;
+		} else {
+			throw new org.rulelearn.core.InvalidValueException("Incorrect type of a union."); //this should not happen
+		}
+		
+		for (int i = 0; i < unions.length; i++) {
+			if (unions[i].getLimitingDecision().equals(limitingDecision)) {
+				return unions[i];
+			}
+		}
+		
+		return null; //if nothing found
 	}
 
 }

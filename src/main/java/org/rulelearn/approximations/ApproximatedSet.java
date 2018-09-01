@@ -109,6 +109,11 @@ public abstract class ApproximatedSet {
 	}
 	
 	/**
+	 * Sole constructor, facilitating construction of subclass objects. Does not provide any initialization of fields.
+	 */
+	ApproximatedSet() {}
+	
+	/**
 	 * Gets the information table for which this approximated set was defined.
 	 * 
 	 * @return the information table for which this approximated set was defined
@@ -376,5 +381,15 @@ public abstract class ApproximatedSet {
 	 * @return the size of the set of objects that is complementary to the set of (positive) objects belonging to this approximated set
 	 */
 	public abstract int getComplementarySetSize();
+	
+	/**
+	 * Tells if this approximated set is meaningful, i.e., it does not contain all the objects from the information table
+	 * 
+	 * @return {@code true} if this approximated set is meaningful, i.e., it does not contain all the objects from the information table,
+	 *         {@code false} otherwise
+	 */
+	public boolean isMeaningful() {
+		return this.size() == this.informationTable.getNumberOfObjects();
+	}
 	
 }

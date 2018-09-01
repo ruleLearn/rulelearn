@@ -16,10 +16,12 @@
 
 package org.rulelearn.data;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
 import org.rulelearn.types.IdentificationField;
@@ -339,7 +341,8 @@ public class InformationTable {
 	 * Gets array of decisions concerning subsequent objects of this information table; i-th entry stores decision concerning i-th object.
 	 * Result can be {@code null}, e.g., if this information table stores evaluations of test objects (for which decisions are unknown).
 	 * 
-	 * @return array of decisions concerning subsequent objects of this information table
+	 * @return array of decisions concerning subsequent objects of this information table,
+	 *         or {@code null} if this information table does not store any decisions
 	 */
 	public Decision[] getDecisions() {
 		return this.getDecisions(false);
@@ -352,7 +355,8 @@ public class InformationTable {
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
 	 *        at the cost of returning a read-only array, or should return a safe array (that can be
 	 *        modified outside this object), at the cost of returning the result slower
-	 * @return array of decisions concerning subsequent objects of this information table
+	 * @return array of decisions concerning subsequent objects of this information table,
+	 *         or {@code null} if this information table does not store any decisions
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
 	public Decision[] getDecisions(boolean accelerateByReadOnlyResult) {
@@ -373,6 +377,84 @@ public class InformationTable {
 		} else {
 			return null;
 		}
+	}
+	
+	/**
+	 * Calculates ordered (from the worst to the best) array of all unique decisions assigned to objects of this information table.
+	 * For any two decisions from the returned array, {@code decision1.equals(decision2)} should return {@code false}.
+	 * Result can be {@code null}, e.g., if this information table stores evaluations of test objects (for which decisions are unknown).
+	 * 
+	 * @return array with unique decisions ordered from the worst to the best,
+	 *         or {@code null} if this information table does not store any decisions
+	 */
+	public Decision[] calculateOrderedUniqueDecisions() {
+		Decision[] allDecisions = this.getDecisions(true);
+		
+		if (allDecisions == null || allDecisions.length <= 1) {
+			return allDecisions;
+		}
+		
+		ArrayList<Decision> orderedUniqueDecisionsList = new ArrayList<Decision>();
+		
+		//auxiliary variables
+		Decision candidateDecision;
+		Decision alreadyPresentDecision;
+		boolean iterate;
+		int decisionIndex;
+		
+		//create sorted list of decisions:
+		
+		//add first decision
+		candidateDecision = allDecisions[0];
+		orderedUniqueDecisionsList.add(candidateDecision);
+		
+		//iterate through objects and extract next unique decisions, retaining respective order of comparable decisions
+		for (int i = 1; i < allDecisions.length; i++) {
+			candidateDecision = allDecisions[i];
+			iterate = true;
+			decisionIndex = 0;
+			
+			while (iterate) {
+				alreadyPresentDecision = orderedUniqueDecisionsList.get(decisionIndex);
+				//candidate decision is equal to compared decision from the list
+				if (candidateDecision.equals(alreadyPresentDecision)) {
+					//ignore candidate decision since it is already present in the list of decisions
+					iterate = false;
+				}
+				else {
+					//candidate decision is worse than compared decision from the list,
+					//or is equal in the sense of isEqualTo method (but not in the sense of equals method!)
+					if (candidateDecision.isAtMostAsGoodAs(alreadyPresentDecision) == TernaryLogicValue.TRUE) {
+						//insert candidate decision into appropriate position and shift following elements forward
+						orderedUniqueDecisionsList.add(decisionIndex, candidateDecision);
+						iterate = false;
+					}
+					//candidate decision is better than compared decision from the list
+					//or is incomparable with the compared decision from the list
+					else {
+						//there is no next decision on the list
+						if (decisionIndex == orderedUniqueDecisionsList.size() - 1) {
+							//append candidate decision to the end of the list
+							orderedUniqueDecisionsList.add(candidateDecision);
+							iterate = false;
+						}
+						//there is next decision on the list
+						else {
+							decisionIndex++; //go to next decision from the list
+						} //else
+					} //else
+				} //else
+			} //while
+		} //for
+		
+		//create returned array of decisions
+		int decisionsCount = orderedUniqueDecisionsList.size();
+		Decision[] orderedUniqueDecisions = new Decision[decisionsCount];
+		
+		for (int i = 0; i < decisionsCount; i++)
+			orderedUniqueDecisions[i] = orderedUniqueDecisionsList.get(i);
+		
+		return orderedUniqueDecisions;
 	}
 	
 	/**

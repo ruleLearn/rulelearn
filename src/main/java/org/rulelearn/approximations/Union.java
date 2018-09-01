@@ -95,6 +95,27 @@ public class Union extends ApproximatedSet {
 	protected IntSortedSet neutralObjects;
 	
 	/**
+	 * Tells if given decision is positive with respect to the union of ordered decision classes that would be constructed for given parameters.
+	 * See {@link #isDecisionPositive(Decision)}.
+	 * 
+	 * @param decision decision to verify for being positive with the union of ordered decision classes that would be constructed for given parameters
+	 * @param unionType see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param limitingDecision see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param informationTable see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * 
+	 * @return {@code true} if given decision is positive with the union of ordered decision classes that would be constructed for given parameters,
+	 *         {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws InvalidTypeException see {@link #validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}
+	 * @throws InvalidValueException see {@link #validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}
+	 */
+	public static boolean isDecisionPositive(Decision decision, UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable) {
+		Union minimalUnion = new Union(unionType, limitingDecision, informationTable); //construct a minimal union, sufficient to call isDecisionPositive method
+		return minimalUnion.isDecisionPositive(decision);
+	}
+	
+	/**
 	 * Constructs union of ordered decision classes of given type (at least or at most), using given limiting decision (concerning the least or the most preferred decision class). Calculates objects
 	 * belonging to this union and neutral objects. Stores given information table and given rough set calculator.
 	 * 
@@ -131,7 +152,7 @@ public class Union extends ApproximatedSet {
 	 * @throws InvalidTypeException see {@link #validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}
 	 * @throws InvalidValueException see {@link #validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}
 	 */
-	protected Union(UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator, boolean includeLimitingDecision) {
+	Union(UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator, boolean includeLimitingDecision) {
 		super(informationTable, limitingDecision, roughSetCalculator);
 		this.unionType = notNull(unionType, "Union type is null.");
 		validateLimitingDecision(limitingDecision, informationTable);
@@ -139,6 +160,34 @@ public class Union extends ApproximatedSet {
 		this.includeLimitingDecision = includeLimitingDecision; //set flag concerning inclusion of limiting decision
 		
 		this.findObjects();
+	}
+	
+	/**
+	 * Constructs union of ordered decision classes of given type (at least or at most), using given limiting decision
+	 * (concerning the least or the most preferred decision class).
+	 * Stores given information table.<br>
+	 * <br>
+	 * This is a minimal constructor that can be used in static methods of this class to quickly construct a lightweight union,
+	 * providing limited functionality. In particular, this constructor does not calculate objects belonging to this union (nor neutral objects),
+	 * which is a time consuming process. Moreover, it does not set rough set calculator.
+	 * 
+	 * @param unionType see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param limitingDecision see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param informationTable see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws InvalidTypeException see {@link #validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}
+	 * @throws InvalidValueException see {@link #validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}
+	 */
+	private Union(UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable) {
+		super();
+		
+		this.unionType = notNull(unionType, "Union type is null.");
+		notNull(limitingDecision, "Limiting decision for constructed union is null.");
+		notNull(informationTable, "Information table for constructed union is null.");
+		validateLimitingDecision(limitingDecision, informationTable);
+		this.limitingDecision = limitingDecision;
+		this.informationTable = informationTable; //may be redundant
 	}
 	
 	/**
