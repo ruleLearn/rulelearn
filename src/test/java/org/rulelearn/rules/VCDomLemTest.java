@@ -19,6 +19,7 @@ package org.rulelearn.rules;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.rulelearn.approximations.Union;
+import org.rulelearn.approximations.Unions;
 import org.rulelearn.data.InformationTable;
 
 /**
@@ -36,9 +37,10 @@ class VCDomLemTest {
 	@Test
 	public void testUpwardUnionCertain() {
 		InformationTable informationTable;
+		Unions unionContainer;
 		Union[] unions; //upward/downward unions
 		RuleType type; //certain/possible
-		double[] consistencyThresholds;
+		double consistencyThreshold;
 		
 		//RuleSemantics semantics;
 		//conditionsSelectionMethod //mix

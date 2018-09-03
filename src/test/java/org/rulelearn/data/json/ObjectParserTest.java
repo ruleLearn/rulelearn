@@ -35,7 +35,7 @@ import org.rulelearn.data.InformationTable;
 class ObjectParserTest {
 
 	/**
-	 * Test method for {@link ObjectBuilder#getObjects(String)}.
+	 * Test method for {@link ObjectParser#getObjects(String)}.
 	 */
 	@Test
 	void testConstructionOfInformationTableBuilder() {
