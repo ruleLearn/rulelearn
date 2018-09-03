@@ -19,6 +19,7 @@ package org.rulelearn.data;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.rulelearn.core.InvalidValueException;
@@ -121,6 +122,62 @@ class InformationTableTest {
 			throw new InvalidValueException("NoSuchAlgorithmException thrown by when creating domain of an enumeration field.");
 		}
 		//</CONFIGURATION 02>
+	}
+	
+	/**
+	 * Test for {@link InformationTable#InformationTable(Attribute[], List, boolean)} class constructor.
+	 * Tests if {@link NullPointerException} exception is thrown when attributes are {@code null}.
+	 */
+	@Test
+	public void testInformationTable01() {
+		try {
+			new InformationTable(null, this.configuration01.getListOfFields(), true);
+			fail("Should not create information table for null attributes.");
+		} catch (NullPointerException exception) {
+			//OK
+		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#InformationTable(Attribute[], List, boolean)} class constructor.
+	 * Tests if {@link NullPointerException} exception is thrown when list of objects' fields is {@code null}.
+	 */
+	@Test
+	public void testInformationTable02() {
+		try {
+			new InformationTable(this.configuration01.getAttributes(), null, true);
+			fail("Should not create information table for null list of objects' fields.");
+		} catch (NullPointerException exception) {
+			//OK
+		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#InformationTable(Attribute[], List, boolean)} class constructor.
+	 * Tests if information table is constructed when list of objects' fields is empty.
+	 */
+	@Test
+	public void testInformationTable03() {
+		try {
+			new InformationTable(this.configuration01.getAttributes(), new ArrayList<Field[]>(), true);
+			//OK
+		} catch (Exception exception) {
+			fail("Should create information table for an empty list of objects' fields.");
+		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#InformationTable(Attribute[], List, boolean)} class constructor.
+	 * Tests if information table is constructed when lists of attributes and objects' fields are empty.
+	 */
+	@Test
+	public void testInformationTable04() {
+		try {
+			new InformationTable(new Attribute[0], new ArrayList<Field[]>(), true);
+			//OK
+		} catch (Exception exception) {
+			fail("Should create information table for an empty list of attributes and objects' fields.");
+		}
 	}
 	
 	/**
