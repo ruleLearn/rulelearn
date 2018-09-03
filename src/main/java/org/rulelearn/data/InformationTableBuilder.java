@@ -49,6 +49,11 @@ public class InformationTableBuilder {
 	 */
 	protected final static String [] DEFAULT_MISSING_VALUE_STRINGS = {"?", "*", "NA"};
 	
+	/** 
+	 * Default string representation of separator.
+	 */
+	protected final static String DEFAULT_SEPARATOR_STRING = ",";
+	
 	/**
 	 * All attributes of the constructed information table.
 	 */
@@ -78,6 +83,7 @@ public class InformationTableBuilder {
 	 * Default constructor initializing this information table builder.
 	 */
 	protected InformationTableBuilder() {
+		this.separator = InformationTableBuilder.DEFAULT_SEPARATOR_STRING;
 		this.missingValueStrings = InformationTableBuilder.DEFAULT_MISSING_VALUE_STRINGS;
 		this.trimConversion = new TrimConversion();
 	}
@@ -121,6 +127,18 @@ public class InformationTableBuilder {
 	 * Constructor initializing this information table builder, setting attributes, and missing values strings (i.e., array of strings representing missing values).
 	 * 
 	 * @param attributes table with attributes
+	 * @param missingValuesStrings array of string representations of missing values
+	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
+	 */
+	public InformationTableBuilder(Attribute[] attributes, String [] missingValuesStrings) {
+		this(attributes);
+		this.missingValueStrings = missingValuesStrings;
+	}
+	
+	/**
+	 * Constructor initializing this information table builder, setting attributes, separator, and missing values strings (i.e., array of strings representing missing values).
+	 * 
+	 * @param attributes table with attributes
 	 * @param separator separator of object's evaluations
 	 * @param missingValuesStrings array of string representations of missing values
 	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
@@ -132,7 +150,7 @@ public class InformationTableBuilder {
 	
 	/**
 	 * Adds one object to this builder. 
-	 * Given string is considered to contain subsequent identifiers/evaluations of a single object, separated by the {@link InformationTableBuilder#separator}.
+	 * Given string is considered to contain subsequent identifiers/evaluations of a single object, separated by the given separator.
 	 * 
 	 * @param objectDescriptions string with object's identifiers/evaluations, separated by the given separator
 	 */
@@ -306,16 +324,16 @@ public class InformationTableBuilder {
 	 * @return the missingValueStrings
 	 */
 	public String[] getMissingValueStrings() {
-		return missingValueStrings;
+		return this.missingValueStrings;
 	}
-
+	
 	/**
-	 * Sets missing value strings.
+	 * Gets separator string.
 	 * 
-	 * @param missingValueStrings the missingValueStrings to set
+	 * @return the separator
 	 */
-	public void setMissingValueStrings(String[] missingValueStrings) {
-		this.missingValueStrings = missingValueStrings;
+	public String getSeparatorStrings() {
+		return this.separator;
 	}
 	
 }
