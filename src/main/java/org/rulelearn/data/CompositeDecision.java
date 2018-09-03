@@ -225,4 +225,14 @@ public class CompositeDecision extends Decision {
 		return Objects.hash(this.getClass(), this.attributeIndex2EvaluationMap);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return attributeIndex2EvaluationMap.toString();
+	}
+	
 }
