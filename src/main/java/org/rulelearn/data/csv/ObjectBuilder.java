@@ -22,6 +22,8 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import static org.rulelearn.core.Precondition.notNull;
+
 import org.rulelearn.data.Attribute;
 
 import com.univocity.parsers.common.processor.RowListProcessor;
@@ -60,10 +62,12 @@ public class ObjectBuilder {
 	public ObjectBuilder () {}
 	
 	public ObjectBuilder (Attribute [] attributes) {
+		notNull(attributes, "Attributes array is null.");
 		this.attributes = attributes;
 	}
 	
 	public ObjectBuilder (String encoding) {
+		notNull(encoding, "Encoding string is null.");
 		this.encoding = encoding; 
 	}
 	
@@ -72,22 +76,28 @@ public class ObjectBuilder {
 	}
 	
 	public ObjectBuilder (Attribute [] attributes, String encoding) {
+		notNull(attributes, "Attributes array is null.");
 		this.attributes = attributes;
+		notNull(encoding, "Encoding string is null.");
 		this.encoding = encoding;
 	}
 	
 	public ObjectBuilder (Attribute [] attributes, boolean header) {
+		notNull(attributes, "Attributes array is null.");
 		this.attributes = attributes;
 		this.header = header;
 	}
 	
 	public ObjectBuilder (Attribute [] attributes, String encoding, boolean header) {
+		notNull(attributes, "Attributes array is null.");
 		this.attributes = attributes;
+		notNull(encoding, "Encoding string is null.");
 		this.encoding = encoding;
 		this.header = header;
 	}
 	
 	public ObjectBuilder (String encoding, boolean header) {
+		notNull(encoding, "Encoding string is null.");
 		this.encoding = encoding;
 		this.header = header;
 	}
@@ -96,11 +106,13 @@ public class ObjectBuilder {
 	 * Reads description of all objects from the supplied CSV file and returns them as a list of {@link String} arrays.
 	 * 
 	 * @param pathToCSVFile a path to the CSV file
-	 * @return a list of {@link String} arrays representing description of all objects in the file on all attributes
+	 * @return a list of {@link String} arrays representing description of all objects in the file on all attributes or {@code null} when something goes wrong
 	 * @throws FileNotFoundException in case the supplied file does not exist
 	 * @throws UnsupportedEncodingException in case the encoding specified is not correct 
 	 */
 	public List<String[]> getObjects(String pathToCSVFile) throws FileNotFoundException, UnsupportedEncodingException {
+		notNull(pathToCSVFile, "String representing path to CSV file is null.");
+		
 		CsvParserSettings parserSettings = new CsvParserSettings();
 		parserSettings.setLineSeparatorDetectionEnabled(true);
 		parserSettings.setHeaderExtractionEnabled(this.header);

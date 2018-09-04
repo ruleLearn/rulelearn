@@ -63,16 +63,19 @@ public class ObjectParser {
 	protected String missingValueString = ObjectParser.MISSING_VALUE_STRING;
 	
 	public ObjectParser (Attribute [] attributes) {
+		notNull(attributes, "Attributes array is null.");
 		this.attributes = attributes;
 	}
 	
 	public ObjectParser (Attribute [] attributes, String missingValueString) {
 		this(attributes);
+		notNull(missingValueString, "Missing value string is null.");
 		this.missingValueString = missingValueString;
 	}
 	
 	public ObjectParser (Attribute [] attributes, String missingValueString, String encoding) {
 		this(attributes, missingValueString);
+		notNull(encoding, "Encoding string is null.");
 		this.encoding = encoding;
 	}
 	
@@ -82,6 +85,7 @@ public class ObjectParser {
 	 * @return information table {@link InformationTable} with parsed objects
 	 */
 	public InformationTable parseObjects (Reader reader) {
+		notNull(reader, "Reader with content to be parsed is null.");
 		InformationTable iTable = null;
 		
 		JsonElement json = getJSON(reader);
@@ -109,6 +113,7 @@ public class ObjectParser {
 	 * @return parsed JSON structure {@link JsonElement}
 	 */
 	protected JsonElement getJSON (Reader reader) {
+		notNull(reader, "Reader with content to be parsed is null.");
 		JsonReader jsonReader = new JsonReader(reader);
 		notNull(jsonReader, "Could not initialize JsonReader.");
 		JsonParser jsonParser = new JsonParser();
@@ -123,6 +128,7 @@ public class ObjectParser {
 	 * @return a list of {@link String} arrays representing description of all objects in the file on all attributes
 	 */
 	protected String [] parseObject (JsonElement json) {
+		notNull(json, "JSON strucure with objects to be parsed is null.");
 		String [] object = null;
 		
 		if (attributes != null) {

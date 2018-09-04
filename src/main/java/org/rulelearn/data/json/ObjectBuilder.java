@@ -18,6 +18,8 @@ package org.rulelearn.data.json;
 
 import java.util.List;
 
+import static org.rulelearn.core.Precondition.notNull;
+
 import org.rulelearn.data.Attribute;
 
 import com.google.gson.JsonArray;
@@ -41,7 +43,7 @@ public class ObjectBuilder {
 	/** 
 	 * Default string representation of a missing value.
 	 */
-	protected final static String MISSING_VALUE_STRING = "?";
+	public final static String MISSING_VALUE_STRING = "?";
 	
 	/**
 	 * All attributes which describe objects.
@@ -54,11 +56,14 @@ public class ObjectBuilder {
 	protected String encoding = ObjectBuilder.DEFAULT_ENCODING; 
 					
 	public ObjectBuilder (Attribute [] attributes) {
+		notNull(attributes, "Attributes array is null.");
 		this.attributes = attributes;
 	}
 	
 	public ObjectBuilder (Attribute [] attributes, String encoding) {
+		notNull(attributes, "Attributes array is null.");
 		this.attributes = attributes;
+		notNull(encoding, "Encoding string is null.");
 		this.encoding = encoding;
 	}
 	
