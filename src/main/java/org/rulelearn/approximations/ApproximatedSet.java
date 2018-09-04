@@ -386,4 +386,14 @@ public abstract class ApproximatedSet {
 		return includeLimitingDecision;
 	}
 	
+	/**
+	 * Tells if this approximated set is meaningful, i.e., it does not contain all the objects from the information table
+	 * 
+	 * @return {@code true} if this approximated set is meaningful, i.e., it does not contain all the objects from the information table,
+	 *         {@code false} otherwise
+	 */
+	public boolean isMeaningful() {
+		return this.size() != this.informationTable.getNumberOfObjects();
+	}
+	
 }
