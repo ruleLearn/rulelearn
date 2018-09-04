@@ -102,6 +102,14 @@ public abstract class Decision {
      * @return hash code of this decision
      */
 	@Override
-    public abstract int hashCode(); 
+    public abstract int hashCode();
+	
+	/**
+     * Gets text representation of this decision.
+     *
+     * @return text representation of this decision
+     */
+	@Override
+    public abstract String toString();
 	
 }

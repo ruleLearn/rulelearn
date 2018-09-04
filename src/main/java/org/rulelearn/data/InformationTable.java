@@ -19,6 +19,7 @@ package org.rulelearn.data;
 import java.util.ArrayList;
 import java.util.List;
 import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.core.TernaryLogicValue;
@@ -36,7 +37,9 @@ import org.rulelearn.types.UUIDIdentificationField;
  * Each field is identified by object's index and attribute's index.
  * An information table is allowed to have any number of active decision attributes.
  * An ordered set of object's evaluations on active decision attributes defines decision associated with that object.
- * An information table is allowed to have zero or exactly one active identification attribute whose values are object identifiers.
+ * An information table is allowed to have zero or exactly one active identification attribute whose values are object identifiers.<br>
+ * <br>
+ * This object can be also build using {@link InformationTableBuilder}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -188,6 +191,9 @@ public class InformationTable {
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT)
 	public InformationTable(Attribute[] attributes, List<Field[]> listOfFields, boolean accelerateByReadOnlyParams) {
+		Precondition.notNull(attributes, "Cannot build information table for null attributes");
+		Precondition.notNull(listOfFields, "Cannot build information table for null list of objects' fields.");
+		
 		if (listOfFields.size() > 0 && attributes.length != listOfFields.get(0).length) {
 			throw new InvalidValueException("The number of attributes and the number of objects' fields in an information table do not match.");
 		}
@@ -697,7 +703,7 @@ public class InformationTable {
 	 * @return number of objects stored in this information table
 	 */
 	public int getNumberOfObjects() {
-		return this.activeConditionAttributeFields.getNumberOfObjects();
+		return this.activeConditionAttributeFields != null ? this.activeConditionAttributeFields.getNumberOfObjects() : 0;
 	}
 	
 	/**

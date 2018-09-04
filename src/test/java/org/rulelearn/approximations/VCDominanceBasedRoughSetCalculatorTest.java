@@ -31,9 +31,12 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
  * Tests for {@link VCDominanceBasedRoughSetCalculator}.
+ *	
+ * Test is based on illustrative example represented in figure: <img src="./doc-files/approximationsOfUnions.png"/>.
  *
- * @author Jerzy Błaszczyński <jurek.blaszczynski@cs.put.poznan.pl>
- * @author Marcin Szeląg <marcin.szelag@cs.put.poznan.pl>
+ *
+ * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+ * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 class VCDominanceBasedRoughSetCalculatorTest {
 

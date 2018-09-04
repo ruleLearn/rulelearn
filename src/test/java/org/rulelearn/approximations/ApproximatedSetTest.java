@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
@@ -563,6 +564,56 @@ class ApproximatedSetTest {
 		assertEquals(this.approximatedSet.contains(9), false);
 		assertEquals(this.approximatedSet.contains(10), false);
 		assertEquals(this.approximatedSet.contains(11), true);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.approximations.ApproximatedSet#isMeaningful()}.
+	 */
+	@Test
+	void testIsMeaningful01() {
+		//record behavior of approximated set mock
+		IntSortedSet expectedObjects = new IntLinkedOpenHashSet();
+		expectedObjects.add(0);
+		expectedObjects.add(1);
+		expectedObjects.add(4);
+		expectedObjects.add(6);
+		expectedObjects.add(7);
+		expectedObjects.add(11);
+		//
+		doAnswer(invocation -> {
+			approximatedSet.objects = expectedObjects;
+			return null;
+		}).when(approximatedSetMock).findObjects(); //mocking a void method
+		
+		createApproximatedSet(); //create instance of tested class
+		Mockito.when(this.informationTableMock.getNumberOfObjects()).thenReturn(10);
+		
+		assertTrue(this.approximatedSet.isMeaningful());
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.approximations.ApproximatedSet#isMeaningful()}.
+	 */
+	@Test
+	void testIsMeaningful02() {
+		//record behavior of approximated set mock
+		IntSortedSet expectedObjects = new IntLinkedOpenHashSet();
+		expectedObjects.add(0);
+		expectedObjects.add(1);
+		expectedObjects.add(4);
+		expectedObjects.add(6);
+		expectedObjects.add(7);
+		expectedObjects.add(11);
+		//
+		doAnswer(invocation -> {
+			approximatedSet.objects = expectedObjects;
+			return null;
+		}).when(approximatedSetMock).findObjects(); //mocking a void method
+		
+		createApproximatedSet(); //create instance of tested class
+		Mockito.when(this.informationTableMock.getNumberOfObjects()).thenReturn(6);
+		
+		assertFalse(this.approximatedSet.isMeaningful());
 	}
 
 }
