@@ -422,22 +422,15 @@ public class InformationTable {
 			
 			while (iterate) {
 				alreadyPresentDecision = orderedUniqueDecisionsList.get(decisionIndex);
-				//candidate decision is equal to compared decision from the list
+				//candidate decision is equal (identical) to compared decision from the list
 				if (candidateDecision.equals(alreadyPresentDecision)) {
 					//ignore candidate decision since it is already present in the list of decisions
 					iterate = false;
 				}
+				//candidate decision is different than compared decision from the list
 				else {
-					//candidate decision is worse than compared decision from the list,
-					//or is equal in the sense of isEqualTo method (but not in the sense of equals method!)
-					if (candidateDecision.isAtMostAsGoodAs(alreadyPresentDecision) == TernaryLogicValue.TRUE) {
-						//insert candidate decision into appropriate position and shift following elements forward
-						orderedUniqueDecisionsList.add(decisionIndex, candidateDecision);
-						iterate = false;
-					}
-					//candidate decision is better than compared decision from the list
-					//or is incomparable with the compared decision from the list
-					else {
+					//candidate decision is similar (equal in the sense of isEqualTo method) to compared decision from the list
+					if (candidateDecision.isEqualTo(alreadyPresentDecision) == TernaryLogicValue.TRUE) {
 						//there is no next decision on the list
 						if (decisionIndex == orderedUniqueDecisionsList.size() - 1) {
 							//append candidate decision to the end of the list
@@ -447,6 +440,29 @@ public class InformationTable {
 						//there is next decision on the list
 						else {
 							decisionIndex++; //go to next decision from the list
+						} //else
+					}
+					//candidate decision is neither equal nor similar (equal in the sense of isEqualTo method) to compared decision from the list
+					else {
+						//candidate decision is worse than compared decision from the list
+						if (candidateDecision.isAtMostAsGoodAs(alreadyPresentDecision) == TernaryLogicValue.TRUE) {
+							//insert candidate decision into appropriate position and shift following elements forward
+							orderedUniqueDecisionsList.add(decisionIndex, candidateDecision);
+							iterate = false;
+						}
+						//candidate decision is better than compared decision from the list
+						//or is incomparable with the compared decision from the list
+						else {
+							//there is no next decision on the list
+							if (decisionIndex == orderedUniqueDecisionsList.size() - 1) {
+								//append candidate decision to the end of the list
+								orderedUniqueDecisionsList.add(candidateDecision);
+								iterate = false;
+							}
+							//there is next decision on the list
+							else {
+								decisionIndex++; //go to next decision from the list
+							} //else
 						} //else
 					} //else
 				} //else
