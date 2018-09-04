@@ -173,7 +173,9 @@ class InformationTableTest {
 	@Test
 	public void testInformationTable04() {
 		try {
-			new InformationTable(new Attribute[0], new ArrayList<Field[]>(), true);
+			InformationTable informationTable = new InformationTable(new Attribute[0], new ArrayList<Field[]>(), true);
+			assertEquals(informationTable.getNumberOfAttributes(), 0);
+			assertEquals(informationTable.getNumberOfObjects(), 0);
 			//OK
 		} catch (Exception exception) {
 			fail("Should create information table for an empty list of attributes and objects' fields.");

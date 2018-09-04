@@ -621,7 +621,7 @@ public class InformationTable {
 	 * @return number of objects stored in this information table
 	 */
 	public int getNumberOfObjects() {
-		return this.activeConditionAttributeFields.getNumberOfObjects();
+		return this.activeConditionAttributeFields != null ? this.activeConditionAttributeFields.getNumberOfObjects() : 0;
 	}
 	
 	/**
