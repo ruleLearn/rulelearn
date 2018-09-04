@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
@@ -586,7 +585,7 @@ class ApproximatedSetTest {
 		}).when(approximatedSetMock).findObjects(); //mocking a void method
 		
 		createApproximatedSet(); //create instance of tested class
-		Mockito.when(this.informationTableMock.getNumberOfObjects()).thenReturn(10);
+		when(this.informationTableMock.getNumberOfObjects()).thenReturn(10);
 		
 		assertTrue(this.approximatedSet.isMeaningful());
 	}
@@ -611,7 +610,7 @@ class ApproximatedSetTest {
 		}).when(approximatedSetMock).findObjects(); //mocking a void method
 		
 		createApproximatedSet(); //create instance of tested class
-		Mockito.when(this.informationTableMock.getNumberOfObjects()).thenReturn(6);
+		when(this.informationTableMock.getNumberOfObjects()).thenReturn(6);
 		
 		assertFalse(this.approximatedSet.isMeaningful());
 	}
