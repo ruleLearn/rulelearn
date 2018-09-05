@@ -33,32 +33,67 @@ import org.rulelearn.data.InformationTable;
  *
  */
 class ObjectParserTest {
-
+	
 	/**
-	 * Test method for {@link ObjectBuilder#getObjects(String)}.
+	 * Test method for {@link ObjectParser#ObjectParser(Attribute[])}.
 	 */
 	@Test
-	void testConstructionOfInformationTableBuilder() {
+	void testConstructionOfObjectParser01() {
+		Attribute[] attributes = null;
+		assertThrows(NullPointerException.class, () -> {new ObjectParser(attributes);});
+	}
+	
+	/**
+	 * Test method for {@link ObjectParser#ObjectParser(Attribute[], String))}.
+	 */
+	@Test
+	void testConstructionOfObjectParser02() {
+		Attribute[] attributes = null;
+		String encoding = null;
+		assertThrows(NullPointerException.class, () -> {new ObjectParser(attributes, encoding);});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser(attributes, "");});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser(new Attribute[0], encoding);});
+	}
+	
+	/**
+	 * Test method for {@link ObjectParser#ObjectParser(Attribute[], String, String)))}.
+	 */
+	@Test
+	void testConstructionOfObjectParser03() {
+		Attribute[] attributes = null;
+		String encoding = null, missingValueString = null;
+		assertThrows(NullPointerException.class, () -> {new ObjectParser(attributes, encoding, missingValueString);});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser(attributes, "", missingValueString);});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser(attributes, "", "");});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser(new Attribute[0], encoding, missingValueString);});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser(new Attribute[0], encoding, "");});
+	}
+
+	/**
+	 * Test method for {@link ObjectParser#parseObjects(java.io.Reader)}.
+	 */
+	@Test
+	void testGetObjects() {
 		Attribute [] attributes = null;
 		
-		AttributeParser aParser = new AttributeParser();
+		AttributeParser attributeParser = new AttributeParser();
 		try {
-			attributes = aParser.parseAttributes(new FileReader("src/test/resources/data/csv/prioritisation.json"));
+			attributes = attributeParser.parseAttributes(new FileReader("src/test/resources/data/csv/prioritisation.json"));
 		}
 		catch (FileNotFoundException ex) {
 			System.out.println(ex.toString());
 		}
 		if (attributes != null) {
-			ObjectParser oParser = new ObjectParser(attributes);
-			InformationTable iTable = null;
+			ObjectParser objectParser = new ObjectParser(attributes);
+			InformationTable informationTable = null;
 			try {
-				iTable = oParser.parseObjects(new FileReader("src/test/resources/data/json/examples.json"));
+				informationTable = objectParser.parseObjects(new FileReader("src/test/resources/data/json/examples.json"));
 			}
 			catch (FileNotFoundException ex) {
 				System.out.println(ex.toString());
 			}
-			if (iTable != null) {
-				assertEquals(iTable.getNumberOfObjects(), 2);
+			if (informationTable != null) {
+				assertEquals(informationTable.getNumberOfObjects(), 2);
 			}
 			else {
 				fail("Unable to load JSON test file with definition of objects");

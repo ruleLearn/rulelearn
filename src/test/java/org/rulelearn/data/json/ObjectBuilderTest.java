@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -32,19 +33,40 @@ import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
 /**
- * Test for {@link ObjectBuilder}
+ * Test for {@link ObjectBuilder}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
 class ObjectBuilderTest {
+	
+	/**
+	 * Test method for {@link ObjectBuilder#ObjectBuilder(Attribute[])}.
+	 */
+	@Test
+	void testConstructionOfObjectBuilder01() {
+		Attribute[] attributes = null;
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes);});
+	}
+	
+	/**
+	 * Test method for {@link ObjectBuilder#ObjectBuilder(Attribute[], String)}.
+	 */
+	@Test
+	void testConstructionOfObjectBuilder04() {
+		Attribute[] attributes = null;
+		String encoding = null;
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, encoding);});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, "");});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(new Attribute[0], encoding);});
+	}
 
 	/**
 	 * Test method for {@link ObjectBuilder#getObjects(String)}.
 	 */
 	@Test
-	void testConstructionOfInformationTableBuilder() {
+	void testGetObjects() {
 		Attribute [] attributes = null;
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
@@ -60,12 +82,19 @@ class ObjectBuilderTest {
 		}
 		if (jsonReader != null) {
 			attributes = gson.fromJson(jsonReader, Attribute[].class);
+			try {
+				jsonReader.close();
+			}
+			catch (IOException ex) {
+				System.out.println(ex.toString());
+			}
 		}
 		else {
 			fail("Unable to load JSON test file with definition of attributes");
 		}
 		
 		JsonElement json = null;
+		jsonReader = null;
 		try {
 			jsonReader = new JsonReader(new FileReader("src/test/resources/data/json/prioritisation1.json"));
 		}
@@ -75,6 +104,12 @@ class ObjectBuilderTest {
 		if (jsonReader != null) {
 			JsonParser jsonParser = new JsonParser();
 			json = jsonParser.parse(jsonReader);
+			try {
+				jsonReader.close();
+			}
+			catch (IOException ex) {
+				System.out.println(ex.toString());
+			}
 		}
 		else {
 			fail("Unable to load JSON test file with definition of objects");
