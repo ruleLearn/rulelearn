@@ -22,6 +22,8 @@ import static org.rulelearn.core.Precondition.nonNegative;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.KnownSimpleField;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -233,6 +235,22 @@ public class CompositeDecision extends Decision {
 	@Override
 	public String toString() {
 		return attributeIndex2EvaluationMap.toString();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public boolean hasNoMissingEvaluation() {
+		for (EvaluationField evaluation : attributeIndex2EvaluationMap.values()) {
+			if (!(evaluation instanceof KnownSimpleField)) {
+				return false; //missing evaluation found
+			}
+		}
+		
+		return true; //all evaluations are non-missing
 	}
 	
 }

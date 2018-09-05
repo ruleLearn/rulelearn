@@ -25,6 +25,7 @@ import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.RealFieldFactory;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -272,6 +273,28 @@ class SimpleDecisionTest {
 		int attributeIndex = 1;
 		Decision decision = new SimpleDecision(evaluation, attributeIndex);
 		assertEquals(decision.toString(), "1=>2");
+	}
+	
+	/**
+	 * Test for {@link SimpleDecision#hasNoMissingEvaluation()} method.
+	 */
+	@Test
+	void testHasNoMissingEvaluation01() {
+		EvaluationField evaluation = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN);
+		int attributeIndex = 1;
+		Decision decision = new SimpleDecision(evaluation, attributeIndex);
+		assertTrue(decision.hasNoMissingEvaluation());
+	}
+	
+	/**
+	 * Test for {@link SimpleDecision#hasNoMissingEvaluation()} method.
+	 */
+	@Test
+	void testHasNoMissingEvaluation02() {
+		EvaluationField evaluation = new UnknownSimpleFieldMV2();
+		int attributeIndex = 1;
+		Decision decision = new SimpleDecision(evaluation, attributeIndex);
+		assertFalse(decision.hasNoMissingEvaluation());
 	}
 	
 }

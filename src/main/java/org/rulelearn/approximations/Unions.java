@@ -19,7 +19,9 @@ package org.rulelearn.approximations;
 import static org.rulelearn.core.Precondition.notNull;
 
 import java.util.ArrayList;
+import java.util.Set;
 
+import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.data.Decision;
@@ -37,7 +39,7 @@ import org.rulelearn.data.InformationTableWithDecisionDistributions;
 public class Unions extends ApproximatedSets {
 	
 	/**
-	 * Array containing all upward unions which can be defined for information table.
+	 * Array containing all meaningful (i.e., not containing all objects) upward unions which can be defined for information table.
 	 * Unions are sorted from the most specific to the least specific.
 	 * For example - if possible values of decision criterion are: 1, 2 and 3
 	 * and preference type for this criterion is gain then:<br>
@@ -47,7 +49,7 @@ public class Unions extends ApproximatedSets {
 	Union[] upwardUnions = null;
 	
 	/**
-	 * Array containing all downward unions which can be defined for information table.
+	 * Array containing all meaningful (i.e., not containing all objects) downward unions which can be defined for information table.
 	 * Unions are sorted from the most specific to the least specific.
 	 * For example, if possible values of decision criterion are: 1, 2 and 3
 	 * and preference type for this criterion is gain, then:<br>
@@ -57,11 +59,13 @@ public class Unions extends ApproximatedSets {
 	Union[] downwardUnions = null;
 	
 	/**
-	 * Ordered (from the worst to the best) array of all unique (distinct) decisions, which can be found in information table.
+	 * Ordered (from the worst to the best) array of all unique (distinct) fully-determined decisions, which can be found in information table.
 	 * Each decision is present only once.
 	 * The order is such that each decision in the array is worse than decisions to the right
 	 * being comparable to this decision, and better than decisions to the left being comparable to this decision.
-	 * If two decisions are incomparable, then their respective order is not constrained and may be any.
+	 * If two decisions are incomparable, then their respective order is not constrained and may be any.<br>
+	 * <br>
+	 * See {@link InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()}.
 	 */
 	Decision[] limitingDecisions = null;
 	
@@ -72,46 +76,74 @@ public class Unions extends ApproximatedSets {
 	 * @param roughSetCalculator rough set calculator used to calculate approximations of all approximated sets stored in this container
 	 * 
 	 * @throws NullPointerException if given information table does not store decisions for subsequent objects
+	 * @throws InvalidSizeException if given information table does not contain at least one fully-determined decision - see {@link Decision#hasNoMissingEvaluation()}
 	 */
 	public Unions(InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator) {
 		super(informationTable, roughSetCalculator);
 		
 		//calculate limiting decisions
-		limitingDecisions = informationTable.calculateOrderedUniqueDecisions();
+		limitingDecisions = informationTable.calculateOrderedUniqueFullyDeterminedDecisions();
 		
 		if (limitingDecisions == null) {
 			throw new NullPointerException("Information table does not store decisions for subsequent objects.");
 		}
 		
+		if (limitingDecisions.length < 1) {
+			throw new InvalidSizeException("Cannot create unions for less than one fully-determined decision.");
+		}
+		
 		//create all upward and downward unions
-		constructUpwardUnions();
-		constructDownwardUnions();
+		calculateUpwardUnions();
+		calculateDownwardUnions();
 	}
 	
 	/**
 	 * Creates array of all meaningful (i.e., not containing all objects) upward unions, sorted from the most to the least specific union.
 	 */
-	void constructUpwardUnions() {
+	void calculateUpwardUnions() {
 		ArrayList<Union> upwardUnionsList = new ArrayList<Union>(); //use a list, as the number of upward unions is unknown, in general
 		
 		int numberOfLimitingDecisions = limitingDecisions.length;
 		boolean nonPositiveDecisionFound;
-
-		//iterate from the best to the worst limiting decision (check all decisions!)
-		for (int i = numberOfLimitingDecisions - 1; i >= 0; i--) { //!
-			nonPositiveDecisionFound = false;
-			
-			for (int j = 0; j < numberOfLimitingDecisions; j++) { //iterate in inverse order to maximize the chance of quickly finding non-positive decision
-				if (!Union.isDecisionPositive(limitingDecisions[j], Union.UnionType.AT_LEAST, limitingDecisions[i], this.getInformationTable())) {
-					nonPositiveDecisionFound = true;
-					break;
+		
+		Set<Decision> allUniqueDecisions = this.getInformationTable().getDecisionDistribution().getDecisions();
+		
+		//all decisions are fully-determined => make use of order of decisions
+		if (limitingDecisions.length == allUniqueDecisions.size()) {
+			//iterate from the best to the worst limiting decision (check all decisions!)
+			for (int i = numberOfLimitingDecisions - 1; i >= 0; i--) { //!
+				nonPositiveDecisionFound = false;
+				
+				for (int j = 0; j < numberOfLimitingDecisions; j++) { //iterate in inverse order to maximize the chance of quickly finding non-positive decision
+					if (!Union.isDecisionPositive(limitingDecisions[j], Union.UnionType.AT_LEAST, limitingDecisions[i], this.getInformationTable())) {
+						nonPositiveDecisionFound = true;
+						break;
+					}
+				} //for (j)
+				
+				if (nonPositiveDecisionFound) { //upward union with limiting decision equal to limitingDecisions[i] does not contain all objects (is meaningful)
+					upwardUnionsList.add(new Union(Union.UnionType.AT_LEAST, limitingDecisions[i], this.getInformationTable(), this.getRoughSetCalculator()));
 				}
-			} //for (j)
-			
-			if (nonPositiveDecisionFound) { //upward union with limiting decision equal to limitingDecisions[i] does not contain all objects (is meaningful)
-				upwardUnionsList.add(new Union(Union.UnionType.AT_LEAST, limitingDecisions[i], this.getInformationTable(), this.getRoughSetCalculator()));
-			}
-		} //for (i)
+			} //for (i)
+		}
+		//not all decisions are fully-determined => check all decisions
+		else {
+			//iterate from the best to the worst limiting decision (check all decisions!)
+			for (int i = numberOfLimitingDecisions - 1; i >= 0; i--) { //!
+				nonPositiveDecisionFound = false;
+				
+				for (Decision decision : allUniqueDecisions) {
+					if (!Union.isDecisionPositive(decision, Union.UnionType.AT_LEAST, limitingDecisions[i], this.getInformationTable())) {
+						nonPositiveDecisionFound = true;
+						break;
+					}
+				}
+				
+				if (nonPositiveDecisionFound) { //upward union with limiting decision equal to limitingDecisions[i] does not contain all objects (is meaningful)
+					upwardUnionsList.add(new Union(Union.UnionType.AT_LEAST, limitingDecisions[i], this.getInformationTable(), this.getRoughSetCalculator()));
+				}
+			} //for (i)
+		}
 		
 		//copy unions from the temporary list to the array stored in this object
 		this.upwardUnions = new Union[upwardUnionsList.size()];
@@ -123,27 +155,50 @@ public class Unions extends ApproximatedSets {
 	/**
 	 * Creates array of all meaningful (i.e., not containing all objects) downward unions, sorted from the most to the least specific union.
 	 */
-	void constructDownwardUnions() {
+	void calculateDownwardUnions() {
 		ArrayList<Union> downwardUnionsList = new ArrayList<Union>(); //use a list, as the number of downward unions is unknown, in general
 		
 		int numberOfLimitingDecisions = limitingDecisions.length;
 		boolean nonPositiveDecisionFound;
+		
+		Set<Decision> allUniqueDecisions = this.getInformationTable().getDecisionDistribution().getDecisions();
 
-		//iterate from the worst to the best decision (check all decisions!)
-		for (int i = 0; i < numberOfLimitingDecisions; i++) { //!
-			nonPositiveDecisionFound = false;
-			
-			for (int j = numberOfLimitingDecisions - 1; j >= 0; j--) { //iterate in inverse order to maximize the chance of quickly finding non-positive decision
-				if (!Union.isDecisionPositive(limitingDecisions[j], Union.UnionType.AT_MOST, limitingDecisions[i], this.getInformationTable())) {
-					nonPositiveDecisionFound = true;
-					break;
+		//all decisions are fully-determined => make use of order of decisions
+		if (limitingDecisions.length == allUniqueDecisions.size()) {
+			//iterate from the worst to the best decision (check all decisions!)
+			for (int i = 0; i < numberOfLimitingDecisions; i++) { //!
+				nonPositiveDecisionFound = false;
+				
+				for (int j = numberOfLimitingDecisions - 1; j >= 0; j--) { //iterate in inverse order to maximize the chance of quickly finding non-positive decision
+					if (!Union.isDecisionPositive(limitingDecisions[j], Union.UnionType.AT_MOST, limitingDecisions[i], this.getInformationTable())) {
+						nonPositiveDecisionFound = true;
+						break;
+					}
+				} //for (j)
+				
+				if (nonPositiveDecisionFound) { //downward union with limiting decision equal to limitingDecisions[i] does not contain all objects (is meaningful)
+					downwardUnionsList.add(new Union(Union.UnionType.AT_MOST, limitingDecisions[i], this.getInformationTable(), this.getRoughSetCalculator()));
 				}
-			} //for (j)
-			
-			if (nonPositiveDecisionFound) { //downward union with limiting decision equal to limitingDecisions[i] does not contain all objects (is meaningful)
-				downwardUnionsList.add(new Union(Union.UnionType.AT_MOST, limitingDecisions[i], this.getInformationTable(), this.getRoughSetCalculator()));
-			}
-		} //for (i)
+			} //for (i)
+		}
+		//not all decisions are fully-determined => check all decisions
+		else {
+			//iterate from the worst to the best decision (check all decisions!)
+			for (int i = 0; i < numberOfLimitingDecisions; i++) { //!
+				nonPositiveDecisionFound = false;
+				
+				for (Decision decision : allUniqueDecisions) {
+					if (!Union.isDecisionPositive(decision, Union.UnionType.AT_MOST, limitingDecisions[i], this.getInformationTable())) {
+						nonPositiveDecisionFound = true;
+						break;
+					}
+				} //for
+				
+				if (nonPositiveDecisionFound) { //downward union with limiting decision equal to limitingDecisions[i] does not contain all objects (is meaningful)
+					downwardUnionsList.add(new Union(Union.UnionType.AT_MOST, limitingDecisions[i], this.getInformationTable(), this.getRoughSetCalculator()));
+				}
+			} //for (i)
+		}
 		
 		//copy unions from the temporary list to the array stored in this object
 		this.downwardUnions = new Union[downwardUnionsList.size()];
@@ -183,7 +238,7 @@ public class Unions extends ApproximatedSets {
 	}
 	
 	/**
-	 * Gets array containing all upward unions which can be defined for information table.
+	 * Gets array containing all meaningful (i.e., not containing all objects) upward unions which can be defined for information table.
 	 * Unions are sorted from the most specific to the least specific.
 	 * 
 	 * @return array containing all upward unions which can be defined for information table
@@ -193,7 +248,7 @@ public class Unions extends ApproximatedSets {
 	}
 	
 	/**
-	 * Gets array containing all upward unions which can be defined for information table.
+	 * Gets array containing all meaningful (i.e., not containing all objects) upward unions which can be defined for information table.
 	 * Unions are sorted from the most specific to the least specific.
 	 * 
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
@@ -207,7 +262,7 @@ public class Unions extends ApproximatedSets {
 	}
 	
 	/**
-	 * Gets array containing all downward unions which can be defined for information table.
+	 * Gets array containing all meaningful (i.e., not containing all objects) downward unions which can be defined for information table.
 	 * Unions are sorted from the most specific to the least specific.
 	 * 
 	 * @return array containing all downward unions which can be defined for information table
@@ -217,7 +272,7 @@ public class Unions extends ApproximatedSets {
 	}
 	
 	/**
-	 * Gets array containing all downward unions which can be defined for information table.
+	 * Gets array containing all meaningful (i.e., not containing all objects) downward unions which can be defined for information table.
 	 * Unions are sorted from the most specific to the least specific.
 	 * 
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
@@ -231,25 +286,29 @@ public class Unions extends ApproximatedSets {
 	}
 	
 	/**
-	 * Gets ordered (from the worst to the best) array of all distinct decisions, which can be found in information table.
+	 * Gets ordered (from the worst to the best) array of all distinct fully-determined decisions, which can be found in information table.
 	 * These decisions are limiting decisions of unions present in this union container.
 	 * The order is such that each decision in the array is worse than decisions to the right
 	 * being comparable to this decision, and better than decisions to the left being comparable to this decision.
-	 * If any two decisions are incomparable, then their respective order may be arbitrary.
+	 * If any two decisions are incomparable, then their respective order may be arbitrary.<br>
+	 * <br>
+	 * See {@link InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()}.
 	 * 
 	 * @return ordered (from the worst to the best) array of all distinct decisions, which can be found in information table
-	 * @see InformationTable#calculateOrderedUniqueDecisions()
+	 * @see InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()
 	 */
 	public Decision[] getLimitingDecisions() {
 		return limitingDecisions.clone();
 	}
 	
 	/**
-	 * Gets ordered (from the worst to the best) array of all distinct decisions, which can be found in information table.
+	 * Gets ordered (from the worst to the best) array of all distinct fully-determined decisions, which can be found in information table.
 	 * These decisions are limiting decisions of unions present in this union container.
 	 * The order is such that each decision in the array is worse than decisions to the right
 	 * being comparable to this decision, and better than decisions to the left being comparable to this decision.
 	 * If any two decisions are incomparable, then their respective order may be arbitrary.<br>
+	 * <br>
+	 * See {@link InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()}.<br>
 	 * <br>
 	 * This method can be used in certain circumstances to accelerate calculations.
 	 * 
@@ -257,7 +316,7 @@ public class Unions extends ApproximatedSets {
 	 *        at the cost of returning a read-only array, or should return a safe array (that can be
 	 *        modified outside this object), at the cost of returning the result slower
 	 * @return ordered (from the worst to the best) array of all distinct decisions, which can be found in information table
-	 * @see InformationTable#calculateOrderedUniqueDecisions()
+	 * @see InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
 	public Decision[] getLimitingDecisions(boolean accelerateByReadOnlyResult) {

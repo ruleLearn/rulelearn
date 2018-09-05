@@ -26,6 +26,7 @@ import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
 import org.rulelearn.types.IdentificationField;
+import org.rulelearn.types.KnownSimpleField;
 import org.rulelearn.types.TextIdentificationField;
 import org.rulelearn.types.UUIDIdentificationField;
 
@@ -386,21 +387,23 @@ public class InformationTable {
 	}
 	
 	/**
-	 * Calculates ordered (from the worst to the best) array of all unique decisions assigned to objects of this information table.
+	 * Calculates ordered (from the worst to the best) array of all unique fully-determined decisions assigned to objects of this information table.
+	 * A fully-determined decision {@link Decision} is a decision whose all contributing evaluations are non-missing (are instances of {@link KnownSimpleField}).
 	 * For any two decisions from the returned array, {@code decision1.equals(decision2)} should return {@code false}.
 	 * Result can be {@code null}, e.g., if this information table stores evaluations of test objects (for which decisions are unknown).
 	 * 
-	 * @return array with unique decisions ordered from the worst to the best,
+	 * @return array with unique fully-determined decisions ordered from the worst to the best,
 	 *         or {@code null} if this information table does not store any decisions
+	 * @see Decision#hasNoMissingEvaluation()
 	 */
-	public Decision[] calculateOrderedUniqueDecisions() {
+	public Decision[] calculateOrderedUniqueFullyDeterminedDecisions() {
 		Decision[] allDecisions = this.getDecisions(true);
 		
 		if (allDecisions == null || allDecisions.length <= 1) {
 			return allDecisions;
 		}
 		
-		ArrayList<Decision> orderedUniqueDecisionsList = new ArrayList<Decision>();
+		ArrayList<Decision> orderedUniqueFullyDeterminedDecisionsList = new ArrayList<Decision>();
 		
 		//auxiliary variables
 		Decision candidateDecision;
@@ -410,53 +413,48 @@ public class InformationTable {
 		
 		//create sorted list of decisions:
 		
-		//add first decision
-		candidateDecision = allDecisions[0];
-		orderedUniqueDecisionsList.add(candidateDecision);
+		//extract first fully-determined decision (if there is any)
+		int startingIndex = allDecisions.length; //make sure that if there is no fully-determined decision, so first such decision could not be found, then next such decisions would not be searched for
+		for (int i = 0; i < allDecisions.length; i++) {
+			//current decision is fully-determined
+			if (allDecisions[i].hasNoMissingEvaluation()) {
+				orderedUniqueFullyDeterminedDecisionsList.add(allDecisions[i]);
+				startingIndex = i + 1;
+				break; //first fully-determined decision found
+			}
+		}
 		
-		//iterate through objects and extract next unique decisions, retaining respective order of comparable decisions
-		for (int i = 1; i < allDecisions.length; i++) {
+		//iterate through objects and extract next unique fully-determined decisions, retaining respective order of comparable decisions
+		for (int i = startingIndex; i < allDecisions.length; i++) {
 			candidateDecision = allDecisions[i];
-			iterate = true;
-			decisionIndex = 0;
 			
-			while (iterate) {
-				alreadyPresentDecision = orderedUniqueDecisionsList.get(decisionIndex);
-				//candidate decision is equal (identical) to compared decision from the list
-				if (candidateDecision.equals(alreadyPresentDecision)) {
-					//ignore candidate decision since it is already present in the list of decisions
-					iterate = false;
-				}
-				//candidate decision is different than compared decision from the list
-				else {
-					//candidate decision is similar (equal in the sense of isEqualTo method) to compared decision from the list
-					if (candidateDecision.isEqualTo(alreadyPresentDecision) == TernaryLogicValue.TRUE) {
-						//there is no next decision on the list
-						if (decisionIndex == orderedUniqueDecisionsList.size() - 1) {
-							//append candidate decision to the end of the list
-							orderedUniqueDecisionsList.add(candidateDecision);
-							iterate = false;
-						}
-						//there is next decision on the list
-						else {
-							decisionIndex++; //go to next decision from the list
-						} //else
+			//verify if candidate decision satisfies loop entry condition of being fully-determined
+			if (candidateDecision.hasNoMissingEvaluation()) {
+				iterate = true;
+				decisionIndex = 0;
+				
+				while (iterate) {
+					alreadyPresentDecision = orderedUniqueFullyDeterminedDecisionsList.get(decisionIndex);
+					//candidate decision is equal (identical) to compared decision from the list
+					if (candidateDecision.equals(alreadyPresentDecision)) {
+						//ignore candidate decision since it is already present in the list of decisions
+						iterate = false;
 					}
-					//candidate decision is neither equal nor similar (equal in the sense of isEqualTo method) to compared decision from the list
+					//candidate decision is different than compared decision from the list
 					else {
 						//candidate decision is worse than compared decision from the list
 						if (candidateDecision.isAtMostAsGoodAs(alreadyPresentDecision) == TernaryLogicValue.TRUE) {
 							//insert candidate decision into appropriate position and shift following elements forward
-							orderedUniqueDecisionsList.add(decisionIndex, candidateDecision);
+							orderedUniqueFullyDeterminedDecisionsList.add(decisionIndex, candidateDecision);
 							iterate = false;
 						}
 						//candidate decision is better than compared decision from the list
 						//or is incomparable with the compared decision from the list
 						else {
 							//there is no next decision on the list
-							if (decisionIndex == orderedUniqueDecisionsList.size() - 1) {
+							if (decisionIndex == orderedUniqueFullyDeterminedDecisionsList.size() - 1) {
 								//append candidate decision to the end of the list
-								orderedUniqueDecisionsList.add(candidateDecision);
+								orderedUniqueFullyDeterminedDecisionsList.add(candidateDecision);
 								iterate = false;
 							}
 							//there is next decision on the list
@@ -465,18 +463,18 @@ public class InformationTable {
 							} //else
 						} //else
 					} //else
-				} //else
-			} //while
+				} //while
+			} //if
 		} //for
 		
 		//create returned array of decisions
-		int decisionsCount = orderedUniqueDecisionsList.size();
-		Decision[] orderedUniqueDecisions = new Decision[decisionsCount];
+		int decisionsCount = orderedUniqueFullyDeterminedDecisionsList.size();
+		Decision[] orderedUniqueFullyDeterminedDecisions = new Decision[decisionsCount];
 		
 		for (int i = 0; i < decisionsCount; i++)
-			orderedUniqueDecisions[i] = orderedUniqueDecisionsList.get(i);
+			orderedUniqueFullyDeterminedDecisions[i] = orderedUniqueFullyDeterminedDecisionsList.get(i);
 		
-		return orderedUniqueDecisions;
+		return orderedUniqueFullyDeterminedDecisions;
 	}
 	
 	/**
