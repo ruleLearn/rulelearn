@@ -76,6 +76,7 @@ public class Unions extends ApproximatedSets {
 	 * @param roughSetCalculator rough set calculator used to calculate approximations of all approximated sets stored in this container
 	 * 
 	 * @throws NullPointerException if given information table does not store decisions for subsequent objects
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidSizeException if given information table does not contain at least one fully-determined decision - see {@link Decision#hasNoMissingEvaluation()}
 	 */
 	public Unions(InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator) {
@@ -98,7 +99,7 @@ public class Unions extends ApproximatedSets {
 	}
 	
 	/**
-	 * Creates array of all meaningful (i.e., not containing all objects) upward unions, sorted from the most to the least specific union.
+	 * Creates array of all meaningful (i.e., not containing all objects) upward unions {@link #upwardUnions}, sorted from the most to the least specific union.
 	 */
 	void calculateUpwardUnions() {
 		ArrayList<Union> upwardUnionsList = new ArrayList<Union>(); //use a list, as the number of upward unions is unknown, in general
@@ -153,7 +154,7 @@ public class Unions extends ApproximatedSets {
 	}
 	
 	/**
-	 * Creates array of all meaningful (i.e., not containing all objects) downward unions, sorted from the most to the least specific union.
+	 * Creates array of all meaningful (i.e., not containing all objects) downward unions {@link #downwardUnions}, sorted from the most to the least specific union.
 	 */
 	void calculateDownwardUnions() {
 		ArrayList<Union> downwardUnionsList = new ArrayList<Union>(); //use a list, as the number of downward unions is unknown, in general
@@ -239,7 +240,9 @@ public class Unions extends ApproximatedSets {
 	
 	/**
 	 * Gets array containing all meaningful (i.e., not containing all objects) upward unions which can be defined for information table.
-	 * Unions are sorted from the most specific to the least specific.
+	 * Unions are sorted from the most specific (i.e., containing the smallest number of objects)
+	 * to the least specific (i.e., containing the greatest number of objects). Returned array represents a partial order of unions.
+	 * That order is such that TODO
 	 * 
 	 * @return array containing all upward unions which can be defined for information table
 	 */
@@ -249,7 +252,9 @@ public class Unions extends ApproximatedSets {
 	
 	/**
 	 * Gets array containing all meaningful (i.e., not containing all objects) upward unions which can be defined for information table.
-	 * Unions are sorted from the most specific to the least specific.
+	 * Unions are sorted from the most specific (i.e., containing the smallest number of objects)
+	 * to the least specific (i.e., containing the greatest number of objects). Returned array represents a partial order of unions.
+	 * That order is such that TODO 
 	 * 
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
 	 *        at the cost of returning a read-only array, or should return a safe array (that can be
@@ -263,7 +268,9 @@ public class Unions extends ApproximatedSets {
 	
 	/**
 	 * Gets array containing all meaningful (i.e., not containing all objects) downward unions which can be defined for information table.
-	 * Unions are sorted from the most specific to the least specific.
+	 * Unions are sorted from the most specific (i.e., containing the smallest number of objects)
+	 * to the least specific (i.e., containing the greatest number of objects). Returned array represents a partial order of unions.
+	 * That order is such that TODO
 	 * 
 	 * @return array containing all downward unions which can be defined for information table
 	 */
@@ -273,7 +280,9 @@ public class Unions extends ApproximatedSets {
 	
 	/**
 	 * Gets array containing all meaningful (i.e., not containing all objects) downward unions which can be defined for information table.
-	 * Unions are sorted from the most specific to the least specific.
+	 * Unions are sorted from the most specific (i.e., containing the smallest number of objects)
+	 * to the least specific (i.e., containing the greatest number of objects). Returned array represents a partial order of unions.
+	 * That order is such that TODO
 	 * 
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
 	 *        at the cost of returning a read-only array, or should return a safe array (that can be

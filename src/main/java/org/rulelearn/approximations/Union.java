@@ -191,7 +191,9 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * Validates given limiting decision, taking into account given information table.
+	 * Validates given limiting decision, taking into account given information table. Checks if each attribute contributing to the given decision
+	 * is an evaluation attribute, is active, and of type {@link AttributeType#DECISION}. Moreover, at least one of the attributes has to have
+	 * preference type different than {@link AttributePreferenceType#NONE}.
 	 * 
 	 * @param limitingDecision decision that serves as a limit for this union; e.g., decision "3" is a limit for union "at least 3" and "at most 3"
 	 * @param informationTable information table with considered objects, some of which belong to this union
