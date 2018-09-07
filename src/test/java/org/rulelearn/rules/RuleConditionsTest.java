@@ -96,6 +96,7 @@ class RuleConditionsTest {
 		assertTrue(ruleConditions.objectIsPositive(3));
 		assertTrue(ruleConditions.objectIsPositive(5));
 		assertTrue(ruleConditions.objectIsPositive(6));
+		assertFalse(ruleConditions.objectIsPositive(7));
 	}
 	
 	/**
@@ -126,10 +127,18 @@ class RuleConditionsTest {
 		
 		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects);
 		
-		assertEquals(ruleConditions.addCondition(Mockito.mock(Condition.class)), 0);
+		EvaluationAttributeWithContext attributeWithContextMock1 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContextMock1.getAttributeIndex()).thenReturn(1);
+		Condition<?> conditionMock1 = Mockito.mock(Condition.class);
+		Mockito.when(conditionMock1.getAttributeWithContext()).thenReturn(attributeWithContextMock1);
+		assertEquals(ruleConditions.addCondition(conditionMock1), 0);
 		assertEquals(ruleConditions.getConditions().size(), 1);
 		
-		assertEquals(ruleConditions.addCondition(Mockito.mock(Condition.class)), 1);
+		EvaluationAttributeWithContext attributeWithContextMock2 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContextMock2.getAttributeIndex()).thenReturn(2);
+		Condition<?> conditionMock2 = Mockito.mock(Condition.class);
+		Mockito.when(conditionMock2.getAttributeWithContext()).thenReturn(attributeWithContextMock2);
+		assertEquals(ruleConditions.addCondition(conditionMock2), 1);
 		assertEquals(ruleConditions.getConditions().size(), 2);
 	}
 
@@ -161,21 +170,31 @@ class RuleConditionsTest {
 		
 		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects);
 		
-		SimpleConditionAtLeast condition0 = Mockito.mock(SimpleConditionAtLeast.class);
-		SimpleConditionAtMost condition1 = Mockito.mock(SimpleConditionAtMost.class);
-		SimpleConditionEqual condition2 = Mockito.mock(SimpleConditionEqual.class);
-		
-		ruleConditions.addCondition(condition0);
+		EvaluationAttributeWithContext attributeWithContext1 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContext1.getAttributeIndex()).thenReturn(1);
+		SimpleConditionAtLeast condition1 = Mockito.mock(SimpleConditionAtLeast.class);
+		Mockito.when(condition1.getAttributeWithContext()).thenReturn(attributeWithContext1);
 		ruleConditions.addCondition(condition1);
+		
+		EvaluationAttributeWithContext attributeWithContext2 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContext2.getAttributeIndex()).thenReturn(2);
+		SimpleConditionAtMost condition2 = Mockito.mock(SimpleConditionAtMost.class);
+		Mockito.when(condition2.getAttributeWithContext()).thenReturn(attributeWithContext2);
 		ruleConditions.addCondition(condition2);
+		
+		EvaluationAttributeWithContext attributeWithContext3 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContext3.getAttributeIndex()).thenReturn(3);
+		SimpleConditionEqual condition3 = Mockito.mock(SimpleConditionEqual.class);
+		Mockito.when(condition3.getAttributeWithContext()).thenReturn(attributeWithContext3);
+		ruleConditions.addCondition(condition3);
 		
 		assertEquals(ruleConditions.size(), 3);
 		
 		ruleConditions.removeCondition(1);
 		
 		assertEquals(ruleConditions.size(), 2);
-		assertEquals(ruleConditions.getCondition(0), condition0);
-		assertEquals(ruleConditions.getCondition(1), condition2);
+		assertEquals(ruleConditions.getCondition(0), condition1);
+		assertEquals(ruleConditions.getCondition(1), condition3);
 	}
 
 	/**
@@ -200,20 +219,30 @@ class RuleConditionsTest {
 		
 		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects);
 		
-		SimpleConditionAtLeast condition0 = Mockito.mock(SimpleConditionAtLeast.class);
-		SimpleConditionAtMost condition1 = Mockito.mock(SimpleConditionAtMost.class);
-		SimpleConditionEqual condition2 = Mockito.mock(SimpleConditionEqual.class);
-		
-		ruleConditions.addCondition(condition0);
+		EvaluationAttributeWithContext attributeWithContext1 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContext1.getAttributeIndex()).thenReturn(1);
+		SimpleConditionAtLeast condition1 = Mockito.mock(SimpleConditionAtLeast.class);
+		Mockito.when(condition1.getAttributeWithContext()).thenReturn(attributeWithContext1);
 		ruleConditions.addCondition(condition1);
+		
+		EvaluationAttributeWithContext attributeWithContext2 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContext2.getAttributeIndex()).thenReturn(2);
+		SimpleConditionAtMost condition2 = Mockito.mock(SimpleConditionAtMost.class);
+		Mockito.when(condition2.getAttributeWithContext()).thenReturn(attributeWithContext2);
 		ruleConditions.addCondition(condition2);
+		
+		EvaluationAttributeWithContext attributeWithContext3 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContext3.getAttributeIndex()).thenReturn(3);
+		SimpleConditionEqual condition3 = Mockito.mock(SimpleConditionEqual.class);
+		Mockito.when(condition3.getAttributeWithContext()).thenReturn(attributeWithContext3);
+		ruleConditions.addCondition(condition3);
 		
 		List<Condition<?>> conditions = ruleConditions.getConditions();
 		
 		assertEquals(conditions.size(), 3);
-		assertEquals(conditions.get(0), condition0);
-		assertEquals(conditions.get(1), condition1);
-		assertEquals(conditions.get(2), condition2);
+		assertEquals(conditions.get(0), condition1);
+		assertEquals(conditions.get(1), condition2);
+		assertEquals(conditions.get(2), condition3);
 	}
 	
 	/**
@@ -242,11 +271,16 @@ class RuleConditionsTest {
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
 		
 		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects);
-		ruleConditions.addCondition(Mockito.mock(Condition.class));
 		
-		EvaluationAttributeWithContext attributeMock = Mockito.mock(EvaluationAttributeWithContext.class);
-		Mockito.when(attributeMock.getAttributeIndex()).thenReturn(1);
-		SimpleConditionAtLeast simpleCondition = new SimpleConditionAtLeast(attributeMock, IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.COST));
+		EvaluationAttributeWithContext attributeWithContextMock1 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContextMock1.getAttributeIndex()).thenReturn(0);
+		Condition<?> conditionMock = Mockito.mock(Condition.class);
+		Mockito.when(conditionMock.getAttributeWithContext()).thenReturn(attributeWithContextMock1);
+		ruleConditions.addCondition(conditionMock);
+		
+		EvaluationAttributeWithContext attributeWithContextMock2 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContextMock2.getAttributeIndex()).thenReturn(1);
+		SimpleConditionAtLeast simpleCondition = new SimpleConditionAtLeast(attributeWithContextMock2, IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.COST));
 		ruleConditions.addCondition(simpleCondition);
 		
 		assertEquals(ruleConditions.getCondition(1), simpleCondition);
@@ -261,12 +295,22 @@ class RuleConditionsTest {
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
 		
 		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects);
-		ruleConditions.addCondition(Mockito.mock(Condition.class));
-		ruleConditions.addCondition(Mockito.mock(Condition.class));
 		
-		EvaluationAttributeWithContext attributeMock = Mockito.mock(EvaluationAttributeWithContext.class);
-		Mockito.when(attributeMock.getAttributeIndex()).thenReturn(2);
-		SimpleConditionAtLeast simpleCondition = new SimpleConditionAtLeast(attributeMock, IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.COST));
+		EvaluationAttributeWithContext attributeWithContextMock1 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContextMock1.getAttributeIndex()).thenReturn(0);
+		Condition<?> conditionMock1 = Mockito.mock(Condition.class);
+		Mockito.when(conditionMock1.getAttributeWithContext()).thenReturn(attributeWithContextMock1);
+		ruleConditions.addCondition(conditionMock1);
+		
+		EvaluationAttributeWithContext attributeWithContextMock2 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContextMock2.getAttributeIndex()).thenReturn(1);
+		Condition<?> conditionMock2 = Mockito.mock(Condition.class);
+		Mockito.when(conditionMock2.getAttributeWithContext()).thenReturn(attributeWithContextMock2);
+		ruleConditions.addCondition(conditionMock2);
+		
+		EvaluationAttributeWithContext attributeWithContextMock3 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContextMock3.getAttributeIndex()).thenReturn(2);
+		SimpleConditionAtLeast simpleCondition = new SimpleConditionAtLeast(attributeWithContextMock3, IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.COST));
 		ruleConditions.addCondition(simpleCondition);
 		
 		assertEquals(ruleConditions.getConditionIndex(simpleCondition), 2);
@@ -282,11 +326,23 @@ class RuleConditionsTest {
 		
 		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects);
 		
-		ruleConditions.addCondition(Mockito.mock(Condition.class));
-		ruleConditions.addCondition(Mockito.mock(Condition.class));
-		ruleConditions.addCondition(Mockito.mock(Condition.class));
+		EvaluationAttributeWithContext attributeWithContextMock1 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContextMock1.getAttributeIndex()).thenReturn(1);
+		Condition<?> conditionMock1 = Mockito.mock(Condition.class);
+		Mockito.when(conditionMock1.getAttributeWithContext()).thenReturn(attributeWithContextMock1);
+		ruleConditions.addCondition(conditionMock1);
 		
-		assertEquals(ruleConditions.size(), 3);
+		EvaluationAttributeWithContext attributeWithContextMock2 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContextMock2.getAttributeIndex()).thenReturn(2);
+		Condition<?> conditionMock2 = Mockito.mock(Condition.class);
+		Mockito.when(conditionMock2.getAttributeWithContext()).thenReturn(attributeWithContextMock2);
+		ruleConditions.addCondition(conditionMock2);
+		
+		EvaluationAttributeWithContext attributeWithContextMock3 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContextMock3.getAttributeIndex()).thenReturn(3);
+		Condition<?> conditionMock3 = Mockito.mock(Condition.class);
+		Mockito.when(conditionMock3.getAttributeWithContext()).thenReturn(attributeWithContextMock3);
+		ruleConditions.addCondition(conditionMock3);
 	}
 	
 	/**
@@ -299,25 +355,35 @@ class RuleConditionsTest {
 		
 		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects);
 		
-		SimpleConditionAtLeast condition0 = Mockito.mock(SimpleConditionAtLeast.class);
-		SimpleConditionAtMost condition1 = Mockito.mock(SimpleConditionAtMost.class);
-		SimpleConditionEqual condition2 = Mockito.mock(SimpleConditionEqual.class);
-		
-		ruleConditions.addCondition(condition0);
+		EvaluationAttributeWithContext attributeWithContext1 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContext1.getAttributeIndex()).thenReturn(1);
+		SimpleConditionAtLeast condition1 = Mockito.mock(SimpleConditionAtLeast.class);
+		Mockito.when(condition1.getAttributeWithContext()).thenReturn(attributeWithContext1);
 		ruleConditions.addCondition(condition1);
+		
+		EvaluationAttributeWithContext attributeWithContext2 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContext2.getAttributeIndex()).thenReturn(2);
+		SimpleConditionAtMost condition2 = Mockito.mock(SimpleConditionAtMost.class);
+		Mockito.when(condition2.getAttributeWithContext()).thenReturn(attributeWithContext2);
 		ruleConditions.addCondition(condition2);
+		
+		EvaluationAttributeWithContext attributeWithContext3 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContext3.getAttributeIndex()).thenReturn(3);
+		SimpleConditionEqual condition3 = Mockito.mock(SimpleConditionEqual.class);
+		Mockito.when(condition3.getAttributeWithContext()).thenReturn(attributeWithContext3);
+		ruleConditions.addCondition(condition3);
 		
 		assertEquals(ruleConditions.size(), 3);
 		
-		assertTrue(ruleConditions.containsCondition(condition0));
 		assertTrue(ruleConditions.containsCondition(condition1));
 		assertTrue(ruleConditions.containsCondition(condition2));
+		assertTrue(ruleConditions.containsCondition(condition3));
 		
 		ruleConditions.removeCondition(1);
 		
-		assertTrue(ruleConditions.containsCondition(condition0));
-		assertFalse(ruleConditions.containsCondition(condition1)); //!
-		assertTrue(ruleConditions.containsCondition(condition2));
+		assertTrue(ruleConditions.containsCondition(condition1));
+		assertFalse(ruleConditions.containsCondition(condition2)); //!
+		assertTrue(ruleConditions.containsCondition(condition3));
 	}
 
 }

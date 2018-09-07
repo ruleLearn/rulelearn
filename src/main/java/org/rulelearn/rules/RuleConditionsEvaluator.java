@@ -35,5 +35,22 @@ public interface RuleConditionsEvaluator extends Measure {
 	 * @throws NullPointerException if given rule conditions are {@code null}
 	 */
 	public double evaluate(RuleConditions ruleConditions);
+	
+	/**
+	 * Checks if evaluation of given rule conditions, as returned by {@link #evaluate(RuleConditions)}, satisfies given threshold.
+	 * Takes into account type of this measure, as returned by {@link #getType()}.
+	 * 
+	 * @param ruleConditions rule conditions to evaluate
+	 * @param threshold threshold compared with evaluation of given rule conditions
+	 * @return {@code true} if evaluation of given rule conditions, as returned by {@link #evaluate(RuleConditions)}, satisfies given threshold,
+	 *         {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given rule conditions are {@code null}
+	 */
+	public default boolean evaluationSatisfiesThreshold(RuleConditions ruleConditions, double threshold) {
+		return (this.getType() == MeasureType.GAIN ?
+					this.evaluate(ruleConditions) >= threshold:
+					this.evaluate(ruleConditions) <= threshold);
+	}
 
 }

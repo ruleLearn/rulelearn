@@ -20,7 +20,6 @@ import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Union.UnionType;
 import org.rulelearn.data.Decision;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
-import org.rulelearn.measures.MeasureType;
 import org.rulelearn.measures.ConsistencyMeasure;
 
 /**

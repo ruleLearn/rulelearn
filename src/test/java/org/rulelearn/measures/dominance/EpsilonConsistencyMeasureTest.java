@@ -33,7 +33,7 @@ import org.rulelearn.data.Decision;
 import org.rulelearn.data.DecisionDistribution;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
-import org.rulelearn.measures.MeasureType;
+import org.rulelearn.measures.Measure;
 
 /**
  * Tests for {@link EpsilonConsistencyMeasure}. Test is based on illustrative example represented in figure (note that all criteria, including decision criterion, are gain-type): 
@@ -123,7 +123,7 @@ class EpsilonConsistencyMeasureTest {
 	 */
 	@Test
 	void testGetType() {
-		assertEquals(MeasureType.COST, this.measure.getType());
+		assertEquals(Measure.MeasureType.COST, this.measure.getType());
 	}
 
 	/**

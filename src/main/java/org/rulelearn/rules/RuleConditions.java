@@ -20,6 +20,9 @@ import java.util.List;
 
 import org.rulelearn.core.Precondition;
 import org.rulelearn.data.InformationTable;
+
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import static org.rulelearn.core.Precondition.notNull;
@@ -31,7 +34,7 @@ import static org.rulelearn.core.Precondition.notNull;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class RuleConditions {
-
+	
 	/**
 	 * Elementary conditions, in order of their addition to rule's LHS.
 	 */
@@ -52,6 +55,66 @@ public class RuleConditions {
 	protected InformationTable learningInformationTable = null;
 	
 	/**
+	 * Indices of attributes from learning information table for which conditions are already stored in {@link #conditions}.
+	 */
+	protected Int2IntMap attributeIndices;
+	
+	/**
+	 * Iterator among objects covered by the rule conditions.
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	public class CoveredObjectsIterator {
+		
+		/**
+		 * Index of last found covered object.
+		 */
+		private int lastCoveredObjectIndex = -1;
+	
+		/**
+		 * Gets index of next object covered by the rule conditions, or {@code -1} if there is no such object
+		 * 
+		 * @return index of next object covered by the rule conditions, or {@code -1} if there is no such object
+		 */
+		public int next() {
+			int objectsCount = learningInformationTable.getNumberOfObjects();
+			for (int i = lastCoveredObjectIndex + 1; i < objectsCount; i++) {
+				if (covers(i)) {
+					lastCoveredObjectIndex = i;
+					return lastCoveredObjectIndex;
+				}
+			}
+			return -1;
+		}
+	}
+	
+	/**
+	 * Checks if these rule conditions cover the object from the learning information table having given index.
+	 * 
+	 * @param objectIndex index of an object in the learning information table
+	 * @return {@code true} if these rule conditions cover the object with given index, {@code false} otherwise
+	 */
+	public boolean covers(int objectIndex) {
+		int conditionsCount = this.conditions.size();
+		for (int i = 0; i < conditionsCount; i++) {
+			if (!this.conditions.get(i).satisfiedBy(objectIndex, learningInformationTable)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Gets an iterator among ordered set of indices of objects from learning information table that are covered by this rule conditions, as returned by {@link #covers(int)}.
+	 * 
+	 * @return an iterator among ordered set of indices of objects from learning information table that are covered by this rule conditions
+	 */
+	public CoveredObjectsIterator getCoveredObjectsIterator() {
+		return new CoveredObjectsIterator();
+	}
+
+	/**
 	 * Constructor setting learning information table and the set of indices of positive objects from this table.
 	 * 
 	 * @param learningInformationTable information table containing positive and negative objects
@@ -64,6 +127,7 @@ public class RuleConditions {
 		this.indicesOfPositiveObjects = notNull(indicesOfPositiveObjects, "Set of indices of positive objects is null.");
 		
 		this.conditions = new ObjectArrayList<Condition<?>>();
+		this.attributeIndices = new Int2IntOpenHashMap();
 	}
 	
 	/**
@@ -105,6 +169,10 @@ public class RuleConditions {
 	 */
 	public int addCondition(Condition<?> condition) {
 		this.conditions.add(notNull(condition, "Condition is null."));
+		int attributeIndex = condition.getAttributeWithContext().getAttributeIndex();
+		int count = this.attributeIndices.containsKey(attributeIndex) ? this.attributeIndices.get(attributeIndex) : 0;
+		this.attributeIndices.put(attributeIndex, count + 1);
+		
 		return this.conditions.size() - 1;
 	}
 	
@@ -115,7 +183,10 @@ public class RuleConditions {
 	 * @throws IndexOutOfBoundsException if given index does not refer to any stored condition
 	 */
 	public void removeCondition(int index) {
+		int attributeIndex = this.conditions.get(index).getAttributeWithContext().getAttributeIndex();
 		this.conditions.remove(index);
+
+		this.attributeIndices.put(attributeIndex, this.attributeIndices.get(attributeIndex) - 1); //decrease count
 	}
 	
 	/**
@@ -168,6 +239,17 @@ public class RuleConditions {
 	 */
 	public boolean containsCondition(Condition<?> condition) {
 		return this.conditions.contains(condition);
+	}
+	
+	/**
+	 * Tells if attribute with given index is already involved in at least one of elementary conditions.
+	 * 
+	 * @param attributeIndex index of an attribute
+	 * @return {@code true} if the attribute with given index is involved in at least one of elementary conditions,
+	 *         {@code false} otherwise
+	 */
+	public boolean hasConditionForAttribute(int attributeIndex) {
+		return (this.attributeIndices.containsKey(attributeIndex) && (this.attributeIndices.get(attributeIndex) > 0));
 	}
 	
 }

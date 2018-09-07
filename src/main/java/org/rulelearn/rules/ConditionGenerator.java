@@ -18,21 +18,24 @@ package org.rulelearn.rules;
 
 import org.rulelearn.types.EvaluationField;
 
+import it.unimi.dsi.fastutil.ints.IntList;
+
 /**
- * Contract of a condition generator used to find next best condition {@link Condition} to be added to constructed rule.
+ * Contract of a condition generator used to find next best condition {@link Condition} to be added to the LHS of constructed decision rule.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface ConditionGenerator extends ConditionEvaluationContext {
+public interface ConditionGenerator {
 
 	/**
-	 * Gets best condition that can be added to given rule conditions.
+	 * Gets best condition that can be added to given rule conditions, constructed on the basis of evaluations of objects whose index is on the given list.
 	 * 
-	 * @param ruleConditions rule conditions for which best condition should be obtained
+	 * @param consideredObjects list of indices of objects which are considered when generating candidate elementary conditions
+	 * @param ruleConditions rule conditions for which best next condition is searched for
 	 * @return best condition that can be added to given rule conditions.
 	 * 
-	 * @throws NullPointerException if given rule conditions are {@code null}
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public Condition<EvaluationField> getBestCondition(RuleConditions ruleConditions);
+	public Condition<EvaluationField> getBestCondition(IntList consideredObjects, RuleConditions ruleConditions);
 }
