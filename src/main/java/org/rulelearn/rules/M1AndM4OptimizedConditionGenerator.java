@@ -16,14 +16,13 @@
 
 package org.rulelearn.rules;
 
-import org.rulelearn.core.Precondition;
-import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.SimpleField;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
- * Condition generator taking advantage of the assumption that for any condition attribute having {@link SimpleField} evaluations (which can be completely ordered),
+ * Condition generator taking advantage of two assumptions. The first assumption is that it is not necessary to consider addition of elementary conditions on attributes which have been already used in rule conditions.  
+ * The second assumption is that for any condition attribute having {@link SimpleField} evaluations (which can be completely ordered),
  * the order of elementary conditions involving that attribute, implied by each considered condition addition evaluator, is consistent with the preference order in the value set of that attribute.<br>
  * <br>
  * For example, given attribute q with integer values, the following monotonic relationships are assumed:
@@ -34,16 +33,11 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *   <li>the worse the attribute value t, the lower (more preferred) the evaluation of elementary condition "q(x) is at most as good as t" calculated by each cost-type condition addition evaluator,</li>
  * </ul>
  * where q(x) denotes value (evaluation) of object x with respect to attribute q.
- * 
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class M4OptimizedConditionGenerator implements ConditionGenerator {
-	
-	/**
-	 * Condition evaluators used lexicographically.
-	 */
-	ConditionAdditionEvaluator[] conditionEvaluators;
+public class M1AndM4OptimizedConditionGenerator extends M4OptimizedConditionGenerator {
 
 	/**
 	 * Constructor for this condition generator. Stores given evaluators for use in {@link #getBestCondition(IntList, RuleConditions)}.
@@ -51,44 +45,18 @@ public class M4OptimizedConditionGenerator implements ConditionGenerator {
 	 * @param conditionEvaluators array with condition evaluators used lexicographically
 	 * @throws NullPointerException if given array or any of its elements is {@code null}
 	 */
-	public M4OptimizedConditionGenerator(ConditionAdditionEvaluator[] conditionEvaluators) {
-		super();
-		this.conditionEvaluators = Precondition.notNull(conditionEvaluators, "Condition evaluators are null.");
-		
-		for (int i = 0; i < conditionEvaluators.length; i++) {
-			Precondition.notNull(conditionEvaluators[i], "Condition evaluator at index ", String.valueOf(i), " is null.");
-		}
+	public M1AndM4OptimizedConditionGenerator(ConditionAdditionEvaluator[] conditionEvaluators) {
+		super(conditionEvaluators);
 	}
 	
 	/**
-	 * Tells if attributes already present in rule conditions can be skipped when generating next best condition.
-	 * 
-	 * @return {@code false}
-	 */
-	boolean skipUsedAttributes() {
-		return false;
-	}
-
-	/**
 	 * {@inheritDoc}
-	 * During search for best condition, scans all active condition attributes. For each such an attribute, optimizes scanning of values of considered objects (skips not relevant values).
-	 * During this scan, elementary conditions are lexicographically evaluated by the condition addition evaluators set in constructor.
-	 * Moreover, it is assumed that evaluations of elementary conditions are monotonically dependent on the preference order of that attribute.  
 	 * 
-	 * @param consideredObjects {@inheritDoc}
-	 * @param ruleConditions {@inheritDoc}
-	 * @return {@inheritDoc}
-	 * 
-	 * @throws NullPointerException if any of the parameters is {@code null}
-	 * @throws ElementaryConditionNotFoundException when it is impossible to find any new condition that could be added to given rule conditions
+	 * @return {@code true}
 	 */
 	@Override
-	public Condition<EvaluationField> getBestCondition(IntList consideredObjects, RuleConditions ruleConditions) {
-		Precondition.notNull(consideredObjects, "List of objects considered in m4-optimized condition generator is null.");
-		Precondition.notNull(ruleConditions, "Rule conditions considered in m4-optimized condition generator is null.");
-		
-		// TODO implement
-		return null;
+	boolean skipUsedAttributes() {
+		return true;
 	}
 
 }

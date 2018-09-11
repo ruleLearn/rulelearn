@@ -14,39 +14,27 @@
  * limitations under the License.
  */
 
-package org.rulelearn.measures;
+package org.rulelearn.rules;
 
 /**
- * Contract for all classes representing measures/evaluators.
+ * Exception thrown when an elementary condition cannot be found. 
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface Measure {
+public class ElementaryConditionNotFoundException extends RuntimeException {
 	
 	/**
-	 * Type of the measure.
-	 *
-	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
-	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 * Generated serial version UID.
 	 */
-	public static enum MeasureType {
-		
-		/**
-		 * Type of a gain-type measure indicating that the higher the value the more it is preferred.
-		 */
-		GAIN,
-		/**
-		 * Type of a cost-type measure indicating that the lower the value the more it is preferred.
-		 */
-		COST
-	}
+	private static final long serialVersionUID = -4552073751215011861L;
 
 	/**
-	 * Gets type of this measure.
+	 * Constructs an exception with message of failure reason.
 	 * 
-	 * @return see {@link MeasureType}
+	 * @param message message of this exception
 	 */
-	public MeasureType getType();
-	
+	public ElementaryConditionNotFoundException(String message) {
+		super(message);
+	}
 }

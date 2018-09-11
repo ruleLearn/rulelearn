@@ -35,14 +35,14 @@ public interface RuleConditionsSetPruner {
 	 * which are covered by the rule conditions from the original list.
 	 * 
 	 * @param ruleConditionsList (input) list of rule conditions that should be pruned; this object should not be modified as a result of performed pruning
-	 * @param ruleConditionsEvaluators list of evaluators used to evaluate rule conditions that can potentially be removed from the currently considered list of rule conditions
-	 * @param indicesOfCoveredObjects set of indices of objects that are covered by at least one rule conditions from the given (input) list of rule conditions,
+	 * @param ruleConditionsEvaluators array of evaluators used to evaluate rule conditions that can potentially be removed from the currently considered list of rule conditions
+	 * @param indicesOfObjectsToKeepCovered set of indices of objects that are covered by at least one rule conditions from the given (input) list of rule conditions,
 	 *        and should remain covered by at least one rule conditions from the returned (output) list of rule conditions
 	 * 
 	 * @return (output) pruned list of rule conditions (new object)
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidSizeException if any of the given lists is empty
 	 */
-	public List<RuleConditions> prune(List<RuleConditions> ruleConditionsList, List<RuleConditionsEvaluator> ruleConditionsEvaluators, IntList indicesOfCoveredObjects);
+	public List<RuleConditions> prune(List<RuleConditions> ruleConditionsList, RuleConditionsEvaluator[] ruleConditionsEvaluators, IntList indicesOfObjectsToKeepCovered);
 
 }

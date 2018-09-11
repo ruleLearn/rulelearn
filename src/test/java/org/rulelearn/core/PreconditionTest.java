@@ -53,6 +53,21 @@ class PreconditionTest {
 
 		assertEquals(Precondition.notNull(object, "Test message."), object);
 	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.core.Precondition#notNull(Object, String...)}.
+	 */
+	@Test
+	void testNotNull03() {
+		String[] messageParts = {"Prefix", " suffix."};
+		String expectedMessage = "Prefix suffix.";
+		try {
+			Precondition.notNull(null, messageParts);
+			fail("Not null precondition verified incorrectly.");
+		} catch (NullPointerException exception) {
+			assertEquals(exception.getMessage(), expectedMessage);
+		}
+	}
 
 	/**
 	 * Test method for {@link org.rulelearn.core.Precondition#nonNegative(int, java.lang.String)}.

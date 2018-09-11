@@ -29,13 +29,17 @@ import it.unimi.dsi.fastutil.ints.IntList;
 public interface ConditionGenerator {
 
 	/**
-	 * Gets best condition that can be added to given rule conditions, constructed on the basis of evaluations of objects whose index is on the given list.
+	 * Gets best condition that can be added to given rule conditions, constructed on the basis of evaluations of objects whose indices are on the given list.
+	 * Takes into account active condition attributes from the learning information table for which given rule conditions are defined, as returned by {@link RuleConditions#getLearningInformationTable()}.<br>
+	 * <br>
+	 * Remark that in general, the best condition is not guaranteed to improve evaluation of rule conditions (it can even deteriorate it).
 	 * 
 	 * @param consideredObjects list of indices of objects which are considered when generating candidate elementary conditions
 	 * @param ruleConditions rule conditions for which best next condition is searched for
 	 * @return best condition that can be added to given rule conditions.
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws ElementaryConditionNotFoundException when it is impossible to find any new condition that could be added to given rule conditions
 	 */
 	public Condition<EvaluationField> getBestCondition(IntList consideredObjects, RuleConditions ruleConditions);
 }

@@ -47,6 +47,29 @@ public final class Precondition {
 	}
 	
 	/**
+	 * Verifies if given object reference is not {@code null}, and if so, returns this reference.
+	 * This methods offers the same functionality as {@link Objects#requireNonNull(Object, String)}.
+	 * 
+	 * @param object object reference to verify
+	 * @param errorMsg parts of error message of the thrown {@link NullPointerException}, used when given object does not verify non-null precondition
+	 * @param <T> type of the object to verify
+	 * @return {@code object}, if {@code object != null}
+	 * 
+	 * @throws NullPointerException with error message concatenated from given parts, if given object reference is {@code null}
+	 */
+	public static <T extends Object> T notNull(T object, String... errorMsg) {
+		if (object != null) {
+			return object;
+		} else {
+			StringBuilder sb = new StringBuilder();
+			for (String errorMsgPart : errorMsg) {
+				sb.append(errorMsgPart);
+			}
+			throw new NullPointerException(sb.toString());
+		}
+	}
+	
+	/**
 	 * Verifies if given number is non-negative.
 	 * 
 	 * @param number number to verify

@@ -23,6 +23,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Builder of {@link RuleConditions} objects.
+ * 
  * TODO: write javadoc
  * TODO: add missing parameters
  *
@@ -35,7 +36,7 @@ public class RuleConditionsBuilder {
 	InformationTable learningInformationTable;
 	IntSet indicesOfPositiveObjects;
 	
-	public RuleConditionsBuilder(IntSet consideredObjects, InformationTable learningInformationTable, IntSet indicesOfPositiveObjects) {
+	public RuleConditionsBuilder(IntSet consideredObjects, InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, ConditionAdditionEvaluator[] conditionEvaluators) {
 		this.consideredObjects = Precondition.notNull(consideredObjects, "Considered objects are null.");
 		this.learningInformationTable = Precondition.notNull(learningInformationTable, "Learning information table is null.");
 		this.indicesOfPositiveObjects = Precondition.notNull(indicesOfPositiveObjects, "Indices of positive objects are null.");

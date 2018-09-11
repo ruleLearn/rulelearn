@@ -14,39 +14,36 @@
  * limitations under the License.
  */
 
-package org.rulelearn.measures;
+package org.rulelearn.rules;
+
+import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
- * Contract for all classes representing measures/evaluators.
+ * Condition generator taking advantage of the assumption that it is not necessary to consider addition of elementary conditions on attributes which have been already used in rule conditions.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface Measure {
+public class M1StandardConditionGenerator extends StandardConditionGenerator {
 	
 	/**
-	 * Type of the measure.
-	 *
-	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
-	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 * Constructor for this condition generator. Stores given evaluators for use in {@link #getBestCondition(IntList, RuleConditions)}.
+	 * 
+	 * @param conditionEvaluators array with condition evaluators used lexicographically
+	 * @throws NullPointerException if given array or any of its elements is {@code null}
 	 */
-	public static enum MeasureType {
-		
-		/**
-		 * Type of a gain-type measure indicating that the higher the value the more it is preferred.
-		 */
-		GAIN,
-		/**
-		 * Type of a cost-type measure indicating that the lower the value the more it is preferred.
-		 */
-		COST
+	public M1StandardConditionGenerator(ConditionAdditionEvaluator[] conditionEvaluators) {
+		super(conditionEvaluators);
 	}
 
 	/**
-	 * Gets type of this measure.
+	 * {@inheritDoc}
 	 * 
-	 * @return see {@link MeasureType}
+	 * @return {@code true}
 	 */
-	public MeasureType getType();
+	@Override
+	boolean skipUsedAttributes() {
+		return true;
+	}
 	
 }

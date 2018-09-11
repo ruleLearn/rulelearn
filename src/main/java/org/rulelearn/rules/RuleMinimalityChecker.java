@@ -18,6 +18,8 @@ package org.rulelearn.rules;
 
 import java.util.List;
 
+import org.rulelearn.core.Precondition;
+
 /**
  * Checks if given rule is minimal in the context of a given set of rules. Rule minimality is understood as in:<br>
  * J. Błaszczyński, R. Słowiński, M. Szeląg, Sequential Covering Rule Induction Algorithm for Variable Consistency Rough Set Approaches. Information Sciences, 181, 2011, pp. 987-1002.<br>
@@ -33,7 +35,7 @@ public abstract class RuleMinimalityChecker implements RuleChecker {
 	/**
 	 * List of rule evaluators used to evaluate compared decision rules.
 	 */
-	List<RuleEvaluator> ruleEvaluators;
+	RuleEvaluator[] ruleEvaluators;
 	
 	/**
 	 * Constructs this checker.
@@ -41,8 +43,8 @@ public abstract class RuleMinimalityChecker implements RuleChecker {
 	 * @param ruleEvaluators list of rule evaluators used to evaluate compared decision rules
 	 * @throws NullPointerException if the list of rule evaluators is {@code null}
 	 */
-	public RuleMinimalityChecker(List<RuleEvaluator> ruleEvaluators) {
-		this.ruleEvaluators = ruleEvaluators;
+	public RuleMinimalityChecker(RuleEvaluator[] ruleEvaluators) {
+		this.ruleEvaluators = Precondition.notNull(ruleEvaluators, "Rule evaluators for rule minimality checker are null.");
 	}
 
 	/**

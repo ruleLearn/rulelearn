@@ -18,27 +18,16 @@ package org.rulelearn.rules;
 
 import org.rulelearn.core.Precondition;
 import org.rulelearn.types.EvaluationField;
-import org.rulelearn.types.SimpleField;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
- * Condition generator taking advantage of the assumption that for any condition attribute having {@link SimpleField} evaluations (which can be completely ordered),
- * the order of elementary conditions involving that attribute, implied by each considered condition addition evaluator, is consistent with the preference order in the value set of that attribute.<br>
- * <br>
- * For example, given attribute q with integer values, the following monotonic relationships are assumed:
- * <ul>
- *   <li>the better the attribute value t, the lower (less preferred) the evaluation of elementary condition "q(x) is at least as good as t" calculated by each gain-type condition addition evaluator,</li>
- *   <li>the better the attribute value t, the lower (more preferred) the evaluation of elementary condition "q(x) is at least as good as t" calculated by each cost-type condition addition evaluator,</li>
- *   <li>the worse the attribute value t, the lower (less preferred) the evaluation of elementary condition "q(x) is at most as good as t" calculated by each gain-type condition addition evaluator,</li>
- *   <li>the worse the attribute value t, the lower (more preferred) the evaluation of elementary condition "q(x) is at most as good as t" calculated by each cost-type condition addition evaluator,</li>
- * </ul>
- * where q(x) denotes value (evaluation) of object x with respect to attribute q.
- * 
+ * Condition generator used when no assumptions can be made with respect to evaluations of elementary conditions (checking each unique elementary conditions for every considered attribute).
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class M4OptimizedConditionGenerator implements ConditionGenerator {
+public class StandardConditionGenerator implements ConditionGenerator {
 	
 	/**
 	 * Condition evaluators used lexicographically.
@@ -51,7 +40,7 @@ public class M4OptimizedConditionGenerator implements ConditionGenerator {
 	 * @param conditionEvaluators array with condition evaluators used lexicographically
 	 * @throws NullPointerException if given array or any of its elements is {@code null}
 	 */
-	public M4OptimizedConditionGenerator(ConditionAdditionEvaluator[] conditionEvaluators) {
+	public StandardConditionGenerator(ConditionAdditionEvaluator[] conditionEvaluators) {
 		super();
 		this.conditionEvaluators = Precondition.notNull(conditionEvaluators, "Condition evaluators are null.");
 		
@@ -71,9 +60,6 @@ public class M4OptimizedConditionGenerator implements ConditionGenerator {
 
 	/**
 	 * {@inheritDoc}
-	 * During search for best condition, scans all active condition attributes. For each such an attribute, optimizes scanning of values of considered objects (skips not relevant values).
-	 * During this scan, elementary conditions are lexicographically evaluated by the condition addition evaluators set in constructor.
-	 * Moreover, it is assumed that evaluations of elementary conditions are monotonically dependent on the preference order of that attribute.  
 	 * 
 	 * @param consideredObjects {@inheritDoc}
 	 * @param ruleConditions {@inheritDoc}
@@ -84,10 +70,10 @@ public class M4OptimizedConditionGenerator implements ConditionGenerator {
 	 */
 	@Override
 	public Condition<EvaluationField> getBestCondition(IntList consideredObjects, RuleConditions ruleConditions) {
-		Precondition.notNull(consideredObjects, "List of objects considered in m4-optimized condition generator is null.");
-		Precondition.notNull(ruleConditions, "Rule conditions considered in m4-optimized condition generator is null.");
+		Precondition.notNull(consideredObjects, "List of objects considered in standard condition generator is null.");
+		Precondition.notNull(ruleConditions, "Rule conditions considered in standard condition generator is null.");
 		
-		// TODO implement
+		// TODO: implement
 		return null;
 	}
 

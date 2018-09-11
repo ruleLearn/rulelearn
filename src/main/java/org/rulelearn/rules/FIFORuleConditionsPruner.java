@@ -19,26 +19,31 @@ package org.rulelearn.rules;
 import org.rulelearn.core.InvalidSizeException;
 
 /**
- * Contract of a pruner used to remove redundant conditions from rule conditions {@link RuleConditions}.
+ * Pruner for rule conditions that analyzes conditions from the oldest (first added) to the newest one (last added). 
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface RuleConditionsPruner {
-	
+public class FIFORuleConditionsPruner implements RuleConditionsPruner {
+
 	/**
-	 * Prunes given rule conditions by removing redundant conditions, so as to produce new rule conditions that still obey given stopping conditions.
+	 * {@inheritDoc}.
 	 * 
-	 * @param ruleConditions rule conditions that should be pruned; this object should not be modified as a result of performed pruning
-	 * @param stoppingConditionsToObey stopping conditions that are satisfied by given rule conditions, and have to be satisfied by the returned rule conditions 
-	 * @param conditionRemovalEvaluators array of condition removal evaluators used to evaluate conditions that can potentially be removed from the currently considered rule conditions;
-	 *        these evaluators are considered lexicographically
+	 * @param ruleConditions {@inheritDoc}
+	 * @param stoppingConditionsToObey {@inheritDoc} 
+	 * @param conditionRemovalEvaluators {@inheritDoc}
 	 * 
-	 * @return pruned rule conditions (new object)
+	 * @return {@inheritDoc}
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidSizeException if any of the given lists is empty
 	 */
-	public RuleConditions prune(RuleConditions ruleConditions, RuleInductionStoppingConditionChecker stoppingConditionsToObey, ConditionRemovalEvaluator[] conditionRemovalEvaluators); //TODO: what with conditionRemovalEvaluators?
+	@Override
+	public RuleConditions prune(RuleConditions ruleConditions,
+			RuleInductionStoppingConditionChecker stoppingConditionsToObey,
+			ConditionRemovalEvaluator[] conditionRemovalEvaluators) { //TODO: what with conditionRemovalEvaluators?
+		// TODO: implement
+		return null;
+	}
 
 }

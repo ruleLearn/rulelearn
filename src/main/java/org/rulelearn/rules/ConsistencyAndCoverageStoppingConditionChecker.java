@@ -36,6 +36,21 @@ public class ConsistencyAndCoverageStoppingConditionChecker implements RuleInduc
 	IntSet objectsThatCanBeCovered;
 
 	/**
+	 * Constructs this stopping condition checker.
+	 * 
+	 * @param ruleConditionsEvaluator evaluator used to evaluate given rule conditions
+	 * @param consistencyThreshold consistency threshold to be compared with evaluation of given rule conditions by given evaluator
+	 * @param objectsThatCanBeCovered set of indices of allowed objects, i.e., objects that given rule conditions can cover
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 */
+	public ConsistencyAndCoverageStoppingConditionChecker(RuleConditionsEvaluator ruleConditionsEvaluator, double consistencyThreshold, IntSet objectsThatCanBeCovered) {
+		this.ruleConditionsEvaluator = Precondition.notNull(ruleConditionsEvaluator, "Rule conditions evaluator is null.");
+		this.consistencyThreshold = consistencyThreshold;
+		this.objectsThatCanBeCovered = Precondition.notNull(objectsThatCanBeCovered, "Set of objects that can be covered is null.");
+	}
+	
+	/**
 	 * {@inheritDoc}
 	 * 
 	 * @param ruleConditions {@inheritDoc}
@@ -59,21 +74,6 @@ public class ConsistencyAndCoverageStoppingConditionChecker implements RuleInduc
 			}
 			return true;
 		}
-	}
-	
-	/**
-	 * Constructs this stopping condition checker.
-	 * 
-	 * @param ruleConditionsEvaluator evaluator used to evaluate given rule conditions
-	 * @param consistencyThreshold consistency threshold to be compared with evaluation of given rule conditions by given evaluator
-	 * @param objectsThatCanBeCovered set of indices of allowed objects, i.e., objects that given rule conditions can cover
-	 * 
-	 * @throws NullPointerException if any of the parameters is {@code null}
-	 */
-	public ConsistencyAndCoverageStoppingConditionChecker(RuleConditionsEvaluator ruleConditionsEvaluator, double consistencyThreshold, IntSet objectsThatCanBeCovered) {
-		this.ruleConditionsEvaluator = Precondition.notNull(ruleConditionsEvaluator, "Rule conditions evaluator is null.");
-		this.consistencyThreshold = consistencyThreshold;
-		this.objectsThatCanBeCovered = Precondition.notNull(objectsThatCanBeCovered, "Set of objects that can be covered is null.");
 	}
 
 }
