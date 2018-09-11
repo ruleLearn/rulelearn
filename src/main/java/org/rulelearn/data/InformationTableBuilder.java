@@ -57,6 +57,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class InformationTableBuilder {
+	
 	/** 
 	 * Default string representations of missing value.
 	 */
@@ -109,18 +110,16 @@ public class InformationTableBuilder {
 	 */
 	public InformationTableBuilder(Attribute[] attributes) {
 		this();
-		
-		this.attributes = attributes;
-		
 		// check attributes and initialize fields
 		if (attributes != null) {
 			for (Attribute attribute : attributes) {
-				if (attribute == null) throw new NullPointerException("At least one attribute is not set");
+				if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
 			}
+			this.attributes = attributes;
 			this.fields = new ObjectArrayList<Field []>();
 		}
 		else {
-			throw new NullPointerException("Attributes are not set");
+			throw new NullPointerException("Attributes are not set.");
 		}
 	}
 	
@@ -129,7 +128,7 @@ public class InformationTableBuilder {
 	 * 
 	 * @param attributes table with attributes
 	 * @param separator separator of object's evaluations
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
+	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or separator have not been set
 	 */
 	public InformationTableBuilder(Attribute[] attributes, String separator) {
 		this(attributes);
@@ -142,7 +141,7 @@ public class InformationTableBuilder {
 	 * 
 	 * @param attributes table with attributes
 	 * @param missingValueStrings array of string representations of missing values
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
+	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or strings representing missing values have not been set 
 	 */
 	public InformationTableBuilder(Attribute[] attributes, String [] missingValueStrings) {
 		this(attributes);
@@ -156,7 +155,7 @@ public class InformationTableBuilder {
 	 * @param attributes table with attributes
 	 * @param separator separator of object's evaluations
 	 * @param missingValueStrings array of string representations of missing values
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
+	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or sparator, and/or strings representing missing values have not been set
 	 */
 	public InformationTableBuilder(Attribute[] attributes, String separator, String [] missingValueStrings) {
 		this(attributes, separator);
@@ -198,15 +197,15 @@ public class InformationTableBuilder {
 	 */
 	public void addObject(String[] objectDescriptions) {
 		Field[] object = new Field[objectDescriptions.length];
-		if (objectDescriptions.length > attributes.length)
+		if (objectDescriptions.length > this.attributes.length)
 			throw new IndexOutOfBoundsException("Object has more evaluations than the number of attributes declared.");
 		
 		for (int i = 0; i < objectDescriptions.length; i++) {
-			if (attributes[i] instanceof EvaluationAttribute) {
-				object[i] = parseEvaluation(objectDescriptions[i], (EvaluationAttribute)attributes[i]);
+			if (this.attributes[i] instanceof EvaluationAttribute) {
+				object[i] = parseEvaluation(objectDescriptions[i], (EvaluationAttribute)this.attributes[i]);
 			}
-			else if (attributes[i] instanceof IdentificationAttribute) {
-				object[i] = parseIdentification(objectDescriptions[i], (IdentificationAttribute)attributes[i]);
+			else if (this.attributes[i] instanceof IdentificationAttribute) {
+				object[i] = parseIdentification(objectDescriptions[i], (IdentificationAttribute)this.attributes[i]);
 			}
 		}
 		
@@ -342,6 +341,7 @@ public class InformationTableBuilder {
 	 * @param pathToCSVObjectFile a path to the CSV file with objects
 	 * 
 	 * @return constructed information table
+	 * @throws NullPointerException if path to JSON file and/or path to CSV file have not been set
 	 */
 	public static InformationTable buildFromCSVFile(String pathToJSONAttributeFile, String pathToCSVObjectFile) {
 		return buildFromCSVFile(pathToJSONAttributeFile, pathToCSVObjectFile, false);
@@ -356,6 +356,7 @@ public class InformationTableBuilder {
 	 * @param header indicates whether header is present in CSV file
 	 * 
 	 * @return constructed information table
+	 * @throws NullPointerException if path to JSON file and/or path to CSV file have not been set
 	 */
 	public static InformationTable buildFromCSVFile(String pathToJSONAttributeFile, String pathToCSVObjectFile, boolean header) {
 		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");

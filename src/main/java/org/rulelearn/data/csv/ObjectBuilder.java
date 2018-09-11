@@ -59,22 +59,57 @@ public class ObjectBuilder {
 	 */
 	boolean header = false;
 	
+	/**
+	 * Default constructor.
+	 * 
+	 */
 	public ObjectBuilder () {}
 	
+	/**
+	 * Constructor initializing this object builder and setting attributes.
+	 * 
+	 * @param attributes table with attributes
+	 * @throws NullPointerException if all or some of the attributes describing data to be loaded have not been set
+	 */
 	public ObjectBuilder (Attribute [] attributes) {
-		notNull(attributes, "Attributes array is null.");
-		this.attributes = attributes;
+		if (attributes != null) {
+			for (Attribute attribute : attributes) {
+				if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
+			}
+			this.attributes = attributes;
+		}
+		else {
+			throw new NullPointerException("Attributes are not set.");
+		}
 	}
 	
+	/**
+	 * Constructor initializing this object builder and setting encoding of loaded CSV files.
+	 * 
+	 * @param encoding string representation of encoding
+	 * @throws NullPointerException if all or some of the attributes of the constructed information table have not been set
+	 */
 	public ObjectBuilder (String encoding) {
 		notNull(encoding, "Encoding string is null.");
 		this.encoding = encoding; 
 	}
 	
+	/**
+	 * Constructor initializing this object builder and setting expected presence of header in loaded CSV files.
+	 * 
+	 * @param header tells whether a header is expected in loaded files 
+	 */
 	public ObjectBuilder (boolean header) {
 		this.header = header; 
 	}
 	
+	/**
+	 * Constructor initializing this object builder and setting attributes together with encoding of loaded CSV files.
+	 * 
+	 * @param attributes table with attributes
+	 * @param encoding string representation of encoding
+	 * @throws NullPointerException if all or some of the attributes describing data to be loaded, and/or encoding have not been set
+	 */
 	public ObjectBuilder (Attribute [] attributes, String encoding) {
 		notNull(attributes, "Attributes array is null.");
 		this.attributes = attributes;
@@ -82,12 +117,27 @@ public class ObjectBuilder {
 		this.encoding = encoding;
 	}
 	
+	/**
+	 * Constructor initializing this object builder and setting attributes together with expected presence of header in CSV files.
+	 * 
+	 * @param attributes table with attributes
+	 * @param header tells whether a header is expected in loaded files
+	 * @throws NullPointerException if all or some of the attributes describing data to be loaded have not been set
+	 */
 	public ObjectBuilder (Attribute [] attributes, boolean header) {
 		notNull(attributes, "Attributes array is null.");
 		this.attributes = attributes;
 		this.header = header;
 	}
 	
+	/**
+	 * Constructor initializing this object builder and setting attributes, encoding of loaded CSV files together with expected presence of header in CSV files.
+	 * 
+	 * @param attributes table with attributes
+	 * @param encoding string representation of encoding
+	 * @param header tells whether a header is expected in loaded files
+	 * @throws NullPointerException if all or some of the attributes describing data to be loaded, and/or encoding have not been set
+	 */
 	public ObjectBuilder (Attribute [] attributes, String encoding, boolean header) {
 		notNull(attributes, "Attributes array is null.");
 		this.attributes = attributes;
@@ -96,6 +146,13 @@ public class ObjectBuilder {
 		this.header = header;
 	}
 	
+	/**
+	 * Constructor initializing this object builder and setting encoding of loaded CSV files together with expected presence of header in CSV files.
+	 * 
+	 * @param encoding string representation of encoding
+	 * @param header tells whether a header is expected in loaded files
+	 * @throws NullPointerException if encoding has not been set
+	 */
 	public ObjectBuilder (String encoding, boolean header) {
 		notNull(encoding, "Encoding string is null.");
 		this.encoding = encoding;

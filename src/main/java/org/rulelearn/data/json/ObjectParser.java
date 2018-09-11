@@ -37,6 +37,7 @@ import com.google.gson.stream.JsonReader;
  *
  */
 public class ObjectParser {
+	
 	/** 
 	 * Default encoding.
 	 */
@@ -62,17 +63,45 @@ public class ObjectParser {
 	 */
 	protected String missingValueString = ObjectParser.MISSING_VALUE_STRING;
 	
+	/**
+	 * Constructor initializing this object parser and setting attributes.
+	 * 
+	 * @param attributes table with attributes
+	 * @throws NullPointerException if all or some of the attributes of the constructed information table have not been set
+	 */
 	public ObjectParser (Attribute [] attributes) {
-		notNull(attributes, "Attributes array is null.");
-		this.attributes = attributes;
+		if (attributes != null) {
+			for (Attribute attribute : attributes) {
+				if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
+			}
+			this.attributes = attributes;
+		}
+		else {
+			throw new NullPointerException("Attributes are not set.");
+		}
 	}
 	
+	/**
+	 * Constructor initializing this object parser, setting attributes, and missing values string (i.e., string representing missing value).
+	 * 
+	 * @param attributes table with attributes
+	 * @param missingValueString string representations of missing value
+	 * @throws NullPointerException if all or some of attributes of the constructed object parser, and/or missing value string have not been set
+	 */
 	public ObjectParser (Attribute [] attributes, String missingValueString) {
 		this(attributes);
 		notNull(missingValueString, "Missing value string is null.");
 		this.missingValueString = missingValueString;
 	}
 	
+	/**
+	 * Constructor initializing this object parser, setting attributes, and missing values string (i.e., string representing missing value).
+	 * 
+	 * @param attributes table with attributes
+	 * @param missingValueString string representations of missing value
+	 * @param encoding string representation of encoding
+	 * @throws NullPointerException if all or some of attributes of the constructed object parser, and/or missing value string, and/or encoding have not been set
+	 */
 	public ObjectParser (Attribute [] attributes, String missingValueString, String encoding) {
 		this(attributes, missingValueString);
 		notNull(encoding, "Encoding string is null.");

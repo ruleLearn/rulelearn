@@ -35,6 +35,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  */
 public class ObjectBuilder {
+	
 	/** 
 	 * Default value for this type of a field.
 	 */
@@ -54,15 +55,34 @@ public class ObjectBuilder {
 	 * Encoding of text data in JSON file.
 	 */
 	protected String encoding = ObjectBuilder.DEFAULT_ENCODING; 
-					
+	
+	/**
+	 * Constructor initializing this object builder and setting attributes.
+	 * 
+	 * @param attributes table with attributes
+	 * @throws NullPointerException if all or some of the attributes of the constructed information table have not been set
+	 */
 	public ObjectBuilder (Attribute [] attributes) {
-		notNull(attributes, "Attributes array is null.");
-		this.attributes = attributes;
+		if (attributes != null) {
+			for (Attribute attribute : attributes) {
+				if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
+			}
+			this.attributes = attributes;
+		}
+		else {
+			throw new NullPointerException("Attributes are not set.");
+		}
 	}
 	
+	/**
+	 * Constructor initializing this object builder and setting attributes together with encoding of loaded JSON files.
+	 * 
+	 * @param attributes table with attributes
+	 * @param encoding string representation of encoding
+	 * @throws NullPointerException if all or some of the attributes describing data to be loaded, and/or encoding have not been set
+	 */
 	public ObjectBuilder (Attribute [] attributes, String encoding) {
-		notNull(attributes, "Attributes array is null.");
-		this.attributes = attributes;
+		this(attributes);
 		notNull(encoding, "Encoding string is null.");
 		this.encoding = encoding;
 	}
