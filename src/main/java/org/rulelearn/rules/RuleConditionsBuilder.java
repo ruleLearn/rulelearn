@@ -35,15 +35,17 @@ public class RuleConditionsBuilder {
 	IntSet consideredObjects;
 	InformationTable learningInformationTable;
 	IntSet indicesOfPositiveObjects;
+	IntSet indicesOfNegativeObjectsThatCanBeCovered;
 	
-	public RuleConditionsBuilder(IntSet consideredObjects, InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, ConditionAdditionEvaluator[] conditionEvaluators) {
+	public RuleConditionsBuilder(IntSet consideredObjects, InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfNegativeObjectsThatCanBeCovered, ConditionAdditionEvaluator[] conditionEvaluators) {
 		this.consideredObjects = Precondition.notNull(consideredObjects, "Considered objects are null.");
 		this.learningInformationTable = Precondition.notNull(learningInformationTable, "Learning information table is null.");
 		this.indicesOfPositiveObjects = Precondition.notNull(indicesOfPositiveObjects, "Indices of positive objects are null.");
+		this.indicesOfNegativeObjectsThatCanBeCovered = indicesOfNegativeObjectsThatCanBeCovered;
 	}
 	
 	public RuleConditions build() {
-		RuleConditions ruleConditions = new RuleConditions(learningInformationTable, indicesOfPositiveObjects);
+		RuleConditions ruleConditions = new RuleConditions(learningInformationTable, indicesOfPositiveObjects, indicesOfNegativeObjectsThatCanBeCovered);
 		
 		//TODO: implement
 		

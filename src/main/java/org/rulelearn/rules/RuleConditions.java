@@ -50,6 +50,13 @@ public class RuleConditions {
 	protected IntSet indicesOfPositiveObjects; //e.g., IntOpenHashSet from fastutil library
 	
 	/**
+	 * Indices of objects from learning information (decision) table that do not belong to {@link #indicesOfPositiveObjects} but can be covered by these rule conditions (of necessity).
+	 * These indices are meaningful only if these rule conditions are constructed for a certain decision rule considered in a variable consistency rough set approach,
+	 * that is allowed to cover some negative objects. Otherwise, this field is {@code null}.
+	 */
+	protected IntSet indicesOfNegativeObjectsThatCanBeCovered = null;
+	
+	/**
 	 * Learning information (decision) table in context of which this complex of elementary conditions is evaluated.
 	 */
 	protected InformationTable learningInformationTable = null;
@@ -119,12 +126,16 @@ public class RuleConditions {
 	 * 
 	 * @param learningInformationTable information table containing positive and negative objects
 	 * @param indicesOfPositiveObjects set of indices of positive objects from the given information table
+	 * @param indicesOfNegativeObjectsThatCanBeCovered indices of objects from learning information (decision) table that do not belong to {@code indicesOfPositiveObjects} but can be covered by these rule conditions;
+	 *        these indices can be given only if these rule conditions are constructed for a certain decision rule considered in a variable consistency rough set approach,
+	 *        that is allowed to cover some negative objects; otherwise, should be {@code null}
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects) {
+	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfNegativeObjectsThatCanBeCovered) {
 		this.learningInformationTable = notNull(learningInformationTable, "Information table is null.");
 		this.indicesOfPositiveObjects = notNull(indicesOfPositiveObjects, "Set of indices of positive objects is null.");
+		//this.indicesOfNegativeObjectsThatCanBeCovered can be null (for RuleConditions of a possible rule, or certain rule in DRSA)
 		
 		this.conditions = new ObjectArrayList<Condition<?>>();
 		this.attributeIndices = new Int2IntOpenHashMap();
@@ -137,6 +148,18 @@ public class RuleConditions {
 	 */
 	public IntSet getIndicesOfPositiveObjects() {
 		return this.indicesOfPositiveObjects;
+	}
+	
+	/**
+	 * Gets indices of objects from learning information (decision) table that do not belong to the set returned by {@link #getIndicesOfPositiveObjects()} but can be covered by these rule conditions.
+	 * These indices are meaningful only if these rule conditions are constructed for a certain decision rule considered in a variable consistency rough set approach,
+	 * that is allowed to cover some negative objects. Otherwise, the result is {@code null}.
+	 * 
+	 * @return the set of indices of objects from learning information (decision) table that do not belong to the set returned by {@link #getIndicesOfPositiveObjects()} but can be covered by these rule conditions;
+	 *         the result is {@code null} if these rule conditions are not allowed to cover any negative objects
+	 */
+	public IntSet getIndicesOfNegativeObjectsThatCanBeCovered() {
+		return this.indicesOfNegativeObjectsThatCanBeCovered;
 	}
 
 	/**

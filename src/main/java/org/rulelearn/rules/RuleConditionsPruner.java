@@ -16,8 +16,6 @@
 
 package org.rulelearn.rules;
 
-import org.rulelearn.core.InvalidSizeException;
-
 /**
  * Contract of a pruner used to remove redundant conditions from rule conditions {@link RuleConditions}.
  *
@@ -27,18 +25,13 @@ import org.rulelearn.core.InvalidSizeException;
 public interface RuleConditionsPruner {
 	
 	/**
-	 * Prunes given rule conditions by removing redundant conditions, so as to produce new rule conditions that still obey given stopping conditions.
+	 * Prunes given rule conditions by removing redundant conditions, and returns new rule conditions.
 	 * 
 	 * @param ruleConditions rule conditions that should be pruned; this object should not be modified as a result of performed pruning
-	 * @param stoppingConditionsToObey stopping conditions that are satisfied by given rule conditions, and have to be satisfied by the returned rule conditions 
-	 * @param conditionRemovalEvaluators array of condition removal evaluators used to evaluate conditions that can potentially be removed from the currently considered rule conditions;
-	 *        these evaluators are considered lexicographically
-	 * 
 	 * @return pruned rule conditions (new object)
 	 * 
-	 * @throws NullPointerException if any of the parameters is {@code null}
-	 * @throws InvalidSizeException if any of the given lists is empty
+	 * @throws NullPointerException if given rule conditions are {@code null}
 	 */
-	public RuleConditions prune(RuleConditions ruleConditions, RuleInductionStoppingConditionChecker stoppingConditionsToObey, ConditionRemovalEvaluator[] conditionRemovalEvaluators); //TODO: what with conditionRemovalEvaluators?
+	public RuleConditions prune(RuleConditions ruleConditions);
 
 }

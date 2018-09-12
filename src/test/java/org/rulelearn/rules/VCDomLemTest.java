@@ -40,7 +40,11 @@ class VCDomLemTest {
 		Unions unionContainer;
 		Union[] unions; //upward/downward unions
 		RuleType type; //certain/possible
-		double consistencyThreshold;
+		double consistencyThreshold = 0.0;
+		
+		RuleConditionsEvaluator ruleConditionsEvaluator = null;
+		
+		RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker = new ConsistencyAndCoverageStoppingConditionChecker(ruleConditionsEvaluator, consistencyThreshold);
 		
 		//RuleSemantics semantics;
 		//conditionsSelectionMethod //mix

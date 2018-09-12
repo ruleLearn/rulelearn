@@ -16,32 +16,34 @@
 
 package org.rulelearn.rules;
 
-import org.rulelearn.core.InvalidSizeException;
-
 /**
  * Pruner for rule conditions that analyzes conditions from the oldest (first added) to the newest one (last added). 
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class FIFORuleConditionsPruner implements RuleConditionsPruner {
-
+public class FIFORuleConditionsPruner extends AbstractRuleConditionsPruner {
+	
+	/**
+	 * Constructor storing given stopping condition checker.
+	 * 
+	 * @param stoppingConditionChecker stopping condition checker
+	 * @throws NullPointerException if given stopping condition checker is {@code null}
+	 */
+	public FIFORuleConditionsPruner(RuleInductionStoppingConditionChecker stoppingConditionChecker) {
+		super(stoppingConditionChecker);
+	}
+	
 	/**
 	 * {@inheritDoc}.
 	 * 
 	 * @param ruleConditions {@inheritDoc}
-	 * @param stoppingConditionsToObey {@inheritDoc} 
-	 * @param conditionRemovalEvaluators {@inheritDoc}
-	 * 
 	 * @return {@inheritDoc}
 	 * 
-	 * @throws NullPointerException if any of the parameters is {@code null}
-	 * @throws InvalidSizeException if any of the given lists is empty
+	 * @throws NullPointerException if given rule conditions are {@code null}
 	 */
 	@Override
-	public RuleConditions prune(RuleConditions ruleConditions,
-			RuleInductionStoppingConditionChecker stoppingConditionsToObey,
-			ConditionRemovalEvaluator[] conditionRemovalEvaluators) { //TODO: what with conditionRemovalEvaluators?
+	public RuleConditions prune(RuleConditions ruleConditions) {
 		// TODO: implement
 		return null;
 	}

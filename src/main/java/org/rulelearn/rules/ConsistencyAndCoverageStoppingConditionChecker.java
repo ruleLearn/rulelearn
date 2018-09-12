@@ -33,21 +33,18 @@ public class ConsistencyAndCoverageStoppingConditionChecker implements RuleInduc
 	
 	RuleConditionsEvaluator ruleConditionsEvaluator;
 	double consistencyThreshold;
-	IntSet objectsThatCanBeCovered;
 
 	/**
 	 * Constructs this stopping condition checker.
 	 * 
 	 * @param ruleConditionsEvaluator evaluator used to evaluate given rule conditions
 	 * @param consistencyThreshold consistency threshold to be compared with evaluation of given rule conditions by given evaluator
-	 * @param objectsThatCanBeCovered set of indices of allowed objects, i.e., objects that given rule conditions can cover
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public ConsistencyAndCoverageStoppingConditionChecker(RuleConditionsEvaluator ruleConditionsEvaluator, double consistencyThreshold, IntSet objectsThatCanBeCovered) {
+	public ConsistencyAndCoverageStoppingConditionChecker(RuleConditionsEvaluator ruleConditionsEvaluator, double consistencyThreshold) {
 		this.ruleConditionsEvaluator = Precondition.notNull(ruleConditionsEvaluator, "Rule conditions evaluator is null.");
 		this.consistencyThreshold = consistencyThreshold;
-		this.objectsThatCanBeCovered = Precondition.notNull(objectsThatCanBeCovered, "Set of objects that can be covered is null.");
 	}
 	
 	/**
@@ -67,11 +64,26 @@ public class ConsistencyAndCoverageStoppingConditionChecker implements RuleInduc
 		} else {
 			RuleConditions.CoveredObjectsIterator coveredObjectsIterator = ruleConditions.getCoveredObjectsIterator();
 			int coveredObjectIndex;
-			while ((coveredObjectIndex = coveredObjectsIterator.next()) >= 0) {
-				if (!objectsThatCanBeCovered.contains(coveredObjectIndex)) { //not allowed object is covered by rule conditions
-					return false;
+			
+			IntSet indicesOfPositiveObjects = ruleConditions.getIndicesOfPositiveObjects();
+			IntSet indicesOfNegativeObjectsThatCanBeCovered = ruleConditions.getIndicesOfNegativeObjectsThatCanBeCovered();
+			
+			if (indicesOfNegativeObjectsThatCanBeCovered != null) {
+				while ((coveredObjectIndex = coveredObjectsIterator.next()) >= 0) {
+					//not allowed object is covered by rule conditions
+					if (!indicesOfPositiveObjects.contains(coveredObjectIndex) && !indicesOfNegativeObjectsThatCanBeCovered.contains(coveredObjectIndex)) {
+						return false;
+					}
 				}
-			}
+			} else {
+				while ((coveredObjectIndex = coveredObjectsIterator.next()) >= 0) {
+					//not allowed object is covered by rule conditions
+					if (!indicesOfPositiveObjects.contains(coveredObjectIndex)) {
+						return false;
+					}
+				}
+			}			
+			
 			return true;
 		}
 	}

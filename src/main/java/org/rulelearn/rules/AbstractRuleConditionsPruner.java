@@ -16,22 +16,31 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.core.Precondition;
+
 /**
- * Contract of a checker verifying rule conditions {@link RuleConditions} against different stopping conditions, like satisfying consistency measure threshold or reaching a given number of conditions.
+ * Abstract rule conditions pruner, storing rule induction stopping condition checker {@link RuleInductionStoppingConditionChecker} and implementing {@link RuleConditionsPruner} interface.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface RuleInductionStoppingConditionChecker {
+public abstract class AbstractRuleConditionsPruner implements RuleConditionsPruner {
 	
 	/**
-	 * Checks if this stopping condition in satisfied by given rule conditions.
-	 *  
-	 * @param ruleConditions rule conditions to be checked
-	 * @return {@code true} if this stopping condition in satisfied by given rule conditions, {@code false} otherwise
-	 * 
-	 * @throws NullPointerException if given rule conditions are {@code null}
+	 * Stopping condition checker.
 	 */
-	public boolean isStoppingConditionSatisified(RuleConditions ruleConditions);
+	RuleInductionStoppingConditionChecker stoppingConditionChecker;
 
+	/**
+	 * Constructor storing given stopping condition checker.
+	 * 
+	 * @param stoppingConditionChecker stopping condition checker
+	 * @throws NullPointerException if given stopping condition checker is {@code null}
+	 */
+	public AbstractRuleConditionsPruner(RuleInductionStoppingConditionChecker stoppingConditionChecker) {
+		super();
+		this.stoppingConditionChecker = Precondition.notNull(stoppingConditionChecker, "Rule induction stopping condition checker is null.");
+	}
+	
+	
 }

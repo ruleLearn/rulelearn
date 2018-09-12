@@ -27,13 +27,8 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class StandardConditionGenerator implements ConditionGenerator {
+public class StandardConditionGenerator extends AbstractConditionGenerator {
 	
-	/**
-	 * Condition evaluators used lexicographically.
-	 */
-	ConditionAdditionEvaluator[] conditionEvaluators;
-
 	/**
 	 * Constructor for this condition generator. Stores given evaluators for use in {@link #getBestCondition(IntList, RuleConditions)}.
 	 * 
@@ -41,12 +36,7 @@ public class StandardConditionGenerator implements ConditionGenerator {
 	 * @throws NullPointerException if given array or any of its elements is {@code null}
 	 */
 	public StandardConditionGenerator(ConditionAdditionEvaluator[] conditionEvaluators) {
-		super();
-		this.conditionEvaluators = Precondition.notNull(conditionEvaluators, "Condition evaluators are null.");
-		
-		for (int i = 0; i < conditionEvaluators.length; i++) {
-			Precondition.notNull(conditionEvaluators[i], "Condition evaluator at index ", String.valueOf(i), " is null.");
-		}
+		super(conditionEvaluators);
 	}
 	
 	/**
