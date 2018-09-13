@@ -21,30 +21,37 @@ import org.rulelearn.core.Precondition;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * Checker verifying if consistency measure threshold is reached and rule conditions cover only allowed objects.
- * This checker is described in:<br>
+ * Checker verifying if evaluation of rule conditions satisfy given threshold and rule conditions cover only allowed objects.
+ * This checker, for evaluator being rule consistency measure, is described in:<br>
  * J. Błaszczyński, R. Słowiński, M. Szeląg, Sequential Covering Rule Induction Algorithm for Variable Consistency Rough Set Approaches. Information Sciences, 181, 2011, pp. 987-1002
- * (Algorithm 2, line 6).<br>
+ * (Algorithm 2, line 6).
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class ConsistencyAndCoverageStoppingConditionChecker implements RuleInductionStoppingConditionChecker {
+public class EvaluationAndCoverageStoppingConditionChecker implements RuleInductionStoppingConditionChecker {
 	
+	/**
+	 * Evaluator applied to rule conditions when verifying if they meet stopping conditions.
+	 */
 	RuleConditionsEvaluator ruleConditionsEvaluator;
-	double consistencyThreshold;
+	
+	/**
+	 * Evaluation threshold used when verifying if rule conditions meet stopping conditions.
+	 */
+	double evaluationThreshold;
 
 	/**
 	 * Constructs this stopping condition checker.
 	 * 
-	 * @param ruleConditionsEvaluator evaluator used to evaluate given rule conditions
-	 * @param consistencyThreshold consistency threshold to be compared with evaluation of given rule conditions by given evaluator
+	 * @param ruleConditionsEvaluator evaluator applied to rule conditions when verifying if they meet stopping conditions
+	 * @param evaluationThreshold threshold to be compared with the evaluation of rule conditions calculated by the given evaluator
 	 * 
-	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws NullPointerException if rule conditions evaluator is {@code null}
 	 */
-	public ConsistencyAndCoverageStoppingConditionChecker(RuleConditionsEvaluator ruleConditionsEvaluator, double consistencyThreshold) {
+	public EvaluationAndCoverageStoppingConditionChecker(RuleConditionsEvaluator ruleConditionsEvaluator, double evaluationThreshold) {
 		this.ruleConditionsEvaluator = Precondition.notNull(ruleConditionsEvaluator, "Rule conditions evaluator is null.");
-		this.consistencyThreshold = consistencyThreshold;
+		this.evaluationThreshold = evaluationThreshold;
 	}
 	
 	/**
@@ -59,7 +66,7 @@ public class ConsistencyAndCoverageStoppingConditionChecker implements RuleInduc
 	public boolean isStoppingConditionSatisified(RuleConditions ruleConditions) {
 		Precondition.notNull(ruleConditions, "Rule conditions for stopping condition checker are null.");
 		
-		if (!ruleConditionsEvaluator.evaluationSatisfiesThreshold(ruleConditions, consistencyThreshold)) {
+		if (!ruleConditionsEvaluator.evaluationSatisfiesThreshold(ruleConditions, evaluationThreshold)) {
 			return false;
 		} else {
 			RuleConditions.CoveredObjectsIterator coveredObjectsIterator = ruleConditions.getCoveredObjectsIterator();
@@ -67,20 +74,14 @@ public class ConsistencyAndCoverageStoppingConditionChecker implements RuleInduc
 			
 			IntSet indicesOfPositiveObjects = ruleConditions.getIndicesOfPositiveObjects();
 			IntSet indicesOfNegativeObjectsThatCanBeCovered = ruleConditions.getIndicesOfNegativeObjectsThatCanBeCovered();
+			IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
 			
-			if (indicesOfNegativeObjectsThatCanBeCovered != null) {
-				while ((coveredObjectIndex = coveredObjectsIterator.next()) >= 0) {
-					//not allowed object is covered by rule conditions
-					if (!indicesOfPositiveObjects.contains(coveredObjectIndex) && !indicesOfNegativeObjectsThatCanBeCovered.contains(coveredObjectIndex)) {
-						return false;
-					}
-				}
-			} else {
-				while ((coveredObjectIndex = coveredObjectsIterator.next()) >= 0) {
-					//not allowed object is covered by rule conditions
-					if (!indicesOfPositiveObjects.contains(coveredObjectIndex)) {
-						return false;
-					}
+			while ((coveredObjectIndex = coveredObjectsIterator.next()) >= 0) {
+				//not allowed object is covered by rule conditions
+				if (!indicesOfPositiveObjects.contains(coveredObjectIndex) &&
+						!indicesOfNegativeObjectsThatCanBeCovered.contains(coveredObjectIndex) &&
+						!neutralObjects.contains(coveredObjectIndex)) {
+					return false;
 				}
 			}			
 			

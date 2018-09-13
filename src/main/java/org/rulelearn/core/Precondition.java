@@ -70,6 +70,32 @@ public final class Precondition {
 	}
 	
 	/**
+	 * Verifies if given array of objects is not {@code null}, and also if each element of that array is not {@code null}. In all verifications succeed, returns given array.
+	 * 
+	 * @param objects array of objects to verify
+	 * @param nullArrayErrorMsg error message of the thrown {@link NullPointerException}, used when given array of objects is {@code null}
+	 * @param nullElementErrorMessage error message of the thrown {@link NullPointerException}, used when some element of the array is {@code null}
+	 * @param <T> type of the objects in the verified array
+	 * @return {@code objects}, if {@code objects != null}, and for each index i: {@code objects[i] != null}
+	 * 
+	 * @throws NullPointerException with {@code nullArrayErrorMsg} error message if given array of objects is {@code null}
+	 * @throws NullPointerException with {@code nullElementErrorMessage} error message if given array of objects is not {@code null}, but some of its elements is {@code null} - in such case,
+	 *         given error message is modified by replacing first occurrence of the string "%i" with the index of the {@code null} element 
+	 */
+	public static <T extends Object> T[] notNullWithContents(T[] objects, String nullArrayErrorMsg, String nullElementErrorMessage) {
+		if (objects != null) {
+			int index = 0;
+			for (T object : objects) {
+				notNull(object, nullElementErrorMessage.replaceFirst("%i", String.valueOf(index)));
+				index++;
+			}
+			return objects;
+		} else {
+			throw new NullPointerException(nullArrayErrorMsg);
+		}
+	} 
+	
+	/**
 	 * Verifies if given number is non-negative.
 	 * 
 	 * @param number number to verify

@@ -264,6 +264,15 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
+	 * Gets set of objects from information table that are neither positive nor negative with respect to this union.
+	 * 
+	 * @return set of objects from information table that are neither positive nor negative with respect to this union
+	 */
+	public IntSortedSet getNeutralObjects() {
+		return this.neutralObjects;
+	}
+
+	/**
 	 * Registers complementary union of decision classes that complements this union w.r.t. set of all objects U.
 	 * This reference is useful, e.g., when calculating the upper approximation of this union using VC-DRSA
 	 * (by complementing the lower approximation of the complementary union).

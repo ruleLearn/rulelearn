@@ -16,27 +16,39 @@
 
 package org.rulelearn.rules;
 
-import org.rulelearn.measures.Measure;
-import org.rulelearn.types.EvaluationField;
+import java.util.List;
 
 /**
- * Contract of an evaluator of a condition {@link Condition} used to evaluate it before it may be added to rule conditions {@link RuleConditions}.
+ * Rule minimality checker that involves comparison of decision rules with respect to a single rule evaluator {@link RuleEvaluator}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface ConditionAdditionEvaluator extends Measure {
+public class SingleEvaluationRuleMinimalityChecker extends RuleMinimalityChecker {
 	
 	/**
-	 * Evaluates given condition in the context of given rule conditions.
-	 * This evaluation concerns modified rule conditions, that would be obtained by adding given condition. 
+	 * Constructs this checker storing given rule evaluator.
 	 * 
-	 * @param ruleConditions rule conditions being the context of evaluation of given condition
-	 * @param condition condition to be evaluated
-	 * 
-	 * @return evaluation of a hypothetical rule conditions obtained from the given ones by adding given condition
-	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @param ruleEvaluator rule evaluator used to evaluate compared decision rules
+	 * @throws NullPointerException if given rule evaluator is {@code null}
 	 */
-	public double evaluateWithCondition(RuleConditions ruleConditions, Condition<EvaluationField> condition);
+	public SingleEvaluationRuleMinimalityChecker(RuleEvaluator ruleEvaluator) {
+		super(new RuleEvaluator[] {ruleEvaluator});
+	}
+
+	/**
+	 * Checks if given rule is acceptable in the context of a given set (list) of rules. 
+	 * 
+	 * @param ruleSet {@inheritDoc}
+	 * @param rule {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * @throws NullPointerException {@inheritDoc}
+	 */
+	@Override
+	public boolean check(List<Rule> ruleSet, Rule rule) {
+		// TODO: implement
+		return false;
+	}
 
 }

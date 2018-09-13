@@ -38,13 +38,13 @@ public abstract class RuleMinimalityChecker implements RuleChecker {
 	RuleEvaluator[] ruleEvaluators;
 	
 	/**
-	 * Constructs this checker.
+	 * Constructs this checker storing given rule evaluators.
 	 * 
 	 * @param ruleEvaluators list of rule evaluators used to evaluate compared decision rules
-	 * @throws NullPointerException if the list of rule evaluators is {@code null}
+	 * @throws NullPointerException if given array or any of its elements is {@code null}
 	 */
 	public RuleMinimalityChecker(RuleEvaluator[] ruleEvaluators) {
-		this.ruleEvaluators = Precondition.notNull(ruleEvaluators, "Rule evaluators for rule minimality checker are null.");
+		this.ruleEvaluators = Precondition.notNullWithContents(ruleEvaluators, "Rule evaluators for rule minimality checker are null.", "Rule evaluator for rule minimality checker is null at index %i.");
 	}
 
 	/**
@@ -53,7 +53,9 @@ public abstract class RuleMinimalityChecker implements RuleChecker {
 	 * 
 	 * @param ruleSet {@inheritDoc}
 	 * @param rule {@inheritDoc}
+	 * 
 	 * @return {@inheritDoc}
+	 * @throws NullPointerException {@inheritDoc}
 	 */
 	@Override
 	public abstract boolean check(List<Rule> ruleSet, Rule rule);

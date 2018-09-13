@@ -19,8 +19,17 @@ package org.rulelearn.measures.dominance;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Union.UnionType;
 import org.rulelearn.data.Decision;
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
 import org.rulelearn.measures.ConsistencyMeasure;
+import org.rulelearn.rules.Condition;
+import org.rulelearn.rules.ConditionAdditionEvaluator;
+import org.rulelearn.rules.ConditionRemovalEvaluator;
+import org.rulelearn.rules.Rule;
+import org.rulelearn.rules.RuleConditions;
+import org.rulelearn.rules.RuleConditionsEvaluator;
+import org.rulelearn.rules.RuleEvaluator;
+import org.rulelearn.types.EvaluationField;
 
 /**
  * Epsilon consistency measure defined with respect to union of decision classes in Błaszczyński, J., Greco, S., Słowiński, R., Szeląg, M.: 
@@ -34,7 +43,7 @@ import org.rulelearn.measures.ConsistencyMeasure;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class EpsilonConsistencyMeasure implements ConsistencyMeasure<Union> {
+public class EpsilonConsistencyMeasure implements ConsistencyMeasure<Union>, ConditionAdditionEvaluator, ConditionRemovalEvaluator, RuleConditionsEvaluator, RuleEvaluator {
 
 	protected final static double BEST_VALUE = 0.0;
 	protected final static double WORST_VALUE = 1.0;
@@ -72,12 +81,75 @@ public class EpsilonConsistencyMeasure implements ConsistencyMeasure<Union> {
 		return (((double)negativeCount) / union.getComplementarySetSize());
 	}
 
-	/* 
+	/** 
 	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc} 
 	 */
-	@Override
+	@Override 
 	public MeasureType getType() {
 		return MeasureType.COST;
+	}
+
+	/** 
+	 * {@inheritDoc}
+	 * 
+	 * @param ruleConditions {@inheritDoc}
+	 * @param condition {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * @throws NullPointerException {@inheritDoc}
+	 */
+	@Override
+	public double evaluateWithCondition(RuleConditions ruleConditions, Condition<EvaluationField> condition) {
+		// TODO: implement
+		return 0;
+	}
+
+	/** 
+	 * {@inheritDoc}
+	 * 
+	 * @param ruleConditions {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * @throws NullPointerException {@inheritDoc} 
+	 */
+	@Override
+	public double evaluate(RuleConditions ruleConditions) {
+		// TODO: implement
+		return 0;
+	}
+
+	/** 
+	 * {@inheritDoc}
+	 * 
+	 * @param ruleConditions {@inheritDoc}
+	 * @param conditionIndex {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * 
+	 * @throws NullPointerException {@inheritDoc}
+	 * @throws IndexOutOfBoundsException {@inheritDoc}
+	 */
+	@Override
+	public double evaluateWithoutCondition(RuleConditions ruleConditions, int conditionIndex) {
+		// TODO: implement
+		return 0;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param rule {@inheritDoc}
+	 * @param informationTable {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * @throws NullPointerException {@inheritDoc}
+	 */
+	@Override
+	public double evaluate(Rule rule, InformationTable informationTable) {
+		// TODO: implement
+		return 0;
 	}
 
 }

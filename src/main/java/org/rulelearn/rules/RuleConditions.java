@@ -24,6 +24,7 @@ import org.rulelearn.data.InformationTable;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import static org.rulelearn.core.Precondition.notNull;
 
@@ -50,11 +51,17 @@ public class RuleConditions {
 	protected IntSet indicesOfPositiveObjects; //e.g., IntOpenHashSet from fastutil library
 	
 	/**
-	 * Indices of objects from learning information (decision) table that do not belong to {@link #indicesOfPositiveObjects} but can be covered by these rule conditions (of necessity).
-	 * These indices are meaningful only if these rule conditions are constructed for a certain decision rule considered in a variable consistency rough set approach,
-	 * that is allowed to cover some negative objects. Otherwise, this field is {@code null}.
+	 * Indices of negative objects from learning information (decision) table that do not belong to {@link #indicesOfPositiveObjects} but can be covered by these rule conditions (of necessity).
+	 * This set of indices may be non-empty only if these rule conditions are constructed for a certain decision rule considered in a variable consistency rough set approach,
+	 * that allows these rule conditions to cover some negative objects.
 	 */
 	protected IntSet indicesOfNegativeObjectsThatCanBeCovered = null;
+	
+	/**
+	 * Indices of neutral objects from learning information (decision) table that do not belong to {@link #indicesOfPositiveObjects} nor to {@link #indicesOfNegativeObjectsThatCanBeCovered}
+	 * but can be covered by these rule conditions.
+	 */
+	protected IntSet indicesOfNeutralObjects = null;
 	
 	/**
 	 * Learning information (decision) table in context of which this complex of elementary conditions is evaluated.
@@ -120,26 +127,50 @@ public class RuleConditions {
 	public CoveredObjectsIterator getCoveredObjectsIterator() {
 		return new CoveredObjectsIterator();
 	}
-
+	
 	/**
 	 * Constructor setting learning information table and the set of indices of positive objects from this table.
+	 * The set of negative objects that can be covered (as returned by {@link #getIndicesOfNegativeObjectsThatCanBeCovered()},
+	 * as well as the set of neutral objects (as returned by {@link #getIndicesOfNeutralObjects()},
+	 * are initialized as empty sets.
 	 * 
-	 * @param learningInformationTable information table containing positive and negative objects
+	 * @param learningInformationTable learning information table for which these rule conditions are constructed
 	 * @param indicesOfPositiveObjects set of indices of positive objects from the given information table
-	 * @param indicesOfNegativeObjectsThatCanBeCovered indices of objects from learning information (decision) table that do not belong to {@code indicesOfPositiveObjects} but can be covered by these rule conditions;
-	 *        these indices can be given only if these rule conditions are constructed for a certain decision rule considered in a variable consistency rough set approach,
-	 *        that is allowed to cover some negative objects; otherwise, should be {@code null}
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfNegativeObjectsThatCanBeCovered) {
+	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects) {
+		this(learningInformationTable, indicesOfPositiveObjects, IntSets.EMPTY_SET, IntSets.EMPTY_SET);
+	}
+
+	/**
+	 * Constructor setting learning information table and the sets of indices of:
+	 * <ul>
+	 *   <li>positive objects from the information table,</li>
+	 *   <li>negative objects from the information table that can be covered by these rule conditions,</li>
+	 *   <li>neutral objects from the information table.</li>
+	 * </ul>
+	 * 
+	 * @param learningInformationTable learning information table for which these rule conditions are constructed
+	 * @param indicesOfPositiveObjects set of indices of positive objects from the given information table
+	 * @param indicesOfNegativeObjectsThatCanBeCovered indices of negative objects from the given learning information (decision) table
+	 *        but can be covered by these rule conditions; this set of indices may be non-empty only if these rule conditions are constructed for a certain decision rule considered
+	 *        in a variable consistency rough set approach, that allows rule conditions to cover some negative objects
+	 * @param indicesOfNeutralObjectsThatCanBeCovered indices of neutral objects from the given learning information (decision) table that can be covered by these rule conditions
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 */
+	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfNegativeObjectsThatCanBeCovered, IntSet indicesOfNeutralObjectsThatCanBeCovered) {
 		this.learningInformationTable = notNull(learningInformationTable, "Information table is null.");
 		this.indicesOfPositiveObjects = notNull(indicesOfPositiveObjects, "Set of indices of positive objects is null.");
-		//this.indicesOfNegativeObjectsThatCanBeCovered can be null (for RuleConditions of a possible rule, or certain rule in DRSA)
+		this.indicesOfNegativeObjectsThatCanBeCovered = notNull(indicesOfNegativeObjectsThatCanBeCovered, "Set of indices of negative objects that can be covered is null.");
+		this.indicesOfNeutralObjects = notNull(indicesOfNeutralObjectsThatCanBeCovered, "Set of indices of neutral objects is null.");
 		
 		this.conditions = new ObjectArrayList<Condition<?>>();
 		this.attributeIndices = new Int2IntOpenHashMap();
 	}
+	
+	
 	
 	/**
 	 * Gets the set of indices of positive objects
@@ -151,15 +182,26 @@ public class RuleConditions {
 	}
 	
 	/**
-	 * Gets indices of objects from learning information (decision) table that do not belong to the set returned by {@link #getIndicesOfPositiveObjects()} but can be covered by these rule conditions.
-	 * These indices are meaningful only if these rule conditions are constructed for a certain decision rule considered in a variable consistency rough set approach,
-	 * that is allowed to cover some negative objects. Otherwise, the result is {@code null}.
+	 * Gets indices of negative objects from learning information (decision) table that do not belong to the set returned by {@link #getIndicesOfPositiveObjects()} but can be covered by these rule conditions.
+	 * The returned set may be not empty only if these rule conditions are constructed for a certain decision rule considered in a variable consistency rough set approach,
+	 * that allows these rule conditions to cover some negative objects.
 	 * 
-	 * @return the set of indices of objects from learning information (decision) table that do not belong to the set returned by {@link #getIndicesOfPositiveObjects()} but can be covered by these rule conditions;
-	 *         the result is {@code null} if these rule conditions are not allowed to cover any negative objects
+	 * @return the set of indices of negative objects from learning information (decision) table that do not belong to the set returned by {@link #getIndicesOfPositiveObjects()}
+	 *         but can be covered by these rule conditions; the result is an empty set if these rule conditions are not allowed to cover any negative objects
 	 */
 	public IntSet getIndicesOfNegativeObjectsThatCanBeCovered() {
 		return this.indicesOfNegativeObjectsThatCanBeCovered;
+	}
+	
+	/**
+	 * Gets indices of neutral objects from learning information (decision) table that do not belong to the set returned by {@link #getIndicesOfPositiveObjects()}
+	 * nor to the set returned by{@link #getIndicesOfNegativeObjectsThatCanBeCovered()} but can be covered by these rule conditions.
+	 * 
+	 * @return indices of neutral objects from learning information (decision) table that do not belong to the set returned by {@link #getIndicesOfPositiveObjects()}
+	 *         nor to the set returned by{@link #getIndicesOfNegativeObjectsThatCanBeCovered()} but can be covered by these rule conditions
+	 */
+	public IntSet getIndicesOfNeutralObjects() {
+		return this.indicesOfNeutralObjects;
 	}
 
 	/**

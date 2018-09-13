@@ -18,30 +18,28 @@ package org.rulelearn.rules;
 
 import org.rulelearn.core.Precondition;
 
-import it.unimi.dsi.fastutil.ints.IntList;
-
 /**
- * Abstract condition generator, storing condition addition evaluators and implementing {@link ConditionGenerator} interface.
+ * Abstract rule conditions set pruner, storing array of rule conditions evaluators and implementing {@link RuleConditionsSetPruner} interface.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class AbstractConditionGenerator implements ConditionGenerator {
-
-	/**
-	 * Condition evaluators used lexicographically to evaluate each condition by assuming its addition to considered rule conditions.
-	 */
-	ConditionAdditionEvaluator[] conditionAdditionEvaluators;
+public abstract class AbstractRuleConditionsSetPruner implements RuleConditionsSetPruner {
 	
 	/**
-	 * Constructor for this condition generator. Stores given evaluators for use in {@link #getBestCondition(IntList, RuleConditions)}.
+	 * Rule conditions evaluators used lexicographically to evaluate each rule conditions {@link RuleConditions} considered by this pruner.
+	 */
+	RuleConditionsEvaluator[] ruleConditionsEvaluators;
+
+	/**
+	 * Constructor for this rule conditions set pruner storing given rule conditions evaluators.
 	 * 
-	 * @param conditionEvaluators array with condition evaluators used lexicographically
+	 * @param ruleConditionsEvaluators rule conditions evaluators used lexicographically to evaluate each {@link RuleConditions} from considered list
 	 * @throws NullPointerException if given array or any of its elements is {@code null}
 	 */
-	public AbstractConditionGenerator(ConditionAdditionEvaluator[] conditionEvaluators) {
+	public AbstractRuleConditionsSetPruner(RuleConditionsEvaluator[] ruleConditionsEvaluators) {
 		super();
-		this.conditionAdditionEvaluators = Precondition.notNullWithContents(conditionEvaluators, "Condition addition evaluators are null.", "Condition addition evaluator is null at index %i.");
+		this.ruleConditionsEvaluators = Precondition.notNullWithContents(ruleConditionsEvaluators, "Rule conditions evaluators are null.", "Rule conditions evaluator is null at index %i.");
 	}
 
 }

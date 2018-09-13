@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
 
 /**
  * Integration tests for VCDomLEM algorithm.
@@ -40,11 +41,21 @@ class VCDomLemTest {
 		Unions unionContainer;
 		Union[] unions; //upward/downward unions
 		RuleType type; //certain/possible
+		
+		EpsilonConsistencyMeasure consistencyMeasure = new EpsilonConsistencyMeasure();
 		double consistencyThreshold = 0.0;
 		
-		RuleConditionsEvaluator ruleConditionsEvaluator = null;
+		RuleEvaluator ruleEvaluator = consistencyMeasure;
+		RuleConditionsEvaluator ruleConditionsEvaluator = consistencyMeasure;
+		RuleConditionsEvaluator[] ruleConditionsEvaluators = {consistencyMeasure};
+		ConditionAdditionEvaluator[] conditionAdditionEvaluators = {consistencyMeasure};
+		ConditionRemovalEvaluator conditionRemovalEvaluator = consistencyMeasure;
 		
-		RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker = new ConsistencyAndCoverageStoppingConditionChecker(ruleConditionsEvaluator, consistencyThreshold);
+		RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker = new EvaluationAndCoverageStoppingConditionChecker(ruleConditionsEvaluator, consistencyThreshold);
+		ConditionGenerator conditionGeneration = new StandardConditionGenerator(conditionAdditionEvaluators);
+		RuleConditionsPruner ruleConditionsPruner = new FIFORuleConditionsPruner(ruleInductionStoppingConditionChecker);
+		RuleConditionsSetPruner ruleConditionsSetPruner = new EvaluationsAndOrderRuleConditionsSetPruner(ruleConditionsEvaluators);
+		RuleMinimalityChecker ruleMinimalityChecker = new SingleEvaluationRuleMinimalityChecker(ruleEvaluator);
 		
 		//RuleSemantics semantics;
 		//conditionsSelectionMethod //mix

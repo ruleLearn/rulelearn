@@ -27,20 +27,6 @@ import org.rulelearn.measures.Measure;
 public interface ConditionRemovalEvaluator extends Measure {
 	
 	/**
-	 * Evaluates given condition in the context of given rule conditions.
-	 * This evaluation concerns modified rule conditions, that would be obtained by removal of given condition. 
-	 * 
-	 * @param ruleConditions rule conditions being the context of evaluation of given condition
-	 * @param condition condition that should be present in given rule conditions
-	 * 
-	 * @return evaluation of a hypothetical rule conditions obtained from the given ones by removing given condition
-	 * @throws NullPointerException if any of the parameters is {@code null}
-	 */
-	public default double evaluate(RuleConditions ruleConditions, Condition<?> condition) {
-		return this.evaluate(ruleConditions, ruleConditions.getConditionIndex(condition));
-	}
-	
-	/**
 	 * Evaluates condition in the context of given rule conditions.
 	 * This evaluation concerns modified rule conditions, that would be obtained by removal of concerned condition. 
 	 * 
@@ -52,6 +38,6 @@ public interface ConditionRemovalEvaluator extends Measure {
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws IndexOutOfBoundsException if given condition index does not index any condition in given rule conditions
 	 */
-	public double evaluate(RuleConditions ruleConditions, int conditionIndex);
+	public double evaluateWithoutCondition(RuleConditions ruleConditions, int conditionIndex);
 
 }
