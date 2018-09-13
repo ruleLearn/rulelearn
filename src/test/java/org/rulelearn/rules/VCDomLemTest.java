@@ -45,15 +45,22 @@ class VCDomLemTest {
 		EpsilonConsistencyMeasure consistencyMeasure = new EpsilonConsistencyMeasure();
 		double consistencyThreshold = 0.0;
 		
-		RuleEvaluator ruleEvaluator = consistencyMeasure;
 		RuleConditionsEvaluator ruleConditionsEvaluator = consistencyMeasure;
-		RuleConditionsEvaluator[] ruleConditionsEvaluators = {consistencyMeasure};
 		ConditionAdditionEvaluator[] conditionAdditionEvaluators = {consistencyMeasure};
-		ConditionRemovalEvaluator conditionRemovalEvaluator = consistencyMeasure;
+		ConditionRemovalEvaluator[] conditionRemovalEvaluators = {consistencyMeasure};
+		RuleConditionsEvaluator[] ruleConditionsEvaluators = {consistencyMeasure};
+		RuleEvaluator ruleEvaluator = consistencyMeasure;
 		
 		RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker = new EvaluationAndCoverageStoppingConditionChecker(ruleConditionsEvaluator, consistencyThreshold);
 		ConditionGenerator conditionGeneration = new StandardConditionGenerator(conditionAdditionEvaluators);
+		
 		RuleConditionsPruner ruleConditionsPruner = new FIFORuleConditionsPruner(ruleInductionStoppingConditionChecker);
+		RuleConditionsPruner ruleConditionsPrunerWithEvaluators = new AbstractRuleConditionsPrunerWithEvaluators(ruleInductionStoppingConditionChecker, conditionRemovalEvaluators) {
+			@Override
+			public RuleConditions prune(RuleConditions ruleConditions) {
+				return null;
+			}
+		};
 		RuleConditionsSetPruner ruleConditionsSetPruner = new EvaluationsAndOrderRuleConditionsSetPruner(ruleConditionsEvaluators);
 		RuleMinimalityChecker ruleMinimalityChecker = new SingleEvaluationRuleMinimalityChecker(ruleEvaluator);
 		

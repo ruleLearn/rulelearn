@@ -29,6 +29,7 @@ import org.rulelearn.types.IntegerFieldFactory;
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 
 /**
  * Tests for {@link RuleConditions}.
@@ -77,6 +78,56 @@ class RuleConditionsTest {
 		
 		assertEquals(ruleConditions.getLearningInformationTable(), informationTable);
 		assertEquals(ruleConditions.getIndicesOfPositiveObjects(), indicesOfPositiveObjects);
+		assertEquals(ruleConditions.getIndicesOfNegativeObjectsThatCanBeCovered(), IntSets.EMPTY_SET);
+		assertEquals(ruleConditions.getIndicesOfNeutralObjects(), IntSets.EMPTY_SET);
+	}
+	
+	/**
+	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet)}.
+	 */
+	@Test
+	void testRuleConditions04() {
+		InformationTable informationTable = Mockito.mock(InformationTable.class);
+		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
+		IntSet indicesOfNegativeObjectsThatCanBeCovered = null;
+		IntSet indicesOfNeutralObjects = Mockito.mock(IntSet.class);
+		
+		assertThrows(NullPointerException.class, () -> {
+			new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfNegativeObjectsThatCanBeCovered, indicesOfNeutralObjects);
+		});
+	}
+	
+	/**
+	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet)}.
+	 */
+	@Test
+	void testRuleConditions05() {
+		InformationTable informationTable = Mockito.mock(InformationTable.class);
+		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
+		IntSet indicesOfNegativeObjectsThatCanBeCovered = Mockito.mock(IntSet.class);
+		IntSet indicesOfNeutralObjects = null;
+		
+		assertThrows(NullPointerException.class, () -> {
+			new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfNegativeObjectsThatCanBeCovered, indicesOfNeutralObjects);
+		});
+	}
+	
+	/**
+	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet)}.
+	 */
+	@Test
+	void testRuleConditions06() {
+		InformationTable informationTable = Mockito.mock(InformationTable.class);
+		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
+		IntSet indicesOfNegativeObjectsThatCanBeCovered = Mockito.mock(IntSet.class);
+		IntSet indicesOfNeutralObjects = Mockito.mock(IntSet.class);
+		
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfNegativeObjectsThatCanBeCovered, indicesOfNeutralObjects);
+		
+		assertEquals(ruleConditions.getLearningInformationTable(), informationTable);
+		assertEquals(ruleConditions.getIndicesOfPositiveObjects(), indicesOfPositiveObjects);
+		assertEquals(ruleConditions.getIndicesOfNegativeObjectsThatCanBeCovered(), indicesOfNegativeObjectsThatCanBeCovered);
+		assertEquals(ruleConditions.getIndicesOfNeutralObjects(), indicesOfNeutralObjects);
 	}
 
 	/**

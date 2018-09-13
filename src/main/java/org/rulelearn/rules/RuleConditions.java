@@ -132,7 +132,7 @@ public class RuleConditions {
 	 * Constructor setting learning information table and the set of indices of positive objects from this table.
 	 * The set of negative objects that can be covered (as returned by {@link #getIndicesOfNegativeObjectsThatCanBeCovered()},
 	 * as well as the set of neutral objects (as returned by {@link #getIndicesOfNeutralObjects()},
-	 * are initialized as empty sets.
+	 * are initialized as empty sets {@link IntSets#EMPTY_SET}.
 	 * 
 	 * @param learningInformationTable learning information table for which these rule conditions are constructed
 	 * @param indicesOfPositiveObjects set of indices of positive objects from the given information table

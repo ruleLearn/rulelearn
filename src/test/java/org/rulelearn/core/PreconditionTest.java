@@ -68,6 +68,42 @@ class PreconditionTest {
 			assertEquals(exception.getMessage(), expectedMessage);
 		}
 	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.core.Precondition#notNullWithContents(Object[], String, String))}.
+	 * Checks if {@link NullPointerException} with proper error message is thrown when array is {@code null}.
+	 */
+	@Test
+	void testNotNullWithContents01() {
+		String nullArrayErrorMsg = "Array is null.";
+		Exception exception = assertThrows(NullPointerException.class, () -> {
+			Precondition.notNullWithContents(null, nullArrayErrorMsg, "");
+		});
+		assertEquals(exception.getMessage(), nullArrayErrorMsg);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.core.Precondition#notNullWithContents(Object[], String, String))}.
+	 * Checks if {@link NullPointerException} with proper error message is thrown when array element is {@code null}.
+	 * This includes check if %i substring within the third parameter is replaced with the index of {@code null} element.
+	 */
+	@Test
+	void testNotNullWithContents02() {
+		String nullElementErrorMessage = "Array element %i is null.";
+		Exception exception = assertThrows(NullPointerException.class, () -> {
+			Precondition.notNullWithContents(new Integer[] {Integer.valueOf(0), Integer.valueOf(1), null}, "", nullElementErrorMessage);
+		});
+		assertEquals(exception.getMessage(), "Array element 2 is null."); //check replace of %i with index of null element
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.core.Precondition#notNullWithContents(Object[], String, String))}.
+	 */
+	@Test
+	void testNotNullWithContents03() {
+		Object[] objects = new Integer[] {Integer.valueOf(0), Integer.valueOf(1)};
+		assertEquals(Precondition.notNullWithContents(objects, "", ""), objects);
+	}
 
 	/**
 	 * Test method for {@link org.rulelearn.core.Precondition#nonNegative(int, java.lang.String)}.

@@ -74,7 +74,8 @@ public final class Precondition {
 	 * 
 	 * @param objects array of objects to verify
 	 * @param nullArrayErrorMsg error message of the thrown {@link NullPointerException}, used when given array of objects is {@code null}
-	 * @param nullElementErrorMessage error message of the thrown {@link NullPointerException}, used when some element of the array is {@code null}
+	 * @param nullElementErrorMessage error message of the thrown {@link NullPointerException}, used when some element of the array is {@code null};
+	 *        if contains "%i" substring, the first occurrence of this substring is replaced with the index of {@code null} element
 	 * @param <T> type of the objects in the verified array
 	 * @return {@code objects}, if {@code objects != null}, and for each index i: {@code objects[i] != null}
 	 * 

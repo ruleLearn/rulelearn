@@ -25,7 +25,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Builder of {@link RuleConditions} objects.
  * 
  * TODO: write javadoc
- * TODO: add missing parameters
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -36,17 +35,40 @@ public class RuleConditionsBuilder {
 	InformationTable learningInformationTable;
 	IntSet indicesOfPositiveObjects;
 	IntSet indicesOfNegativeObjectsThatCanBeCovered;
+	IntSet indicesOfNeutralObjects;
+	ConditionGenerator conditionGenerator;
+	RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker;
 	
+	/**
+	 * TODO: write javadoc
+	 * 
+	 * @param consideredObjects set of indices of positive object used to generate elementary conditions
+	 * @param learningInformationTable TODO
+	 * @param indicesOfPositiveObjects TODO
+	 * @param indicesOfNegativeObjectsThatCanBeCovered TODO
+	 * @param indicesOfNeutralObject TODO
+	 * @param conditionGenerator TODO
+	 * @param ruleInductionStoppingConditionChecker TODO
+	 */
 	public RuleConditionsBuilder(IntSet consideredObjects, InformationTable learningInformationTable,
-			IntSet indicesOfPositiveObjects, IntSet indicesOfNegativeObjectsThatCanBeCovered, ConditionAdditionEvaluator[] conditionEvaluators) {
+			IntSet indicesOfPositiveObjects, IntSet indicesOfNegativeObjectsThatCanBeCovered, IntSet indicesOfNeutralObject,
+			ConditionGenerator conditionGenerator, RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker) {
 		this.consideredObjects = Precondition.notNull(consideredObjects, "Considered objects are null.");
 		this.learningInformationTable = Precondition.notNull(learningInformationTable, "Learning information table is null.");
 		this.indicesOfPositiveObjects = Precondition.notNull(indicesOfPositiveObjects, "Indices of positive objects are null.");
-		this.indicesOfNegativeObjectsThatCanBeCovered = indicesOfNegativeObjectsThatCanBeCovered;
+		this.indicesOfNegativeObjectsThatCanBeCovered = Precondition.notNull(indicesOfNegativeObjectsThatCanBeCovered, "Indices of negative objects that can be covered are null.");
+		this.indicesOfNeutralObjects = Precondition.notNull(indicesOfNeutralObject, "Indices of neutral objects are null.");
+		this.conditionGenerator = Precondition.notNull(conditionGenerator, "Condition generator is null.");
+		this.ruleInductionStoppingConditionChecker = Precondition.notNull(ruleInductionStoppingConditionChecker, "Rule induction stopping condition checker is null.");
 	}
 	
+	/**
+	 * Builds rule conditions.
+	 * 
+	 * @return built rule conditions
+	 */
 	public RuleConditions build() {
-		RuleConditions ruleConditions = new RuleConditions(learningInformationTable, indicesOfPositiveObjects); //TODO: call the other constructor
+		RuleConditions ruleConditions = new RuleConditions(learningInformationTable, indicesOfPositiveObjects, indicesOfNegativeObjectsThatCanBeCovered, indicesOfNeutralObjects);
 		
 		//TODO: implement
 		
