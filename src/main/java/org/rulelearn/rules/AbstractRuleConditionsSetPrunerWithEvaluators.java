@@ -16,6 +16,7 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.Precondition;
 
 /**
@@ -24,22 +25,26 @@ import org.rulelearn.core.Precondition;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class AbstractRuleConditionsSetPruner implements RuleConditionsSetPruner {
+public abstract class AbstractRuleConditionsSetPrunerWithEvaluators implements RuleConditionsSetPruner {
 	
 	/**
 	 * Rule conditions evaluators used lexicographically to evaluate each rule conditions {@link RuleConditions} considered by this pruner.
 	 */
 	RuleConditionsEvaluator[] ruleConditionsEvaluators;
-
+	
 	/**
 	 * Constructor for this rule conditions set pruner storing given rule conditions evaluators.
 	 * 
 	 * @param ruleConditionsEvaluators rule conditions evaluators used lexicographically to evaluate each {@link RuleConditions} from considered list
+	 * 
 	 * @throws NullPointerException if given array or any of its elements is {@code null}
+	 * @throws InvalidSizeException if given array is empty
 	 */
-	public AbstractRuleConditionsSetPruner(RuleConditionsEvaluator[] ruleConditionsEvaluators) {
+	public AbstractRuleConditionsSetPrunerWithEvaluators(RuleConditionsEvaluator[] ruleConditionsEvaluators) {
 		super();
-		this.ruleConditionsEvaluators = Precondition.notNullWithContents(ruleConditionsEvaluators, "Rule conditions evaluators are null.", "Rule conditions evaluator is null at index %i.");
+		this.ruleConditionsEvaluators = Precondition.nonEmpty(Precondition.notNullWithContents(ruleConditionsEvaluators,
+				"Rule conditions evaluators are null.",
+				"Rule conditions evaluator is null at index %i."), "Array of rule conditions evaluators is empty.");
 	}
 
 }

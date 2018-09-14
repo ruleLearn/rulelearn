@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleConditionsSetPruner {
+public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleConditionsSetPrunerWithEvaluators {
 
 	/**
 	 * Constructor for this rule conditions set pruner storing given rule conditions evaluators.

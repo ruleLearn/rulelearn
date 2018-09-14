@@ -18,6 +18,7 @@ package org.rulelearn.rules;
 
 import java.util.List;
 
+import org.rulelearn.approximations.ApproximatedSet;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.data.InformationTable;
 
@@ -29,7 +30,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import static org.rulelearn.core.Precondition.notNull;
 
 /**
- * List (complex) of elementary conditions on the LHS of a decision rule. Each condition is identified by its position on the list.
+ * List (complex) of elementary conditions on the LHS of a decision rule induced to cover objects from a single {@link ApproximatedSet}.
+ * Each condition is identified by its position on the list.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -42,31 +44,34 @@ public class RuleConditions {
 	protected List<Condition<?>> conditions;
 	
 	/**
-	 * Indices of objects from learning information (decision) table that are considered to be positive objects for this complex of rule conditions.
-	 * In case of inducing a certain decision rule, one should assume that positive objects are those belonging to the lower approximation of an approximated set,
-	 * or that positive objects are those belonging to the approximated set.
+	 * Indices of objects from learning information (decision) table that are considered to be positive objects for these rule conditions.
+	 * In case of inducing a certain decision rule, one should assume that positive objects are those belonging to the lower approximation of an approximated set.
 	 * In case of inducing a possible decision rule, positive objects are those belonging to the upper approximation of the approximated set.
-	 * The meaning of the notion "positive object" is such, that this complex of rule conditions should be appreciated for covering "positive objects" and/or for not covering the other objects ("non-positive" ones).
+	 * In case of inducing an approximate decision rule, positive objects are those belonging to the boundary of the approximated set.
+	 * The meaning of the notion "positive object" is such, that this complex of rule conditions should be appreciated for covering "positive objects".<br>
+	 * <br>
+	 * This set is a subset of {@link #indicesOfObjectsThatCanBeCovered}.
 	 */
 	protected IntSet indicesOfPositiveObjects; //e.g., IntOpenHashSet from fastutil library
 	
 	/**
-	 * Indices of negative objects from learning information (decision) table that do not belong to {@link #indicesOfPositiveObjects} but can be covered by these rule conditions (of necessity).
-	 * This set of indices may be non-empty only if these rule conditions are constructed for a certain decision rule considered in a variable consistency rough set approach,
-	 * that allows these rule conditions to cover some negative objects.
+	 * Indices of all objects from learning information (decision) table that can be covered by these rule conditions (allowed objects).<br>
+	 * <br>
+	 * This set is a superset of {@link indicesOfPositiveObjects} and a superset of {@link #indicesOfNeutralObjects}.
 	 */
-	protected IntSet indicesOfNegativeObjectsThatCanBeCovered = null;
+	protected IntSet indicesOfObjectsThatCanBeCovered; //allowed objects, AO
 	
 	/**
-	 * Indices of neutral objects from learning information (decision) table that do not belong to {@link #indicesOfPositiveObjects} nor to {@link #indicesOfNegativeObjectsThatCanBeCovered}
-	 * but can be covered by these rule conditions.
+	 * Indices of all neutral objects from learning information (decision) table that can be covered by these rule conditions. Can be an empty set.
+	 * This set is a subset of {@link #indicesOfObjectsThatCanBeCovered}.
+	 * Neutral objects are such that their decision is uncomparable with the limiting decision of considered approximated set {@link ApproximatedSet#getLimitingDecision()}.
 	 */
-	protected IntSet indicesOfNeutralObjects = null;
+	protected IntSet indicesOfNeutralObjects;
 	
 	/**
 	 * Learning information (decision) table in context of which this complex of elementary conditions is evaluated.
 	 */
-	protected InformationTable learningInformationTable = null;
+	protected InformationTable learningInformationTable;
 	
 	/**
 	 * Indices of attributes from learning information table for which conditions are already stored in {@link #conditions}.
@@ -129,76 +134,87 @@ public class RuleConditions {
 	}
 	
 	/**
-	 * Constructor setting learning information table and the set of indices of positive objects from this table.
-	 * The set of negative objects that can be covered (as returned by {@link #getIndicesOfNegativeObjectsThatCanBeCovered()},
-	 * as well as the set of neutral objects (as returned by {@link #getIndicesOfNeutralObjects()},
-	 * are initialized as empty sets {@link IntSets#EMPTY_SET}.
+	 * Constructor setting learning learning information table and the sets of indices of:
+	 * <ul>
+	 *   <li>objects from the information table that are positive with respect to these rule conditions,</li>
+	 *   <li>all objects from the information table that can be covered by these rule conditions.</li>
+	 * </ul>
+	 * In case of inducing a certain decision rule, positive objects are those belonging to the lower approximation of considered approximated set.
+	 * In case of inducing a possible decision rule, positive objects are those belonging to the upper approximation of the approximated set.
+	 * In case of inducing an approximate decision rule, positive objects are those belonging to the boundary of the approximated set.<br>
+	 * <br> 
+	 * The set of neutral objects (as returned by {@link #getIndicesOfNeutralObjects()}, is initialized as an empty set {@link IntSets#EMPTY_SET}.
+	 * Neutral objects are such objects that their decision is uncomparable with the limiting decision of considered approximated set {@link ApproximatedSet#getLimitingDecision()}.
 	 * 
 	 * @param learningInformationTable learning information table for which these rule conditions are constructed
-	 * @param indicesOfPositiveObjects set of indices of positive objects from the given information table
+	 * @param indicesOfPositiveObjects set of indices of positive objects from the given information table; it is expected that this set is a subset of {@code indicesOfObjectsThatCanBeCovered}
+	 * @param indicesOfObjectsThatCanBeCovered indices of objects from the given learning information (decision) table
+	 *        that can be covered by these rule conditions
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects) {
-		this(learningInformationTable, indicesOfPositiveObjects, IntSets.EMPTY_SET, IntSets.EMPTY_SET);
+	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfObjectsThatCanBeCovered) {
+		this(learningInformationTable, indicesOfPositiveObjects, indicesOfObjectsThatCanBeCovered, IntSets.EMPTY_SET);
 	}
 
 	/**
-	 * Constructor setting learning information table and the sets of indices of:
+	 * Constructor setting learning learning information table and the sets of indices of:
 	 * <ul>
-	 *   <li>positive objects from the information table,</li>
-	 *   <li>negative objects from the information table that can be covered by these rule conditions,</li>
-	 *   <li>neutral objects from the information table.</li>
+	 *   <li>objects from the information table that are positive with respect to these rule conditions,</li>
+	 *   <li>all objects from the information table that can be covered by these rule conditions,</li>
+	 *   <li>objects from the information table that are neutral with respect to these rule conditions.</li>
 	 * </ul>
+	 * In case of inducing a certain decision rule, positive objects are those belonging to the lower approximation of considered approximated set.
+	 * In case of inducing a possible decision rule, positive objects are those belonging to the upper approximation of the approximated set.
+	 * In case of inducing an approximate decision rule, positive objects are those belonging to the boundary of the approximated set.<br>
+	 * <br>
+	 * Neutral objects are such objects that their decision is uncomparable with the limiting decision of considered approximated set {@link ApproximatedSet#getLimitingDecision()}.
 	 * 
 	 * @param learningInformationTable learning information table for which these rule conditions are constructed
-	 * @param indicesOfPositiveObjects set of indices of positive objects from the given information table
-	 * @param indicesOfNegativeObjectsThatCanBeCovered indices of negative objects from the given learning information (decision) table
-	 *        but can be covered by these rule conditions; this set of indices may be non-empty only if these rule conditions are constructed for a certain decision rule considered
-	 *        in a variable consistency rough set approach, that allows rule conditions to cover some negative objects
-	 * @param indicesOfNeutralObjectsThatCanBeCovered indices of neutral objects from the given learning information (decision) table that can be covered by these rule conditions
+	 * @param indicesOfPositiveObjects set of indices of positive objects from the given information table; it is expected that this set is a subset of {@code indicesOfObjectsThatCanBeCovered}
+	 * @param indicesOfObjectsThatCanBeCovered indices of objects from the given learning information (decision) table
+	 *        that can be covered by these rule conditions
+	 * @param indicesOfNeutralObjects indices of neutral objects from the given learning information (decision) table; it is expected that this set is a subset of {@code indicesOfObjectsThatCanBeCovered}
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfNegativeObjectsThatCanBeCovered, IntSet indicesOfNeutralObjectsThatCanBeCovered) {
+	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfObjectsThatCanBeCovered, IntSet indicesOfNeutralObjects) {
 		this.learningInformationTable = notNull(learningInformationTable, "Information table is null.");
 		this.indicesOfPositiveObjects = notNull(indicesOfPositiveObjects, "Set of indices of positive objects is null.");
-		this.indicesOfNegativeObjectsThatCanBeCovered = notNull(indicesOfNegativeObjectsThatCanBeCovered, "Set of indices of negative objects that can be covered is null.");
-		this.indicesOfNeutralObjects = notNull(indicesOfNeutralObjectsThatCanBeCovered, "Set of indices of neutral objects is null.");
+		this.indicesOfObjectsThatCanBeCovered = notNull(indicesOfObjectsThatCanBeCovered, "Set of indices of objects that can be covered is null.");
+		this.indicesOfNeutralObjects = notNull(indicesOfNeutralObjects, "Set of indices of neutral objects is null.");
 		
 		this.conditions = new ObjectArrayList<Condition<?>>();
 		this.attributeIndices = new Int2IntOpenHashMap();
 	}
 	
-	
-	
 	/**
-	 * Gets the set of indices of positive objects
+	 * Gets the set of indices of objects from the information table that are positive with respect to these rule conditions.<br>
+	 * <br>
+	 * In case of inducing a certain decision rule, positive objects are those belonging to the lower approximation of considered approximated set.
+	 * In case of inducing a possible decision rule, positive objects are those belonging to the upper approximation of the approximated set.
+	 * In case of inducing an approximate decision rule, positive objects are those belonging to the boundary of the approximated set.
 	 * 
-	 * @return the set of indices of positive objects
+	 * @return the set of indices of objects from the information table that are positive with respect to these rule conditions.
 	 */
 	public IntSet getIndicesOfPositiveObjects() {
 		return this.indicesOfPositiveObjects;
 	}
 	
 	/**
-	 * Gets indices of negative objects from learning information (decision) table that do not belong to the set returned by {@link #getIndicesOfPositiveObjects()} but can be covered by these rule conditions.
-	 * The returned set may be not empty only if these rule conditions are constructed for a certain decision rule considered in a variable consistency rough set approach,
-	 * that allows these rule conditions to cover some negative objects.
+	 * Gets indices of all objects from the learning information (decision) table that can be covered by these rule conditions.
 	 * 
-	 * @return the set of indices of negative objects from learning information (decision) table that do not belong to the set returned by {@link #getIndicesOfPositiveObjects()}
-	 *         but can be covered by these rule conditions; the result is an empty set if these rule conditions are not allowed to cover any negative objects
+	 * @return the set of indices of all objects from the learning information (decision) table that can be covered by these rule conditions
 	 */
-	public IntSet getIndicesOfNegativeObjectsThatCanBeCovered() {
-		return this.indicesOfNegativeObjectsThatCanBeCovered;
+	public IntSet getIndicesOfObjectsThatCanBeCovered() {
+		return this.indicesOfObjectsThatCanBeCovered;
 	}
 	
 	/**
-	 * Gets indices of neutral objects from learning information (decision) table that do not belong to the set returned by {@link #getIndicesOfPositiveObjects()}
-	 * nor to the set returned by{@link #getIndicesOfNegativeObjectsThatCanBeCovered()} but can be covered by these rule conditions.
+	 * Gets indices of all neutral objects from learning information (decision) table that can be covered by these rule conditions.
+	 * Neutral objects are such that their decision is uncomparable with the limiting decision of considered approximated entity {@link ApproximatedSet#getLimitingDecision()}.
 	 * 
-	 * @return indices of neutral objects from learning information (decision) table that do not belong to the set returned by {@link #getIndicesOfPositiveObjects()}
-	 *         nor to the set returned by{@link #getIndicesOfNegativeObjectsThatCanBeCovered()} but can be covered by these rule conditions
+	 * @return indices of all neutral objects from learning information (decision) table that can be covered by these rule conditions
 	 */
 	public IntSet getIndicesOfNeutralObjects() {
 		return this.indicesOfNeutralObjects;
@@ -214,10 +230,10 @@ public class RuleConditions {
 	}
 
 	/**
-	 * Tells if object with given index is positive for this set of rule conditions.
+	 * Tells if object with given index is positive for these rule conditions, i.e., if its index is in the set returned by {@link #getIndicesOfPositiveObjects}.
 	 * 
-	 * @param objectIndex index of an object in learning information table
-	 * @return {@code true} if object with given index is positive for this set of rule conditions
+	 * @param objectIndex index of an object from the learning information table
+	 * @return {@code true} if object with given index is positive for these rule conditions
 	 *         {@code false} otherwise
 	 */
 	public boolean objectIsPositive(int objectIndex) {

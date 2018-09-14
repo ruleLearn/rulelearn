@@ -18,6 +18,7 @@ package org.rulelearn.rules;
 
 import java.util.List;
 
+import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.Precondition;
 
 /**
@@ -41,10 +42,14 @@ public abstract class RuleMinimalityChecker implements RuleChecker {
 	 * Constructs this checker storing given rule evaluators.
 	 * 
 	 * @param ruleEvaluators list of rule evaluators used to evaluate compared decision rules
+	 * 
 	 * @throws NullPointerException if given array or any of its elements is {@code null}
+	 * @throws InvalidSizeException if given array is empty
 	 */
 	public RuleMinimalityChecker(RuleEvaluator[] ruleEvaluators) {
-		this.ruleEvaluators = Precondition.notNullWithContents(ruleEvaluators, "Rule evaluators for rule minimality checker are null.", "Rule evaluator for rule minimality checker is null at index %i.");
+		this.ruleEvaluators = Precondition.nonEmpty(Precondition.notNullWithContents(ruleEvaluators,
+				"Rule evaluators for rule minimality checker are null.",
+				"Rule evaluator for rule minimality checker is null at index %i."), "Array of rule evaluators is empty.");
 	}
 
 	/**

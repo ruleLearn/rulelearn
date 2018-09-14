@@ -21,7 +21,7 @@ import org.rulelearn.types.EvaluationField;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
- * Contract of a condition generator used to find next best condition {@link Condition} to be added to the LHS of constructed decision rule.
+ * Contract of a condition generator used to find next best condition {@link Condition} to be added to the LHS of a constructed decision rule.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -34,9 +34,9 @@ public interface ConditionGenerator {
 	 * <br>
 	 * Remark that in general, the best condition is not guaranteed to improve evaluation of rule conditions (it can even deteriorate it).
 	 * 
-	 * @param consideredObjects list of indices of objects which are considered when generating candidate elementary conditions
+	 * @param consideredObjects list of indices of (positive) objects which are considered when generating candidate elementary conditions
 	 * @param ruleConditions rule conditions for which best next condition is searched for
-	 * @return best condition that can be added to given rule conditions.
+	 * @return best condition that can be added to given rule conditions
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws ElementaryConditionNotFoundException when it is impossible to find any new condition that could be added to given rule conditions

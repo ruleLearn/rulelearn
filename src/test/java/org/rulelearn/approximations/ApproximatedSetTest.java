@@ -119,6 +119,11 @@ class ApproximatedSetTest {
 			protected void findObjects() {
 				approximatedSetMock.findObjects();
 			}
+
+			@Override
+			public IntSortedSet getNeutralObjects() {
+				return approximatedSetMock.getNeutralObjects();
+			}
 		};
 	}
 	

@@ -16,12 +16,26 @@
 
 package org.rulelearn.rules;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.rulelearn.approximations.Union;
+import org.mockito.Mockito;
+import org.rulelearn.approximations.ApproximatedSet;
+import org.rulelearn.approximations.ClassicalDominanceBasedRoughSetCalculator;
+import org.rulelearn.approximations.DominanceBasedRoughSetCalculator;
 import org.rulelearn.approximations.Unions;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSortedSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Integration tests for VCDomLEM algorithm.
@@ -37,11 +51,6 @@ class VCDomLemTest {
 	 */
 	@Test
 	public void testUpwardUnionCertain() {
-		InformationTable informationTable;
-		Unions unionContainer;
-		Union[] unions; //upward/downward unions
-		RuleType type; //certain/possible
-		
 		EpsilonConsistencyMeasure consistencyMeasure = new EpsilonConsistencyMeasure();
 		double consistencyThreshold = 0.0;
 		
@@ -52,7 +61,7 @@ class VCDomLemTest {
 		RuleEvaluator ruleEvaluator = consistencyMeasure;
 		
 		RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker = new EvaluationAndCoverageStoppingConditionChecker(ruleConditionsEvaluator, consistencyThreshold);
-		ConditionGenerator conditionGeneration = new StandardConditionGenerator(conditionAdditionEvaluators);
+		ConditionGenerator conditionGenerator = new StandardConditionGenerator(conditionAdditionEvaluators);
 		
 		RuleConditionsPruner ruleConditionsPruner = new FIFORuleConditionsPruner(ruleInductionStoppingConditionChecker);
 		RuleConditionsPruner ruleConditionsPrunerWithEvaluators = new AbstractRuleConditionsPrunerWithEvaluators(ruleInductionStoppingConditionChecker, conditionRemovalEvaluators) {
@@ -64,9 +73,72 @@ class VCDomLemTest {
 		RuleConditionsSetPruner ruleConditionsSetPruner = new EvaluationsAndOrderRuleConditionsSetPruner(ruleConditionsEvaluators);
 		RuleMinimalityChecker ruleMinimalityChecker = new SingleEvaluationRuleMinimalityChecker(ruleEvaluator);
 		
-		//RuleSemantics semantics;
-		//conditionsSelectionMethod //mix
-		//negativeExamplesTreatment
+		InformationTableWithDecisionDistributions informationTable = Mockito.mock(InformationTableWithDecisionDistributions.class);
+		
+		DominanceBasedRoughSetCalculator roughSetCalculator = new ClassicalDominanceBasedRoughSetCalculator();
+		Unions unionContainer = new Unions(informationTable, roughSetCalculator);
+		ApproximatedSet[] approximatedSets = unionContainer.getUpwardUnions();
+		
+		RuleType ruleType = RuleType.CERTAIN; //certain/possible
+		RuleSemantics ruleSemantics = RuleSemantics.AT_LEAST;
+		AllowedObjectsType allowedObjectsType = AllowedObjectsType.POSITIVE_REGION;
+		
+		List<Rule> minimalRules = new ObjectArrayList<Rule>();
+		List<RuleConditions> approximatedSetRuleConditions;
+		Rule rule;
+		
+		for (ApproximatedSet approximatedSet : approximatedSets) {
+			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, ruleType, ruleSemantics, allowedObjectsType); //TODO: extend list of parameters
+			//TODO: build a rule for each obtained rule conditions
+			//TODO: check minimality of each rule built this way
+		}
+	}
+	
+	private List<RuleConditions> calculateApproximatedSetRuleConditionsList(ApproximatedSet approximatedSet, RuleType ruleType, RuleSemantics ruleSemantics, AllowedObjectsType allowedObjectsType) { //TODO: extend list of parameters
+		InformationTable learningInformationTable;
+		IntSortedSet indicesOfPositiveObjects = null;
+		IntSet indicesOfObjectsThatCanBeCovered;
+		IntSet indicesOfNeutralObjects = approximatedSet.getNeutralObjects();
+		
+		List<RuleConditions> approximatedSetRuleConditions = new ObjectArrayList<RuleConditions>(); //the result
+		
+		switch (ruleType) {
+		case CERTAIN:
+			indicesOfPositiveObjects = approximatedSet.getLowerApproximation();
+			break;
+		case POSSIBLE:
+			indicesOfPositiveObjects = approximatedSet.getUpperApproximation();
+			break;
+		case APPROXIMATE:
+			indicesOfPositiveObjects = approximatedSet.getBoundary();
+			break;
+		}
+		
+		switch (allowedObjectsType) {
+		case POSITIVE_REGION:
+			indicesOfObjectsThatCanBeCovered = approximatedSet.getPositiveRegion();
+			break;
+		case POSITIVE_AND_BOUNDARY_REGIONS:
+			indicesOfObjectsThatCanBeCovered = approximatedSet.getPositiveRegion();
+			indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getBoundaryRegion());
+			break;
+		case ANY_REGION:
+			int numberOfObjects = approximatedSet.getInformationTable().getNumberOfObjects();
+			indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(numberOfObjects);
+			for (int i = 0; i < numberOfObjects; i++) {
+				indicesOfObjectsThatCanBeCovered.add(i);
+			}
+			break;
+		}
+		
+		//TODO: choose proper type of considered objects
+		IntList consideredObjects = new IntArrayList(indicesOfPositiveObjects); //positive objects not already covered by rule conditions induced so far
+		
+		//TODO: how to handle consistencyIn?
+		
+		//TODO: implement
+		
+		return approximatedSetRuleConditions;
 	}
 
 }

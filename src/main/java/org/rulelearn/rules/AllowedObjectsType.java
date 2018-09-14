@@ -17,27 +17,22 @@
 package org.rulelearn.rules;
 
 /**
- * Semantics of a decision rule, reflecting the type of conditions and decision present in this rule.
+ * Type of a decision rule, reflecting the way of construction of this rule.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
-public enum RuleSemantics {
-	
+public enum AllowedObjectsType {
 	/**
-	 * Semantics of a rule describing minimal conditions (lower profile) that need to be satisfied by a decision object to conclude that this object belongs to the set determined by rule's decision part.
+	 * Allowed objects type used when {@link RuleConditions} can cover objects from the positive region of an approximated set.
 	 */
-	AT_LEAST,
-	
+	POSITIVE_REGION,
 	/**
-	 * Semantics of a rule describing maximal conditions (upper profile) that must not be exceeded by a decision object to conclude that this object belongs to the set determined by rule's decision part.
+	 * Allowed objects type used when {@link RuleConditions} can cover objects from the positive and boundary regions of an approximated set.
 	 */
-	AT_MOST,
-	
+	POSITIVE_AND_BOUNDARY_REGIONS,
 	/**
-	 * Semantics of a rule describing exact conditions (profile) that need to be satisfied by a decision object to conclude that this object belongs to the set determined by rule's decision part.
+	 * Allowed objects type used when {@link RuleConditions} can cover any objects. 
 	 */
-	EQUAL
-
+	ANY_REGION
 }

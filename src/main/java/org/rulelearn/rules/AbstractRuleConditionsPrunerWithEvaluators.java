@@ -45,9 +45,9 @@ public abstract class AbstractRuleConditionsPrunerWithEvaluators extends Abstrac
 	 */
 	public AbstractRuleConditionsPrunerWithEvaluators(RuleInductionStoppingConditionChecker stoppingConditionChecker, ConditionRemovalEvaluator[] conditionRemovalEvaluators) {
 		super(stoppingConditionChecker);
-		this.conditionRemovalEvaluators = Precondition.nonEmpty(Precondition.notNull(conditionRemovalEvaluators, "Condition removal evaluators are null."), "Array with condition removal evaluators is empty.");
-		
-		// TODO: check each evaluator if not null
+		this.conditionRemovalEvaluators = Precondition.nonEmpty(Precondition.notNullWithContents(conditionRemovalEvaluators,
+				"Condition removal evaluators are null.",
+				"Condition removal evaluator is null at index %i."), "Array with condition removal evaluators is empty.");
 	}
 
 }

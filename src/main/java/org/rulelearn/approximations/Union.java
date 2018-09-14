@@ -268,6 +268,7 @@ public class Union extends ApproximatedSet {
 	 * 
 	 * @return set of objects from information table that are neither positive nor negative with respect to this union
 	 */
+	@Override
 	public IntSortedSet getNeutralObjects() {
 		return this.neutralObjects;
 	}

@@ -72,15 +72,11 @@ public class EvaluationAndCoverageStoppingConditionChecker implements RuleInduct
 			RuleConditions.CoveredObjectsIterator coveredObjectsIterator = ruleConditions.getCoveredObjectsIterator();
 			int coveredObjectIndex;
 			
-			IntSet indicesOfPositiveObjects = ruleConditions.getIndicesOfPositiveObjects();
-			IntSet indicesOfNegativeObjectsThatCanBeCovered = ruleConditions.getIndicesOfNegativeObjectsThatCanBeCovered();
-			IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
+			IntSet indicesOfObjectsThatCanBeCovered = ruleConditions.getIndicesOfObjectsThatCanBeCovered();
 			
 			while ((coveredObjectIndex = coveredObjectsIterator.next()) >= 0) {
 				//not allowed object is covered by rule conditions
-				if (!indicesOfPositiveObjects.contains(coveredObjectIndex) &&
-						!indicesOfNegativeObjectsThatCanBeCovered.contains(coveredObjectIndex) &&
-						!neutralObjects.contains(coveredObjectIndex)) {
+				if (!indicesOfObjectsThatCanBeCovered.contains(coveredObjectIndex)) {
 					return false;
 				}
 			}			

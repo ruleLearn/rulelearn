@@ -164,6 +164,14 @@ public abstract class ApproximatedSet {
 	 */
 	protected abstract void findObjects();
 	
+	/**
+	 * Gets set of objects from information table that are neither positive nor negative with respect to this approximated set.
+	 * 
+	 * @return set of objects from information table that are neither positive nor negative with respect to this approximated set;
+	 *         if the notion of neutral objects does not make sense for particular approximated set, returns an empty set
+	 */
+	public abstract IntSortedSet getNeutralObjects();
+	
 //	/**
 //	 * Gets indices of uncomparable objects from the information table such that this set's limiting decision is uncomparable with their decision.
 //	 * The concept of uncomparable objects is important, e.g., in case of multicriteria decision problems,

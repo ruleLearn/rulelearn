@@ -16,32 +16,36 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.Precondition;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
- * Abstract condition generator, storing condition addition evaluators and implementing {@link ConditionGenerator} interface.
+ * Abstract condition generator, employing condition addition evaluators and implementing {@link ConditionGenerator} interface.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class AbstractConditionGenerator implements ConditionGenerator {
+public abstract class AbstractConditionGeneratorWithEvaluators implements ConditionGenerator {
 
 	/**
 	 * Condition evaluators used lexicographically to evaluate each condition by assuming its addition to considered rule conditions.
 	 */
-	ConditionAdditionEvaluator[] conditionAdditionEvaluators;
+	ConditionAdditionEvaluator[] conditionAdditionEvaluators = null;
 	
 	/**
 	 * Constructor for this condition generator. Stores given evaluators for use in {@link #getBestCondition(IntList, RuleConditions)}.
 	 * 
-	 * @param conditionEvaluators array with condition evaluators used lexicographically
+	 * @param conditionAdditionEvaluators array with condition addition evaluators used lexicographically
 	 * @throws NullPointerException if given array or any of its elements is {@code null}
+	 * @throws InvalidSizeException if given array is empty
 	 */
-	public AbstractConditionGenerator(ConditionAdditionEvaluator[] conditionEvaluators) {
+	public AbstractConditionGeneratorWithEvaluators(ConditionAdditionEvaluator[] conditionAdditionEvaluators) {
 		super();
-		this.conditionAdditionEvaluators = Precondition.notNullWithContents(conditionEvaluators, "Condition addition evaluators are null.", "Condition addition evaluator is null at index %i.");
+		this.conditionAdditionEvaluators = Precondition.nonEmpty(Precondition.notNullWithContents(conditionAdditionEvaluators,
+				"Condition addition evaluators are null.",
+				"Condition addition evaluator is null at index %i."), "Array of condition addition evaluators is empty.");
 	}
-
+	
 }

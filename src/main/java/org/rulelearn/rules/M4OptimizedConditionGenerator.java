@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class M4OptimizedConditionGenerator extends AbstractConditionGenerator {
+public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWithEvaluators {
 	
 	/**
 	 * Constructor for this condition generator. Stores given evaluators for use in {@link #getBestCondition(IntList, RuleConditions)}.
