@@ -294,7 +294,7 @@ class InformationTableBuilderTest {
 	}
 	
 	/**
-	 * Test method for {@link InformationTableBuilder#build(String, String)}.
+	 * Test method for {@link InformationTableBuilder#buildFromCSVFile(String, String)}.
 	 */
 	@Test
 	void testConstructionOfInformationTable03() {
@@ -305,7 +305,7 @@ class InformationTableBuilderTest {
 	}
 	
 	/**
-	 * Test method for {@link InformationTableBuilder#build(String, String)}.
+	 * Test method for {@link InformationTableBuilder#buildFromCSVFile(String, String)}.
 	 */
 	@Test
 	void testConstructionOfInformationTable04() {
@@ -343,6 +343,72 @@ class InformationTableBuilderTest {
 	@Test
 	void testConstructionOfInformationTable07() {
 		InformationTable informationTable = InformationTableBuilder.buildFromJSONFile("", "");
+		assertTrue(informationTable != null);
+		assertEquals(0, informationTable.getNumberOfAttributes());
+		assertEquals(0, informationTable.getNumberOfObjects());		
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#safelyBuildFromCSVFile(String, String, boolean)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable08() {
+		InformationTable informationTable = InformationTableBuilder.safelyBuildFromCSVFile("src/test/resources/data/csv/prioritisation.json", "src/test/resources/data/csv/prioritisation.csv", true);
+		assertTrue(informationTable != null);
+		assertEquals(11, informationTable.getNumberOfAttributes());
+		assertEquals(2, informationTable.getNumberOfObjects());		
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#safelyBuildFromCSVFile(String, String, boolean)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable09() {
+		InformationTable informationTable = InformationTableBuilder.safelyBuildFromCSVFile("src/test/resources/data/csv/prioritisation.json", "", true);
+		assertTrue(informationTable != null);
+		assertEquals(11, informationTable.getNumberOfAttributes());
+		assertEquals(0, informationTable.getNumberOfObjects());		
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#safelyBuildFromCSVFile(String, String, boolean)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable11() {
+		InformationTable informationTable = InformationTableBuilder.safelyBuildFromCSVFile("", "", true);
+		assertTrue(informationTable != null);
+		assertEquals(0, informationTable.getNumberOfAttributes());
+		assertEquals(0, informationTable.getNumberOfObjects());		
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#safelyBuildFromJSONFile(String, String)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable12() {
+		InformationTable informationTable = InformationTableBuilder.safelyBuildFromJSONFile("src/test/resources/data/csv/prioritisation.json", "src/test/resources/data/json/examples.json");
+		assertTrue(informationTable != null);
+		assertEquals(11, informationTable.getNumberOfAttributes());
+		assertEquals(2, informationTable.getNumberOfObjects());		
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#safelyBuildFromJSONFile(String, String)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable13() {
+		InformationTable informationTable = InformationTableBuilder.safelyBuildFromJSONFile("src/test/resources/data/csv/prioritisation.json", "");
+		assertTrue(informationTable != null);
+		assertEquals(11, informationTable.getNumberOfAttributes());
+		assertEquals(0, informationTable.getNumberOfObjects());		
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#safelyBuildFromJSONFile(String, String)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable14() {
+		InformationTable informationTable = InformationTableBuilder.safelyBuildFromJSONFile("", "");
 		assertTrue(informationTable != null);
 		assertEquals(0, informationTable.getNumberOfAttributes());
 		assertEquals(0, informationTable.getNumberOfObjects());		

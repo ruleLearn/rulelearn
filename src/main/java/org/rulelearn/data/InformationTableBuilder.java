@@ -368,7 +368,8 @@ public class InformationTableBuilder {
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		
-		JsonReader jsonReader = null;
+		JsonReader jsonReader = null;		
+		
 		try {
 			jsonReader = new JsonReader(new FileReader(pathToJSONAttributeFile));
 		}
@@ -412,6 +413,72 @@ public class InformationTableBuilder {
 			}
 		}
 		return informationTableBuilder.build();
+	}
+	
+	/**
+	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored in CSV format.
+	 * Internally it uses attribute deserializer {@link AttributeDeserializer} to load attributes and object builder {@link ObjectBuilder} to load objects.
+	 * 
+	 * @param pathToJSONAttributeFile a path to JSON file with attributes
+	 * @param pathToCSVObjectFile a path to the CSV file with objects
+	 * @param header indicates whether header is present in CSV file
+	 * 
+	 * @return constructed information table
+	 * @throws NullPointerException if path to JSON file and/or path to CSV file have not been set
+	 */
+	public static InformationTable safelyBuildFromCSVFile(String pathToJSONAttributeFile, String pathToCSVObjectFile, boolean header) {
+		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");
+		notNull(pathToCSVObjectFile, "Path to CSV file with objects is null.");
+		
+		Attribute [] attributes = null;
+		List<String []> objects = null;
+		InformationTableBuilder informationTableBuilder = null;
+		
+		// load attributes
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		
+		try (JsonReader jsonReader = new JsonReader(new FileReader(pathToJSONAttributeFile))) {
+			attributes = gson.fromJson(jsonReader, Attribute[].class);
+			
+			// load objects 
+			ObjectBuilder ob = new ObjectBuilder(header);
+			try {
+				 objects = ob.getObjects(pathToCSVObjectFile);
+			}
+			catch (UnsupportedEncodingException ex) {
+				System.out.println(ex);
+			}
+			catch (FileNotFoundException ex) {
+				System.out.println(ex.toString());
+			}
+			
+			// construct information table builder
+			if (attributes != null) {
+				informationTableBuilder = new InformationTableBuilder(attributes);
+				if (objects != null) {
+					for (int i = 0; i < objects.size(); i++) {
+						informationTableBuilder.addObject(objects.get(i));
+					}
+				}
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		catch (IOException ex) {
+			System.out.println(ex.toString());
+		}
+		
+		// build information table
+		if (informationTableBuilder != null) {
+			return informationTableBuilder.build();
+		}
+		else {
+			// create empty information table
+			return new InformationTable(new Attribute[0], new ObjectArrayList<Field []>());
+		}
 	}
 
 	/**
@@ -490,6 +557,73 @@ public class InformationTableBuilder {
 			}
 		}
 		return informationTableBuilder.build();
+	}
+	
+	/**
+	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored also in JSON format.
+	 * Internally it uses attribute deserializer {@link AttributeDeserializer} to load attributes and object builder {@link org.rulelearn.data.json.ObjectBuilder} to load objects.
+	 * 
+	 * @param pathToJSONAttributeFile a path to JSON file with attributes
+	 * @param pathToJSONObjectFile a path to the JSON file with objects
+	 * 
+	 * @return constructed information table
+	 */
+	public static InformationTable safelyBuildFromJSONFile(String pathToJSONAttributeFile, String pathToJSONObjectFile) {
+		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");
+		notNull(pathToJSONObjectFile, "Path to JSON file with objects is null.");
+		
+		Attribute [] attributes = null;
+		List<String []> objects = null;
+		InformationTableBuilder informationTableBuilder = null;
+		
+		// load attributes
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		
+		try(JsonReader jsonAttributesReader = new JsonReader(new FileReader(pathToJSONAttributeFile))) {
+			attributes = gson.fromJson(jsonAttributesReader, Attribute[].class);
+			
+			// load objects
+			JsonElement json = null;
+			try(JsonReader jsonObjectsReader = new JsonReader(new FileReader(pathToJSONObjectFile))) {
+				JsonParser jsonParser = new JsonParser();
+				json = jsonParser.parse(jsonObjectsReader);
+			}
+			catch (FileNotFoundException ex) {
+				System.out.println(ex.toString());
+			}
+			catch (IOException ex) {
+				System.out.println(ex.toString());
+			}
+			org.rulelearn.data.json.ObjectBuilder ob = new org.rulelearn.data.json.ObjectBuilder(attributes);
+			objects = ob.getObjects(json);
+			
+			// construct information table builder
+			if (attributes != null) {
+				informationTableBuilder = new InformationTableBuilder(attributes, new String[] {org.rulelearn.data.json.ObjectBuilder.MISSING_VALUE_STRING});
+				if (objects != null) {
+					for (int i = 0; i < objects.size(); i++) {
+						informationTableBuilder.addObject(objects.get(i));
+					}
+				}
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		catch (IOException ex) {
+			System.out.println(ex.toString());
+		}
+		
+		// build information table
+		if (informationTableBuilder != null) {
+			return informationTableBuilder.build();
+		}
+		else {
+			// create empty information table
+			return new InformationTable(new Attribute[0], new ObjectArrayList<Field []>());
+		}
 	}
 	
 	/**
