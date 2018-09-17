@@ -383,6 +383,46 @@ public abstract class ApproximatedSet {
 	protected abstract TernaryLogicValue isConcordantWithDecision(Decision decision);
 	
 	/**
+	 * Tells if given decision is positive with respect to this approximated set.
+	 * 
+	 * @param decision decision to verify for being positive with respect to this approximated set
+	 * @return {@code true} if given decision is positive with respect to this approximated set,
+	 *         {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given decision is {@code null}
+	 */
+	public abstract boolean isDecisionPositive(Decision decision);
+	
+	/**
+	 * Tells if given decision is negative with respect to this approximated set.
+	 * 
+	 * @param decision decision to verify for being negative with respect to this approximated set
+	 * @return {@code true} if given decision is negative with respect to this approximated set,
+	 *         {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given decision is {@code null}
+	 */
+	public abstract boolean isDecisionNegative(Decision decision);
+	
+	/**
+	 * Tells if given object is positive with respect to this approximated set.
+	 * 
+	 * @param objectNumber index of an object from the information table
+	 * @return {@code true} if object with given number is positive with respect to this approximated set,
+	 *         {@code false} otherwise
+	 */
+	public abstract boolean isObjectPositive(int objectNumber);
+	
+	/**
+	 * Tells if given object is negative with respect to this approximated set.
+	 * 
+	 * @param objectNumber index of an object from the information table
+	 * @return {@code true} if object with given number is negative with respect to this approximated set,
+	 *         {@code false} otherwise
+	 */
+	public abstract boolean isObjectNegative(int objectNumber);
+	
+	/**
 	 * Gets the size of the set of objects that is complementary to the set of objects belonging to this approximated set.
 	 * The understanding of the notion of set complementarity is on behalf of the implementing subclass.
 	 * 

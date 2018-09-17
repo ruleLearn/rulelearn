@@ -124,6 +124,26 @@ class ApproximatedSetTest {
 			public IntSortedSet getNeutralObjects() {
 				return approximatedSetMock.getNeutralObjects();
 			}
+
+			@Override
+			public boolean isDecisionPositive(Decision decision) {
+				return approximatedSetMock.isDecisionPositive(decision);
+			}
+
+			@Override
+			public boolean isDecisionNegative(Decision decision) {
+				return approximatedSetMock.isDecisionNegative(decision);
+			}
+
+			@Override
+			public boolean isObjectPositive(int objectNumber) {
+				return approximatedSetMock.isObjectPositive(objectNumber);
+			}
+
+			@Override
+			public boolean isObjectNegative(int objectNumber) {
+				return approximatedSetMock.isObjectNegative(objectNumber);
+			}
 		};
 	}
 	
