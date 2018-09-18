@@ -24,6 +24,10 @@ import org.rulelearn.data.InformationTable;
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -56,7 +60,7 @@ public class RuleConditions {
 	 * <br>
 	 * This set is a subset of {@link #indicesOfObjectsThatCanBeCovered}.
 	 */
-	protected IntSet indicesOfElementaryConditionsBaseObjects; //TODO
+	protected IntSet indicesOfElementaryConditionsBaseObjects;
 	
 	/**
 	 * Indices of all objects from learning information (decision) table that can be covered by these rule conditions (allowed objects).<br>
@@ -81,6 +85,20 @@ public class RuleConditions {
 	 * Indices of attributes from learning information table for which conditions are already stored in {@link #conditions}.
 	 */
 	protected Int2IntMap attributeIndices;
+	
+	/**
+	 * Indices of objects from learning information table covered by these rule conditions.
+	 */
+	IntList indicedOfCoveredObjects;
+	
+	/**
+	 * Stores for each object index the number of conditions from these rule conditions that do not cover that object (i.e., "eliminate" that object from the set of covered objects).
+	 * Initialized with {@code null}. This array is initialized only when first condition is considered to be removed. Then, it is maintained up to date.
+	 * If {@code notCoveringConditionsCounts[objectIndex] = 2}, it means that these rule conditions contain two conditions that do not cover object indexed by {@code objectIndex}.
+	 * If {@code notCoveringConditionsCounts[objectIndex] = 0}, it means that these rule conditions cover object indexed by {@code objectIndex}.
+	 * Once initialized, no new condition should be added to these rule conditions.
+	 */
+	int[] notCoveringConditionsCounts = null; //TODO set in constructor, and update when adding new condition 
 	
 	/**
 	 * Iterator among objects covered by the rule conditions.
@@ -113,15 +131,36 @@ public class RuleConditions {
 	}
 	
 	/**
+	 * Initializes {@link #notCoveringConditionsCounts} based on the current set of elementary conditions.
+	 */
+	private void initializeNotCoveringConditionsCounts() {
+		int objectsCount = this.learningInformationTable.getNumberOfObjects();
+		this.notCoveringConditionsCounts = new int[objectsCount];
+		int notCoveringConditionsCount;
+		
+		for (int objectIndex = 0; objectIndex < objectsCount; objectIndex++) {
+			notCoveringConditionsCount = 0;
+			for (Condition<?> condition : this.conditions) {
+				if (!condition.satisfiedBy(objectIndex, this.learningInformationTable)) { //condition eliminates given object
+					notCoveringConditionsCount++;
+				}
+			}
+			this.notCoveringConditionsCounts[objectIndex] = notCoveringConditionsCount;
+		}
+	}
+	
+	/**
 	 * Checks if these rule conditions cover the object from the learning information table having given index.
 	 * 
 	 * @param objectIndex index of an object in the learning information table
 	 * @return {@code true} if these rule conditions cover the object with given index, {@code false} otherwise
+	 * 
+	 * @throws IndexOutOfBoundsException if given object index does not correspond to any object in the learning information table
 	 */
 	public boolean covers(int objectIndex) {
 		int conditionsCount = this.conditions.size();
 		for (int i = 0; i < conditionsCount; i++) {
-			if (!this.conditions.get(i).satisfiedBy(objectIndex, learningInformationTable)) {
+			if (!this.conditions.get(i).satisfiedBy(objectIndex, this.learningInformationTable)) {
 				return false;
 			}
 		}
@@ -199,6 +238,12 @@ public class RuleConditions {
 		
 		this.conditions = new ObjectArrayList<Condition<?>>();
 		this.attributeIndices = new Int2IntOpenHashMap();
+		this.indicedOfCoveredObjects = new IntArrayList();
+		
+		int objectsCount = learningInformationTable.getNumberOfObjects();
+		for (int objectIndex = 0; objectIndex < objectsCount; objectIndex++) {
+			this.indicedOfCoveredObjects.add(objectIndex); //initially all objects are covered
+		}
 	}
 	
 	/**
@@ -262,7 +307,7 @@ public class RuleConditions {
 	 * @param condition new condition to add
 	 * @return index of added condition
 	 * 
-	 * @throws NullPointerException if condition does not conform to {@link org.rulelearn.core.Precondition#notNull(Object, String)}
+	 * @throws NullPointerException if given condition is {@code null}
 	 */
 	public int addCondition(Condition<?> condition) {
 		this.conditions.add(notNull(condition, "Condition is null."));
@@ -270,19 +315,135 @@ public class RuleConditions {
 		int count = this.attributeIndices.containsKey(attributeIndex) ? this.attributeIndices.get(attributeIndex) : 0;
 		this.attributeIndices.put(attributeIndex, count + 1);
 		
+		updateCoveredObjectsWithCondition(this.indicedOfCoveredObjects, condition);
+		
 		return this.conditions.size() - 1;
+	}
+	
+	/**
+	 * Gets indices of objects covered by these rules conditions.
+	 * 
+	 * @return indices of objects covered by these rules conditions;
+	 *         this list is in general non-ordered if at least one condition has been removed from these rule conditions
+	 */
+	public IntList getIndicesOfCoveredObjects() {
+		return IntLists.unmodifiable(this.indicedOfCoveredObjects);
+	}
+	
+	/**
+	 * Gets indices of objects covered by these rules conditions assuming addition of given condition.
+	 * 
+	 * @param condition condition that can be added to these rule conditions
+	 * @return indices of objects covered by these rules conditions assuming addition of given condition
+	 * 
+	 * @throws NullPointerException if given condition is {@code null}
+	 */
+	public IntList getIndicesOfCoveredObjectsWithCondition(Condition<?> condition) {
+		notNull(condition, "Condition is null.");
+		
+		IntList indicedOfCoveredObjects = new IntArrayList(this.indicedOfCoveredObjects); //copy list
+		updateCoveredObjectsWithCondition(indicedOfCoveredObjects, condition);
+		
+		return indicedOfCoveredObjects;
+	}
+	
+	/**
+	 * Gets indices of objects covered by these rule conditions if condition with given index is dropped.
+	 * 
+	 * @param conditionIndex index of condition in these rule conditions that is considered to be removed
+	 * @return indices of objects covered by these rule conditions if condition with given index is dropped
+	 * 
+	 * @throws IndexOutOfBoundsException if given condition index is less than zero or too big concerning number of stored conditions
+	 */
+	public IntList getIndicesOfCoveredObjectsWithoutCondition(int conditionIndex) {
+		IntList indicedOfCoveredObjects = new IntArrayList(this.indicedOfCoveredObjects); //copy list
+		
+		if (this.notCoveringConditionsCounts == null) {
+			this.initializeNotCoveringConditionsCounts();
+		}
+		int[] notCoveringConditionsCounts = this.notCoveringConditionsCounts.clone(); //copy array
+		
+		updateCoveredObjectsWithoutCondition(indicedOfCoveredObjects, notCoveringConditionsCounts, conditionIndex);
+		
+		return indicedOfCoveredObjects;
+	}
+	
+	/**
+	 * Updates given set of indices of objects covered by these rule conditions assuming addition of given condition.
+	 * 
+	 * @param indicedOfCoveredObjects indices of objects covered so far by these rule conditions
+	 * @param condition condition that is going to or can be added to these rule conditions
+	 */
+	private void updateCoveredObjectsWithCondition(IntList indicedOfCoveredObjects, Condition<?> condition) {
+		IntSet nonCoveredObjects = new IntOpenHashSet(indicedOfCoveredObjects.size()); //ensures faster execution of indicedOfCoveredObjects.removeAll(nonCoveredObjects); expected capacity ensures no need of rehashing)
+		
+		for (int objectIndex : indicedOfCoveredObjects) { //iterate over already covered objects to see if they remain covered or get "rejected" by the given condition
+			if (!condition.satisfiedBy(objectIndex, this.learningInformationTable)) {
+				nonCoveredObjects.add(objectIndex);
+			}
+		}
+		
+		indicedOfCoveredObjects.removeAll(nonCoveredObjects);
+	}
+	
+	/**
+	 * Updates:<br>
+	 * - given set of indices of objects covered by these rule conditions,<br>
+	 * - given array with counts of conditions not covering particular objects,<br>
+	 * assuming removal of condition with given index.
+	 * 
+	 * @param indicedOfCoveredObjects indices of objects covered by these rule conditions;
+	 *        this parameter is modified to reflect the situation
+	 *        when condition with given index is dropped from these rule conditions
+	 * @param notCoveringConditionsCounts array indexed with object's index, storing for each object 
+	 *        the number of conditions from these rule conditions that do not cover that object
+	 *        (i.e., "eliminate" that object from the set of covered objects);
+	 *        this parameter is modified to reflect the situation
+	 *        when condition with given index is dropped from these rule conditions
+	 * @param conditionIndex index of condition considered for removal from these rule conditions
+	 * 
+	 * @throws NullPointerException if any of the given objects is {@code null}
+	 * @throws IndexOutOfBoundsException if given condition index is less than zero or too big concerning number of stored conditions
+	 */
+	private void updateCoveredObjectsWithoutCondition(IntList indicedOfCoveredObjects, int[] notCoveringConditionsCounts, int conditionIndex) {
+		Precondition.notNull(indicedOfCoveredObjects, "Indices of covered objects are null.");
+		Precondition.notNull(notCoveringConditionsCounts, "Counts of conditions not covering objects from learning information table is null.");
+		
+		Condition<?> condition = this.getCondition(conditionIndex); //validates given index of condition
+		int numberOfObjects = notCoveringConditionsCounts.length;
+		int count;
+		
+		//update notCoveringConditionsCounts and indicedOfCoveredObjects
+		for (int objectIndex = 0; objectIndex < numberOfObjects; objectIndex++) {
+			count = notCoveringConditionsCounts[objectIndex];
+			if (count > 0) { //something can change
+				if (!condition.satisfiedBy(objectIndex, this.learningInformationTable)) { //dropped condition eliminates current object
+					notCoveringConditionsCounts[objectIndex] = --count;
+					if (count == 0) {
+						indicedOfCoveredObjects.add(objectIndex);
+					}
+				}
+			}
+		}
 	}
 	
 	/**
 	 * Removes from the list of conditions the condition with given index.
 	 * 
-	 * @param index index of a condition to remove from this list of conditions
+	 * @param conditionIndex index of a condition to remove from this list of conditions
 	 * @throws IndexOutOfBoundsException if given index does not refer to any stored condition
 	 */
-	public void removeCondition(int index) {
-		int attributeIndex = this.conditions.get(index).getAttributeWithContext().getAttributeIndex();
-		this.conditions.remove(index);
-
+	public void removeCondition(int conditionIndex) {
+		int attributeIndex = getCondition(conditionIndex).getAttributeWithContext().getAttributeIndex();
+		
+		if (this.notCoveringConditionsCounts == null) {
+			this.initializeNotCoveringConditionsCounts();
+		}
+		
+		//first call method that gets considered condition ...
+		this.updateCoveredObjectsWithoutCondition(this.indicedOfCoveredObjects, this.notCoveringConditionsCounts, conditionIndex);
+		//...and only then remove that condition
+		this.conditions.remove(conditionIndex);
 		this.attributeIndices.put(attributeIndex, this.attributeIndices.get(attributeIndex) - 1); //decrease count
 	}
 	
@@ -300,11 +461,17 @@ public class RuleConditions {
 	/**
 	 * Gets an elementary condition building this list of elementary conditions and indexed by the given value.
 	 * 
-	 * @param index index of a condition on this list of conditions
+	 * @param conditionIndex index of a condition on this list of conditions
 	 * @return an elementary condition building this list of elementary conditions and indexed by the given value
+	 * 
+	 * @throws IndexOutOfBoundsException if given index is less than zero or too big concerning number of stored conditions
 	 */
-	public Condition<?> getCondition(int index) {
-		return this.conditions.get(index);
+	public Condition<?> getCondition(int conditionIndex) {
+		if (conditionIndex < 0 || conditionIndex >= this.conditions.size()) {
+			throw new IndexOutOfBoundsException("Condition index is less than zero or too big concerning number of stored conditions.");
+		}
+		
+		return this.conditions.get(conditionIndex);
 	}
 	
 	/**
