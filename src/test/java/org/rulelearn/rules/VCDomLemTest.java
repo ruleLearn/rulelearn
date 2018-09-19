@@ -57,18 +57,21 @@ class VCDomLemTest {
 		ConditionAdditionEvaluator[] conditionAdditionEvaluators = {consistencyMeasure};
 		ConditionRemovalEvaluator[] conditionRemovalEvaluators = {consistencyMeasure};
 		RuleConditionsEvaluator[] ruleConditionsEvaluators = {consistencyMeasure};
-		RuleEvaluator ruleEvaluator = consistencyMeasure;
+		RuleEvaluator ruleEvaluator = consistencyMeasure; //just single evaluator, for rule minimality checker taking into account just single evaluation
 		
 		ConditionGenerator conditionGenerator = new StandardConditionGenerator(conditionAdditionEvaluators);
 		RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker = new EvaluationAndCoverageStoppingConditionChecker(ruleConditionsEvaluator, consistencyThreshold);
 		
 		AbstractRuleConditionsPruner ruleConditionsPruner = new FIFORuleConditionsPruner(ruleInductionStoppingConditionChecker); //enforce RuleInductionStoppingConditionChecker
-		RuleConditionsPruner ruleConditionsPrunerWithEvaluators = new AbstractRuleConditionsPrunerWithEvaluators(ruleInductionStoppingConditionChecker, conditionRemovalEvaluators) {
+		//---
+		@SuppressWarnings("unused")
+		AbstractRuleConditionsPruner ruleConditionsPrunerWithEvaluators = new AbstractRuleConditionsPrunerWithEvaluators(ruleInductionStoppingConditionChecker, conditionRemovalEvaluators) {
 			@Override
 			public RuleConditions prune(RuleConditions ruleConditions) {
 				return null;
 			}
 		};
+		//---
 		RuleConditionsSetPruner ruleConditionsSetPruner = new EvaluationsAndOrderRuleConditionsSetPruner(ruleConditionsEvaluators);
 		RuleMinimalityChecker ruleMinimalityChecker = new SingleEvaluationRuleMinimalityChecker(ruleEvaluator);
 		
@@ -89,6 +92,7 @@ class VCDomLemTest {
 		for (ApproximatedSet approximatedSet : approximatedSets) {
 			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, ruleType, ruleSemantics, allowedObjectsType,
 					ruleInductionStoppingConditionChecker, conditionGenerator, ruleConditionsPruner, ruleConditionsSetPruner);
+			
 			//TODO: build a rule for each obtained rule conditions
 			//TODO: check minimality of each rule built this way
 		}
@@ -135,44 +139,43 @@ class VCDomLemTest {
 		}
 		
 		//TODO: test order of elements!
-		IntList setB = new IntArrayList(indicesOfElementaryConditionsBaseObjects); //positive objects not already covered by rule conditions induced so far (set B from algorithm description)
+		IntList setB = new IntArrayList(indicesOfElementaryConditionsBaseObjects); //lower/upper approximation objects not already covered by rule conditions induced so far (set B from algorithm description)
 		Condition<EvaluationField> bestCondition;
 		RuleConditions ruleConditions;
-		IntList indicesOfConsideredObjects; //indices of objects from set B covered by rule conditions
+		IntList indicesOfConsideredObjects; //intersection of current set B and set of objects covered by rule conditions
 		IntList indicesOfCoveredObjects;
-		IntSet indicesOfNotCoveredObjects;
+		IntSet indicesOfNoLongerCoveredObjects;
 		
 		while (!setB.isEmpty()) {
 			ruleConditions = new RuleConditions(approximatedSet.getInformationTable(), approximatedSet.getObjects(), indicesOfElementaryConditionsBaseObjects, indicesOfObjectsThatCanBeCovered, approximatedSet.getNeutralObjects());
-			indicesOfConsideredObjects = new IntArrayList(setB); //intersection of set B and set of objects covered by rule conditions
+			indicesOfConsideredObjects = new IntArrayList(setB);
 			
 			while (!ruleInductionStoppingConditionChecker.isStoppingConditionSatisified(ruleConditions)) {
 				try {
 					bestCondition = conditionGenerator.getBestCondition(indicesOfConsideredObjects, ruleConditions);
 					ruleConditions.addCondition(bestCondition);
 					
-					//TODO: verify implementation
 					//update indices of considered objects
 					indicesOfCoveredObjects = ruleConditions.getIndicesOfCoveredObjects();
-					indicesOfNotCoveredObjects = new IntOpenHashSet();
-					for (int objectIndex : indicesOfConsideredObjects) {
-						if (!indicesOfCoveredObjects.contains(objectIndex)) {
-							indicesOfNotCoveredObjects.add(objectIndex);
+					indicesOfNoLongerCoveredObjects = new IntOpenHashSet();
+					for (int previouslyCoveredObjectIndex : indicesOfConsideredObjects) {
+						if (!indicesOfCoveredObjects.contains(previouslyCoveredObjectIndex)) { //previously covered object is no longer covered
+							indicesOfNoLongerCoveredObjects.add(previouslyCoveredObjectIndex);
 						}
 					}
-					indicesOfConsideredObjects.removeAll(indicesOfNotCoveredObjects);
+					indicesOfConsideredObjects.removeAll(indicesOfNoLongerCoveredObjects);
 				} catch (ElementaryConditionNotFoundException exception) {
 					//TODO: handle exception
 				}
 			} //while
 			
-			ruleConditions = ruleConditionsPruner.prune(ruleConditions);
+			ruleConditions = ruleConditionsPruner.prune(ruleConditions); //remove redundant elementary conditions
 			approximatedSetRuleConditions.add(ruleConditions);
 			
 			//TODO: update setB - remove objects covered by the new rule conditions
 		}
 	
-		return ruleConditionsSetPruner.prune(approximatedSetRuleConditions, indicesOfElementaryConditionsBaseObjects);
+		return ruleConditionsSetPruner.prune(approximatedSetRuleConditions, indicesOfElementaryConditionsBaseObjects); //remove redundant rules, but keep covered all objects from lower/upper approximation
 	}
 
 }
