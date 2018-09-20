@@ -87,14 +87,22 @@ class VCDomLemTest {
 		
 		List<Rule> minimalRules = new ObjectArrayList<Rule>();
 		List<RuleConditions> approximatedSetRuleConditions;
+		List<Rule> verifiedRules;
 		Rule rule;
 		
 		for (ApproximatedSet approximatedSet : approximatedSets) {
 			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, ruleType, ruleSemantics, allowedObjectsType,
 					ruleInductionStoppingConditionChecker, conditionGenerator, ruleConditionsPruner, ruleConditionsSetPruner);
 			
-			//TODO: build a rule for each obtained rule conditions
-			//TODO: check minimality of each rule built this way
+			verifiedRules = new ObjectArrayList<Rule>();
+			for (RuleConditions ruleConditions : approximatedSetRuleConditions) {
+				rule = null; //TODO: build a rule for each obtained rule conditions (add constructor!)
+				if (ruleMinimalityChecker.check(minimalRules, rule)) {
+					verifiedRules.add(rule);
+				}
+			}
+			
+			minimalRules.addAll(verifiedRules);
 		}
 	}
 	
@@ -172,7 +180,10 @@ class VCDomLemTest {
 			ruleConditions = ruleConditionsPruner.prune(ruleConditions); //remove redundant elementary conditions
 			approximatedSetRuleConditions.add(ruleConditions);
 			
-			//TODO: update setB - remove objects covered by the new rule conditions
+			//remove objects covered by the new rule conditions
+			//setB \ ruleConditions.getIndicesOfCoveredObjects()
+			IntSet setOfIndicesOfCoveredObjects = new IntOpenHashSet(ruleConditions.getIndicesOfCoveredObjects());
+			setB.removeAll(setOfIndicesOfCoveredObjects);
 		}
 	
 		return ruleConditionsSetPruner.prune(approximatedSetRuleConditions, indicesOfElementaryConditionsBaseObjects); //remove redundant rules, but keep covered all objects from lower/upper approximation
