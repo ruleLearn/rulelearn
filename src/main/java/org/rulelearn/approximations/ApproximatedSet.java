@@ -18,6 +18,9 @@ package org.rulelearn.approximations;
 
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.rules.Condition;
+import org.rulelearn.types.EvaluationField;
+
 import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -27,6 +30,9 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSets;
 
 import static org.rulelearn.core.Precondition.notNull;
+
+import java.util.List;
+
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
@@ -448,5 +454,12 @@ public abstract class ApproximatedSet {
 	public boolean isMeaningful() {
 		return this.size() != this.informationTable.getNumberOfObjects();
 	}
+	
+	/**
+	 * Gets list of elementary decisions associated with this approximated set, each dependent on the type of this set and one of the evaluations contributing to the limiting decision.
+	 * 
+	 * @return list of elementary decisions associated with this approximated set, each dependent on the type of this set and one of the evaluations contributing to the limiting decision
+	 */
+	public abstract List<Condition<? extends EvaluationField>> getElementaryDecisions();
 	
 }

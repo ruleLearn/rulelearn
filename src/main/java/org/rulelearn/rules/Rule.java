@@ -133,6 +133,7 @@ public class Rule {
     	this.decisions[0] = notNull(decision, "Rule's decision is null.");
     }
 
+    //TODO: add constructor building rule from RuleConditions
 
 	/**
 	 * Gets type of this rule. See {@link RuleType}.
@@ -295,7 +296,7 @@ public class Rule {
 	public boolean decisionsMatchedBy(int objectIndex, InformationTable informationTable) {
 		//check if at least one rule's decision is verified by the considered object
 		for (int i = 0; i < this.decisions.length; i++) {
-			if (this.decisions[i].satisfiedBy(objectIndex, informationTable)) {
+			if (this.decisions[i].satisfiedBy(objectIndex, informationTable)) { //TODO: fix for composite decision
 				return true;
 			}
 		}

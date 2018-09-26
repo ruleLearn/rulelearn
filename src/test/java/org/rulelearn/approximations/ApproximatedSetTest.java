@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.rules.Condition;
+import org.rulelearn.types.EvaluationField;
 
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -31,6 +33,8 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSets;
 
 import static org.mockito.Mockito.*;
+
+import java.util.List;
 
 /**
  * Test for {@link ApproximatedSet} class.
@@ -143,6 +147,11 @@ class ApproximatedSetTest {
 			@Override
 			public boolean isObjectNegative(int objectNumber) {
 				return approximatedSetMock.isObjectNegative(objectNumber);
+			}
+
+			@Override
+			public List<Condition<? extends EvaluationField>> getElementaryDecisions() {
+				return approximatedSetMock.getElementaryDecisions();
 			}
 		};
 	}

@@ -25,6 +25,8 @@ import org.rulelearn.data.Decision;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConeCalculator;
+import org.rulelearn.rules.Condition;
+import org.rulelearn.types.EvaluationField;
 
 import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -35,6 +37,8 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSets;
 
 import static org.rulelearn.core.Precondition.notNull;
+
+import java.util.List;
 
 import org.rulelearn.core.InvalidTypeException;
 
@@ -637,6 +641,35 @@ public class Union extends ApproximatedSet {
 	 */
 	public int getComplementarySetSize() {
 		return this.informationTable.getNumberOfObjects() - this.size() - this.neutralObjects.size();
+	}
+
+	/**
+	 * Gets list of elementary decisions associated with this union, each dependent on the type of this union and one of the evaluations contributing to the limiting decision.
+	 * 
+	 * @return list of elementary decisions associated with this union, each dependent on the type of this union and one of the evaluations contributing to the limiting decision.
+	 */
+	@Override
+	public List<Condition<? extends EvaluationField>> getElementaryDecisions() {
+		IntSet attributeIndices = this.limitingDecision.getAttributeIndices();
+		EvaluationField evaluation;
+		List<Condition<? extends EvaluationField>> elementaryDecisions = null;
+		
+		IntIterator attributeIndicesIterator = attributeIndices.iterator();
+		
+		while (attributeIndicesIterator.hasNext()) {
+			evaluation = this.limitingDecision.getEvaluation(attributeIndicesIterator.nextInt());
+			
+			switch (this.unionType) {
+			case AT_LEAST:
+				//TODO: implement
+				break;
+			case AT_MOST:
+				//TODO: implement
+				break;
+			}
+		}
+		
+		return elementaryDecisions;
 	}
 
 }
