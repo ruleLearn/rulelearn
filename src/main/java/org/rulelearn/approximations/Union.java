@@ -23,10 +23,14 @@ import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.EvaluationAttribute;
+import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConeCalculator;
-import org.rulelearn.rules.Condition;
-import org.rulelearn.types.EvaluationField;
+import org.rulelearn.rules.SimpleCondition;
+import org.rulelearn.rules.SimpleConditionAtLeast;
+import org.rulelearn.rules.SimpleConditionAtMost;
+import org.rulelearn.rules.SimpleConditionEqual;
+import org.rulelearn.types.SimpleField;
 
 import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -38,6 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntSortedSets;
 
 import static org.rulelearn.core.Precondition.notNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.rulelearn.core.InvalidTypeException;
@@ -645,29 +650,76 @@ public class Union extends ApproximatedSet {
 
 	/**
 	 * Gets list of elementary decisions associated with this union, each dependent on the type of this union and one of the evaluations contributing to the limiting decision.
+	 * Assumes that all the contributing evaluations are of type {@link SimpleField}.
 	 * 
-	 * @return list of elementary decisions associated with this union, each dependent on the type of this union and one of the evaluations contributing to the limiting decision.
+	 * @return list of elementary decisions associated with this union, each dependent on the type of this union and one of the evaluations contributing to the limiting decision
+	 * @throws InvalidTypeException if any evaluation contributing to the limiting decision is not of type {@link SimpleField}
 	 */
 	@Override
-	public List<Condition<? extends EvaluationField>> getElementaryDecisions() {
+	public List<SimpleCondition> getElementaryDecisions() {
 		IntSet attributeIndices = this.limitingDecision.getAttributeIndices();
-		EvaluationField evaluation;
-		List<Condition<? extends EvaluationField>> elementaryDecisions = null;
+		SimpleField evaluation;
+		EvaluationAttribute attribute;
+		int attributeIndex;
+		List<SimpleCondition> elementaryDecisions = new ArrayList<>();
 		
 		IntIterator attributeIndicesIterator = attributeIndices.iterator();
 		
 		while (attributeIndicesIterator.hasNext()) {
-			evaluation = this.limitingDecision.getEvaluation(attributeIndicesIterator.nextInt());
+			attributeIndex = attributeIndicesIterator.nextInt();
+			attribute = (EvaluationAttribute)this.informationTable.getAttribute(attributeIndex);
+			try {
+				evaluation = (SimpleField)this.limitingDecision.getEvaluation(attributeIndex);
+			} catch (ClassCastException exception) {
+				throw new InvalidTypeException("Evaluation contributing to union's limiting decision is not a simple field.");
+			}
 			
 			switch (this.unionType) {
 			case AT_LEAST:
-				//TODO: implement
+				switch (attribute.getPreferenceType()) {
+				case GAIN:
+					elementaryDecisions.add(new SimpleConditionAtLeast(
+							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
+					break;
+				case COST:
+					elementaryDecisions.add(new SimpleConditionAtMost(
+							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
+					break;
+				case NONE:
+					elementaryDecisions.add(new SimpleConditionEqual(
+							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
+					break;
+				}
 				break;
 			case AT_MOST:
-				//TODO: implement
+				switch (attribute.getPreferenceType()) {
+				case GAIN:
+					elementaryDecisions.add(new SimpleConditionAtMost(
+							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
+					break;
+				case COST:
+					elementaryDecisions.add(new SimpleConditionAtLeast(
+							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
+					break;
+				case NONE:
+					elementaryDecisions.add(new SimpleConditionEqual(
+							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
+					break;
+				}
 				break;
 			}
 		}
+		
+		//arrange elementary decisions in order
+		elementaryDecisions.sort((SimpleCondition x, SimpleCondition y) -> {
+			int i = x.getAttributeWithContext().getAttributeIndex();
+			int j = y.getAttributeWithContext().getAttributeIndex();
+			if (i < j) {
+				return -1;
+			} else {
+				return (i == j) ? 0 : 1;
+			}
+		});
 		
 		return elementaryDecisions;
 	}
