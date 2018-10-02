@@ -19,7 +19,7 @@ package org.rulelearn.rules;
 import java.util.List;
 
 /**
- * Rule minimality checker that involves comparison of decision rules with respect to a single rule evaluator {@link RuleEvaluator}.
+ * Rule minimality checker that involves comparison of decision rules with respect to a single rule conditions evaluator {@link RuleConditionsEvaluator}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -27,17 +27,17 @@ import java.util.List;
 public class SingleEvaluationRuleMinimalityChecker extends RuleMinimalityChecker {
 	
 	/**
-	 * Constructs this checker storing given rule evaluator.
+	 * Constructs this checker storing given rule conditions evaluator.
 	 * 
-	 * @param ruleEvaluator rule evaluator used to evaluate compared decision rules
-	 * @throws NullPointerException if given rule evaluator is {@code null}
+	 * @param ruleConditionsEvaluator rule conditions evaluator used to evaluate compared decision rules
+	 * @throws NullPointerException if given rule conditions evaluator is {@code null}
 	 */
-	public SingleEvaluationRuleMinimalityChecker(RuleEvaluator ruleEvaluator) {
-		super(new RuleEvaluator[] {ruleEvaluator});
+	public SingleEvaluationRuleMinimalityChecker(RuleConditionsEvaluator ruleConditionsEvaluator) {
+		super(new RuleConditionsEvaluator[] {ruleConditionsEvaluator});
 	}
 
 	/**
-	 * Checks if given rule is acceptable in the context of a given set (list) of rules. 
+	 * {@inheritDoc} 
 	 * 
 	 * @param ruleSet {@inheritDoc}
 	 * @param rule {@inheritDoc}
@@ -46,7 +46,7 @@ public class SingleEvaluationRuleMinimalityChecker extends RuleMinimalityChecker
 	 * @throws NullPointerException {@inheritDoc}
 	 */
 	@Override
-	public boolean check(List<Rule> ruleSet, Rule rule) {
+	public boolean check(List<RuleConditionsWithApproximatedSet> ruleSet, RuleConditionsWithApproximatedSet rule) {
 		// TODO: implement
 		return false;
 	}

@@ -24,8 +24,8 @@ import org.rulelearn.core.Precondition;
 /**
  * Checks if given rule is minimal in the context of a given set of rules. Rule minimality is understood as in:<br>
  * J. Błaszczyński, R. Słowiński, M. Szeląg, Sequential Covering Rule Induction Algorithm for Variable Consistency Rough Set Approaches. Information Sciences, 181, 2011, pp. 987-1002.<br>
- * Moreover, implemented minimality check involves comparison of rule evaluations, i.e., a rule is minimal in the context of a given set of rules if this set
- * does not contain a rule with not less general conditions, not less specific decision, and at least as good evaluations (where, e.g., evaluations may be compared lexicographically,
+ * Moreover, implemented minimality check involves comparison of evaluations of rule conditions, i.e., a rule is minimal in the context of a given set of rules if this set
+ * does not contain a rule with not less general conditions, not less specific decision, and at least as good evaluations of rule conditions (where, e.g., evaluations may be compared lexicographically,
  * or jointly using Pareto dominance relation).
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
@@ -34,27 +34,27 @@ import org.rulelearn.core.Precondition;
 public abstract class RuleMinimalityChecker implements RuleChecker {
 	
 	/**
-	 * List of rule evaluators used to evaluate compared decision rules.
+	 * List of rule conditions evaluators used to evaluate compared decision rules.
 	 */
-	RuleEvaluator[] ruleEvaluators;
+	RuleConditionsEvaluator[] ruleConditionsEvaluators;
 	
 	/**
-	 * Constructs this checker storing given rule evaluators.
+	 * Constructs this checker storing given rule conditions evaluators.
 	 * 
-	 * @param ruleEvaluators list of rule evaluators used to evaluate compared decision rules
+	 * @param ruleConditionsEvaluators list of rule conditions evaluators used to evaluate compared decision rules
 	 * 
 	 * @throws NullPointerException if given array or any of its elements is {@code null}
 	 * @throws InvalidSizeException if given array is empty
 	 */
-	public RuleMinimalityChecker(RuleEvaluator[] ruleEvaluators) {
-		this.ruleEvaluators = Precondition.nonEmpty(Precondition.notNullWithContents(ruleEvaluators,
-				"Rule evaluators for rule minimality checker are null.",
-				"Rule evaluator for rule minimality checker is null at index %i."), "Array of rule evaluators is empty.");
+	public RuleMinimalityChecker(RuleConditionsEvaluator[] ruleConditionsEvaluators) {
+		this.ruleConditionsEvaluators = Precondition.nonEmpty(Precondition.notNullWithContents(ruleConditionsEvaluators,
+				"Rule conditions evaluators for rule minimality checker are null.",
+				"Rule conditions evaluator for rule minimality checker is null at index %i."), "Array of rule conditions evaluators is empty.");
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * Checks minimality of the given rule using rule evaluators for which this checker has been constructed. 
+	 * Checks minimality of the given rule using rule conditions evaluator(s) for which this checker has been constructed. 
 	 * 
 	 * @param ruleSet {@inheritDoc}
 	 * @param rule {@inheritDoc}
@@ -63,6 +63,6 @@ public abstract class RuleMinimalityChecker implements RuleChecker {
 	 * @throws NullPointerException {@inheritDoc}
 	 */
 	@Override
-	public abstract boolean check(List<Rule> ruleSet, Rule rule);
+	public abstract boolean check(List<RuleConditionsWithApproximatedSet> ruleSet, RuleConditionsWithApproximatedSet rule);
 
 }

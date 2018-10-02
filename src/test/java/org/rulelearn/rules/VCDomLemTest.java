@@ -57,7 +57,7 @@ class VCDomLemTest {
 		ConditionAdditionEvaluator[] conditionAdditionEvaluators = {consistencyMeasure};
 		ConditionRemovalEvaluator[] conditionRemovalEvaluators = {consistencyMeasure};
 		RuleConditionsEvaluator[] ruleConditionsEvaluators = {consistencyMeasure};
-		RuleEvaluator ruleEvaluator = consistencyMeasure; //just single evaluator, for rule minimality checker taking into account just single evaluation
+		//RuleEvaluator ruleEvaluator = consistencyMeasure; //just single evaluator, for rule minimality checker taking into account just single evaluation
 		
 		ConditionGenerator conditionGenerator = new StandardConditionGenerator(conditionAdditionEvaluators);
 		RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker = new EvaluationAndCoverageStoppingConditionChecker(ruleConditionsEvaluator, consistencyThreshold);
@@ -73,7 +73,7 @@ class VCDomLemTest {
 		};
 		//---
 		RuleConditionsSetPruner ruleConditionsSetPruner = new EvaluationsAndOrderRuleConditionsSetPruner(ruleConditionsEvaluators);
-		RuleMinimalityChecker ruleMinimalityChecker = new SingleEvaluationRuleMinimalityChecker(ruleEvaluator);
+		RuleMinimalityChecker ruleMinimalityChecker = new SingleEvaluationRuleMinimalityChecker(ruleConditionsEvaluator);
 		
 		InformationTableWithDecisionDistributions informationTable = Mockito.mock(InformationTableWithDecisionDistributions.class);
 		
@@ -85,24 +85,26 @@ class VCDomLemTest {
 		RuleSemantics ruleSemantics = RuleSemantics.AT_LEAST;
 		AllowedObjectsType allowedObjectsType = AllowedObjectsType.POSITIVE_REGION;
 		
-		List<Rule> minimalRules = new ObjectArrayList<Rule>();
-		List<RuleConditions> approximatedSetRuleConditions;
-		List<Rule> verifiedRules;
-		Rule rule;
+		List<RuleConditionsWithApproximatedSet> minimalRuleConditionsWithApproximatedSets = new ObjectArrayList<RuleConditionsWithApproximatedSet>(); //rule conditions for approximated sets considered so far
+		List<RuleConditions> approximatedSetRuleConditions; //rule conditions for current approximated set
+		List<RuleConditionsWithApproximatedSet> verifiedRuleConditionsWithApproximatedSet; //minimal rule conditions for current approximated set
+		RuleConditionsWithApproximatedSet ruleConditionsWithApproximatedSet;
 		
 		for (ApproximatedSet approximatedSet : approximatedSets) {
 			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, ruleType, ruleSemantics, allowedObjectsType,
 					ruleInductionStoppingConditionChecker, conditionGenerator, ruleConditionsPruner, ruleConditionsSetPruner);
 			
-			verifiedRules = new ObjectArrayList<Rule>();
+			verifiedRuleConditionsWithApproximatedSet = new ObjectArrayList<RuleConditionsWithApproximatedSet>();
 			for (RuleConditions ruleConditions : approximatedSetRuleConditions) {
-				rule = null; //TODO: build a rule for each obtained rule conditions (add constructor!)
-				if (ruleMinimalityChecker.check(minimalRules, rule)) {
-					verifiedRules.add(rule);
+				ruleConditionsWithApproximatedSet = new RuleConditionsWithApproximatedSet(ruleConditions, approximatedSet); 
+				if (ruleMinimalityChecker.check(minimalRuleConditionsWithApproximatedSets, ruleConditionsWithApproximatedSet)) {
+					verifiedRuleConditionsWithApproximatedSet.add(ruleConditionsWithApproximatedSet);
 				}
 			}
 			
-			minimalRules.addAll(verifiedRules);
+			minimalRuleConditionsWithApproximatedSets.addAll(verifiedRuleConditionsWithApproximatedSet);
+			
+			//TODO: build a rule for each obtained rule conditions (add constructor!)
 		}
 	}
 	
