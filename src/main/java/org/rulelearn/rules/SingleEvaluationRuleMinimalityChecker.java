@@ -18,6 +18,8 @@ package org.rulelearn.rules;
 
 import java.util.List;
 
+import org.rulelearn.approximations.ApproximatedSet;
+
 /**
  * Rule minimality checker that involves comparison of decision rules with respect to a single rule conditions evaluator {@link RuleConditionsEvaluator}.
  *
@@ -47,6 +49,9 @@ public class SingleEvaluationRuleMinimalityChecker extends RuleMinimalityChecker
 	 */
 	@Override
 	public boolean check(List<RuleConditionsWithApproximatedSet> ruleSet, RuleConditionsWithApproximatedSet rule) {
+		RuleConditions evaluatedRuleConditions = rule.getRuleConditions();
+		ApproximatedSet approximatedSet = rule.getApproximatedSet();
+		
 		// TODO: implement
 		return false;
 	}

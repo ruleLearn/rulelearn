@@ -95,7 +95,7 @@ class VCDomLemTest {
 					ruleInductionStoppingConditionChecker, conditionGenerator, ruleConditionsPruner, ruleConditionsSetPruner);
 			
 			verifiedRuleConditionsWithApproximatedSet = new ObjectArrayList<RuleConditionsWithApproximatedSet>();
-			for (RuleConditions ruleConditions : approximatedSetRuleConditions) {
+			for (RuleConditions ruleConditions : approximatedSetRuleConditions) { //verify minimality of each rule conditions
 				ruleConditionsWithApproximatedSet = new RuleConditionsWithApproximatedSet(ruleConditions, approximatedSet); 
 				if (ruleMinimalityChecker.check(minimalRuleConditionsWithApproximatedSets, ruleConditionsWithApproximatedSet)) {
 					verifiedRuleConditionsWithApproximatedSet.add(ruleConditionsWithApproximatedSet);
@@ -105,6 +105,7 @@ class VCDomLemTest {
 			minimalRuleConditionsWithApproximatedSets.addAll(verifiedRuleConditionsWithApproximatedSet);
 			
 			//TODO: build a rule for each obtained rule conditions (add constructor!)
+			//TODO: calculate ComputableRuleCharacteristics
 		}
 	}
 	
