@@ -31,9 +31,17 @@ import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Union.UnionType;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.DecisionDistribution;
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
+import org.rulelearn.measures.CoverageInApproximationMeasure;
 import org.rulelearn.measures.Measure;
+import org.rulelearn.rules.Condition;
+import org.rulelearn.rules.RuleConditions;
+import org.rulelearn.types.EvaluationField;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 
 /**
  * Tests for {@link EpsilonConsistencyMeasure}. Test is based on illustrative example represented in figure (note that all criteria, including decision criterion, are gain-type): 
@@ -63,6 +71,14 @@ class EpsilonConsistencyMeasureTest {
 	private Set<Decision> decisionClassDistributionSet3, decisionClassDistributionSet4, decisionClassDistributionSet5;
 	@Mock
 	private Iterator<Decision> decisionClassDistributionIterator3, decisionClassDistributionIterator4, decisionClassDistributionIterator5;
+	
+	@Mock 
+	private RuleConditions ruleConditionsMock;
+	@Mock
+	private Condition<EvaluationField> conditionMock;
+	@Mock 
+	private InformationTable informationTableMock1;
+	
 	
 	@BeforeEach
 	void setUp() {
@@ -116,6 +132,15 @@ class EpsilonConsistencyMeasureTest {
 		when(this.coneDecisionClassDistribution5.getCount(class1)).thenReturn(1);
 		when(this.coneDecisionClassDistribution5.getCount(class2)).thenReturn(1);
 		when(this.coneDecisionClassDistribution5.getCount(class3)).thenReturn(1);
+		
+		// mock evaluation for rule condition
+		when(this.ruleConditionsMock.getIndicesOfCoveredObjects()).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4, 5}));
+		when(this.ruleConditionsMock.getIndicesOfCoveredObjectsWithCondition(this.conditionMock)).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4}));
+		when(this.ruleConditionsMock.getIndicesOfCoveredObjectsWithoutCondition(0)).thenReturn(new IntArrayList(new int [] {4, 5}));
+		when(this.ruleConditionsMock.getIndicesOfPositiveObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {0, 1, 2, 3, 4}));
+		when(this.ruleConditionsMock.getLearningInformationTable()).thenReturn(this.informationTableMock1);
+		when(this.informationTableMock1.getNumberOfObjects()).thenReturn(10);
+		when(this.ruleConditionsMock.getIndicesOfNeutralObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {}));
 	}
 
 	/**
@@ -148,5 +173,29 @@ class EpsilonConsistencyMeasureTest {
 	@Test
 	void testEpsilonOnObject5withRespectToUnionAtMost1() {
 		assertEquals(((double)2)/7, this.measure.calculateConsistency(4, this.unionAtMost1Mock));
+	}
+	
+	/**
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#evaluate(RuleConditions)}.
+	 */
+	@Test
+	void testEvalueate() {		
+		assertEquals(0.2, this.measure.evaluate(this.ruleConditionsMock));
+	}
+	
+	/**
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#evaluateWithCondition(RuleConditions, Condition)}.
+	 */
+	@Test
+	void testEvalueateWithCondition() {
+		assertEquals(0, this.measure.evaluateWithCondition(this.ruleConditionsMock, this.conditionMock));
+	}
+
+	/**
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#evaluateWithoutCondition(RuleConditions, int)}.
+	 */
+	@Test
+	void testEvalueateWithoutCondition() {
+		assertEquals(0.2, this.measure.evaluateWithoutCondition(this.ruleConditionsMock, 0));
 	}
 }

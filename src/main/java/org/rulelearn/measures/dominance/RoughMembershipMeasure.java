@@ -21,6 +21,7 @@ import org.rulelearn.approximations.Union.UnionType;
 import org.rulelearn.data.Decision;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
 import org.rulelearn.measures.ConsistencyMeasure;
+import org.rulelearn.measures.GainTypeMeasure;
 
 /**
  * Rough membership consistency measure defined with respect to union of decision classes in Błaszczyński, J., Greco, S., Słowiński, R., Szeląg, M.: 
@@ -34,7 +35,8 @@ import org.rulelearn.measures.ConsistencyMeasure;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class RoughMembershipMeasure implements ConsistencyMeasure<Union> {
+public class RoughMembershipMeasure implements GainTypeMeasure, ConsistencyMeasure<Union> {
+	
 	protected final static double BEST_VALUE = 1.0;
 	protected final static double WORST_VALUE = 0.0;
 	
@@ -81,11 +83,4 @@ public class RoughMembershipMeasure implements ConsistencyMeasure<Union> {
 		return (((double)positiveCount) / count);
 	}
 
-	/* 
-	 * {@inheritDoc}
-	 */
-	@Override
-	public MeasureType getType() {
-		return MeasureType.GAIN;
-	}
 }

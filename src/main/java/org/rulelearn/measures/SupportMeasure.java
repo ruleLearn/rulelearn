@@ -16,37 +16,37 @@
 
 package org.rulelearn.measures;
 
+import org.rulelearn.data.InformationTable;
+import org.rulelearn.rules.Rule;
+import org.rulelearn.rules.RuleEvaluator;
+
 /**
- * Contract for all classes representing measures/evaluators.
+ * Rule support measure reflecting the amount of objects which support a rule (i.e., objects which match elementary conditions on the LHS, and decisions on the RHS).  
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface Measure {
-	
-	/**
-	 * Type of the measure.
-	 *
-	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
-	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
-	 */
-	public static enum MeasureType {
-		
-		/**
-		 * Type of a gain-type measure indicating that the higher the value the more it is preferred.
-		 */
-		GAIN,
-		/**
-		 * Type of a cost-type measure indicating that the lower the value the more it is preferred.
-		 */
-		COST
-	}
+public class SupportMeasure implements GainTypeMeasure, RuleEvaluator {
 
 	/**
-	 * Gets type of this measure.
+	 * {@inheritDoc}
 	 * 
-	 * @return see {@link MeasureType}
+	 * @param rule {@inheritDoc}
+	 * @param informationTable {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * @throws NullPointerException {@inheritDoc}
 	 */
-	public MeasureType getType();
-
+	@Override
+	public double evaluate(Rule rule, InformationTable informationTable) {
+		int counter = 0;
+		int numberOfObjects = informationTable.getNumberOfObjects(); 
+		for (int i = 0; i < numberOfObjects; i++) {
+			if (rule.supportedBy(i, informationTable)) {
+				counter++;
+			}
+		}
+		return counter;
+	}
+	
 }

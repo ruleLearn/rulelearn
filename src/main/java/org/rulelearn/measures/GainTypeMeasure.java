@@ -17,36 +17,21 @@
 package org.rulelearn.measures;
 
 /**
- * Contract for all classes representing measures/evaluators.
+ * Contract for all classes representing gain type measures/evaluators.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface Measure {
-	
-	/**
-	 * Type of the measure.
-	 *
-	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
-	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
-	 */
-	public static enum MeasureType {
-		
-		/**
-		 * Type of a gain-type measure indicating that the higher the value the more it is preferred.
-		 */
-		GAIN,
-		/**
-		 * Type of a cost-type measure indicating that the lower the value the more it is preferred.
-		 */
-		COST
-	}
+public interface GainTypeMeasure extends Measure {
 
-	/**
-	 * Gets type of this measure.
+	/** 
+	 * {@inheritDoc}
 	 * 
-	 * @return see {@link MeasureType}
+	 * @return {@inheritDoc} 
 	 */
-	public MeasureType getType();
-
+	@Override
+	public default MeasureType getType() {
+		return MeasureType.GAIN;
+	}
+	
 }

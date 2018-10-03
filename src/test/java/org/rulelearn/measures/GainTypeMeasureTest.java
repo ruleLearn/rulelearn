@@ -16,37 +16,37 @@
 
 package org.rulelearn.measures;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 /**
- * Contract for all classes representing measures/evaluators.
+ * Test for {@link GainTypeMeasure}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface Measure {
+class GainTypeMeasureTest {
+
+	@Mock
+	private GainTypeMeasure measureMock;
 	
-	/**
-	 * Type of the measure.
-	 *
-	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
-	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
-	 */
-	public static enum MeasureType {
-		
-		/**
-		 * Type of a gain-type measure indicating that the higher the value the more it is preferred.
-		 */
-		GAIN,
-		/**
-		 * Type of a cost-type measure indicating that the lower the value the more it is preferred.
-		 */
-		COST
+	@BeforeEach
+	void setUp() {
+		MockitoAnnotations.initMocks(this);
+		when(measureMock.getType()).thenCallRealMethod();
 	}
 
 	/**
-	 * Gets type of this measure.
-	 * 
-	 * @return see {@link MeasureType}
+	 * Tests method {@link GainTypeMeasure#getType()}.
 	 */
-	public MeasureType getType();
+	@Test
+	void testGetType() {
+		assertEquals(Measure.MeasureType.GAIN, this.measureMock.getType());
+	}
 
 }
