@@ -82,6 +82,11 @@ public class RuleParser {
 	protected final static Integer DEFAULT_INDEX = -1;
 	
 	/**
+	 * Default type of rule.
+	 */
+	final static RuleType DEFAULT_RULE_TYPE = RuleType.CERTAIN;
+	
+	/**
 	 * All attributes which may be present in conditions, which are forming decision rules.
 	 */
 	protected Attribute [] attributes = null;
@@ -216,7 +221,7 @@ public class RuleParser {
 	protected Rule parseRule (Element assertElement) throws RuleParseException {
 		Rule rule = null;
 		List<Condition<? extends EvaluationField>> conditions = null;
-		List<Condition<? extends EvaluationField>> decisions = null;
+		List<List<Condition<? extends EvaluationField>>> decisions = null;
 		
 		for (Node assertClause = assertElement.getFirstChild(); assertClause != null; assertClause = assertClause.getNextSibling()) {
 			if (assertClause.getNodeType() == Node.ELEMENT_NODE && "implies".equals(assertClause.getNodeName())) {
@@ -251,34 +256,35 @@ public class RuleParser {
 		
 		notNull(conditions, "No condition part specified for a rule in RuleML.");
 		notNull(decisions, "No decision part specified for a rule in RuleML.");
-		if (decisions.size() == 1) {
-			Condition<? extends EvaluationField> decision = decisions.get(0);
+		if (decisions.size() >= 1) {
 			// TODO include types of rules in RuleML
-			rule = new Rule(RuleType.CERTAIN, conditions, decision);
-		}
-		else if (decisions.size() > 1) {
-			Condition<? extends EvaluationField> decision = decisions.get(0);
-			// TODO check correctness
-			// TODO include types of rules in RuleML
-			if (decision.getAttributeWithContext().getAttributePreferenceType() == AttributePreferenceType.NONE) {
-				rule = new Rule(RuleType.CERTAIN, RuleSemantics.EQUAL, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
+			RuleType ruleType = DEFAULT_RULE_TYPE;
+			
+			// TODO check/include rule semantics
+			RuleSemantics ruleSemantics = null;
+			// TODO for now the semantics of rule depends on type of first decision condition only
+			Condition<? extends EvaluationField> firstDecisionCondition = decisions.get(0).get(0);
+			AttributePreferenceType preferenceType = firstDecisionCondition.getAttributeWithContext().getAttributePreferenceType();
+			if (preferenceType == AttributePreferenceType.NONE) {
+				ruleSemantics = RuleSemantics.EQUAL;
 			}
-			else if (decision.getAttributeWithContext().getAttributePreferenceType() == AttributePreferenceType.GAIN) {
-				if (decision instanceof SimpleConditionAtLeast) {
-					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
+			else if (preferenceType == AttributePreferenceType.GAIN) {
+				if (firstDecisionCondition instanceof SimpleConditionAtLeast) { // TODO works only for SimpleCondition
+					ruleSemantics = RuleSemantics.AT_LEAST;
 				}
-				else { // TODO (MSz): verify if this else is safe (what if equality decision)
-					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
-				}
-			}
-			else {
-				if (decision instanceof SimpleConditionAtLeast) {
-					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
-				}
-				else { // TODO (MSz): verify if this else is safe (what if equality decision)
-					rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, ((EvaluationField)decisions.get(0).getLimitingEvaluation()), conditions, decisions);
+				else {
+					ruleSemantics = RuleSemantics.AT_MOST;
 				}
 			}
+			else { //cost-type attribute
+				if (firstDecisionCondition instanceof SimpleConditionAtLeast) { // TODO works only for SimpleCondition
+					ruleSemantics = RuleSemantics.AT_MOST;
+				}
+				else {
+					ruleSemantics = RuleSemantics.AT_LEAST;
+				}
+			}
+			rule = new Rule(ruleType, ruleSemantics, conditions, decisions);
 		}
 		return rule;
 	}
@@ -328,33 +334,57 @@ public class RuleParser {
 	 * @return a list {@link ObjectArrayList} of conditions {@link Condition}
 	 * @throws RuleParseException if any of the rules can't be parsed 
 	 */
-	protected List<Condition<? extends EvaluationField>> parseRuleDecisionPart (Element thenElement) throws RuleParseException {
-		List<Condition<? extends EvaluationField>> decisions = new ObjectArrayList<Condition<? extends EvaluationField>> ();
+	protected List<List<Condition<? extends EvaluationField>>> parseRuleDecisionPart (Element thenElement) throws RuleParseException {
+		List<List<Condition<? extends EvaluationField>>> decisionsOR = new ObjectArrayList<List<Condition<? extends EvaluationField>>> ();
+		List<Condition<? extends EvaluationField>> decisionsAND = null;
 		for (Node thenClause = thenElement.getFirstChild(); thenClause != null; thenClause = thenClause.getNextSibling()) {
-            if (thenClause.getNodeType() == Node.ELEMENT_NODE) {
-                if ("or".equals(thenClause.getNodeName())) {
-                    if (decisions.size() > 0) {
-                        throw new RuleParseException("More than one 'or' node inside a 'then' node detected in RuleML");
-                    }
-                    for (Node orElement = thenClause.getFirstChild(); orElement != null; orElement = orElement.getNextSibling()) {
-                       if (orElement.getNodeType() == Node.ELEMENT_NODE) {
-                           if ("atom".equals(orElement.getNodeName())) {
-                        	   		decisions.add(parseRuleCondition((Element) orElement));
-                           }
-                           else {throw new RuleParseException("Node other than 'atom' detected inside 'or' node in RuleML.");}
+			if (thenClause.getNodeType() == Node.ELEMENT_NODE) {
+				if ("or".equals(thenClause.getNodeName())) {
+					for (Node orElement = thenClause.getFirstChild(); orElement != null; orElement = orElement.getNextSibling()) {
+						if (orElement.getNodeType() == Node.ELEMENT_NODE) {
+							if ("and".equals(orElement.getNodeName())) {
+								decisionsAND = new ObjectArrayList<Condition<? extends EvaluationField>> ();
+								for (Node andElement = orElement.getFirstChild(); andElement != null; andElement = andElement.getNextSibling()) {
+									if (andElement.getNodeType() == Node.ELEMENT_NODE) {
+										if ("atom".equals(andElement.getNodeName())) {
+											decisionsAND.add(parseRuleCondition((Element) andElement));
+										}
+									}
+									else {throw new RuleParseException("Node other than 'atom' detected inside 'and' node in RuleML.");}
+								}
+								decisionsOR.add(decisionsAND);
+							}
+							else if ("atom".equals(orElement.getNodeName())) {
+								decisionsAND.add(parseRuleCondition((Element) orElement));
+								decisionsOR.add(decisionsAND);
+							}
+							else {throw new RuleParseException("Node other than 'and', and 'atom' detected inside 'or' node in RuleML.");}
                        }
                     }
-                } else if ("atom".equals(thenClause.getNodeName())) {
-                    if (decisions.size() > 0) {
-                        throw new RuleParseException("More than one condition node without disjunction operation inside a 'then' node detected in RuleML.");
-                    }
-                    decisions.add(parseRuleCondition((Element) thenClause));
-                } else {
-                    throw new RuleParseException("Node other than 'or' and 'atom' detected inside a 'than' node in RuleML.");
+                } 
+                else if ("and".equals(thenClause.getNodeName())) {
+                		decisionsAND = new ObjectArrayList<Condition<? extends EvaluationField>> ();
+					for (Node andElement = thenClause.getFirstChild(); andElement != null; andElement = andElement.getNextSibling()) {
+						if (andElement.getNodeType() == Node.ELEMENT_NODE) {
+							if ("atom".equals(andElement.getNodeName())) {
+								decisionsAND.add(parseRuleCondition((Element) andElement));
+							}
+						}
+						else {throw new RuleParseException("Node other than 'atom' detected inside 'and' node in RuleML.");}
+					}
+					decisionsOR.add(decisionsAND);
+				}
+                else if ("atom".equals(thenClause.getNodeName())) {
+                		decisionsAND = new ObjectArrayList<Condition<? extends EvaluationField>> ();
+                		decisionsAND.add(parseRuleCondition((Element) thenClause));
+                		decisionsOR.add(decisionsAND);
+                	} 
+                else {
+                    throw new RuleParseException("Node other than 'or', 'and', and 'atom' detected inside a 'than' node in RuleML.");
                 }
             }
         }
-		return decisions;
+		return decisionsOR;
 	}
 	
 	/**

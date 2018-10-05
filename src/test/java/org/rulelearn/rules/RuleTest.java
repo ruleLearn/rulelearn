@@ -19,6 +19,7 @@ package org.rulelearn.rules;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttribute;
@@ -87,25 +88,72 @@ class RuleTest {
 				IntegerFieldFactory.getInstance().create(5, preferenceTypeDec));
 	}
 	
+	private Condition<? extends EvaluationField> getDecisionInv() {
+		AttributePreferenceType preferenceTypeDec = AttributePreferenceType.GAIN;
+		return new SimpleConditionAtMost(
+				new EvaluationAttributeWithContext(
+						new EvaluationAttribute(
+								"dec",
+								true,
+								AttributeType.DECISION,
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceTypeDec),
+								new UnknownSimpleFieldMV2(),
+								preferenceTypeDec),
+						7),
+				IntegerFieldFactory.getInstance().create(7, preferenceTypeDec));
+	}
+	
+	private Condition<? extends EvaluationField> getDecision2() {
+		AttributePreferenceType preferenceTypeDec = AttributePreferenceType.COST;
+		return new SimpleConditionAtMost(
+				new EvaluationAttributeWithContext(
+						new EvaluationAttribute(
+								"dec2",
+								true,
+								AttributeType.DECISION,
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceTypeDec),
+								new UnknownSimpleFieldMV15(),
+								preferenceTypeDec),
+						9),
+				IntegerFieldFactory.getInstance().create(3, preferenceTypeDec));
+	}
+	
+	private Condition<? extends EvaluationField> getDecision2Inv() {
+		AttributePreferenceType preferenceTypeDec = AttributePreferenceType.COST;
+		return new SimpleConditionAtLeast(
+				new EvaluationAttributeWithContext(
+						new EvaluationAttribute(
+								"dec2",
+								true,
+								AttributeType.DECISION,
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, preferenceTypeDec),
+								new UnknownSimpleFieldMV15(),
+								preferenceTypeDec),
+						9),
+				IntegerFieldFactory.getInstance().create(1, preferenceTypeDec));
+	}
+	
 	//constructs rule using longer constructor
 	private Rule getTestRule1() {
 		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
-		List<Condition<? extends EvaluationField>> decisions = new ObjectArrayList<>();
+		List<Condition<? extends EvaluationField>> andDecisions = new ObjectArrayList<Condition<?>>();
+		List<List<Condition<? extends EvaluationField>>> decisions = new ObjectArrayList<>();
 		
 		//create conditions
 		conditions.add(getCondition1());
 		conditions.add(getCondition2());
 		
 		//create decisions
-		decisions.add(getDecision());
+		andDecisions.add(getDecision());
+		decisions.add(andDecisions);
 		
 		//create and return rule
-		Rule rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), conditions, decisions);
+		Rule rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, conditions, decisions);
 		return rule;
 	}
 	
 	//constructs rule using shorter constructor
-	private Rule getTestRule1B() {
+	private Rule getTestRule2() {
 		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
 		
 		//create conditions
@@ -114,6 +162,48 @@ class RuleTest {
 		
 		//create and return rule
 		Rule rule = new Rule(RuleType.CERTAIN, conditions, (SimpleCondition)getDecision());
+		return rule;
+	}
+	
+	//constructs 2-decision rule using longer constructor
+	private Rule getTestRule3() {
+		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
+		List<Condition<? extends EvaluationField>> andDecisions = new ObjectArrayList<Condition<?>>();
+		List<List<Condition<? extends EvaluationField>>> decisions = new ObjectArrayList<>();
+
+		//create conditions
+		conditions.add(getCondition1());
+		conditions.add(getCondition2());
+
+		//create decisions
+		andDecisions.add(getDecision());
+		andDecisions.add(getDecision2());
+		decisions.add(andDecisions);
+
+		//create and return rule
+		Rule rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, conditions, decisions);
+		return rule;
+	}
+	
+	//constructs 2 x 2-decision rule using longer constructor
+	private Rule getTestRule4() {
+		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
+
+		//create conditions
+		conditions.add(getCondition1());
+		conditions.add(getCondition2());
+
+		//create decisions
+		List<List<Condition<? extends EvaluationField>>> decisions = new ObjectArrayList<>();
+		decisions.add(new ObjectArrayList<>());
+		decisions.add(new ObjectArrayList<>());
+		decisions.get(0).add(getDecision());
+		decisions.get(0).add(getDecision2());
+		decisions.get(1).add(getDecisionInv());
+		decisions.get(1).add(getDecision2Inv());
+		
+		//create and return rule
+		Rule rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, conditions, decisions);
 		return rule;
 	}
 
@@ -126,11 +216,13 @@ class RuleTest {
 		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
 		conditions.add(condition);
 		
-		SimpleConditionAtLeast decision = null;
-		List<Condition<? extends EvaluationField>> decisions = new ObjectArrayList<>();
-		decisions.add(decision);
+		SimpleConditionAtLeast decision = Mockito.mock(SimpleConditionAtLeast.class);;
 		
-		Rule rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), conditions, decisions);
+		List<List<Condition<? extends EvaluationField>>> decisions = new ObjectArrayList<>();
+		decisions.add(new ObjectArrayList<>());
+		decisions.get(0).add(decision);
+		
+		Rule rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, conditions, decisions);
 		assertEquals(rule.getType(), RuleType.CERTAIN);
 	}
 
@@ -143,27 +235,14 @@ class RuleTest {
 		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
 		conditions.add(condition);
 		
-		SimpleConditionAtLeast decision = null;
-		List<Condition<? extends EvaluationField>> decisions = new ObjectArrayList<>();
-		decisions.add(decision);
+		SimpleConditionAtLeast decision = Mockito.mock(SimpleConditionAtLeast.class);;
 		
-		Rule rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), conditions, decisions);
+		List<List<Condition<? extends EvaluationField>>> decisions = new ObjectArrayList<>();
+		decisions.add(new ObjectArrayList<>());
+		decisions.get(0).add(decision);
+		
+		Rule rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, conditions, decisions);
 		assertEquals(rule.getSemantics(), RuleSemantics.AT_MOST);
-	}
-
-	/**
-	 * Test method for {@link org.rulelearn.rules.Rule#getInherentDecision()}.
-	 */
-	@Test
-	void testGetInherentDecision() {
-		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>(); //empty list of conditions
-		
-		SimpleConditionAtLeast decision = null;
-		List<Condition<? extends EvaluationField>> decisions = new ObjectArrayList<>();
-		decisions.add(decision);
-		
-		Rule rule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST), conditions, decisions);
-		assertEquals(rule.getInherentDecision(), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST));
 	}
 
 	/**
@@ -196,9 +275,9 @@ class RuleTest {
 	@Test
 	void testGetDecisions() {
 		Rule rule = getTestRule1();
-		Condition<? extends EvaluationField>[] decisions = rule.getDecisions();
+		Condition<? extends EvaluationField>[][] decisions = rule.getDecisions();
 		assertEquals(decisions.length, 1);
-		assertEquals(decisions[0], getDecision());
+		assertEquals(decisions[0][0], getDecision());
 	}
 
 	/**
@@ -207,10 +286,10 @@ class RuleTest {
 	@Test
 	void testGetDecisionsBoolean() {
 		Rule rule = getTestRule1();
-		Condition<? extends EvaluationField>[] decisions = rule.getDecisions(true);
+		Condition<? extends EvaluationField>[][] decisions = rule.getDecisions(true);
 		assertEquals(decisions.length, 1);
 		assertEquals(decisions.length, 1);
-		assertEquals(decisions[0], getDecision());
+		assertEquals(decisions[0][0], getDecision());
 	}
 
 	/**
@@ -228,9 +307,8 @@ class RuleTest {
 	 */
 	@Test
 	void testRule() {
-		Rule rule = getTestRule1B();
+		Rule rule = getTestRule2();
 		assertEquals(rule.getSemantics(), RuleSemantics.AT_LEAST);
-		assertEquals(rule.getInherentDecision(), IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.GAIN));
 		assertEquals(rule.getDecision(), getDecision());
 	}
 
@@ -238,10 +316,30 @@ class RuleTest {
 	 * Test method for {@link org.rulelearn.rules.Rule#toString()}.
 	 */
 	@Test
-	void testToString() {
+	void testToString01() {
 		Rule rule = getTestRule1();
 		System.out.println(rule);
 		assertEquals(rule.toString(), "(attr1 >= 3) & (attr3 <= -2.1) =>[c] (dec >= 5)");
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Rule#toString()}. Tests rule with 2 AND-connected decisions.
+	 */
+	@Test
+	void testToString02() {
+		Rule rule = getTestRule3();
+		System.out.println(rule);
+		assertEquals(rule.toString(), "(attr1 >= 3) & (attr3 <= -2.1) =>[c] (dec >= 5) & (dec2 <= 3)");
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Rule#toString()}. Tests rule with 2 x 2 AND-connected decisions.
+	 */
+	@Test
+	void testToString03() {
+		Rule rule = getTestRule4();
+		System.out.println(rule);
+		assertEquals(rule.toString(), "(attr1 >= 3) & (attr3 <= -2.1) =>[c] ((dec >= 5) & (dec2 <= 3)) OR ((dec <= 7) & (dec2 >= 1))");
 	}
 
 	/**

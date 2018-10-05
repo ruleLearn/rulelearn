@@ -26,10 +26,11 @@ import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConeCalculator;
-import org.rulelearn.rules.SimpleCondition;
+import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.SimpleConditionAtLeast;
 import org.rulelearn.rules.SimpleConditionAtMost;
 import org.rulelearn.rules.SimpleConditionEqual;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.SimpleField;
 
 import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
@@ -649,19 +650,20 @@ public class Union extends ApproximatedSet {
 	}
 
 	/**
-	 * Gets list of elementary decisions associated with this union, each dependent on the type of this union and one of the evaluations contributing to the limiting decision.
+	 * Gets list of elementary decisions associated with this union, each dependent on the type of this union and one of the evaluations contributing to the limiting decision.<br>
+	 * <br>
 	 * Assumes that all the contributing evaluations are of type {@link SimpleField}.
 	 * 
 	 * @return list of elementary decisions associated with this union, each dependent on the type of this union and one of the evaluations contributing to the limiting decision
-	 * @throws InvalidTypeException if any evaluation contributing to the limiting decision is not of type {@link SimpleField}
+	 * @throws InvalidTypeException if any evaluation contributing to this union's limiting decision is not of type {@link SimpleField}
 	 */
 	@Override
-	public List<SimpleCondition> getElementaryDecisions() {
+	public List<Condition<? extends EvaluationField>> getElementaryDecisions() {
 		IntSet attributeIndices = this.limitingDecision.getAttributeIndices();
 		SimpleField evaluation;
 		EvaluationAttribute attribute;
 		int attributeIndex;
-		List<SimpleCondition> elementaryDecisions = new ArrayList<>();
+		List<Condition<? extends EvaluationField>> elementaryDecisions = new ArrayList<>();
 		
 		IntIterator attributeIndicesIterator = attributeIndices.iterator();
 		
@@ -669,7 +671,7 @@ public class Union extends ApproximatedSet {
 			attributeIndex = attributeIndicesIterator.nextInt();
 			attribute = (EvaluationAttribute)this.informationTable.getAttribute(attributeIndex);
 			try {
-				evaluation = (SimpleField)this.limitingDecision.getEvaluation(attributeIndex);
+				evaluation = (SimpleField)this.limitingDecision.getEvaluation(attributeIndex); //assumes SimpleField eval
 			} catch (ClassCastException exception) {
 				throw new InvalidTypeException("Evaluation contributing to union's limiting decision is not a simple field.");
 			}
@@ -711,7 +713,7 @@ public class Union extends ApproximatedSet {
 		}
 		
 		//arrange elementary decisions in order
-		elementaryDecisions.sort((SimpleCondition x, SimpleCondition y) -> {
+		elementaryDecisions.sort((x, y) -> {
 			int i = x.getAttributeWithContext().getAttributeIndex();
 			int j = y.getAttributeWithContext().getAttributeIndex();
 			if (i < j) {

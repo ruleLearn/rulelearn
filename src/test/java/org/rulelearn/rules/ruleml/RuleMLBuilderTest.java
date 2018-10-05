@@ -276,10 +276,10 @@ class RuleMLBuilderTest {
 	@Test
 	void testRuleMLBuilderRule1() {
 		Condition<? extends EvaluationField>[] conditions = new Condition<?>[] {this.conditionAtLeastMock};
-		Condition<? extends EvaluationField>[] decision = new Condition<?>[] {this.decisionAtLeastMock};
+		Condition<? extends EvaluationField>[][] decisions = new Condition<?>[][] {{this.decisionAtLeastMock}};
 		
 		when(this.ruleAtLeastMock.getConditions()).thenReturn(conditions);
-		when(this.ruleAtLeastMock.getDecisions()).thenReturn(decision);
+		when(this.ruleAtLeastMock.getDecisions()).thenReturn(decisions);
 		
 		String ruleRuleML = "<assert>\n" + 
 				"\t<implies>\n" + 
@@ -293,13 +293,13 @@ class RuleMLBuilderTest {
 				"\t\t\t\t</atom>\n" + 
 				"\t\t</if>\n" + 
 				"\t\t<then>\n" + 
-				"\t\t\t\t<atom>\n" + 
-				"\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t<rel>ge</rel>\n" + 
-				"\t\t\t\t</op>\n" + 
-				"\t\t\t\t<ind>b</ind>\n" + 
-				"\t\t\t\t\t<var>gd1</var>\n" + 
-				"\t\t\t\t</atom>\n" + 
+				"\t\t\t\t\t<atom>\n" + 
+				"\t\t\t\t\t<op>\n" + 
+				"\t\t\t\t\t\t<rel>ge</rel>\n" + 
+				"\t\t\t\t\t</op>\n" + 
+				"\t\t\t\t\t<ind>b</ind>\n" + 
+				"\t\t\t\t\t\t<var>gd1</var>\n" + 
+				"\t\t\t\t\t</atom>\n" + 
 				"\t\t</then>\n" + 
 				"\t</implies>\n" + 
 				"</assert>\n";
@@ -314,10 +314,10 @@ class RuleMLBuilderTest {
 	@Test
 	void testRuleMLBuilderRule2() {
 		Condition<? extends EvaluationField>[] conditions = new Condition<?>[] {this.conditionAtMostMock, this.conditionEqualMock};
-		Condition<? extends EvaluationField>[] decision = new Condition<?>[] {this.decisionAtMostMock};
+		Condition<? extends EvaluationField>[][] decisions = new Condition<?>[][] {{this.decisionAtMostMock}};
 		
 		when(this.ruleAtMostMock.getConditions()).thenReturn(conditions);
-		when(this.ruleAtMostMock.getDecisions()).thenReturn(decision);
+		when(this.ruleAtMostMock.getDecisions()).thenReturn(decisions);
 		
 		String ruleRuleML = "<assert>\n" + 
 				"\t<implies>\n" + 
@@ -340,13 +340,13 @@ class RuleMLBuilderTest {
 				"\t\t\t</and>\n" +
 				"\t\t</if>\n" + 
 				"\t\t<then>\n" + 
-				"\t\t\t\t<atom>\n" + 
-				"\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t<rel>le</rel>\n" + 
-				"\t\t\t\t</op>\n" + 
-				"\t\t\t\t<ind>a</ind>\n" + 
-				"\t\t\t\t\t<var>cd1</var>\n" + 
-				"\t\t\t\t</atom>\n" + 
+				"\t\t\t\t\t<atom>\n" + 
+				"\t\t\t\t\t<op>\n" + 
+				"\t\t\t\t\t\t<rel>le</rel>\n" + 
+				"\t\t\t\t\t</op>\n" + 
+				"\t\t\t\t\t<ind>a</ind>\n" + 
+				"\t\t\t\t\t\t<var>cd1</var>\n" + 
+				"\t\t\t\t\t</atom>\n" + 
 				"\t\t</then>\n" + 
 				"\t</implies>\n" + 
 				"</assert>\n";
@@ -362,17 +362,17 @@ class RuleMLBuilderTest {
 	void testRuleMLBuilderRuleSet1() {
 		// first rule
 		Condition<? extends EvaluationField>[] conditions = new Condition<?>[] {this.conditionAtLeastMock};
-		Condition<? extends EvaluationField>[] decision = new Condition<?>[] {this.decisionAtLeastMock};
+		Condition<? extends EvaluationField>[][] decisions = new Condition<?>[][] {{this.decisionAtLeastMock}};
 		
 		when(this.ruleAtLeastMock.getConditions()).thenReturn(conditions);
-		when(this.ruleAtLeastMock.getDecisions()).thenReturn(decision);
+		when(this.ruleAtLeastMock.getDecisions()).thenReturn(decisions);
 		
 		// second rule
 		conditions = new Condition<?>[] {this.conditionAtMostMock, this.conditionEqualMock};
-		decision = new Condition<?>[] {this.decisionAtMostMock};
+		decisions = new Condition<?>[][] {{this.decisionAtMostMock}};
 		
 		when(this.ruleAtMostMock.getConditions()).thenReturn(conditions);
-		when(this.ruleAtMostMock.getDecisions()).thenReturn(decision);
+		when(this.ruleAtMostMock.getDecisions()).thenReturn(decisions);
 		
 		when(this.ruleSetMock.getRule(0)).thenReturn(this.ruleAtLeastMock);
 		when(this.ruleSetMock.getRule(1)).thenReturn(this.ruleAtMostMock);
@@ -394,13 +394,13 @@ class RuleMLBuilderTest {
 				"\t\t\t\t</atom>\n" + 
 				"\t\t</if>\n" + 
 				"\t\t<then>\n" + 
-				"\t\t\t\t<atom>\n" + 
-				"\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t<rel>ge</rel>\n" + 
-				"\t\t\t\t</op>\n" + 
-				"\t\t\t\t<ind>b</ind>\n" + 
-				"\t\t\t\t\t<var>gd1</var>\n" + 
-				"\t\t\t\t</atom>\n" + 
+				"\t\t\t\t\t<atom>\n" + 
+				"\t\t\t\t\t<op>\n" + 
+				"\t\t\t\t\t\t<rel>ge</rel>\n" + 
+				"\t\t\t\t\t</op>\n" + 
+				"\t\t\t\t\t<ind>b</ind>\n" + 
+				"\t\t\t\t\t\t<var>gd1</var>\n" + 
+				"\t\t\t\t\t</atom>\n" + 
 				"\t\t</then>\n" + 
 				"\t</implies>\n" + 
 				"</assert>\n" +
@@ -425,13 +425,13 @@ class RuleMLBuilderTest {
 				"\t\t\t</and>\n" +
 				"\t\t</if>\n" + 
 				"\t\t<then>\n" + 
-				"\t\t\t\t<atom>\n" + 
-				"\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t<rel>le</rel>\n" + 
-				"\t\t\t\t</op>\n" + 
-				"\t\t\t\t<ind>a</ind>\n" + 
-				"\t\t\t\t\t<var>cd1</var>\n" + 
-				"\t\t\t\t</atom>\n" + 
+				"\t\t\t\t\t<atom>\n" + 
+				"\t\t\t\t\t<op>\n" + 
+				"\t\t\t\t\t\t<rel>le</rel>\n" + 
+				"\t\t\t\t\t</op>\n" + 
+				"\t\t\t\t\t<ind>a</ind>\n" + 
+				"\t\t\t\t\t\t<var>cd1</var>\n" + 
+				"\t\t\t\t\t</atom>\n" + 
 				"\t\t</then>\n" + 
 				"\t</implies>\n" + 
 				"</assert>\n" +
@@ -439,7 +439,7 @@ class RuleMLBuilderTest {
 				"</RuleML>\n";
 		
 		//System.out.println(ruleMLBuilder.toRuleMLString(this.ruleSetMock, 1));
-		assertEquals(ruleMLBuilder.toRuleMLString(this.ruleSetMock, 1), ruleSetRuleML);
+		assertEquals(ruleSetRuleML, ruleMLBuilder.toRuleMLString(this.ruleSetMock, 1));
 	}
 	
 	/**
@@ -448,10 +448,10 @@ class RuleMLBuilderTest {
 	@Test
 	void testRuleMLBuilderRuleSet2() {
 		Condition<? extends EvaluationField>[] conditions = new Condition<?>[] {this.conditionAtLeastMock};
-		Condition<? extends EvaluationField>[] decision = new Condition<?>[] {this.decisionAtLeastMock};
+		Condition<? extends EvaluationField>[][] decisions = new Condition<?>[][] {{this.decisionAtLeastMock}};
 		
 		when(this.ruleAtLeastMock.getConditions()).thenReturn(conditions);
-		when(this.ruleAtLeastMock.getDecisions()).thenReturn(decision);
+		when(this.ruleAtLeastMock.getDecisions()).thenReturn(decisions);
 				
 		when(this.ruleSetWithCharacteristicsMock.getRule(0)).thenReturn(this.ruleAtLeastMock);
 		when(this.ruleSetWithCharacteristicsMock.getRuleCharacteristics(0)).thenReturn(this.ruleCharacteristicsMock);
@@ -473,13 +473,13 @@ class RuleMLBuilderTest {
 				"\t\t\t\t</atom>\n" + 
 				"\t\t</if>\n" + 
 				"\t\t<then>\n" + 
-				"\t\t\t\t<atom>\n" + 
-				"\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t<rel>ge</rel>\n" + 
-				"\t\t\t\t</op>\n" + 
-				"\t\t\t\t<ind>b</ind>\n" + 
-				"\t\t\t\t\t<var>gd1</var>\n" + 
-				"\t\t\t\t</atom>\n" + 
+				"\t\t\t\t\t<atom>\n" + 
+				"\t\t\t\t\t<op>\n" + 
+				"\t\t\t\t\t\t<rel>ge</rel>\n" + 
+				"\t\t\t\t\t</op>\n" + 
+				"\t\t\t\t\t<ind>b</ind>\n" + 
+				"\t\t\t\t\t\t<var>gd1</var>\n" + 
+				"\t\t\t\t\t</atom>\n" + 
 				"\t\t</then>\n" + 
 				"\t\t<evaluations>\n" + 
 				"\t\t\t<evaluation measure=\"Support\" value=\"1.0\"/>\n" + 

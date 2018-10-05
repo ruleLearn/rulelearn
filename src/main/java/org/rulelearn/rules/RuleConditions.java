@@ -21,6 +21,7 @@ import java.util.List;
 import org.rulelearn.approximations.ApproximatedSet;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.types.EvaluationField;
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -45,7 +46,7 @@ public class RuleConditions {
 	/**
 	 * Elementary conditions, in order of their addition to rule's LHS.
 	 */
-	List<Condition<?>> conditions;
+	List<Condition<? extends EvaluationField>> conditions;
 	
 	/**
 	 * Indices of all objects that satisfy right-hand side (RHS, decision part) of induced decision rule. In case of a certain/possible rule, these are the objects from considered approximated set.
@@ -463,7 +464,7 @@ public class RuleConditions {
 	 * @return list of elementary conditions building this complex of elementary conditions,
 	 *         in order of their addition
 	 */
-	public List<Condition<?>> getConditions() { //TODO: return unmodifiable list
+	public List<Condition<? extends EvaluationField>> getConditions() { //TODO: return unmodifiable list
 		return this.conditions;
 	}
 	

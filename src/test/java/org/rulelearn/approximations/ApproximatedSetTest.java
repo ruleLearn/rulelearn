@@ -24,7 +24,6 @@ import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.Condition;
-import org.rulelearn.rules.SimpleCondition;
 import org.rulelearn.types.EvaluationField;
 
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
@@ -151,7 +150,7 @@ class ApproximatedSetTest {
 			}
 
 			@Override
-			public List<SimpleCondition> getElementaryDecisions() {
+			public List<Condition<? extends EvaluationField>> getElementaryDecisions() {
 				return approximatedSetMock.getElementaryDecisions();
 			}
 		};

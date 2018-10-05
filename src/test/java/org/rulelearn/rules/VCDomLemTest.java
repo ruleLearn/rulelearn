@@ -49,7 +49,7 @@ class VCDomLemTest {
 	 * Tests upward unions and certain rules.
 	 */
 	@Test
-	public void testUpwardUnionCertain() {
+	public List<Rule> testUpwardUnionCertain() {
 		EpsilonConsistencyMeasure consistencyMeasure = new EpsilonConsistencyMeasure();
 		double consistencyThreshold = 0.0;
 		
@@ -103,10 +103,21 @@ class VCDomLemTest {
 			}
 			
 			minimalRuleConditionsWithApproximatedSets.addAll(verifiedRuleConditionsWithApproximatedSet);
-			
-			//TODO: build a rule for each obtained rule conditions (add constructor!)
-			//TODO: calculate ComputableRuleCharacteristics
 		}
+		
+		List<Rule> rules = new ObjectArrayList<>();
+		List<List<Condition<? extends EvaluationField>>> decisions;
+		Rule rule;
+		
+		for (RuleConditionsWithApproximatedSet minimalRuleConditionsWithApproximatedSet : minimalRuleConditionsWithApproximatedSets ) {
+			decisions = new ObjectArrayList<>(); //TODO: optimize to create less objects
+			decisions.add(minimalRuleConditionsWithApproximatedSet.getApproximatedSet().getElementaryDecisions());
+			rule = new Rule(ruleType, ruleSemantics, minimalRuleConditionsWithApproximatedSet.getRuleConditions(), decisions);
+			rules.add(rule);
+			//TODO: calculate ComputableRuleCharacteristics for each rule
+		}
+		
+		return rules;
 	}
 	
 	private List<RuleConditions> calculateApproximatedSetRuleConditionsList(ApproximatedSet approximatedSet, RuleType ruleType, RuleSemantics ruleSemantics, AllowedObjectsType allowedObjectsType,

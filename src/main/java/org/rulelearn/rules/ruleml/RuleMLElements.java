@@ -40,6 +40,7 @@ public class RuleMLElements {
     static final String Implies = "implies";
     static final String If = "if";
     static final String And = "and";
+    static final String Or = "or";
     static final String Atom = "atom";
     static final String Operation = "op";
     static final String Relation = "rel";
@@ -256,6 +257,13 @@ public class RuleMLElements {
 	 */
 	public static String getAndKeyword() {
 		return And;
+	}
+	
+	/**
+	 * @return the or keyword
+	 */
+	public static String getOrKeyword() {
+		return Or;
 	}
 
 	/**

@@ -18,8 +18,8 @@ package org.rulelearn.approximations;
 
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.rules.SimpleCondition;
-import org.rulelearn.types.SimpleField;
+import org.rulelearn.rules.Condition;
+import org.rulelearn.types.EvaluationField;
 
 import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
@@ -33,7 +33,6 @@ import static org.rulelearn.core.Precondition.notNull;
 
 import java.util.List;
 
-import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
@@ -458,11 +457,9 @@ public abstract class ApproximatedSet {
 	
 	/**
 	 * Gets list of elementary decisions associated with this approximated set, each dependent on the type of this set and one of the evaluations contributing to the limiting decision.
-	 * Assumes that all the contributing evaluations are of type {@link SimpleField}.
 	 * 
 	 * @return list of elementary decisions associated with this approximated set, each dependent on the type of this set and one of the evaluations contributing to the limiting decision
-	 * @throws InvalidTypeException if any evaluation contributing to the limiting decision is not of type {@link SimpleField}
 	 */
-	public abstract List<SimpleCondition> getElementaryDecisions();
+	public abstract List<Condition<? extends EvaluationField>> getElementaryDecisions();
 	
 }
