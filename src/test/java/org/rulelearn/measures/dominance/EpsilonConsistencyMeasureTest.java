@@ -34,7 +34,6 @@ import org.rulelearn.data.DecisionDistribution;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
-import org.rulelearn.measures.CoverageInApproximationMeasure;
 import org.rulelearn.measures.Measure;
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.RuleConditions;

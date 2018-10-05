@@ -16,7 +16,7 @@
 
 package org.rulelearn.measures.dominance;
 
-import static org.rulelearn.core.OperationsOnCollections.getNumberOfElementsFromListNotPresentInSet;
+import static org.rulelearn.core.OperationsOnCollections.getNumberOfElementsFromListNotPresentInSets;
 
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Union.UnionType;
@@ -96,9 +96,10 @@ public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMe
 	public double evaluate(RuleConditions ruleConditions) {
 		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjects();
 		IntSet unionObjects = ruleConditions.getIndicesOfPositiveObjects();
+		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
 		
-		return (((double)getNumberOfElementsFromListNotPresentInSet(coveredObjects, unionObjects))/
-				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - unionObjects.size() - ruleConditions.getIndicesOfNeutralObjects().size()));
+		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, unionObjects, neutralObjects) /
+				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - unionObjects.size() - neutralObjects.size()));
 	}
 
 	/** 
@@ -114,9 +115,10 @@ public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMe
 	public double evaluateWithCondition(RuleConditions ruleConditions, Condition<EvaluationField> condition) {
 		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithCondition(condition);
 		IntSet unionObjects = ruleConditions.getIndicesOfPositiveObjects();
+		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
 		
-		return (((double)getNumberOfElementsFromListNotPresentInSet(coveredObjects, unionObjects))/
-				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - unionObjects.size() - ruleConditions.getIndicesOfNeutralObjects().size()));
+		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, unionObjects, neutralObjects) /
+				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - unionObjects.size() - neutralObjects.size()));
 	}
 
 	/** 
@@ -134,9 +136,10 @@ public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMe
 	public double evaluateWithoutCondition(RuleConditions ruleConditions, int conditionIndex) {
 		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithoutCondition(conditionIndex);
 		IntSet unionObjects = ruleConditions.getIndicesOfPositiveObjects();
+		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
 		
-		return (((double)getNumberOfElementsFromListNotPresentInSet(coveredObjects, unionObjects))/
-				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - unionObjects.size() - ruleConditions.getIndicesOfNeutralObjects().size()));
+		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, unionObjects, neutralObjects) /
+				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - unionObjects.size() - neutralObjects.size()));
 	}
 
 }

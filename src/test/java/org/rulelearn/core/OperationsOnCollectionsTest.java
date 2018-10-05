@@ -209,4 +209,64 @@ class OperationsOnCollectionsTest {
 		assertEquals(1, OperationsOnCollections.getNumberOfElementsFromListNotPresentInSet(list, set));
 	}
 	
+	/**
+	 * Tests method {@link OperationsOnCollections#getNumberOfElementsFromListNotPresentInSets(IntList, IntSet...)}.
+	 */
+	@Test
+	void testGetNumberOfElementsFromListNotPresentInSets01() {
+		IntList list = null;
+		IntSet set1 = new IntArraySet(new int [] {1, 2, 3, 4, 5, 6, 7, 8, 9});
+		IntSet set2 = new IntArraySet(new int [] {11, 12, 13, 14, 15, 16, 17, 18, 19});
+		
+		assertThrows(NullPointerException.class, () -> {OperationsOnCollections.getNumberOfElementsFromListNotPresentInSets(list, set1, set2);});
+	}
+	
+	/**
+	 * Tests method {@link OperationsOnCollections#getNumberOfElementsFromListNotPresentInSets(IntList, IntSet...)}.
+	 */
+	@Test
+	void testGetNumberOfElementsFromListNotPresentInSets02() {
+		IntList list = new IntArrayList(new int [] {0, 10, 20});
+		IntSet set1 = new IntArraySet(new int [] {1, 2, 3, 4, 5, 6, 7, 8, 9});
+		IntSet set2 = null;
+		
+		assertThrows(NullPointerException.class, () -> {OperationsOnCollections.getNumberOfElementsFromListNotPresentInSets(list, set1, set2);});
+	}
+	
+	/**
+	 * Tests method {@link OperationsOnCollections#getNumberOfElementsFromListNotPresentInSets(IntList, IntSet...)}.
+	 */
+	@Test
+	void testGetNumberOfElementsFromListNotPresentInSets03() {
+		IntList list = new IntArrayList(new int [] {0, 10, 20});
+		IntSet set1 = new IntArraySet(new int [] {1, 2, 3, 4, 5, 6, 7, 8, 9});
+		IntSet set2 = new IntArraySet(new int [] {11, 12, 13, 14, 15, 16, 17, 18, 19});
+		
+		assertEquals(3, OperationsOnCollections.getNumberOfElementsFromListNotPresentInSets(list, set1, set2));
+	}
+	
+	/**
+	 * Tests method {@link OperationsOnCollections#getNumberOfElementsFromListNotPresentInSets(IntList, IntSet...)}.
+	 */
+	@Test
+	void testGetNumberOfElementsFromListNotPresentInSets04() {
+		IntList list = new IntArrayList(new int [] {0, 10, 20});
+		IntSet set1 = new IntArraySet(new int [] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20});
+		IntSet set2 = new IntArraySet(new int [] {11, 12, 13, 14, 15, 16, 17, 18, 19, 20});
+		
+		assertEquals(1, OperationsOnCollections.getNumberOfElementsFromListNotPresentInSets(list, set1, set2));
+	}
+	
+	/**
+	 * Tests method {@link OperationsOnCollections#getNumberOfElementsFromListNotPresentInSets(IntList, IntSet...)}.
+	 */
+	@Test
+	void testGetNumberOfElementsFromListNotPresentInSets05() {
+		IntList list = new IntArrayList(new int [] {0, 10, 20});
+		IntSet set1 = new IntArraySet(new int [] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20});
+		IntSet set2 = new IntArraySet(new int [] {0, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20});
+		
+		assertEquals(0, OperationsOnCollections.getNumberOfElementsFromListNotPresentInSets(list, set1, set2));
+	}
+	
 }

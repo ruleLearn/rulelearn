@@ -64,4 +64,34 @@ public class OperationsOnCollections {
 		}
 		return count;
 	}
+	
+	/**
+	 * Gets the number of elements from the list which are not present in any set.
+	 * @param list list with elements to check
+	 * @param sets sets on which the elements are checked 
+	 * @return the number of elements from list which are not present in the set
+	 */
+	public static int getNumberOfElementsFromListNotPresentInSets (IntList list, IntSet... sets) {
+		notNull(list, "List provided to get number of elements which are not present in the set is null.");
+		notNull(sets, "Sets on which number of elements from the list are checked is null.");
+		for (IntSet set : sets) {
+			notNull(set, "One of sets on which number of elements from the list are checked is null.");
+		}
+		
+		int count = 0;
+		boolean present = false;
+		for (int element : list) {
+			present = false;
+			for (IntSet set : sets) {
+				if (set.contains(element)) {
+					present = true;
+					break;
+				}
+			}
+			if (!present) {
+				count++;
+			}
+		}
+		return count;
+	}
 }
