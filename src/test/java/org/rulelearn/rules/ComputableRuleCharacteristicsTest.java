@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.rulelearn.data.InformationTable;
 
 /**
  * Tests for {@link ComputableRuleCharacteristics}.
@@ -90,7 +89,7 @@ class ComputableRuleCharacteristicsTest {
 	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getEpsilonPrime()}.
 	 */
 	@Test
-	void testGetEpsilonPrim() {
+	void testGetEpsilonPrime() {
 		//TODO: implement test
 	}
 
@@ -143,46 +142,27 @@ class ComputableRuleCharacteristicsTest {
 	}
 
 	/**
-	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#ComputableRuleCharacteristics(org.rulelearn.rules.Rule, org.rulelearn.data.InformationTable)}.
+	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#ComputableRuleCharacteristics(RuleCoverageInfo))}
+	 * and {@link ComputableRuleCharacteristics#getRuleCoverageInfo()}.
 	 */
 	@Test
 	void testComputableRuleCharacteristics01() {
-		Rule rule = Mockito.mock(Rule.class);
-		InformationTable informationTable = Mockito.mock(InformationTable.class);
+		RuleCoverageInfo ruleCoverageInfoMock = Mockito.mock(RuleCoverageInfo.class);
 		
-		ComputableRuleCharacteristics characteristics = new ComputableRuleCharacteristics(rule, informationTable);
+		ComputableRuleCharacteristics characteristics = new ComputableRuleCharacteristics(ruleCoverageInfoMock);
 		
-		assertEquals(rule,  characteristics.getRule());
-		assertEquals(informationTable,  characteristics.getInformationTable());
+		assertEquals(ruleCoverageInfoMock, characteristics.getRuleCoverageInfo());
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#ComputableRuleCharacteristics(org.rulelearn.rules.Rule, org.rulelearn.data.InformationTable)}.
-	 * Tests throwing of {@link NullPointerException} when one of the constructor parameters is {@code null}.
+	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#ComputableRuleCharacteristics(RuleCoverageInfo))}.
+	 * Tests throwing of {@link NullPointerException} when constructor parameter is {@code null}.
 	 */
 	@Test
 	void testComputableRuleCharacteristics02() {
-		InformationTable informationTable = Mockito.mock(InformationTable.class);
-
 		try {
-			new ComputableRuleCharacteristics(null, informationTable);
-			fail("Should not create computable rule characteristics with a null rule.");
-		} catch (NullPointerException exception) {
-			//exception is correctly thrown => do nothing
-		}
-	}
-	
-	/**
-	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#ComputableRuleCharacteristics(org.rulelearn.rules.Rule, org.rulelearn.data.InformationTable)}.
-	 * Tests throwing of {@link NullPointerException} when one of the constructor parameters is {@code null}.
-	 */
-	@Test
-	void testComputableRuleCharacteristics03() {
-		Rule rule = Mockito.mock(Rule.class);
-		
-		try {
-			new ComputableRuleCharacteristics(rule, null);
-			fail("Should not create computable rule characteristics with a null information table.");
+			new ComputableRuleCharacteristics(null);
+			fail("Should not create computable rule characteristics with a null rule coverage info.");
 		} catch (NullPointerException exception) {
 			//exception is correctly thrown => do nothing
 		}

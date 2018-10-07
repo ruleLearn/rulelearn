@@ -49,7 +49,7 @@ class VCDomLemTest {
 	 * Tests upward unions and certain rules.
 	 */
 	@Test
-	public List<Rule> testUpwardUnionCertain() {
+	public RuleSetWithCharacteristics testUpwardUnionCertain() {
 		EpsilonConsistencyMeasure consistencyMeasure = new EpsilonConsistencyMeasure();
 		double consistencyThreshold = 0.0;
 		
@@ -105,19 +105,20 @@ class VCDomLemTest {
 			minimalRuleConditionsWithApproximatedSets.addAll(verifiedRuleConditionsWithApproximatedSet);
 		}
 		
-		List<Rule> rules = new ObjectArrayList<>();
+		Rule[] rules = new Rule[minimalRuleConditionsWithApproximatedSets.size()];
+		RuleCoverageInfo[] ruleCoverageInfos = new RuleCoverageInfo[minimalRuleConditionsWithApproximatedSets.size()];
 		List<List<Condition<? extends EvaluationField>>> decisions;
-		Rule rule;
+		int ruleIndex = 0;
 		
 		for (RuleConditionsWithApproximatedSet minimalRuleConditionsWithApproximatedSet : minimalRuleConditionsWithApproximatedSets ) {
 			decisions = new ObjectArrayList<>(); //TODO: optimize to create less objects
 			decisions.add(minimalRuleConditionsWithApproximatedSet.getApproximatedSet().getElementaryDecisions());
-			rule = new Rule(ruleType, ruleSemantics, minimalRuleConditionsWithApproximatedSet.getRuleConditions(), decisions);
-			rules.add(rule);
-			//TODO: calculate ComputableRuleCharacteristics for each rule
+			rules[ruleIndex] = new Rule(ruleType, ruleSemantics, minimalRuleConditionsWithApproximatedSet.getRuleConditions(), decisions);
+			ruleCoverageInfos[ruleIndex] = minimalRuleConditionsWithApproximatedSet.getRuleConditions().getRuleCoverageInfo();
+			ruleIndex++;
 		}
 		
-		return rules;
+		return new RuleSetWithComputableCharacteristics(rules, ruleCoverageInfos, true); //TODO: second version of VCDomLEM returning just decision rules
 	}
 	
 	private List<RuleConditions> calculateApproximatedSetRuleConditionsList(ApproximatedSet approximatedSet, RuleType ruleType, RuleSemantics ruleSemantics, AllowedObjectsType allowedObjectsType,

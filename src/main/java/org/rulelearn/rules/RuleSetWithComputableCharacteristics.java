@@ -17,9 +17,10 @@
 package org.rulelearn.rules;
 
 import static org.rulelearn.core.Precondition.notNull;
+
+import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
-import org.rulelearn.data.InformationTable;
 
 /**
  * Set of decision rules and their complete characteristics (pre-stored or computed on demand - see {@link ComputableRuleCharacteristics}),
@@ -31,39 +32,47 @@ import org.rulelearn.data.InformationTable;
 public class RuleSetWithComputableCharacteristics extends RuleSetWithCharacteristics {
 	
 	/**
-	 * Information table against which all rule characteristics are computed.
+	 * Array with rule coverage info for each decision rule stored in this rule set.
 	 */
-	protected InformationTable informationTable = null;
+	RuleCoverageInfo[] ruleCoverageInfos;
 	
 	/**
-	 * Constructor storing rules from the given array and the information table against which characteristics of all rules should be computed.
+	 * Constructor storing given rules and rule coverage info for each rule (given arrays get cloned).
 	 * 
 	 * @param rules decision rules to store in this rule set
-	 * @param informationTable information table against which all rule characteristics should be computed
+	 * @param ruleCoverageInfos array with rule coverage info for each rule
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public RuleSetWithComputableCharacteristics(Rule[] rules, InformationTable informationTable) {
-		this(rules, informationTable, false);
+	public RuleSetWithComputableCharacteristics(Rule[] rules, RuleCoverageInfo[] ruleCoverageInfos) {
+		this(rules, ruleCoverageInfos, false);
 	}
 	
 	/**
-	 * Constructor storing rules from the given array and the information table against which characteristics of all rules should be computed.
+	 * Constructor storing given rules and rule coverage info for each rule.
 	 * 
 	 * @param rules decision rules to store in this rule set
-	 * @param informationTable information table against which all rule characteristics should be computed
-	 * @param accelerateByReadOnlyParams tells if construction of this object should be accelerated by assuming that the given references
-	 *        to an array of rules is not going to be used outside this class
-	 *        to modify that array (and thus, this object does not need to clone the array for internal read-only use)
+	 * @param ruleCoverageInfos array with rule coverage info for each rule
+	 * @param accelerateByReadOnlyParams tells if construction of this object should be accelerated by assuming that given references
+	 *        to an array of rules and to an array with rule coverage info for each rule are not going to be used outside this class
+	 *        to modify these arrays (and thus, this object does not need to clone the arrays for internal read-only use)
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws InvalidSizeException if length of given array with decision rules is different than length of given array with rule coverage info for each rule
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT)
-	public RuleSetWithComputableCharacteristics(Rule[] rules, InformationTable informationTable, boolean accelerateByReadOnlyParams) {
+	public RuleSetWithComputableCharacteristics(Rule[] rules, RuleCoverageInfo[] ruleCoverageInfos, boolean accelerateByReadOnlyParams) {
 		super(rules, accelerateByReadOnlyParams);
 		
 		this.ruleCharacteristics = new ComputableRuleCharacteristics[rules.length];
-		this.informationTable = notNull(informationTable, "Information table is null.");
+		
+		notNull(ruleCoverageInfos, "Array with rule coverage infos is null.");
+		
+		this.ruleCoverageInfos = accelerateByReadOnlyParams ? ruleCoverageInfos : ruleCoverageInfos.clone();
+		
+		if (rules.length != ruleCoverageInfos.length) {
+			throw new InvalidSizeException("Number of rules and rule coverage infos are different.");
+		}
 	}
 	
 	/**
@@ -77,19 +86,10 @@ public class RuleSetWithComputableCharacteristics extends RuleSetWithCharacteris
 	@Override
 	public ComputableRuleCharacteristics getRuleCharacteristics(int ruleIndex) {
 		if (this.ruleCharacteristics[ruleIndex] == null) {
-			this.ruleCharacteristics[ruleIndex] = new ComputableRuleCharacteristics(rules[ruleIndex], this.informationTable);
+			this.ruleCharacteristics[ruleIndex] = new ComputableRuleCharacteristics(this.ruleCoverageInfos[ruleIndex]);
 		}
 		
 		return (ComputableRuleCharacteristics)this.ruleCharacteristics[ruleIndex];
-	}
-
-	/**
-	 * Gets the information table against which all rule characteristics are computed.
-	 * 
-	 * @return information table against which all rule characteristics are computed
-	 */
-	public InformationTable getInformationTable() {
-		return this.informationTable;
 	}
 
 }

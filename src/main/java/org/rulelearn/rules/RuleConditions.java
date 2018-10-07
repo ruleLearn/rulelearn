@@ -526,4 +526,15 @@ public class RuleConditions {
 		return (this.attributeIndices.containsKey(attributeIndex) && (this.attributeIndices.get(attributeIndex) > 0));
 	}
 	
+	/**
+	 * Gets coverage information concerning induced decision rule.
+	 * 
+	 * @return coverage information concerning induced decision rule
+	 * @see RuleCoverageInfo
+	 */
+	public RuleCoverageInfo getRuleCoverageInfo() {
+		return new RuleCoverageInfo(this.indicesOfPositiveObjects, this.indicesOfNeutralObjects, this.indicedOfCoveredObjects,
+				this.learningInformationTable.getNumberOfObjects());
+	}
+	
 }
