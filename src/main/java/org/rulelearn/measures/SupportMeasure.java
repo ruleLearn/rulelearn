@@ -31,7 +31,6 @@ public class SupportMeasure implements GainTypeMeasure, RuleEvaluator {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @param rule {@inheritDoc}
 	 * @param ruleCoverageInformation {@inheritDoc}
 	 * 
 	 * @return {@inheritDoc}
