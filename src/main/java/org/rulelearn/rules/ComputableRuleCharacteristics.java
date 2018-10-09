@@ -19,7 +19,7 @@ package org.rulelearn.rules;
 import static org.rulelearn.core.Precondition.notNull;
 
 /**
- * Characteristics of a decision rule, calculated using rule coverage information {@link RuleCoverageInfo}. This class extends {@link RuleCharacteristics}
+ * Characteristics of a decision rule, calculated using rule coverage information {@link RuleCoverageInformation}. This class extends {@link RuleCharacteristics}
  * by ensuring that if any characteristic is not stored explicitly, it will be calculated on demand.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
@@ -30,7 +30,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	/**
 	 * Coverage information concerning considered decision rule {@link Rule}.
 	 */
-	RuleCoverageInfo ruleCoverageInfo;
+	RuleCoverageInformation ruleCoverageInformation;
 	
 	/**
 	 * Number of all objects from the information table
@@ -55,12 +55,23 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	/**
 	 * Creates these rule characteristics using given rule coverage information.
 	 * 
-	 * @param ruleCoverageInfo coverage information concerning considered decision rule {@link RuleCoverageInfo}
+	 * @param ruleCoverageInformation coverage information concerning considered decision rule {@link RuleCoverageInformation}
 	 * @throws NullPointerException if given parameter is {@code null}
 	 */
-	public ComputableRuleCharacteristics(RuleCoverageInfo ruleCoverageInfo) {
+	public ComputableRuleCharacteristics(RuleCoverageInformation ruleCoverageInformation) {
 		super();
-		this.ruleCoverageInfo = notNull(ruleCoverageInfo, "Rule coverage info is null.");
+		this.ruleCoverageInformation = notNull(ruleCoverageInformation, "Rule coverage information is null.");
+	}
+	
+	/**
+	 * Gets value of given rule evaluator.
+	 * TODO: caching?
+	 * 
+	 * @param ruleEvaluator rule evaluator
+	 * @return value of given rule evaluator
+	 */
+	public double getCharacteristic(RuleEvaluator ruleEvaluator) {
+		return ruleEvaluator.evaluate(ruleCoverageInformation);
 	}
 	
 	//TODO: override getters throwing an exception, to compute required characteristic on demand
@@ -70,10 +81,10 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	 * Gets coverage information concerning considered decision rule.
 	 * 
 	 * @return coverage information concerning considered decision rule
-	 * @see RuleCoverageInfo
+	 * @see RuleCoverageInformation
 	 */
-	public RuleCoverageInfo getRuleCoverageInfo() {
-		return this.ruleCoverageInfo;
+	public RuleCoverageInformation getRuleCoverageInformation() {
+		return this.ruleCoverageInformation;
 	}
 	
 	/**

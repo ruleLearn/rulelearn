@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class RuleCoverageInfo {
+public class RuleCoverageInformation {
 	//rule coverage info
 	//rule coverage report
 	//rule coverage summary
@@ -75,7 +75,7 @@ public class RuleCoverageInfo {
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidValueException if given number of all objects is less than zero
 	 */
-	public RuleCoverageInfo(IntSet indicesOfPositiveObjects, IntSet indicesOfNeutralObjects, IntList indicedOfCoveredObjects, int allObjectsCount) {
+	public RuleCoverageInformation(IntSet indicesOfPositiveObjects, IntSet indicesOfNeutralObjects, IntList indicedOfCoveredObjects, int allObjectsCount) {
 		super();
 		this.indicesOfPositiveObjects = Precondition.notNull(indicesOfPositiveObjects, "Positive objects are null.");
 		this.indicesOfNeutralObjects = Precondition.notNull(indicesOfNeutralObjects, "Neutral objects are null.");

@@ -16,8 +16,8 @@
 
 package org.rulelearn.measures;
 
-import org.rulelearn.data.InformationTable;
-import org.rulelearn.rules.Rule;
+import org.rulelearn.core.OperationsOnCollections;
+import org.rulelearn.rules.RuleCoverageInformation;
 import org.rulelearn.rules.RuleEvaluator;
 
 /**
@@ -32,21 +32,14 @@ public class SupportMeasure implements GainTypeMeasure, RuleEvaluator {
 	 * {@inheritDoc}
 	 * 
 	 * @param rule {@inheritDoc}
-	 * @param informationTable {@inheritDoc}
+	 * @param ruleCoverageInformation {@inheritDoc}
 	 * 
 	 * @return {@inheritDoc}
 	 * @throws NullPointerException {@inheritDoc}
 	 */
 	@Override
-	public double evaluate(Rule rule, InformationTable informationTable) {
-		int counter = 0;
-		int numberOfObjects = informationTable.getNumberOfObjects(); 
-		for (int i = 0; i < numberOfObjects; i++) {
-			if (rule.supportedBy(i, informationTable)) {
-				counter++;
-			}
-		}
-		return counter;
+	public double evaluate(RuleCoverageInformation ruleCoverageInformation) {
+		return OperationsOnCollections.getNumberOfElementsFromListInSet(ruleCoverageInformation.getIndicedOfCoveredObjects(), ruleCoverageInformation.getIndicesOfPositiveObjects());
 	}
 	
 }

@@ -49,7 +49,8 @@ public class RuleConditions {
 	List<Condition<? extends EvaluationField>> conditions;
 	
 	/**
-	 * Indices of all objects that satisfy right-hand side (RHS, decision part) of induced decision rule. In case of a certain/possible rule, these are the objects from considered approximated set.
+	 * Indices of all objects that satisfy right-hand side (RHS, decision part) of induced decision rule.
+	 * In case of a certain/possible rule, these are the objects from considered approximated set.
 	 */
 	IntSet indicesOfPositiveObjects; //e.g., IntOpenHashSet from fastutil library
 	
@@ -530,10 +531,10 @@ public class RuleConditions {
 	 * Gets coverage information concerning induced decision rule.
 	 * 
 	 * @return coverage information concerning induced decision rule
-	 * @see RuleCoverageInfo
+	 * @see RuleCoverageInformation
 	 */
-	public RuleCoverageInfo getRuleCoverageInfo() {
-		return new RuleCoverageInfo(this.indicesOfPositiveObjects, this.indicesOfNeutralObjects, this.indicedOfCoveredObjects,
+	public RuleCoverageInformation getRuleCoverageInformation() {
+		return new RuleCoverageInformation(this.indicesOfPositiveObjects, this.indicesOfNeutralObjects, this.indicedOfCoveredObjects,
 				this.learningInformationTable.getNumberOfObjects());
 	}
 	

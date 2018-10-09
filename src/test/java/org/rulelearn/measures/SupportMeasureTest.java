@@ -23,8 +23,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.rulelearn.data.InformationTable;
-import org.rulelearn.rules.Rule;
+import org.rulelearn.rules.RuleCoverageInformation;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 
 /**
  * Tests for {@link SupportMeasure}.
@@ -35,29 +37,22 @@ import org.rulelearn.rules.Rule;
 class SupportMeasureTest {
 
 	@Mock
-	private InformationTable informationTableMock;
-	
-	@Mock 
-	private Rule ruleMock;
+	private RuleCoverageInformation ruleCoverageInformationMock;
 	
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		when(this.informationTableMock.getNumberOfObjects()).thenReturn(5);
-		when(this.ruleMock.supportedBy(0, this.informationTableMock)).thenReturn(true);
-		when(this.ruleMock.supportedBy(1, this.informationTableMock)).thenReturn(true);
-		when(this.ruleMock.supportedBy(2, this.informationTableMock)).thenReturn(true);
-		when(this.ruleMock.supportedBy(3, this.informationTableMock)).thenReturn(true);
-		when(this.ruleMock.supportedBy(4, this.informationTableMock)).thenReturn(false);
+		when(this.ruleCoverageInformationMock.getIndicedOfCoveredObjects()).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4, 5}));
+		when(this.ruleCoverageInformationMock.getIndicesOfPositiveObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {0, 1, 2, 5}));
 	}
 	
 	/**
-	 * Test for method {@link SupportMeasure#evaluate(Rule, InformationTable)}.
+	 * Test for method {@link SupportMeasure#evaluate(RuleCoverageInformation)}.
 	 */
 	@Test
-	void testEvalueate() {
+	void testEvaluate() {
 		SupportMeasure support = new SupportMeasure();
-		assertEquals(4, support.evaluate(this.ruleMock, this.informationTableMock));
+		assertEquals(4, support.evaluate(this.ruleCoverageInformationMock));
 	}
 
 }

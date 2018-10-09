@@ -143,15 +143,15 @@ class ComputableRuleCharacteristicsTest {
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#ComputableRuleCharacteristics(RuleCoverageInfo))}
-	 * and {@link ComputableRuleCharacteristics#getRuleCoverageInfo()}.
+	 * and {@link ComputableRuleCharacteristics#getRuleCoverageInformation()}.
 	 */
 	@Test
 	void testComputableRuleCharacteristics01() {
-		RuleCoverageInfo ruleCoverageInfoMock = Mockito.mock(RuleCoverageInfo.class);
+		RuleCoverageInformation ruleCoverageInformationMock = Mockito.mock(RuleCoverageInformation.class);
 		
-		ComputableRuleCharacteristics characteristics = new ComputableRuleCharacteristics(ruleCoverageInfoMock);
+		ComputableRuleCharacteristics characteristics = new ComputableRuleCharacteristics(ruleCoverageInformationMock);
 		
-		assertEquals(ruleCoverageInfoMock, characteristics.getRuleCoverageInfo());
+		assertEquals(ruleCoverageInformationMock, characteristics.getRuleCoverageInformation());
 	}
 	
 	/**

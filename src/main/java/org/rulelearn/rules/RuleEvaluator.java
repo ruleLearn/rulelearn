@@ -16,11 +16,10 @@
 
 package org.rulelearn.rules;
 
-import org.rulelearn.data.InformationTable;
 import org.rulelearn.measures.Measure;
 
 /**
- * Contract of an evaluator of a rule {@link Rule} in the context of an information table {@link InformationTable}.
+ * Contract of an evaluator of a rule {@link Rule} using rule coverage information {@link RuleCoverageInformation}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -28,14 +27,13 @@ import org.rulelearn.measures.Measure;
 public interface RuleEvaluator extends Measure {
 	
 	/**
-	 * Evaluates given decision rule in the context of given information table.
+	 * Evaluates given decision rule in the context of rule coverage information.
 	 * 
-	 * @param rule decision rule being evaluated
-	 * @param informationTable information table used to evaluate given decision rule
+	 * @param ruleCoverageInformation rule coverage information concerning considered decision rule
 	 * 
-	 * @return evaluation of the given rule in the context of the given information table
-	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @return evaluation of the given rule in the context of the given rule coverage information
+	 * @throws NullPointerException if given parameter is {@code null}
 	 */
-	public double evaluate(Rule rule, InformationTable informationTable);
+	public double evaluate(RuleCoverageInformation ruleCoverageInformation);
 	
 }

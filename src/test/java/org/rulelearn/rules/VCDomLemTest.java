@@ -106,7 +106,7 @@ class VCDomLemTest {
 		}
 		
 		Rule[] rules = new Rule[minimalRuleConditionsWithApproximatedSets.size()];
-		RuleCoverageInfo[] ruleCoverageInfos = new RuleCoverageInfo[minimalRuleConditionsWithApproximatedSets.size()];
+		RuleCoverageInformation[] ruleCoverageInformationArray = new RuleCoverageInformation[minimalRuleConditionsWithApproximatedSets.size()];
 		List<List<Condition<? extends EvaluationField>>> decisions;
 		int ruleIndex = 0;
 		
@@ -114,11 +114,11 @@ class VCDomLemTest {
 			decisions = new ObjectArrayList<>(); //TODO: optimize to create less objects
 			decisions.add(minimalRuleConditionsWithApproximatedSet.getApproximatedSet().getElementaryDecisions());
 			rules[ruleIndex] = new Rule(ruleType, ruleSemantics, minimalRuleConditionsWithApproximatedSet.getRuleConditions(), decisions);
-			ruleCoverageInfos[ruleIndex] = minimalRuleConditionsWithApproximatedSet.getRuleConditions().getRuleCoverageInfo();
+			ruleCoverageInformationArray[ruleIndex] = minimalRuleConditionsWithApproximatedSet.getRuleConditions().getRuleCoverageInformation();
 			ruleIndex++;
 		}
 		
-		return new RuleSetWithComputableCharacteristics(rules, ruleCoverageInfos, true); //TODO: second version of VCDomLEM returning just decision rules
+		return new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true); //TODO: second version of VCDomLEM returning just decision rules
 	}
 	
 	private List<RuleConditions> calculateApproximatedSetRuleConditionsList(ApproximatedSet approximatedSet, RuleType ruleType, RuleSemantics ruleSemantics, AllowedObjectsType allowedObjectsType,
