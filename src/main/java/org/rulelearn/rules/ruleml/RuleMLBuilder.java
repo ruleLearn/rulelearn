@@ -23,8 +23,10 @@ import static org.rulelearn.core.Precondition.notNull;
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleCharacteristics;
+import org.rulelearn.rules.RuleSemantics;
 import org.rulelearn.rules.RuleSet;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
+import org.rulelearn.rules.RuleType;
 import org.rulelearn.rules.SimpleConditionAtLeast;
 import org.rulelearn.rules.SimpleConditionAtMost;
 import org.rulelearn.rules.SimpleConditionEqual;
@@ -123,7 +125,7 @@ public class RuleMLBuilder {
 	 * @return RuleML representation of the rule
 	 */
 	public String toRuleMLString(Rule rule) {
-		notNull(rule, "Rule to be transfomed into a RuleML string is null.");
+		/*notNull(rule, "Rule to be transfomed into a RuleML string is null.");
 		StringBuilder result = new StringBuilder();
 		
 		result.append(RuleMLElements.getBeginningTag(RuleMLElements.getAssertKeyword())).append(RuleMLElements.getTab()).append(
@@ -167,7 +169,9 @@ public class RuleMLBuilder {
 	    	// end rule
 	    	result.append(RuleMLElements.getTab()).append(RuleMLElements.getEndTag(RuleMLElements.Implies)).append(RuleMLElements.getEndTag(RuleMLElements.Assert));
 	    	
-	    	return result.toString();
+	    	return result.toString();*/
+		
+		return toRuleMLString(rule, null);
 	}
 	
 	/**
@@ -182,7 +186,6 @@ public class RuleMLBuilder {
 	 */
 	public String toRuleMLString(Rule rule, RuleCharacteristics ruleCharacteristics) {
 		notNull(rule, "Rule to be transfomed into a RuleML string is null.");
-		notNull(ruleCharacteristics, "Rule characteristics to be transfomed into a RuleML string are null.");
 		StringBuilder result = new StringBuilder();
 
 		// rule beginning
@@ -224,11 +227,17 @@ public class RuleMLBuilder {
 			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getEndTag(RuleMLElements.getOrKeyword()));
 		}
 	    	result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.Then));
+	    	
+	    	// rule type and rule semantics
+	    	result.append(toRuleMLString(rule.getSemantics(), 2));
+	    	result.append(toRuleMLString(rule.getType(), 2));
 		
 		// rule characteristics
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginningTag(RuleMLElements.getEvaluationsKeyword()));
-		result.append(toRuleMLString(ruleCharacteristics, 3));
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.getEvaluationsKeyword()));
+	    	if (ruleCharacteristics != null) {
+			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginningTag(RuleMLElements.getEvaluationsKeyword()));
+			result.append(toRuleMLString(ruleCharacteristics, 3));
+			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getEndTag(RuleMLElements.getEvaluationsKeyword()));
+	    	}
 		
 		// end rule
 		result.append(RuleMLElements.getTab()).append(RuleMLElements.getEndTag(RuleMLElements.Implies)).append(RuleMLElements.getEndTag(RuleMLElements.Assert));
@@ -237,7 +246,7 @@ public class RuleMLBuilder {
 	}
 	
 	/**
-	 * Construct a RuleML string representing an elementary condition passed as a parameter. The RuleML string is constructed by 
+	 * Construct a RuleML string representing an elementary condition {@link Condition} passed as a parameter. The RuleML string is constructed by 
 	 * joining string RuleML representation of relation, limiting value, and attribute name.
 	 * 
 	 * @param condition an elementary condition to be represented as a RuleML string
@@ -285,7 +294,7 @@ public class RuleMLBuilder {
 	}
 	
 	/**
-	 * Construct a RuleML string representing characteristics of a rule passed as a parameter. The RuleML string is constructed by 
+	 * Construct a RuleML string representing characteristics {@link RuleCharacteristics} of a rule passed as a parameter. The RuleML string is constructed by 
 	 * joining string RuleML representation of all specified characteristics of a rule.
 	 *  
 	 * @param ruleCharacteristics characteristics of a rule
@@ -294,38 +303,95 @@ public class RuleMLBuilder {
 	 */
 	String toRuleMLString(RuleCharacteristics ruleCharacteristics, int indenture) {
 		notNull(ruleCharacteristics, "Rule characteristics to be transfomed into a RuleML string are null.");
-		final StringBuilder stringBuilder = new StringBuilder();
+		final StringBuilder result = new StringBuilder();
 		
-		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("Support", ruleCharacteristics.getSupport()));
-		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("Strength", ruleCharacteristics.getStrength()));
-		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("Confidence", ruleCharacteristics.getConfidence()));
-		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("CoverageFactor", String.valueOf(ruleCharacteristics.getCoverageFactor())));
-		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("Coverage", ruleCharacteristics.getCoverage()));
-		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("NegativeCoverage", ruleCharacteristics.getNegativeCoverage()));
-		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("InconsistencyMeasure", ruleCharacteristics.getEpsilon()));
-		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("EpsilonPrimMeasure", ruleCharacteristics.getEpsilonPrime()));		
-		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("f-ConfirmationMeasure", ruleCharacteristics.getFConfirmation()));
-		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("A-ConfirmationMeasure", ruleCharacteristics.getAConfirmation()));
-		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("Z-ConfirmationMeasure", ruleCharacteristics.getZConfirmation()));
-		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("l-ConfirmationMeasure", ruleCharacteristics.getLConfirmation()));
-		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("c1-ConfirmationMeasure", ruleCharacteristics.getC1Confirmation()));
-		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("s-ConfirmationMeasure", ruleCharacteristics.getSConfirmation()));
 				
-		return stringBuilder.toString();
+		return result.toString();
 	}
 	
+	/**
+	 * Construct a RuleML string representing semantics {@link RuleSemantics} of a rule passed as a parameter. 
+	 *  
+	 * @param ruleSemantics semantics of a rule
+	 * @param indenture how many tabs should be added to pretty print the document
+	 * @return RuleML representation of the rule semantics 
+	 */
+	String toRuleMLString(RuleSemantics ruleSemantics, int indenture) {
+		notNull(ruleSemantics, "Rule semantics to be transfomed into a RuleML string are null.");
+		final StringBuilder result = new StringBuilder();
+		
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(RuleMLElements.getBeginnigInlineTag(RuleMLElements.getRuleSemanticsKeyword()));
+        if (ruleSemantics == RuleSemantics.AT_LEAST) {
+        		result.append(RuleMLElements.getAtLeastKeyword());
+        }
+        else if (ruleSemantics == RuleSemantics.AT_MOST) {
+        		result.append(RuleMLElements.getAtMostKeyword());
+        }
+        else if (ruleSemantics == RuleSemantics.EQUAL) {
+        		result.append(RuleMLElements.getEqualsKeyword());
+        }
+        else {
+        		throw new UnknownRuleSemanticsException("Rule semantics " + ruleSemantics + " is unknown.");
+        }
+        result.append(RuleMLElements.getEndTag(RuleMLElements.getRuleSemanticsKeyword()));
+					
+		return result.toString();
+	}
+	
+	/**
+	 * Construct a RuleML string representing type {@link RuleType} of a rule passed as a parameter. 
+	 *  
+	 * @param ruleType type of a rule
+	 * @param indenture how many tabs should be added to pretty print the document
+	 * @return RuleML representation of the rule type 
+	 */
+	String toRuleMLString(RuleType ruleType, int indenture) {
+		notNull(ruleType, "Rule type to be transfomed into a RuleML string are null.");
+		final StringBuilder result = new StringBuilder();
+		
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(RuleMLElements.getBeginnigInlineTag(RuleMLElements.getRuleTypeKeyword()));
+        if (ruleType == RuleType.CERTAIN) {
+        		result.append(RuleMLElements.getCertainKeyword());
+        }
+        else if (ruleType == RuleType.POSSIBLE) {
+        		result.append(RuleMLElements.getPossibleKeyword());
+        }
+        else if (ruleType == RuleType.APPROXIMATE) {
+        		result.append(RuleMLElements.getApproximateKeyword());
+        }
+        else {
+        		throw new UnknownRuleSemanticsException("Rule type " + ruleType + " is unknown.");
+        }
+        result.append(RuleMLElements.getEndTag(RuleMLElements.getRuleTypeKeyword()));
+					
+		return result.toString();
+	}
 }

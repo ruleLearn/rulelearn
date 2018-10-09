@@ -37,6 +37,7 @@ import org.rulelearn.rules.RuleCharacteristics;
 import org.rulelearn.rules.RuleSemantics;
 import org.rulelearn.rules.RuleSet;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
+import org.rulelearn.rules.RuleType;
 import org.rulelearn.rules.SimpleConditionAtLeast;
 import org.rulelearn.rules.SimpleConditionAtMost;
 import org.rulelearn.rules.SimpleConditionEqual;
@@ -253,12 +254,12 @@ class RuleMLBuilderTest {
 	@Test
 	void testRuleMLBuilderCondition() {
 		//System.out.println(ruleMLBuilder.toRuleMLString(this.conditionAtLeast, 0));
-		assertEquals(ruleMLBuilder.toRuleMLString(this.conditionAtLeastMock, 0), this.conditionAtLeastRuleML);
-		assertEquals(ruleMLBuilder.toRuleMLString(this.conditionAtMostMock, 0), this.conditionAtMostRuleML);
-		assertEquals(ruleMLBuilder.toRuleMLString(this.conditionEqualMock, 0), this.conditionEqualRuleML);
+		assertEquals(this.conditionAtLeastRuleML, ruleMLBuilder.toRuleMLString(this.conditionAtLeastMock, 0));
+		assertEquals(this.conditionAtMostRuleML, ruleMLBuilder.toRuleMLString(this.conditionAtMostMock, 0));
+		assertEquals(this.conditionEqualRuleML, ruleMLBuilder.toRuleMLString(this.conditionEqualMock, 0));
 		//System.out.println(ruleMLBuilder.toRuleMLString(this.decisionAtLeast, 0));
-		assertEquals(ruleMLBuilder.toRuleMLString(this.decisionAtLeastMock, 0), this.decisionAtLeastRuleML);
-		assertEquals(ruleMLBuilder.toRuleMLString(this.decisionAtMostMock, 0), this.decisionAtMostRuleML);
+		assertEquals(this.decisionAtLeastRuleML, ruleMLBuilder.toRuleMLString(this.decisionAtLeastMock, 0));
+		assertEquals(this.decisionAtMostRuleML, ruleMLBuilder.toRuleMLString(this.decisionAtMostMock, 0));
 	}
 	
 	/**
@@ -267,7 +268,7 @@ class RuleMLBuilderTest {
 	@Test
 	void testRuleMLBuilderRuleCharacteristics() {
 		//System.out.println(ruleMLBuilder.toRuleMLString(this.ruleCharacteristicsMock, 0));
-		assertEquals(ruleMLBuilder.toRuleMLString(this.ruleCharacteristicsMock, 0), this.ruleCharacteristicsRuleML);
+		assertEquals(this.ruleCharacteristicsRuleML, ruleMLBuilder.toRuleMLString(this.ruleCharacteristicsMock, 0));
 	}
 	
 	/**
@@ -280,6 +281,8 @@ class RuleMLBuilderTest {
 		
 		when(this.ruleAtLeastMock.getConditions()).thenReturn(conditions);
 		when(this.ruleAtLeastMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtLeastMock.getSemantics()).thenReturn(RuleSemantics.AT_LEAST);
+		when(this.ruleAtLeastMock.getType()).thenReturn(RuleType.CERTAIN);
 		
 		String ruleRuleML = "<assert>\n" + 
 				"\t<implies>\n" + 
@@ -300,12 +303,14 @@ class RuleMLBuilderTest {
 				"\t\t\t\t\t<ind>b</ind>\n" + 
 				"\t\t\t\t\t\t<var>gd1</var>\n" + 
 				"\t\t\t\t\t</atom>\n" + 
-				"\t\t</then>\n" + 
+				"\t\t</then>\n" +
+				"\t\t<ruleSemantics>ge</ruleSemantics>\n" +
+				"\t\t<ruleType>certain</ruleType>\n" +
 				"\t</implies>\n" + 
 				"</assert>\n";
 		
 		//System.out.println(ruleMLBuilder.toRuleMLString(this.rule));
-		assertEquals(ruleMLBuilder.toRuleMLString(this.ruleAtLeastMock), ruleRuleML);
+		assertEquals(ruleRuleML, ruleMLBuilder.toRuleMLString(this.ruleAtLeastMock));
 	}
 
 	/**
@@ -318,6 +323,8 @@ class RuleMLBuilderTest {
 		
 		when(this.ruleAtMostMock.getConditions()).thenReturn(conditions);
 		when(this.ruleAtMostMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtMostMock.getSemantics()).thenReturn(RuleSemantics.AT_MOST);
+		when(this.ruleAtMostMock.getType()).thenReturn(RuleType.POSSIBLE);
 		
 		String ruleRuleML = "<assert>\n" + 
 				"\t<implies>\n" + 
@@ -347,7 +354,9 @@ class RuleMLBuilderTest {
 				"\t\t\t\t\t<ind>a</ind>\n" + 
 				"\t\t\t\t\t\t<var>cd1</var>\n" + 
 				"\t\t\t\t\t</atom>\n" + 
-				"\t\t</then>\n" + 
+				"\t\t</then>\n" +
+				"\t\t<ruleSemantics>le</ruleSemantics>\n" +
+				"\t\t<ruleType>possible</ruleType>\n" +
 				"\t</implies>\n" + 
 				"</assert>\n";
 		
@@ -366,6 +375,8 @@ class RuleMLBuilderTest {
 		
 		when(this.ruleAtLeastMock.getConditions()).thenReturn(conditions);
 		when(this.ruleAtLeastMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtLeastMock.getSemantics()).thenReturn(RuleSemantics.AT_LEAST);
+		when(this.ruleAtLeastMock.getType()).thenReturn(RuleType.CERTAIN);
 		
 		// second rule
 		conditions = new Condition<?>[] {this.conditionAtMostMock, this.conditionEqualMock};
@@ -373,6 +384,8 @@ class RuleMLBuilderTest {
 		
 		when(this.ruleAtMostMock.getConditions()).thenReturn(conditions);
 		when(this.ruleAtMostMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtMostMock.getSemantics()).thenReturn(RuleSemantics.AT_MOST);
+		when(this.ruleAtMostMock.getType()).thenReturn(RuleType.CERTAIN);
 		
 		when(this.ruleSetMock.getRule(0)).thenReturn(this.ruleAtLeastMock);
 		when(this.ruleSetMock.getRule(1)).thenReturn(this.ruleAtMostMock);
@@ -402,6 +415,8 @@ class RuleMLBuilderTest {
 				"\t\t\t\t\t\t<var>gd1</var>\n" + 
 				"\t\t\t\t\t</atom>\n" + 
 				"\t\t</then>\n" + 
+				"\t\t<ruleSemantics>ge</ruleSemantics>\n" +
+				"\t\t<ruleType>certain</ruleType>\n" +
 				"\t</implies>\n" + 
 				"</assert>\n" +
 				"<assert>\n" + 
@@ -432,14 +447,16 @@ class RuleMLBuilderTest {
 				"\t\t\t\t\t<ind>a</ind>\n" + 
 				"\t\t\t\t\t\t<var>cd1</var>\n" + 
 				"\t\t\t\t\t</atom>\n" + 
-				"\t\t</then>\n" + 
+				"\t\t</then>\n" +
+				"\t\t<ruleSemantics>le</ruleSemantics>\n" +
+				"\t\t<ruleType>certain</ruleType>\n" +
 				"\t</implies>\n" + 
 				"</assert>\n" +
 				"</act>\n" + 
 				"</RuleML>\n";
 		
 		//System.out.println(ruleMLBuilder.toRuleMLString(this.ruleSetMock, 1));
-		assertEquals(ruleSetRuleML, ruleMLBuilder.toRuleMLString(this.ruleSetMock, 1));
+		assertEquals(ruleMLBuilder.toRuleMLString(this.ruleSetMock, 1), ruleSetRuleML);
 	}
 	
 	/**
@@ -452,6 +469,8 @@ class RuleMLBuilderTest {
 		
 		when(this.ruleAtLeastMock.getConditions()).thenReturn(conditions);
 		when(this.ruleAtLeastMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtLeastMock.getSemantics()).thenReturn(RuleSemantics.AT_LEAST);
+		when(this.ruleAtLeastMock.getType()).thenReturn(RuleType.APPROXIMATE);
 				
 		when(this.ruleSetWithCharacteristicsMock.getRule(0)).thenReturn(this.ruleAtLeastMock);
 		when(this.ruleSetWithCharacteristicsMock.getRuleCharacteristics(0)).thenReturn(this.ruleCharacteristicsMock);
@@ -481,6 +500,8 @@ class RuleMLBuilderTest {
 				"\t\t\t\t\t\t<var>gd1</var>\n" + 
 				"\t\t\t\t\t</atom>\n" + 
 				"\t\t</then>\n" + 
+				"\t\t<ruleSemantics>ge</ruleSemantics>\n" +
+				"\t\t<ruleType>approximate</ruleType>\n" +
 				"\t\t<evaluations>\n" + 
 				"\t\t\t<evaluation measure=\"Support\" value=\"1.0\"/>\n" + 
 				"\t\t\t<evaluation measure=\"Strength\" value=\"1.0\"/>\n" + 
@@ -503,7 +524,7 @@ class RuleMLBuilderTest {
 				"</RuleML>\n";
 		
 		//System.out.println(ruleMLBuilder.toRuleMLString(this.ruleSetWithCharacteristicsMock, new UUID(0, 1)));
-		assertEquals(ruleMLBuilder.toRuleMLString(this.ruleSetWithCharacteristicsMock, new UUID(0, 1)), ruleSetRuleML);
+		assertEquals(ruleSetRuleML, ruleMLBuilder.toRuleMLString(this.ruleSetWithCharacteristicsMock, new UUID(0, 1)));
 	}
 		
 }

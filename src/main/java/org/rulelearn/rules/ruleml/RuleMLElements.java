@@ -39,25 +39,30 @@ public class RuleMLElements {
     static final String Assert = "assert";
     static final String Implies = "implies";
     static final String If = "if";
+    static final String Then = "then";
     static final String And = "and";
     static final String Or = "or";
     static final String Atom = "atom";
     static final String Operation = "op";
     static final String Relation = "rel";
-    static final String Constant = "ind";
-    static final String Variable = "var";	
-    static final String Then = "then";
-    static final String Evaluation = "evaluation";
-    static final String Evaluations = "evaluations";
-    static final String PositiveCovered = "positiveCovered";
-    static final String NegativeCovered = "negativeCovered";
-    static final String Case = "case";
     static final String AtLeast = "ge";
     static final String Greater = "g";
     static final String AtMost = "le";
     static final String Less = "l";
     static final String Equals = "eq";
     static final String NotEquals = "neq";
+    static final String Constant = "ind";
+    static final String Variable = "var";	
+    static final String Evaluations = "evaluations";
+    static final String Evaluation = "evaluation";
+    static final String PositiveCovered = "positiveCovered";
+    static final String NegativeCovered = "negativeCovered";
+    static final String Case = "case";
+    static final String RuleSemantics = "ruleSemantics";
+    static final String RuleType = "ruleType";
+    static final String Certain = "certain";
+    static final String Possible = "possible";
+    static final String Approximate = "approximate";
     
     /** 
      * Declarations of character sequences used for white spaces.
@@ -383,6 +388,41 @@ public class RuleMLElements {
 	 */
 	public static String getNotEqualsKeyword() {
 		return NotEquals;
+	}
+	
+	/**
+	 * @return the rule semantics keyword
+	 */
+	public static String getRuleSemanticsKeyword() {
+		return RuleSemantics;
+	}
+	
+	/**
+	 * @return the rule type keyword
+	 */
+	public static String getRuleTypeKeyword() {
+		return RuleType;
+	}
+	
+	/**
+	 * @return the certain keyword
+	 */
+	public static String getCertainKeyword() {
+		return Certain;
+	}
+	
+	/**
+	 * @return the possible keyword
+	 */
+	public static String getPossibleKeyword() {
+		return Possible;
+	}
+	
+	/**
+	 * @return the approximate keyword
+	 */
+	public static String getApproximateKeyword() {
+		return Approximate;
 	}
 
 	/**
