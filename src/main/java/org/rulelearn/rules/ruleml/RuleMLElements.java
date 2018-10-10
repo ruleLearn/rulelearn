@@ -77,7 +77,7 @@ public class RuleMLElements {
      */
     public static String getHeader () {
     		StringBuffer buffer = new StringBuffer();
-    		buffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<?xml-model href=\"http://deliberation.ruleml.org/1.01/relaxng/datalogplus_min_relaxed.rnc\"?>")
+    		buffer.append("<?xml version=\"1.01\" encoding=\"UTF-8\"?>\n<?xml-model href=\"http://deliberation.ruleml.org/1.01/relaxng/datalogplus_min_relaxed.rnc\"?>")
     			.append(getNewLine()).append("<RuleML xmlns=\"http://ruleml.org/spec\">").append(getNewLine());
     		return buffer.toString();
     }
