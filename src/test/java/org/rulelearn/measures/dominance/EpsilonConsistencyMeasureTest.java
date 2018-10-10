@@ -37,6 +37,7 @@ import org.rulelearn.dominance.DominanceConesDecisionDistributions;
 import org.rulelearn.measures.Measure;
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.RuleConditions;
+import org.rulelearn.rules.RuleCoverageInformation;
 import org.rulelearn.types.EvaluationField;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -77,6 +78,8 @@ class EpsilonConsistencyMeasureTest {
 	private Condition<EvaluationField> conditionMock;
 	@Mock 
 	private InformationTable informationTableMock1;
+	@Mock 
+	private RuleCoverageInformation ruleCoverageInformationMock;
 	
 	
 	@BeforeEach
@@ -132,7 +135,7 @@ class EpsilonConsistencyMeasureTest {
 		when(this.coneDecisionClassDistribution5.getCount(class2)).thenReturn(1);
 		when(this.coneDecisionClassDistribution5.getCount(class3)).thenReturn(1);
 		
-		// mock evaluation for rule condition
+		// mock evaluation for a rule condition
 		when(this.ruleConditionsMock.getIndicesOfCoveredObjects()).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4, 5}));
 		when(this.ruleConditionsMock.getIndicesOfCoveredObjectsWithCondition(this.conditionMock)).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4}));
 		when(this.ruleConditionsMock.getIndicesOfCoveredObjectsWithoutCondition(0)).thenReturn(new IntArrayList(new int [] {4, 5}));
@@ -140,6 +143,12 @@ class EpsilonConsistencyMeasureTest {
 		when(this.ruleConditionsMock.getLearningInformationTable()).thenReturn(this.informationTableMock1);
 		when(this.informationTableMock1.getNumberOfObjects()).thenReturn(10);
 		when(this.ruleConditionsMock.getIndicesOfNeutralObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {}));
+		
+		// mock evaluation of a rule coverage information
+		when(this.ruleCoverageInformationMock.getIndicesOfCoveredObjects()).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4, 5}));
+		when(this.ruleCoverageInformationMock.getIndicesOfPositiveObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {0, 1, 2}));
+		when(this.ruleCoverageInformationMock.getIndicesOfNeutralObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {4}));
+		when(this.ruleCoverageInformationMock.getAllObjectsCount()).thenReturn(10);
 	}
 
 	/**
@@ -178,8 +187,16 @@ class EpsilonConsistencyMeasureTest {
 	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#evaluate(RuleConditions)}.
 	 */
 	@Test
-	void testEvalueate() {		
+	void testEvalueate01() {		
 		assertEquals(0.2, this.measure.evaluate(this.ruleConditionsMock));
+	}
+	
+	/**
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#evaluate(RuleCoverageInformation)}.
+	 */
+	@Test
+	void testEvalueate02() {		
+		assertEquals(((double)1)/3, this.measure.evaluate(this.ruleCoverageInformationMock));
 	}
 	
 	/**

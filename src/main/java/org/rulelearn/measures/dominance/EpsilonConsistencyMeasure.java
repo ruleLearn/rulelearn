@@ -29,6 +29,8 @@ import org.rulelearn.rules.ConditionAdditionEvaluator;
 import org.rulelearn.rules.ConditionRemovalEvaluator;
 import org.rulelearn.rules.RuleConditions;
 import org.rulelearn.rules.RuleConditionsEvaluator;
+import org.rulelearn.rules.RuleCoverageInformation;
+import org.rulelearn.rules.RuleEvaluator;
 import org.rulelearn.types.EvaluationField;
 
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -46,7 +48,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMeasure<Union>, ConditionAdditionEvaluator, ConditionRemovalEvaluator, RuleConditionsEvaluator {
+public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMeasure<Union>, ConditionAdditionEvaluator, ConditionRemovalEvaluator, RuleConditionsEvaluator, RuleEvaluator {
 
 	protected final static double BEST_VALUE = 0.0;
 	protected final static double WORST_VALUE = 1.0;
@@ -95,11 +97,11 @@ public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMe
 	@Override
 	public double evaluate(RuleConditions ruleConditions) {
 		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjects();
-		IntSet unionObjects = ruleConditions.getIndicesOfPositiveObjects();
+		IntSet positiveObjects = ruleConditions.getIndicesOfPositiveObjects();
 		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
 		
-		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, unionObjects, neutralObjects) /
-				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - unionObjects.size() - neutralObjects.size()));
+		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, positiveObjects, neutralObjects) /
+				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - positiveObjects.size() - neutralObjects.size()));
 	}
 
 	/** 
@@ -114,11 +116,11 @@ public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMe
 	@Override
 	public double evaluateWithCondition(RuleConditions ruleConditions, Condition<EvaluationField> condition) {
 		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithCondition(condition);
-		IntSet unionObjects = ruleConditions.getIndicesOfPositiveObjects();
+		IntSet positiveObjects = ruleConditions.getIndicesOfPositiveObjects();
 		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
 		
-		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, unionObjects, neutralObjects) /
-				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - unionObjects.size() - neutralObjects.size()));
+		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, positiveObjects, neutralObjects) /
+				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - positiveObjects.size() - neutralObjects.size()));
 	}
 
 	/** 
@@ -135,11 +137,29 @@ public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMe
 	@Override
 	public double evaluateWithoutCondition(RuleConditions ruleConditions, int conditionIndex) {
 		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithoutCondition(conditionIndex);
-		IntSet unionObjects = ruleConditions.getIndicesOfPositiveObjects();
+		IntSet positiveObjects = ruleConditions.getIndicesOfPositiveObjects();
 		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
 		
-		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, unionObjects, neutralObjects) /
-				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - unionObjects.size() - neutralObjects.size()));
+		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, positiveObjects, neutralObjects) /
+				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - positiveObjects.size() - neutralObjects.size()));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param ruleCoverageInformation {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * @throws NullPointerException {@inheritDoc}
+	 */
+	@Override
+	public double evaluate(RuleCoverageInformation ruleCoverageInformation) {
+		IntList coveredObjects = ruleCoverageInformation.getIndicesOfCoveredObjects();
+		IntSet positiveObjects = ruleCoverageInformation.getIndicesOfPositiveObjects();
+		IntSet neutralObjects = ruleCoverageInformation.getIndicesOfNeutralObjects();
+		
+		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, positiveObjects, neutralObjects)) /
+				(ruleCoverageInformation.getAllObjectsCount() - positiveObjects.size() - neutralObjects.size());
 	}
 
 }
