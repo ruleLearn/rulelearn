@@ -16,6 +16,8 @@
 
 package org.rulelearn.rules;
 
+import static org.rulelearn.core.Precondition.notNull;
+
 import java.util.List;
 
 import org.rulelearn.approximations.ApproximatedSet;
@@ -32,7 +34,6 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import static org.rulelearn.core.Precondition.notNull;
 
 /**
  * List (complex) of elementary conditions on the left-hand side (LHS) of a decision rule induced to cover objects from a single approximated set {@link ApproximatedSet}.
@@ -115,7 +116,7 @@ public class RuleConditions {
 		private int lastCoveredObjectIndex = -1;
 	
 		/**
-		 * Gets index of next object covered by the rule conditions, or {@code -1} if there is no such object
+		 * Gets index of next object covered by the rule conditions, or {@code -1} if there is no such object.
 		 * 
 		 * @return index of next object covered by the rule conditions, or {@code -1} if there is no such object
 		 */
@@ -229,7 +230,7 @@ public class RuleConditions {
 	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfElementaryConditionsBaseObjects, IntSet indicesOfObjectsThatCanBeCovered, IntSet indicesOfNeutralObjects) {
 		this.learningInformationTable = notNull(learningInformationTable, "Information table is null.");
 		this.indicesOfPositiveObjects = notNull(indicesOfPositiveObjects, "Set of indices of positive objects is null.");
-		this.indicesOfElementaryConditionsBaseObjects = notNull(indicesOfElementaryConditionsBaseObjects, "Set of indices of elementary conditions base objects.");
+		this.indicesOfElementaryConditionsBaseObjects = notNull(indicesOfElementaryConditionsBaseObjects, "Set of indices of elementary conditions base objects is null.");
 		this.indicesOfObjectsThatCanBeCovered = notNull(indicesOfObjectsThatCanBeCovered, "Set of indices of objects that can be covered is null.");
 		this.indicesOfNeutralObjects = notNull(indicesOfNeutralObjects, "Set of indices of neutral objects is null.");
 		

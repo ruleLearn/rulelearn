@@ -142,23 +142,28 @@ class VCDomLemTest {
 			break;
 		}
 		
-		switch (allowedObjectsType) {
-		case POSITIVE_REGION:
-			indicesOfObjectsThatCanBeCovered = approximatedSet.getPositiveRegion();
-			indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
-			break;
-		case POSITIVE_AND_BOUNDARY_REGIONS:
-			indicesOfObjectsThatCanBeCovered = approximatedSet.getPositiveRegion();
-			indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getBoundaryRegion());
-			indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
-			break;
-		case ANY_REGION:
-			int numberOfObjects = approximatedSet.getInformationTable().getNumberOfObjects();
-			indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(numberOfObjects);
-			for (int i = 0; i < numberOfObjects; i++) {
-				indicesOfObjectsThatCanBeCovered.add(i);
+		if (ruleType == RuleType.CERTAIN) {
+			switch (allowedObjectsType) {
+			case POSITIVE_REGION:
+				indicesOfObjectsThatCanBeCovered = approximatedSet.getPositiveRegion();
+				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
+				break;
+			case POSITIVE_AND_BOUNDARY_REGIONS:
+				indicesOfObjectsThatCanBeCovered = approximatedSet.getPositiveRegion();
+				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getBoundaryRegion());
+				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
+				break;
+			case ANY_REGION:
+				int numberOfObjects = approximatedSet.getInformationTable().getNumberOfObjects();
+				indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(numberOfObjects);
+				for (int i = 0; i < numberOfObjects; i++) {
+					indicesOfObjectsThatCanBeCovered.add(i);
+				}
+				break;
 			}
-			break;
+		} else { //possible/approximate rule
+			indicesOfObjectsThatCanBeCovered = indicesOfElementaryConditionsBaseObjects;
+			indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
 		}
 		
 		//TODO: test order of elements!
@@ -196,7 +201,7 @@ class VCDomLemTest {
 			approximatedSetRuleConditions.add(ruleConditions);
 			
 			//remove objects covered by the new rule conditions
-			//setB \ ruleConditions.getIndicesOfCoveredObjects()
+			//setB = setB \ ruleConditions.getIndicesOfCoveredObjects()
 			IntSet setOfIndicesOfCoveredObjects = new IntOpenHashSet(ruleConditions.getIndicesOfCoveredObjects());
 			setB.removeAll(setOfIndicesOfCoveredObjects);
 		}

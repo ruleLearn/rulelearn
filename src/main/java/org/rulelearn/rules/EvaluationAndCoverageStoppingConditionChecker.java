@@ -18,6 +18,7 @@ package org.rulelearn.rules;
 
 import org.rulelearn.core.Precondition;
 
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -69,17 +70,16 @@ public class EvaluationAndCoverageStoppingConditionChecker implements RuleInduct
 		if (!ruleConditionsEvaluator.evaluationSatisfiesThreshold(ruleConditions, evaluationThreshold)) {
 			return false;
 		} else {
-			RuleConditions.CoveredObjectsIterator coveredObjectsIterator = ruleConditions.getCoveredObjectsIterator();
-			int coveredObjectIndex;
-			
 			IntSet indicesOfObjectsThatCanBeCovered = ruleConditions.getIndicesOfObjectsThatCanBeCovered();
+			IntList indicesOfCoveredObjects = ruleConditions.getIndicesOfCoveredObjects();
+			int coveredObjectIndex = 0;
+			int coveredObjectsCount = indicesOfCoveredObjects.size();
 			
-			while ((coveredObjectIndex = coveredObjectsIterator.next()) >= 0) {
-				//not allowed object is covered by rule conditions
-				if (!indicesOfObjectsThatCanBeCovered.contains(coveredObjectIndex)) {
+			while (coveredObjectIndex < coveredObjectsCount) {
+				if (!indicesOfObjectsThatCanBeCovered.contains(indicesOfCoveredObjects.getInt(coveredObjectIndex++))) {
 					return false;
 				}
-			}			
+			}
 			
 			return true;
 		}

@@ -16,9 +16,14 @@
 
 package org.rulelearn.rules;
 
+import static org.rulelearn.core.Precondition.notNull;
+
 import org.rulelearn.core.Precondition;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.types.EvaluationField;
 
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -31,9 +36,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public class RuleConditionsBuilder {
 	
-	IntSet consideredObjects;
+	IntList indicesOfConsideredObjects;
 	InformationTable learningInformationTable;
 	IntSet indicesOfPositiveObjects;
+	IntSet indicesOfElementaryConditionsBaseObjects;
 	IntSet indicesOfObjectsThatCanBeCovered;
 	IntSet indicesOfNeutralObjects;
 	ConditionGenerator conditionGenerator;
@@ -42,22 +48,26 @@ public class RuleConditionsBuilder {
 	/**
 	 * TODO: write javadoc
 	 * 
-	 * @param consideredObjects set of indices of positive object used to generate elementary conditions
+	 * @param indicesOfConsideredObjects set of indices of positive object used to generate elementary conditions
 	 * @param learningInformationTable TODO
 	 * @param indicesOfPositiveObjects TODO
+	 * @param indicesOfElementaryConditionsBaseObjects TODO
 	 * @param indicesOfObjectsThatCanBeCovered TODO
-	 * @param indicesOfNeutralObject TODO
+	 * @param indicesOfNeutralObjects TODO
 	 * @param conditionGenerator TODO
 	 * @param ruleInductionStoppingConditionChecker TODO
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public RuleConditionsBuilder(IntSet consideredObjects, InformationTable learningInformationTable,
-			IntSet indicesOfPositiveObjects, IntSet indicesOfObjectsThatCanBeCovered, IntSet indicesOfNeutralObject,
+	public RuleConditionsBuilder(IntList indicesOfConsideredObjects, InformationTable learningInformationTable,
+			IntSet indicesOfPositiveObjects, IntSet indicesOfElementaryConditionsBaseObjects, IntSet indicesOfObjectsThatCanBeCovered, IntSet indicesOfNeutralObjects,
 			ConditionGenerator conditionGenerator, RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker) {
-		this.consideredObjects = Precondition.notNull(consideredObjects, "Considered objects are null.");
+		this.indicesOfConsideredObjects = Precondition.notNull(indicesOfConsideredObjects, "Indices of considered objects are null.");
 		this.learningInformationTable = Precondition.notNull(learningInformationTable, "Learning information table is null.");
 		this.indicesOfPositiveObjects = Precondition.notNull(indicesOfPositiveObjects, "Indices of positive objects are null.");
+		this.indicesOfElementaryConditionsBaseObjects = notNull(indicesOfElementaryConditionsBaseObjects, "Set of indices of elementary conditions base objects.");
 		this.indicesOfObjectsThatCanBeCovered = Precondition.notNull(indicesOfObjectsThatCanBeCovered, "Indices of objects that can be covered are null.");
-		this.indicesOfNeutralObjects = Precondition.notNull(indicesOfNeutralObject, "Indices of neutral objects are null.");
+		this.indicesOfNeutralObjects = Precondition.notNull(indicesOfNeutralObjects, "Indices of neutral objects are null.");
 		this.conditionGenerator = Precondition.notNull(conditionGenerator, "Condition generator is null.");
 		this.ruleInductionStoppingConditionChecker = Precondition.notNull(ruleInductionStoppingConditionChecker, "Rule induction stopping condition checker is null.");
 	}
@@ -68,9 +78,29 @@ public class RuleConditionsBuilder {
 	 * @return built rule conditions
 	 */
 	public RuleConditions build() {
-		RuleConditions ruleConditions = new RuleConditions(learningInformationTable, indicesOfPositiveObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects);
+		RuleConditions ruleConditions = new RuleConditions(learningInformationTable, indicesOfPositiveObjects, indicesOfElementaryConditionsBaseObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects);
+		Condition<EvaluationField> bestCondition;
+		IntList indicesOfCoveredObjects;
+		IntSet indicesOfNoLongerCoveredObjects;
 		
-		//TODO: implement
+		while (!ruleInductionStoppingConditionChecker.isStoppingConditionSatisified(ruleConditions)) {
+			try {
+				bestCondition = conditionGenerator.getBestCondition(indicesOfConsideredObjects, ruleConditions);
+				ruleConditions.addCondition(bestCondition);
+				
+				//update indices of considered objects
+				indicesOfCoveredObjects = ruleConditions.getIndicesOfCoveredObjects();
+				indicesOfNoLongerCoveredObjects = new IntOpenHashSet();
+				for (int previouslyCoveredObjectIndex : indicesOfConsideredObjects) {
+					if (!indicesOfCoveredObjects.contains(previouslyCoveredObjectIndex)) { //previously covered object is no longer covered
+						indicesOfNoLongerCoveredObjects.add(previouslyCoveredObjectIndex);
+					}
+				}
+				indicesOfConsideredObjects.removeAll(indicesOfNoLongerCoveredObjects);
+			} catch (ElementaryConditionNotFoundException exception) {
+				//TODO: handle exception
+			}
+		} //while
 		
 		return ruleConditions;
 	}

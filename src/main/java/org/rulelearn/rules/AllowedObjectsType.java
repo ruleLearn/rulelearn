@@ -17,7 +17,7 @@
 package org.rulelearn.rules;
 
 /**
- * Type of a decision rule, reflecting the way of construction of this rule.
+ * Type of objects allowed to be covered by rule conditions {@link RuleConditions}, determining the way of construction of these rule conditions.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -32,7 +32,7 @@ public enum AllowedObjectsType {
 	 */
 	POSITIVE_AND_BOUNDARY_REGIONS,
 	/**
-	 * Allowed objects type used when {@link RuleConditions} can cover any objects. 
+	 * Allowed objects type used when {@link RuleConditions} can cover any objects from considered learning information table.
 	 */
 	ANY_REGION
 }
