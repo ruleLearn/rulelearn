@@ -38,7 +38,7 @@ public class SupportMeasure implements GainTypeMeasure, RuleEvaluator {
 	 */
 	@Override
 	public double evaluate(RuleCoverageInformation ruleCoverageInformation) {
-		return OperationsOnCollections.getNumberOfElementsFromListInSet(ruleCoverageInformation.getIndicedOfCoveredObjects(), ruleCoverageInformation.getIndicesOfPositiveObjects());
+		return OperationsOnCollections.getNumberOfElementsFromListInSet(ruleCoverageInformation.getIndicesOfCoveredObjects(), ruleCoverageInformation.getIndicesOfPositiveObjects());
 	}
 	
 }

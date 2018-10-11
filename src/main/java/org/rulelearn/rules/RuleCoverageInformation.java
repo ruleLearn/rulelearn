@@ -54,7 +54,7 @@ public class RuleCoverageInformation {
 	/**
 	 * Indices of objects from rule's learning information table that are covered by the rule.
 	 */
-	IntList indicedOfCoveredObjects;
+	IntList indicesOfCoveredObjects;
 	
 	/**
 	 * Number of all objects in rule's learning information table.
@@ -69,17 +69,17 @@ public class RuleCoverageInformation {
 	 * @param indicesOfNeutralObjects indices of all neutral objects from rule's learning information (decision) table, i.e., objects such that their decision
 	 *        is uncomparable with the limiting decision obtained by {@link ApproximatedSet#getLimitingDecision()}
 	 *        for the approximated set used to induce the rule
-	 * @param indicedOfCoveredObjects indices of all objects from rule's learning information table that are covered by the rule
+	 * @param indicesOfCoveredObjects indices of all objects from rule's learning information table that are covered by the rule
 	 * @param allObjectsCount number of all objects in rule's learning information table
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidValueException if given number of all objects is less than zero
 	 */
-	public RuleCoverageInformation(IntSet indicesOfPositiveObjects, IntSet indicesOfNeutralObjects, IntList indicedOfCoveredObjects, int allObjectsCount) {
+	public RuleCoverageInformation(IntSet indicesOfPositiveObjects, IntSet indicesOfNeutralObjects, IntList indicesOfCoveredObjects, int allObjectsCount) {
 		super();
 		this.indicesOfPositiveObjects = Precondition.notNull(indicesOfPositiveObjects, "Positive objects are null.");
 		this.indicesOfNeutralObjects = Precondition.notNull(indicesOfNeutralObjects, "Neutral objects are null.");
-		this.indicedOfCoveredObjects = Precondition.notNull(indicedOfCoveredObjects, "Covered objects are null.");
+		this.indicesOfCoveredObjects = Precondition.notNull(indicesOfCoveredObjects, "Covered objects are null.");
 		this.allObjectsCount = Precondition.nonNegative(allObjectsCount, "Number of objects is less than zero.");
 	}
 
@@ -109,8 +109,8 @@ public class RuleCoverageInformation {
 	 * 
 	 * @return indices of all objects from rule's learning information table that are covered by the rule
 	 */
-	public IntList getIndicedOfCoveredObjects() {
-		return indicedOfCoveredObjects;
+	public IntList getIndicesOfCoveredObjects() {
+		return indicesOfCoveredObjects;
 	}
 
 	/**

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://deliberation.ruleml.org/1.01/relaxng/datalogplus_min_relaxed.rnc"?>
+<RuleML xmlns="http://ruleml.org/spec">
+<act index="1">
+<assert>
+	<implies>
+		<if>
+				<atom>
+					<op>
+						<rel>ge</rel>
+					</op>
+					<ind>critical</ind>
+					<var>SourceAssetCriticality</var>
+				</atom>
+		</if>
+		<then>
+			<atom>
+				<op>
+					<rel>le</rel>
+				</op>
+				<ind>1</ind>
+				<var>Priority</var>
+			</atom>
+		</then>
+		<evaluations>
+			<evaluation measure="Strength" value="0.19689119170984457"/>
+			<evaluation measure="Confidence" value="1.0"/>
+		</evaluations>
+		<ruleSemantics>le</ruleSemantics>
+		<ruleType>certain</ruleType>
+	</implies>
+</assert>
+<assert>
+	<implies>
+		<if>
+			<and>
+				<atom>
+					<op>
+						<rel>le</rel>
+					</op>
+					<ind>med</ind>
+					<var>SourceAssetCriticality</var>
+				</atom>
+				<atom>
+					<op>
+						<rel>le</rel>
+					</op>
+					<ind>high</ind>
+					<var>TargetAssetCriticality</var>
+				</atom>
+			</and>
+		</if>
+		<then>
+			<atom>
+				<op>
+					<rel>ge</rel>
+				</op>
+				<ind>3</ind>
+				<var>Priority</var>
+			</atom>
+		</then>
+		<ruleSemantics>ge</ruleSemantics>
+		<ruleType>certain</ruleType>
+		<evaluations>
+			<evaluation measure="Strength" value="0.4905008635578584"/>
+			<evaluation measure="Confidence" value="1.0"/>
+ 		</evaluations>
+	</implies>
+</assert>
+</act>
+</RuleML>
+

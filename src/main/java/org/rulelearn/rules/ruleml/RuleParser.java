@@ -222,6 +222,8 @@ public class RuleParser {
 		Rule rule = null;
 		List<Condition<? extends EvaluationField>> conditions = null;
 		List<List<Condition<? extends EvaluationField>>> decisions = null;
+		RuleSemantics ruleSemantics = null;
+		RuleType ruleType = null;
 		
 		for (Node assertClause = assertElement.getFirstChild(); assertClause != null; assertClause = assertClause.getNextSibling()) {
 			if (assertClause.getNodeType() == Node.ELEMENT_NODE && "implies".equals(assertClause.getNodeName())) {
@@ -234,20 +236,26 @@ public class RuleParser {
                                 throw new RuleParseException("More than one 'if' node inside an 'implies' node detected in RuleML.");
                             }
                         }
-                        if ("then".equals(impliesClause.getNodeName())) {
+                        else if ("then".equals(impliesClause.getNodeName())) {
                             if (decisions == null) {
                             	decisions = parseRuleDecisionPart((Element) impliesClause);
                             } else {
                                 throw new RuleParseException("More than one 'then' node in an 'implies' node detected in RuleML.");
                             }
                         }
-                        if ("evaluations".equals(impliesClause.getNodeName())) {
+                        else if ("evaluations".equals(impliesClause.getNodeName())) {
                         		// TODO parse evaluations
                             /*if (evaluations == null) {
                          
                             } else {
                                 throw new RuleParserException("More than one 'evaluations' node detected in RuleML.");
                             }*/
+                        }
+                        else if ("ruleSemantics".equals(impliesClause.getNodeName())) {
+                        		ruleSemantics = parseRuleSemantics((Element) impliesClause);
+                        }
+                        else if ("ruleType".equals(impliesClause.getNodeName())) {
+                        		ruleType = parseRuleType((Element) impliesClause);
                         }
 	                }
 	             }
@@ -257,31 +265,31 @@ public class RuleParser {
 		notNull(conditions, "No condition part specified for a rule in RuleML.");
 		notNull(decisions, "No decision part specified for a rule in RuleML.");
 		if (decisions.size() >= 1) {
-			// TODO include types of rules in RuleML
-			RuleType ruleType = DEFAULT_RULE_TYPE;
-			
-			// TODO check/include rule semantics
-			RuleSemantics ruleSemantics = null;
-			// TODO for now the semantics of rule depends on type of first decision condition only
-			Condition<? extends EvaluationField> firstDecisionCondition = decisions.get(0).get(0);
-			AttributePreferenceType preferenceType = firstDecisionCondition.getAttributeWithContext().getAttributePreferenceType();
-			if (preferenceType == AttributePreferenceType.NONE) {
-				ruleSemantics = RuleSemantics.EQUAL;
+			if (ruleType == null) { // rule type not set
+				ruleType = DEFAULT_RULE_TYPE;
 			}
-			else if (preferenceType == AttributePreferenceType.GAIN) {
-				if (firstDecisionCondition instanceof SimpleConditionAtLeast) { // TODO works only for SimpleCondition
-					ruleSemantics = RuleSemantics.AT_LEAST;
+			if (ruleSemantics == null) { // rule semantics not set 
+				// TODO for now the semantics of rule depends on type of first decision condition only
+				Condition<? extends EvaluationField> firstDecisionCondition = decisions.get(0).get(0);
+				AttributePreferenceType preferenceType = firstDecisionCondition.getAttributeWithContext().getAttributePreferenceType();
+				if (preferenceType == AttributePreferenceType.NONE) {
+					ruleSemantics = RuleSemantics.EQUAL;
 				}
-				else {
-					ruleSemantics = RuleSemantics.AT_MOST;
+				else if (preferenceType == AttributePreferenceType.GAIN) {
+					if (firstDecisionCondition instanceof SimpleConditionAtLeast) { // TODO works only for SimpleCondition
+						ruleSemantics = RuleSemantics.AT_LEAST;
+					}
+					else {
+						ruleSemantics = RuleSemantics.AT_MOST;
+					}
 				}
-			}
-			else { //cost-type attribute
-				if (firstDecisionCondition instanceof SimpleConditionAtLeast) { // TODO works only for SimpleCondition
-					ruleSemantics = RuleSemantics.AT_MOST;
-				}
-				else {
-					ruleSemantics = RuleSemantics.AT_LEAST;
+				else { //cost-type attribute
+					if (firstDecisionCondition instanceof SimpleConditionAtLeast) { // TODO works only for SimpleCondition
+						ruleSemantics = RuleSemantics.AT_MOST;
+					}
+					else {
+						ruleSemantics = RuleSemantics.AT_LEAST;
+					}
 				}
 			}
 			rule = new Rule(ruleType, ruleSemantics, conditions, decisions);
@@ -496,4 +504,56 @@ public class RuleParser {
 		}
 		return field;
 	}
+	
+	/**
+	 * Parses semantics of a rule from RuleML.
+	 * 
+	 * @param ruleSemanticsElement RuleML element representing rule semantics
+	 * @return rule semantics {@link RuleSemantics}
+	 */
+	protected RuleSemantics parseRuleSemantics (Element ruleSemanticsElement) {
+		RuleSemantics ruleSemantics = null;
+        
+		Node valueNode = ruleSemanticsElement.getFirstChild();
+		if (valueNode != null) {
+	        String value = valueNode.getNodeValue();
+	        if ("le".equals(value.toLowerCase())) {
+	        		ruleSemantics = RuleSemantics.AT_MOST;
+	        	}
+	        	else if ("ge".equals(value.toLowerCase())) {
+	        		ruleSemantics = RuleSemantics.AT_LEAST;
+	        	}
+	        	else if ("eq".equals(value.toLowerCase())) {
+	        		ruleSemantics = RuleSemantics.EQUAL;
+	        }
+		}
+		
+	    return ruleSemantics;
+    }
+	
+	/**
+	 * Parses type of a rule from RuleML.
+	 * 
+	 * @param ruleTypeElement RuleML element representing rule semantics
+	 * @return rule type {@link RuleType}
+	 */
+	protected RuleType parseRuleType (Element ruleTypeElement) {
+		RuleType ruleType = null;
+		
+		Node valueNode = ruleTypeElement.getFirstChild();
+		if (valueNode != null) {   
+	        String value = valueNode.getTextContent();
+	        if ("certain".equals(value.toLowerCase())) {
+	        		ruleType	 = RuleType.CERTAIN;
+	        	}
+	        	else if ("possible".equals(value.toLowerCase())) {
+	        		ruleType	 = RuleType.POSSIBLE;
+	        	}
+	        	else if ("approximate".equals(value.toLowerCase())) {
+	        		ruleType	 = RuleType.APPROXIMATE;
+	        }
+        }
+		
+	    return ruleType;
+    }
 }
