@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Builder of {@link RuleConditions} objects. After creating an empty rule conditions object, iteratively adds best condition suggested by employed condition generator,
- * until stopping condition is satisfied. 
+ * until stopping condition is satisfied. Does not perform any pruning once stopping condition is satisfied.
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -47,14 +47,18 @@ public class RuleConditionsBuilder {
 	/**
 	 * Constructs this rule conditions builder.
 	 * 
-	 * @param indicesOfConsideredObjects set of indices of objects from learning information table that are used to generate elementary conditions
-	 * @param learningInformationTable TODO
-	 * @param indicesOfPositiveObjects TODO
-	 * @param indicesOfApproximationObjects TODO
-	 * @param indicesOfObjectsThatCanBeCovered TODO
-	 * @param indicesOfNeutralObjects TODO
-	 * @param conditionGenerator TODO
-	 * @param ruleInductionStoppingConditionChecker TODO
+	 * @param indicesOfConsideredObjects list of indices of (positive) objects from learning information which are considered when generating candidate elementary conditions
+	 * @param learningInformationTable learning information table for which rule conditions are constructed
+	 * @param indicesOfPositiveObjects set of indices of positive objects from the given learning information table, i.e., all objects that satisfy right-hand side (RHS, decision part) of induced decision rule;
+	 *        in case of a certain/possible rule, these are the objects from considered approximated set
+	 * @param indicesOfApproximationObjects indices of objects from learning information (decision) table that belong to lower/upper approximation, or boundary of considered approximated set;
+	 *        it is expected that this set is a subset of {@code indicesOfObjectsThatCanBeCovered}
+	 * @param indicesOfObjectsThatCanBeCovered indices of objects from the given learning information (decision) table that can be covered by soon-to-be-constructed rule conditions
+	 * @param indicesOfNeutralObjects indices of neutral objects from the given learning information (decision) table; it is expected that this set is a subset of {@code indicesOfObjectsThatCanBeCovered};
+	 * @param conditionGenerator generator of elementary conditions used to build rule conditions object
+	 * @param ruleInductionStoppingConditionChecker stopping condition checker iteratively used to verify if rule conditions
+	 *        (after extending with a new best elementary condition coming from condition generator)
+	 *        satisfy stopping condition(s)
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
@@ -75,6 +79,8 @@ public class RuleConditionsBuilder {
 	 * Builds rule conditions by iteratively adding best condition suggested by employed condition generator, until stopping condition is satisfied.
 	 * 
 	 * @return built rule conditions
+	 * @throws ElementaryConditionNotFoundException when at some point is was impossible to find any new elementary condition
+	 *         that could be added to rule conditions that still do not satisfy stopping condition(s)
 	 */
 	public RuleConditions build() {
 		RuleConditions ruleConditions = new RuleConditions(learningInformationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects);
@@ -97,7 +103,7 @@ public class RuleConditionsBuilder {
 				}
 				indicesOfConsideredObjects.removeAll(indicesOfNoLongerCoveredObjects);
 			} catch (ElementaryConditionNotFoundException exception) {
-				//TODO: handle exception
+				throw exception;
 			}
 		} //while
 		

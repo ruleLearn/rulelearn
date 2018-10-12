@@ -34,7 +34,7 @@ public abstract class AbstractRuleConditionsPruner implements RuleConditionsPrun
 	/**
 	 * Constructor storing given stopping condition checker.
 	 * 
-	 * @param stoppingConditionChecker stopping condition checker
+	 * @param stoppingConditionChecker stopping condition checker used to assure that pruned rule conditions satisfy stopping condition(s)
 	 * @throws NullPointerException if given stopping condition checker is {@code null}
 	 */
 	public AbstractRuleConditionsPruner(RuleInductionStoppingConditionChecker stoppingConditionChecker) {
