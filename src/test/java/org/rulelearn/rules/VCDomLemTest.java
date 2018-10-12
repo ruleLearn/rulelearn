@@ -125,23 +125,22 @@ class VCDomLemTest {
 			RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker, ConditionGenerator conditionGenerator, AbstractRuleConditionsPruner ruleConditionsPruner,
 			RuleConditionsSetPruner ruleConditionsSetPruner) {
 		
-		IntSortedSet indicesOfElementaryConditionsBaseObjects = null; //set of objects that need to be covered (each object by at least one rule conditions)
-		IntSet indicesOfObjectsThatCanBeCovered = null;
-		
 		List<RuleConditions> approximatedSetRuleConditions = new ObjectArrayList<RuleConditions>(); //the result
 		
+		IntSortedSet indicesOfApproximationObjects = null; //set of objects that need to be covered (each object by at least one rule conditions)
 		switch (ruleType) {
 		case CERTAIN:
-			indicesOfElementaryConditionsBaseObjects = approximatedSet.getLowerApproximation();
+			indicesOfApproximationObjects = approximatedSet.getLowerApproximation();
 			break;
 		case POSSIBLE:
-			indicesOfElementaryConditionsBaseObjects = approximatedSet.getUpperApproximation();
+			indicesOfApproximationObjects = approximatedSet.getUpperApproximation();
 			break;
 		case APPROXIMATE:
-			indicesOfElementaryConditionsBaseObjects = approximatedSet.getBoundary();
+			indicesOfApproximationObjects = approximatedSet.getBoundary();
 			break;
 		}
 		
+		IntSet indicesOfObjectsThatCanBeCovered = null; //indices of objects that are allowed to be covered
 		if (ruleType == RuleType.CERTAIN) {
 			switch (allowedObjectsType) {
 			case POSITIVE_REGION:
@@ -162,51 +161,35 @@ class VCDomLemTest {
 				break;
 			}
 		} else { //possible/approximate rule
-			indicesOfObjectsThatCanBeCovered = indicesOfElementaryConditionsBaseObjects;
+			indicesOfObjectsThatCanBeCovered = indicesOfApproximationObjects;
 			indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
 		}
 		
 		//TODO: test order of elements!
-		IntList setB = new IntArrayList(indicesOfElementaryConditionsBaseObjects); //lower/upper approximation objects not already covered by rule conditions induced so far (set B from algorithm description)
-		Condition<EvaluationField> bestCondition;
+		IntList setB = new IntArrayList(indicesOfApproximationObjects); //lower/upper approximation objects not already covered by rule conditions induced so far (set B from algorithm description)
 		RuleConditions ruleConditions;
+		RuleConditionsBuilder ruleConditionsBuilder;
 		IntList indicesOfConsideredObjects; //intersection of current set B and set of objects covered by rule conditions
-		IntList indicesOfCoveredObjects;
-		IntSet indicesOfNoLongerCoveredObjects;
 		
 		while (!setB.isEmpty()) {
-			ruleConditions = new RuleConditions(approximatedSet.getInformationTable(), approximatedSet.getObjects(), indicesOfElementaryConditionsBaseObjects, indicesOfObjectsThatCanBeCovered, approximatedSet.getNeutralObjects());
 			indicesOfConsideredObjects = new IntArrayList(setB);
 			
-			while (!ruleInductionStoppingConditionChecker.isStoppingConditionSatisified(ruleConditions)) {
-				try {
-					bestCondition = conditionGenerator.getBestCondition(indicesOfConsideredObjects, ruleConditions);
-					ruleConditions.addCondition(bestCondition);
-					
-					//update indices of considered objects
-					indicesOfCoveredObjects = ruleConditions.getIndicesOfCoveredObjects();
-					indicesOfNoLongerCoveredObjects = new IntOpenHashSet();
-					for (int previouslyCoveredObjectIndex : indicesOfConsideredObjects) {
-						if (!indicesOfCoveredObjects.contains(previouslyCoveredObjectIndex)) { //previously covered object is no longer covered
-							indicesOfNoLongerCoveredObjects.add(previouslyCoveredObjectIndex);
-						}
-					}
-					indicesOfConsideredObjects.removeAll(indicesOfNoLongerCoveredObjects);
-				} catch (ElementaryConditionNotFoundException exception) {
-					//TODO: handle exception
-				}
-			} //while
+			ruleConditionsBuilder = new RuleConditionsBuilder(
+					indicesOfConsideredObjects, approximatedSet.getInformationTable(),
+					approximatedSet.getObjects(), indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, approximatedSet.getNeutralObjects(),
+					conditionGenerator, ruleInductionStoppingConditionChecker);
+			ruleConditions = ruleConditionsBuilder.build(); //build rule conditions
 			
-			ruleConditions = ruleConditionsPruner.prune(ruleConditions); //remove redundant elementary conditions
+			ruleConditions = ruleConditionsPruner.prune(ruleConditions); //prune built rule conditions by removing redundant elementary conditions
 			approximatedSetRuleConditions.add(ruleConditions);
 			
 			//remove objects covered by the new rule conditions
 			//setB = setB \ ruleConditions.getIndicesOfCoveredObjects()
-			IntSet setOfIndicesOfCoveredObjects = new IntOpenHashSet(ruleConditions.getIndicesOfCoveredObjects());
+			IntSet setOfIndicesOfCoveredObjects = new IntOpenHashSet(ruleConditions.getIndicesOfCoveredObjects()); //translate list to hash set to accelerate subsequent removeAll method execution
 			setB.removeAll(setOfIndicesOfCoveredObjects);
 		}
 	
-		return ruleConditionsSetPruner.prune(approximatedSetRuleConditions, indicesOfElementaryConditionsBaseObjects); //remove redundant rules, but keep covered all objects from lower/upper approximation
+		return ruleConditionsSetPruner.prune(approximatedSetRuleConditions, indicesOfApproximationObjects); //remove redundant rules, but keep covered all objects from lower/upper approximation
 	}
 
 }

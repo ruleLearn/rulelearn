@@ -16,15 +16,15 @@
 
 package org.rulelearn.measures;
 
+import static org.rulelearn.core.OperationsOnCollections.getNumberOfElementsFromListInSet;
+import static org.rulelearn.core.Precondition.notNull;
+
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.ConditionAdditionEvaluator;
 import org.rulelearn.rules.ConditionRemovalEvaluator;
 import org.rulelearn.rules.RuleConditions;
 import org.rulelearn.rules.RuleConditionsEvaluator;
 import org.rulelearn.types.EvaluationField;
-
-import static org.rulelearn.core.OperationsOnCollections.getNumberOfElementsFromListInSet;
-import static org.rulelearn.core.Precondition.notNull;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -49,9 +49,9 @@ public class CoverageInApproximationMeasure implements GainTypeMeasure, RuleCond
 	public double evaluate(RuleConditions ruleConditions) {
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
 		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjects();
-		IntSet baseObjects = ruleConditions.getIndicesOfElementaryConditionsBaseObjects();
+		IntSet approximationObjects = ruleConditions.getIndicesOfApproximationObjects();
 		
-		return getNumberOfElementsFromListInSet(coveredObjects, baseObjects);
+		return getNumberOfElementsFromListInSet(coveredObjects, approximationObjects);
 	}
 	
 	/** 
@@ -67,9 +67,9 @@ public class CoverageInApproximationMeasure implements GainTypeMeasure, RuleCond
 	public double evaluateWithCondition(RuleConditions ruleConditions, Condition<EvaluationField> condition) {
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
 		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithCondition(condition);
-		IntSet baseObjects = ruleConditions.getIndicesOfElementaryConditionsBaseObjects();
+		IntSet approximationObjects = ruleConditions.getIndicesOfApproximationObjects();
 		
-		return getNumberOfElementsFromListInSet(coveredObjects, baseObjects);
+		return getNumberOfElementsFromListInSet(coveredObjects, approximationObjects);
 	}
 
 	/** 
@@ -87,9 +87,9 @@ public class CoverageInApproximationMeasure implements GainTypeMeasure, RuleCond
 	public double evaluateWithoutCondition(RuleConditions ruleConditions, int conditionIndex) {
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
 		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithoutCondition(conditionIndex);
-		IntSet baseObjects = ruleConditions.getIndicesOfElementaryConditionsBaseObjects();
+		IntSet approximationObjects = ruleConditions.getIndicesOfApproximationObjects();
 		
-		return getNumberOfElementsFromListInSet(coveredObjects, baseObjects);
+		return getNumberOfElementsFromListInSet(coveredObjects, approximationObjects);
 	}
 	
 }

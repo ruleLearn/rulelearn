@@ -16,7 +16,11 @@
 
 package org.rulelearn.rules;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 
@@ -92,21 +96,21 @@ class RuleConditionsTest {
 	
 	/**
 	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet))}, {@link RuleConditions#getLearningInformationTable()},
-	 * {@link RuleConditions#getIndicesOfPositiveObjects()}, {@link RuleConditions#getIndicesOfElementaryConditionsBaseObjects()}, {@link RuleConditions#getIndicesOfObjectsThatCanBeCovered()},
+	 * {@link RuleConditions#getIndicesOfPositiveObjects()}, {@link RuleConditions#getIndicesOfApproximationObjects()()}, {@link RuleConditions#getIndicesOfObjectsThatCanBeCovered()},
 	 * and {@link RuleConditions#getIndicesOfNeutralObjects()}.
 	 */
 	@Test
 	void testRuleConditionsA05() {
 		InformationTable informationTable = Mockito.mock(InformationTable.class);
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
-		IntSet indicesOfElementaryConditionsBaseObjects = Mockito.mock(IntSet.class);
+		IntSet indicesOfApproximationObjects = Mockito.mock(IntSet.class);
 		IntSet indicesOfObjectsThatCanBeCovered = Mockito.mock(IntSet.class);
 		
-		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfElementaryConditionsBaseObjects, indicesOfObjectsThatCanBeCovered);
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered);
 		
 		assertEquals(ruleConditions.getLearningInformationTable(), informationTable);
 		assertEquals(ruleConditions.getIndicesOfPositiveObjects(), indicesOfPositiveObjects);
-		assertEquals(ruleConditions.getIndicesOfElementaryConditionsBaseObjects(), indicesOfElementaryConditionsBaseObjects);
+		assertEquals(ruleConditions.getIndicesOfApproximationObjects(), indicesOfApproximationObjects);
 		assertEquals(ruleConditions.getIndicesOfObjectsThatCanBeCovered(), indicesOfObjectsThatCanBeCovered);
 		assertEquals(ruleConditions.getIndicesOfNeutralObjects(), IntSets.EMPTY_SET);
 	}
@@ -118,12 +122,12 @@ class RuleConditionsTest {
 	void testRuleConditionsB01() {
 		InformationTable informationTable = Mockito.mock(InformationTable.class);
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
-		IntSet indicesOfElementaryConditionsBaseObjects = Mockito.mock(IntSet.class);
+		IntSet indicesOfApproximationObjects = Mockito.mock(IntSet.class);
 		IntSet indicesOfObjectsThatCanBeCovered = Mockito.mock(IntSet.class);
 		IntSet indicesOfNeutralObjects = null;
 		
 		assertThrows(NullPointerException.class, () -> {
-			new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfElementaryConditionsBaseObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects);
+			new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects);
 		});
 	}
 	
@@ -134,15 +138,15 @@ class RuleConditionsTest {
 	void testRuleConditionsB02() {
 		InformationTable informationTable = Mockito.mock(InformationTable.class);
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
-		IntSet indicesOfElementaryConditionsBaseObjects = Mockito.mock(IntSet.class);
+		IntSet indicesOfApproximationObjects = Mockito.mock(IntSet.class);
 		IntSet indicesOfObjectsThatCanBeCovered = Mockito.mock(IntSet.class);
 		IntSet indicesOfNeutralObjects = Mockito.mock(IntSet.class);
 		
-		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfElementaryConditionsBaseObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects);
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects);
 		
 		assertEquals(ruleConditions.getLearningInformationTable(), informationTable);
 		assertEquals(ruleConditions.getIndicesOfPositiveObjects(), indicesOfPositiveObjects);
-		assertEquals(ruleConditions.getIndicesOfElementaryConditionsBaseObjects(), indicesOfElementaryConditionsBaseObjects);
+		assertEquals(ruleConditions.getIndicesOfApproximationObjects(), indicesOfApproximationObjects);
 		assertEquals(ruleConditions.getIndicesOfObjectsThatCanBeCovered(), indicesOfObjectsThatCanBeCovered);
 		assertEquals(ruleConditions.getIndicesOfNeutralObjects(), indicesOfNeutralObjects);
 	}

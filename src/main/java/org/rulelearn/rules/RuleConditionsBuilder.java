@@ -27,10 +27,9 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * Builder of {@link RuleConditions} objects.
+ * Builder of {@link RuleConditions} objects. After creating an empty rule conditions object, iteratively adds best condition suggested by employed condition generator,
+ * until stopping condition is satisfied. 
  * 
- * TODO: write javadoc
- *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
@@ -39,19 +38,19 @@ public class RuleConditionsBuilder {
 	IntList indicesOfConsideredObjects;
 	InformationTable learningInformationTable;
 	IntSet indicesOfPositiveObjects;
-	IntSet indicesOfElementaryConditionsBaseObjects;
+	IntSet indicesOfApproximationObjects;
 	IntSet indicesOfObjectsThatCanBeCovered;
 	IntSet indicesOfNeutralObjects;
 	ConditionGenerator conditionGenerator;
 	RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker;
 	
 	/**
-	 * TODO: write javadoc
+	 * Constructs this rule conditions builder.
 	 * 
-	 * @param indicesOfConsideredObjects set of indices of positive object used to generate elementary conditions
+	 * @param indicesOfConsideredObjects set of indices of objects from learning information table that are used to generate elementary conditions
 	 * @param learningInformationTable TODO
 	 * @param indicesOfPositiveObjects TODO
-	 * @param indicesOfElementaryConditionsBaseObjects TODO
+	 * @param indicesOfApproximationObjects TODO
 	 * @param indicesOfObjectsThatCanBeCovered TODO
 	 * @param indicesOfNeutralObjects TODO
 	 * @param conditionGenerator TODO
@@ -60,12 +59,12 @@ public class RuleConditionsBuilder {
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public RuleConditionsBuilder(IntList indicesOfConsideredObjects, InformationTable learningInformationTable,
-			IntSet indicesOfPositiveObjects, IntSet indicesOfElementaryConditionsBaseObjects, IntSet indicesOfObjectsThatCanBeCovered, IntSet indicesOfNeutralObjects,
+			IntSet indicesOfPositiveObjects, IntSet indicesOfApproximationObjects, IntSet indicesOfObjectsThatCanBeCovered, IntSet indicesOfNeutralObjects,
 			ConditionGenerator conditionGenerator, RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker) {
 		this.indicesOfConsideredObjects = Precondition.notNull(indicesOfConsideredObjects, "Indices of considered objects are null.");
 		this.learningInformationTable = Precondition.notNull(learningInformationTable, "Learning information table is null.");
 		this.indicesOfPositiveObjects = Precondition.notNull(indicesOfPositiveObjects, "Indices of positive objects are null.");
-		this.indicesOfElementaryConditionsBaseObjects = notNull(indicesOfElementaryConditionsBaseObjects, "Set of indices of elementary conditions base objects.");
+		this.indicesOfApproximationObjects = notNull(indicesOfApproximationObjects, "Set of indices of approximation objects is null.");
 		this.indicesOfObjectsThatCanBeCovered = Precondition.notNull(indicesOfObjectsThatCanBeCovered, "Indices of objects that can be covered are null.");
 		this.indicesOfNeutralObjects = Precondition.notNull(indicesOfNeutralObjects, "Indices of neutral objects are null.");
 		this.conditionGenerator = Precondition.notNull(conditionGenerator, "Condition generator is null.");
@@ -78,7 +77,7 @@ public class RuleConditionsBuilder {
 	 * @return built rule conditions
 	 */
 	public RuleConditions build() {
-		RuleConditions ruleConditions = new RuleConditions(learningInformationTable, indicesOfPositiveObjects, indicesOfElementaryConditionsBaseObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects);
+		RuleConditions ruleConditions = new RuleConditions(learningInformationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects);
 		Condition<EvaluationField> bestCondition;
 		IntList indicesOfCoveredObjects;
 		IntSet indicesOfNoLongerCoveredObjects;

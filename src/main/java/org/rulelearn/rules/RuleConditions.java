@@ -56,19 +56,16 @@ public class RuleConditions {
 	IntSet indicesOfPositiveObjects; //e.g., IntOpenHashSet from fastutil library
 	
 	/**
-	 * Indices of objects from learning information (decision) table that are taken into account when generating elementary conditions considered for addition to induced decision rule.
-	 * In case of inducing a certain decision rule, one should assume that base objects are those belonging to the lower approximation of the approximated set.
-	 * In case of inducing a possible decision rule, base objects are those belonging to the upper approximation of the approximated set.
-	 * In case of inducing an approximate decision rule, base objects are those belonging to the boundary of the approximated set.<br>
+	 * Indices of objects from learning information (decision) table that belong to lower/upper approximation, or boundary of considered approximated set.<br>
 	 * <br>
 	 * This set is a subset of {@link #indicesOfObjectsThatCanBeCovered}.
 	 */
-	IntSet indicesOfElementaryConditionsBaseObjects; //lower/upper approximation, or boundary of considered approximated set
+	IntSet indicesOfApproximationObjects; //lower/upper approximation, or boundary of considered approximated set
 	
 	/**
 	 * Indices of all objects from learning information (decision) table that can be covered by these rule conditions (allowed objects).<br>
 	 * <br>
-	 * This set is a superset of {@link #indicesOfElementaryConditionsBaseObjects} and a superset of {@link #indicesOfNeutralObjects}.
+	 * This set is a superset of {@link #indicesOfApproximationObjects} and a superset of {@link #indicesOfNeutralObjects}.
 	 */
 	IntSet indicesOfObjectsThatCanBeCovered; //allowed objects, AO
 	
@@ -189,15 +186,15 @@ public class RuleConditions {
 	 * 
 	 * @param learningInformationTable learning information table for which these rule conditions are constructed
 	 * @param indicesOfPositiveObjects set of indices of positive objects from the given information table, i.e., all objects that satisfy right-hand side (RHS, decision part) of induced decision rule;
-	 *        in case of a certain/possible rule, these are the objects from considered approximated set
-	 * @param indicesOfElementaryConditionsBaseObjects indices of objects from learning information (decision) table that are taken into account
-	 *        when generating elementary conditions considered for addition to induced decision rule; it is expected that this set is a subset of {@code indicesOfObjectsThatCanBeCovered}
-	 * @param indicesOfObjectsThatCanBeCovered indices of objects from the given learning information (decision) table that can be covered by these rule conditions
+	 *        in case of a certain/possible rule, these are the objects from considered approximated set; this set should be unmodifiable
+	 * @param indicesOfApproximationObjects indices of objects from learning information (decision) table that belong to lower/upper approximation, or boundary of considered approximated set;
+	 *        it is expected that this set is a subset of {@code indicesOfObjectsThatCanBeCovered}; this set should be unmodifiable
+	 * @param indicesOfObjectsThatCanBeCovered indices of objects from the given learning information (decision) table that can be covered by these rule conditions; this set should be unmodifiable
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfElementaryConditionsBaseObjects, IntSet indicesOfObjectsThatCanBeCovered) {
-		this(learningInformationTable, indicesOfPositiveObjects, indicesOfElementaryConditionsBaseObjects, indicesOfObjectsThatCanBeCovered, IntSets.EMPTY_SET);
+	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfApproximationObjects, IntSet indicesOfObjectsThatCanBeCovered) {
+		this(learningInformationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, IntSets.EMPTY_SET);
 	}
 
 	/**
@@ -217,20 +214,19 @@ public class RuleConditions {
 	 * 
 	 * @param learningInformationTable learning information table for which these rule conditions are constructed
 	 * @param indicesOfPositiveObjects set of indices of positive objects from the given information table, i.e., all objects that satisfy right-hand side (RHS, decision part) of induced decision rule;
-	 *        in case of a certain/possible rule, these are the objects from considered approximated set; this object should be unmodifiable
-	 * @param indicesOfElementaryConditionsBaseObjects indices of objects from learning information (decision) table that are taken into account
-	 *        when generating elementary conditions considered for addition to induced decision rule; it is expected that this set is a subset of {@code indicesOfObjectsThatCanBeCovered};
-	 *        this object should be unmodifiable
-	 * @param indicesOfObjectsThatCanBeCovered indices of objects from the given learning information (decision) table that can be covered by these rule conditions; this object should be unmodifiable
+	 *        in case of a certain/possible rule, these are the objects from considered approximated set; this set should be unmodifiable
+	 * @param indicesOfApproximationObjects indices of objects from learning information (decision) table that belong to lower/upper approximation, or boundary of considered approximated set;
+	 *        it is expected that this set is a subset of {@code indicesOfObjectsThatCanBeCovered}; this set should be unmodifiable
+	 * @param indicesOfObjectsThatCanBeCovered indices of objects from the given learning information (decision) table that can be covered by these rule conditions; this set should be unmodifiable
 	 * @param indicesOfNeutralObjects indices of neutral objects from the given learning information (decision) table; it is expected that this set is a subset of {@code indicesOfObjectsThatCanBeCovered};
-	 *        this object should be unmodifiable
+	 *        this set should be unmodifiable
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfElementaryConditionsBaseObjects, IntSet indicesOfObjectsThatCanBeCovered, IntSet indicesOfNeutralObjects) {
+	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfApproximationObjects, IntSet indicesOfObjectsThatCanBeCovered, IntSet indicesOfNeutralObjects) {
 		this.learningInformationTable = notNull(learningInformationTable, "Information table is null.");
 		this.indicesOfPositiveObjects = notNull(indicesOfPositiveObjects, "Set of indices of positive objects is null.");
-		this.indicesOfElementaryConditionsBaseObjects = notNull(indicesOfElementaryConditionsBaseObjects, "Set of indices of elementary conditions base objects is null.");
+		this.indicesOfApproximationObjects = notNull(indicesOfApproximationObjects, "Set of indices of approximation objects is null.");
 		this.indicesOfObjectsThatCanBeCovered = notNull(indicesOfObjectsThatCanBeCovered, "Set of indices of objects that can be covered is null.");
 		this.indicesOfNeutralObjects = notNull(indicesOfNeutralObjects, "Set of indices of neutral objects is null.");
 		
@@ -257,18 +253,14 @@ public class RuleConditions {
 	}
 	
 	/**
-	 * Gets the set of indices of objects from learning information (decision) table that are taken into account when generating elementary conditions considered for addition to induced decision rule.<br>
-	 * <br>
-	 * In case of inducing a certain decision rule, base objects are those belonging to the lower approximation of considered approximated set.
-	 * In case of inducing a possible decision rule, base objects are those belonging to the upper approximation of the approximated set.
-	 * In case of inducing an approximate decision rule, base objects are those belonging to the boundary of the approximated set.<br>
+	 * Gets the set of indices of objects from learning information (decision) table that belong to lower/upper approximation, or boundary of considered approximated set.<br>
 	 * <br>
 	 * The returned set is a subset of set returned by {@link #getIndicesOfObjectsThatCanBeCovered()}.
 	 * 
-	 * @return the set of indices of objects from the information table that are taken into account when generating elementary conditions considered for addition to induced decision rule
+	 * @return the set of indices of objects from learning information (decision) table that belong to lower/upper approximation, or boundary of considered approximated set.
 	 */
-	public IntSet getIndicesOfElementaryConditionsBaseObjects() {
-		return this.indicesOfElementaryConditionsBaseObjects;
+	public IntSet getIndicesOfApproximationObjects() {
+		return this.indicesOfApproximationObjects;
 	}
 	
 	/**
