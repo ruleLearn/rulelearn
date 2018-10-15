@@ -184,6 +184,22 @@ public class RuleMLElements {
      * 
      * @return RuleML evaluation tag
      */
+    public static String getEvaluationTag (String measure, int value) {
+    		StringBuffer buffer = new StringBuffer();
+    		buffer.append("<").append(getEvaluationKeyword()).append(" measure=\"").append(measure).append("\" value=\"").append(value).append("\"/>").append(getNewLine());
+    		return buffer.toString();
+    }
+    
+    /**
+     * Constructs an evaluation RuleML tag (i.e., tag representing a value of a measure describing a rule) followed by indication of a new line.
+     * 
+     * Note that this tag is not defined in RuleML standard (i.e., it is our extension of the RuleML standard).
+     * 
+     * @param measure measure to be represented as a RuleML tag
+     * @param value value of the measure
+     * 
+     * @return RuleML evaluation tag
+     */
     public static String getEvaluationTag (String measure, double value) {
     		StringBuffer buffer = new StringBuffer();
     		buffer.append("<").append(getEvaluationKeyword()).append(" measure=\"").append(measure).append("\" value=\"").append(value).append("\"/>").append(getNewLine());

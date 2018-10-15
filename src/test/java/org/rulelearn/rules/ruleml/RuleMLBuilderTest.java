@@ -251,12 +251,12 @@ class RuleMLBuilderTest {
 		when(this.ruleCharacteristicsMock.getZConfirmation()).thenReturn(-1.0);
 		when(this.ruleCharacteristicsMock.isCoverageFactorSet()).thenReturn(true);
 		when(this.ruleCharacteristicsMock.getCoverageFactor()).thenReturn(0.0);
-		this.ruleCharacteristicsRuleML = "<evaluation measure=\"Support\" value=\"1.0\"/>\n" + 
+		this.ruleCharacteristicsRuleML = "<evaluation measure=\"Support\" value=\"1\"/>\n" + 
 				"<evaluation measure=\"Strength\" value=\"1.0\"/>\n" + 
 				"<evaluation measure=\"Confidence\" value=\"1.0\"/>\n" + 
 				"<evaluation measure=\"CoverageFactor\" value=\"0.0\"/>\n" + 
-				"<evaluation measure=\"Coverage\" value=\"1.0\"/>\n" + 
-				"<evaluation measure=\"NegativeCoverage\" value=\"1.0\"/>\n" + 
+				"<evaluation measure=\"Coverage\" value=\"1\"/>\n" + 
+				"<evaluation measure=\"NegativeCoverage\" value=\"1\"/>\n" + 
 				"<evaluation measure=\"EpsilonMeasure\" value=\"-1.0\"/>\n" + 
 				"<evaluation measure=\"EpsilonPrimeMeasure\" value=\"1.0\"/>\n" + 
 				"<evaluation measure=\"f-ConfirmationMeasure\" value=\"1.0\"/>\n" + 
@@ -295,12 +295,12 @@ class RuleMLBuilderTest {
 		when(this.notAllSetRuleCharacteristicsMock.getZConfirmation()).thenThrow(new UnknownValueException("Value of rule confirmation measure 'z' is unknown."));
 		when(this.notAllSetRuleCharacteristicsMock.isCoverageFactorSet()).thenReturn(true);
 		when(this.notAllSetRuleCharacteristicsMock.getCoverageFactor()).thenReturn(0.0);
-		this.notAllSetRuleCharacteristicsRuleML = "<evaluation measure=\"Support\" value=\"1.0\"/>\n" + 
+		this.notAllSetRuleCharacteristicsRuleML = "<evaluation measure=\"Support\" value=\"1\"/>\n" + 
 				"<evaluation measure=\"Strength\" value=\"1.0\"/>\n" + 
 				"<evaluation measure=\"Confidence\" value=\"1.0\"/>\n" + 
 				"<evaluation measure=\"CoverageFactor\" value=\"0.0\"/>\n" + 
-				"<evaluation measure=\"Coverage\" value=\"1.0\"/>\n" + 
-				"<evaluation measure=\"NegativeCoverage\" value=\"1.0\"/>\n" + 
+				"<evaluation measure=\"Coverage\" value=\"1\"/>\n" + 
+				"<evaluation measure=\"NegativeCoverage\" value=\"1\"/>\n" + 
 				"<evaluation measure=\"EpsilonMeasure\" value=\"0.0\"/>\n" + 
 				"<evaluation measure=\"s-ConfirmationMeasure\" value=\"1.0\"/>\n";
 	}
@@ -569,12 +569,12 @@ class RuleMLBuilderTest {
 				"\t\t<ruleSemantics>ge</ruleSemantics>\n" +
 				"\t\t<ruleType>approximate</ruleType>\n" +
 				"\t\t<evaluations>\n" + 
-				"\t\t\t<evaluation measure=\"Support\" value=\"1.0\"/>\n" + 
+				"\t\t\t<evaluation measure=\"Support\" value=\"1\"/>\n" + 
 				"\t\t\t<evaluation measure=\"Strength\" value=\"1.0\"/>\n" + 
 				"\t\t\t<evaluation measure=\"Confidence\" value=\"1.0\"/>\n" + 
 				"\t\t\t<evaluation measure=\"CoverageFactor\" value=\"0.0\"/>\n" + 
-				"\t\t\t<evaluation measure=\"Coverage\" value=\"1.0\"/>\n" + 
-				"\t\t\t<evaluation measure=\"NegativeCoverage\" value=\"1.0\"/>\n" + 
+				"\t\t\t<evaluation measure=\"Coverage\" value=\"1\"/>\n" + 
+				"\t\t\t<evaluation measure=\"NegativeCoverage\" value=\"1\"/>\n" + 
 				"\t\t\t<evaluation measure=\"EpsilonMeasure\" value=\"-1.0\"/>\n" + 
 				"\t\t\t<evaluation measure=\"EpsilonPrimeMeasure\" value=\"1.0\"/>\n" + 
 				"\t\t\t<evaluation measure=\"f-ConfirmationMeasure\" value=\"1.0\"/>\n" + 
@@ -592,5 +592,22 @@ class RuleMLBuilderTest {
 		//System.out.println(ruleMLBuilder.toRuleMLString(this.ruleSetWithCharacteristicsMock, new UUID(0, 1)));
 		assertEquals(ruleSetRuleML, ruleMLBuilder.toRuleMLString(this.ruleSetWithCharacteristicsMock, new UUID(0, 1)));
 	}
-		
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.ruleml.RuleMLBuilder#evaluationToRuleMLString(String, java.util.function.IntSupplier, int)}.
+	 */
+	@Test
+	void testEvaluationToRuleMLString01() {
+		String expectedRuleML = "\t\t\t<evaluation measure=\"Support\" value=\"1\"/>\n";
+		assertEquals(expectedRuleML, ruleMLBuilder.evaluationToRuleMLString("Support", this.ruleCharacteristicsMock::getSupport, 3));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.ruleml.RuleMLBuilder#evaluationToRuleMLString(String, java.util.function.DoubleSupplier, int)}.
+	 */
+	@Test
+	void testEvaluationToRuleMLString02() {
+		String expectedRuleML = "<evaluation measure=\"s-ConfirmationMeasure\" value=\"1.0\"/>\n";
+		assertEquals(expectedRuleML, ruleMLBuilder.evaluationToRuleMLString("s-ConfirmationMeasure", this.notAllSetRuleCharacteristicsMock::getSConfirmation, 0));
+	}
 }

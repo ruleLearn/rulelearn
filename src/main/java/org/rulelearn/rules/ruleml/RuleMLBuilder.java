@@ -19,7 +19,10 @@ package org.rulelearn.rules.ruleml;
 import static org.rulelearn.core.Precondition.notNull;
 
 import java.util.UUID;
+import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
 
+import org.rulelearn.core.UnknownValueException;
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleCharacteristics;
@@ -361,10 +364,64 @@ public class RuleMLBuilder {
 	 * @param indenture how many tabs should be added to pretty print the document
 	 * @return RuleML representation of the rule evaluation 
 	 */
+	String evaluationToRuleMLString(String name, int value, int indenture) {
+		final StringBuilder result = new StringBuilder();
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(RuleMLElements.getEvaluationTag(name, value));
+		return result.toString();
+	}
+	
+	/**
+	 * Construct a RuleML string representing evaluation of a rule. 
+	 *  
+	 * @param name name of evaluation
+	 * @param value value of evaluation 
+	 * @param indenture how many tabs should be added to pretty print the document
+	 * @return RuleML representation of the rule evaluation 
+	 */
 	String evaluationToRuleMLString(String name, double value, int indenture) {
 		final StringBuilder result = new StringBuilder();
 		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(RuleMLElements.getEvaluationTag(name, value));
 		return result.toString();
+	}
+	
+	/**
+	 * Construct a RuleML string representing evaluation of a rule. 
+	 *  
+	 * @param name name of evaluation
+	 * @param valueSupplier supplier of integer value {@link IntSupplier} of evaluation 
+	 * @param indenture how many tabs should be added to pretty print the document
+	 * @return RuleML representation of the rule evaluation 
+	 */
+	String evaluationToRuleMLString(String name, IntSupplier valueSupplier, int indenture) {
+		final StringBuilder result = new StringBuilder();
+		try {
+			int value = valueSupplier.getAsInt();
+			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(RuleMLElements.getEvaluationTag(name, value));
+			return result.toString();
+		}
+		catch (UnknownValueException e) {
+			return "";
+		}
+	}
+	
+	/**
+	 * Construct a RuleML string representing evaluation of a rule. 
+	 *  
+	 * @param name name of evaluation
+	 * @param valueSupplier supplier of integer value {@link IntSupplier} of evaluation 
+	 * @param indenture how many tabs should be added to pretty print the document
+	 * @return RuleML representation of the rule evaluation 
+	 */
+	String evaluationToRuleMLString(String name, DoubleSupplier valueSupplier, int indenture) {
+		final StringBuilder result = new StringBuilder();
+		try {
+			double value = valueSupplier.getAsDouble();
+			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(RuleMLElements.getEvaluationTag(name, value));
+			return result.toString();
+		}
+		catch (UnknownValueException e) {
+			return "";
+		}
 	}
 	
 	/**
