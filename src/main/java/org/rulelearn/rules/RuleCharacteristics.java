@@ -16,12 +16,16 @@
 
 package org.rulelearn.rules;
 
-import org.rulelearn.core.UnknownValueException;
-import static org.rulelearn.core.Precondition.nonNegative;
 import static org.rulelearn.core.Precondition.known;
+import static org.rulelearn.core.Precondition.nonNegative;
 import static org.rulelearn.core.Precondition.within01Interval;
 import static org.rulelearn.core.Precondition.withinMinus1Plus1Interval;
+
+import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
+
 import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.UnknownValueException;
 
 /**
  * Characteristics of a decision rule. One can get from this object only:<br>
@@ -460,6 +464,48 @@ public class RuleCharacteristics {
 			withinMinus1Plus1Interval(sConfirmation, "Value of rule confirmation measure 's' has to be within interval [-1,1].");
 		}
 		this.sConfirmation = sConfirmation;
+	}
+	
+	/**
+	 * Tells if the characteristic returned by the given getter is set. Exemplary usage:<br>
+	 * {@code RuleCharacteristics ruleCharacteristics = new RuleCharacteristics();}<br>
+	 * {@code boolean isSet = ruleCharacteristics.isCharacteristicSet(ruleCharacteristics::getSupport);}
+	 * 
+	 * @param intCharacteristicGetter reference to a getter returning an integer characteristic stored in this object
+	 * @return {@code true} if the characteristic returned by the given getter is set, {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given parameter is {@code null}
+	 */
+	public boolean isCharacteristicSet(IntSupplier intCharacteristicGetter) {
+		try {
+			intCharacteristicGetter.getAsInt();
+			return true;
+		} catch (UnknownValueException exception) {
+			return false;
+		} catch (NullPointerException exception) {
+			throw new NullPointerException("Integer-type characteristic getter is null.");
+		}
+	}
+	
+	/**
+	 * Tells if the characteristic returned by the given getter is set. Exemplary usage:<br>
+	 * {@code RuleCharacteristics ruleCharacteristics = new RuleCharacteristics();}<br>
+	 * {@code boolean isSet = ruleCharacteristics.isCharacteristicSet(ruleCharacteristics::getEpsilon);}
+	 * 
+	 * @param doubleCharacteristicGetter reference to a getter returning a floating-point characteristic stored in this object
+	 * @return {@code true} if the characteristic returned by the given getter is set, {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given parameter is {@code null}
+	 */
+	public boolean isCharacteristicSet(DoubleSupplier doubleCharacteristicGetter) {
+		try {
+			doubleCharacteristicGetter.getAsDouble();
+			return true;
+		} catch (UnknownValueException exception) {
+			return false;
+		} catch (NullPointerException exception) {
+			throw new NullPointerException("Floating-point-type characteristic getter is null.");
+		}
 	}
 	
 }

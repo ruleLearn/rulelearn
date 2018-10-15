@@ -41,6 +41,7 @@ public class RuleConditionsBuilder {
 	IntSet indicesOfApproximationObjects;
 	IntSet indicesOfObjectsThatCanBeCovered;
 	IntSet indicesOfNeutralObjects;
+	RuleSemantics ruleSemantics;
 	ConditionGenerator conditionGenerator;
 	RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker;
 	
@@ -55,6 +56,7 @@ public class RuleConditionsBuilder {
 	 *        it is expected that this set is a subset of {@code indicesOfObjectsThatCanBeCovered}
 	 * @param indicesOfObjectsThatCanBeCovered indices of objects from the given learning information (decision) table that can be covered by soon-to-be-constructed rule conditions
 	 * @param indicesOfNeutralObjects indices of neutral objects from the given learning information (decision) table; it is expected that this set is a subset of {@code indicesOfObjectsThatCanBeCovered};
+	 * @param ruleSemantics semantics of the decision rule for which conditions are built by this builder
 	 * @param conditionGenerator generator of elementary conditions used to build rule conditions object
 	 * @param ruleInductionStoppingConditionChecker stopping condition checker iteratively used to verify if rule conditions
 	 *        (after extending with a new best elementary condition coming from condition generator)
@@ -63,7 +65,7 @@ public class RuleConditionsBuilder {
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public RuleConditionsBuilder(IntList indicesOfConsideredObjects, InformationTable learningInformationTable,
-			IntSet indicesOfPositiveObjects, IntSet indicesOfApproximationObjects, IntSet indicesOfObjectsThatCanBeCovered, IntSet indicesOfNeutralObjects,
+			IntSet indicesOfPositiveObjects, IntSet indicesOfApproximationObjects, IntSet indicesOfObjectsThatCanBeCovered, IntSet indicesOfNeutralObjects, RuleSemantics ruleSemantics,
 			ConditionGenerator conditionGenerator, RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker) {
 		this.indicesOfConsideredObjects = Precondition.notNull(indicesOfConsideredObjects, "Indices of considered objects are null.");
 		this.learningInformationTable = Precondition.notNull(learningInformationTable, "Learning information table is null.");
@@ -71,6 +73,7 @@ public class RuleConditionsBuilder {
 		this.indicesOfApproximationObjects = notNull(indicesOfApproximationObjects, "Set of indices of approximation objects is null.");
 		this.indicesOfObjectsThatCanBeCovered = Precondition.notNull(indicesOfObjectsThatCanBeCovered, "Indices of objects that can be covered are null.");
 		this.indicesOfNeutralObjects = Precondition.notNull(indicesOfNeutralObjects, "Indices of neutral objects are null.");
+		this.ruleSemantics = notNull(ruleSemantics, "Rule semantics is null.");
 		this.conditionGenerator = Precondition.notNull(conditionGenerator, "Condition generator is null.");
 		this.ruleInductionStoppingConditionChecker = Precondition.notNull(ruleInductionStoppingConditionChecker, "Rule induction stopping condition checker is null.");
 	}
@@ -83,7 +86,7 @@ public class RuleConditionsBuilder {
 	 *         that could be added to rule conditions that still do not satisfy stopping condition(s)
 	 */
 	public RuleConditions build() {
-		RuleConditions ruleConditions = new RuleConditions(learningInformationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects);
+		RuleConditions ruleConditions = new RuleConditions(learningInformationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects, ruleSemantics);
 		Condition<EvaluationField> bestCondition;
 		IntList indicesOfCoveredObjects;
 		IntSet indicesOfNoLongerCoveredObjects;

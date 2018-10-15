@@ -16,7 +16,10 @@
 
 package org.rulelearn.rules;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -1063,6 +1066,44 @@ class RuleCharacteristicsTest {
 		double sConfirmation = 1;
 		ruleCharacteristics.setSConfirmation(sConfirmation);
 		assertEquals(ruleCharacteristics.getSConfirmation(), sConfirmation);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isCharacteristicSet(java.util.function.IntSupplier)}.
+	 * Tests the case when characteristic is not set.
+	 */
+	@Test
+	void testIsCharacteristicSet01() {
+		assertFalse(ruleCharacteristics.isCharacteristicSet(ruleCharacteristics::getSupport));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isCharacteristicSet(java.util.function.IntSupplier)}.
+	 * Tests the case when characteristic is set.
+	 */
+	@Test
+	void testIsCharacteristicSet02() {
+		ruleCharacteristics.setSupport(2);
+		assertTrue(ruleCharacteristics.isCharacteristicSet(ruleCharacteristics::getSupport));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isCharacteristicSet(java.util.function.DoubleSupplier)}.
+	 * Tests the case when characteristic is not set.
+	 */
+	@Test
+	void testIsCharacteristicSet03() {
+		assertFalse(ruleCharacteristics.isCharacteristicSet(ruleCharacteristics::getEpsilon));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isCharacteristicSet(java.util.function.DoubleSupplier)}.
+	 * Tests the case when characteristic is set.
+	 */
+	@Test
+	void testIsCharacteristicSet04() {
+		ruleCharacteristics.setEpsilon(0.2);
+		assertTrue(ruleCharacteristics.isCharacteristicSet(ruleCharacteristics::getEpsilon));
 	}
 
 }

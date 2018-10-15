@@ -176,7 +176,7 @@ class VCDomLemTest {
 			
 			ruleConditionsBuilder = new RuleConditionsBuilder(
 					indicesOfConsideredObjects, approximatedSet.getInformationTable(),
-					approximatedSet.getObjects(), indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, approximatedSet.getNeutralObjects(),
+					approximatedSet.getObjects(), indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, approximatedSet.getNeutralObjects(), ruleSemantics,
 					conditionGenerator, ruleInductionStoppingConditionChecker);
 			ruleConditions = ruleConditionsBuilder.build(); //build rule conditions
 			

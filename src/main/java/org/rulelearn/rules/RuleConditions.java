@@ -97,7 +97,12 @@ public class RuleConditions {
 	 * If {@code notCoveringConditionsCounts[objectIndex] = 0}, it means that these rule conditions cover object indexed by {@code objectIndex}.
 	 * This field is initialized with all zeros.
 	 */
-	int[] notCoveringConditionsCounts; 
+	int[] notCoveringConditionsCounts;
+	
+	/**
+	 * Semantics of the constructed decision rule.
+	 */
+	RuleSemantics ruleSemantics;
 	
 	/**
 	 * Iterator among objects covered by the rule conditions.
@@ -170,10 +175,10 @@ public class RuleConditions {
 	}
 	
 	/**
-	 * Constructor setting learning information table and the sets of indices of:
+	 * Constructor setting learning information table, rule semantics, and the sets of indices of:
 	 * <ul>
 	 *   <li>all objects that satisfy right-hand side (RHS, decision part) of induced decision rule
-	 *   (in case of a certain/possible rule, these are the objects from considered approximated set),</li>
+	 *       (in case of a certain/possible rule, these are the objects from considered approximated set),</li>
 	 *   <li>objects from learning information (decision) table that are taken into account when generating elementary conditions considered for addition to induced decision rule,</li>
 	 *   <li>all objects from the information table that can be covered by these rule conditions.</li>
 	 * </ul>
@@ -190,18 +195,19 @@ public class RuleConditions {
 	 * @param indicesOfApproximationObjects indices of objects from learning information (decision) table that belong to lower/upper approximation, or boundary of considered approximated set;
 	 *        it is expected that this set is a subset of {@code indicesOfObjectsThatCanBeCovered}; this set should be unmodifiable
 	 * @param indicesOfObjectsThatCanBeCovered indices of objects from the given learning information (decision) table that can be covered by these rule conditions; this set should be unmodifiable
+	 * @param ruleSemantics semantics of the constructed decision rule
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfApproximationObjects, IntSet indicesOfObjectsThatCanBeCovered) {
-		this(learningInformationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, IntSets.EMPTY_SET);
+	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfApproximationObjects, IntSet indicesOfObjectsThatCanBeCovered, RuleSemantics ruleSemantics) {
+		this(learningInformationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, IntSets.EMPTY_SET, ruleSemantics);
 	}
 
 	/**
-	 * Constructor setting learning learning information table and the sets of indices of:
+	 * Constructor setting learning learning information table, rule semantics, and the sets of indices of:
 	 * <ul>
 	 *    <li>all objects that satisfy right-hand side (RHS, decision part) of induced decision rule
-	 *   (in case of a certain/possible rule, these are the objects from considered approximated set),</li>
+	 *        (in case of a certain/possible rule, these are the objects from considered approximated set),</li>
 	 *   <li>objects from learning information (decision) table that are taken into account when generating elementary conditions considered for addition to induced decision rule,</li>
 	 *   <li>all objects from the information table that can be covered by these rule conditions,</li>
 	 *   <li>objects from the information table that are neutral with respect to these rule conditions.</li>
@@ -220,10 +226,11 @@ public class RuleConditions {
 	 * @param indicesOfObjectsThatCanBeCovered indices of objects from the given learning information (decision) table that can be covered by these rule conditions; this set should be unmodifiable
 	 * @param indicesOfNeutralObjects indices of neutral objects from the given learning information (decision) table; it is expected that this set is a subset of {@code indicesOfObjectsThatCanBeCovered};
 	 *        this set should be unmodifiable
+	 * @param ruleSemantics semantics of the constructed decision rule
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfApproximationObjects, IntSet indicesOfObjectsThatCanBeCovered, IntSet indicesOfNeutralObjects) {
+	public RuleConditions(InformationTable learningInformationTable, IntSet indicesOfPositiveObjects, IntSet indicesOfApproximationObjects, IntSet indicesOfObjectsThatCanBeCovered, IntSet indicesOfNeutralObjects, RuleSemantics ruleSemantics) {
 		this.learningInformationTable = notNull(learningInformationTable, "Information table is null.");
 		this.indicesOfPositiveObjects = notNull(indicesOfPositiveObjects, "Set of indices of positive objects is null.");
 		this.indicesOfApproximationObjects = notNull(indicesOfApproximationObjects, "Set of indices of approximation objects is null.");
@@ -240,6 +247,7 @@ public class RuleConditions {
 		}
 		
 		initializeNotCoveringConditionsCounts();
+		this.ruleSemantics = notNull(ruleSemantics, "Rule semantics is null.");
 	}
 	
 	/**
@@ -529,6 +537,15 @@ public class RuleConditions {
 	public RuleCoverageInformation getRuleCoverageInformation() {
 		return new RuleCoverageInformation(this.indicesOfPositiveObjects, this.indicesOfNeutralObjects, this.indicesOfCoveredObjects,
 				this.learningInformationTable.getNumberOfObjects());
+	}
+	
+	/**
+	 * Gets semantics of the constructed decision rule.
+	 * 
+	 * @return semantics of the constructed decision rule
+	 */
+	public RuleSemantics getRuleSemantics() {
+		return this.ruleSemantics;
 	}
 	
 }
