@@ -186,10 +186,10 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	 */
 	@Override
 	public double getEpsilonPrime() {
-		if (epsilonPrim == UNKNOWN_DOUBLE_VALUE) {
+		if (epsilonPrime == UNKNOWN_DOUBLE_VALUE) {
 			//TODO: calculate measure
 		}
-		return epsilonPrim;
+		return epsilonPrime;
 	}
 	
 	/**
