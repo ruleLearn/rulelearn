@@ -16,8 +16,8 @@
 
 package org.rulelearn.rules.ruleml;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
@@ -26,7 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
+import org.rulelearn.core.UnknownValueException;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttribute;
@@ -82,9 +82,12 @@ class RuleMLBuilderTest {
 	
 	@Mock
 	private RuleCharacteristics ruleCharacteristicsMock;
+	@Mock
+	private RuleCharacteristics notAllSetRuleCharacteristicsMock;
 	
 	@Mock
-	private RuleSetWithCharacteristics ruleSetWithCharacteristicsMock;  
+	private RuleSetWithCharacteristics ruleSetWithCharacteristicsMock;
+	
 	
 	private String conditionAtLeastRuleML;
 	private String conditionAtMostRuleML;
@@ -93,6 +96,7 @@ class RuleMLBuilderTest {
 	private String decisionAtMostRuleML;
 	
 	private String ruleCharacteristicsRuleML;
+	private String notAllSetRuleCharacteristicsRuleML;
 
 	/**
 	 * Set up for each test.
@@ -219,33 +223,86 @@ class RuleMLBuilderTest {
 				"</atom>\n";
 		
 		// set mock for rule characteristics
+		when(this.ruleCharacteristicsMock.isAConfirmationSet()).thenReturn(true);
 		when(this.ruleCharacteristicsMock.getAConfirmation()).thenReturn(1.0);
+		when(this.ruleCharacteristicsMock.isC1ConfirmationSet()).thenReturn(true);
 		when(this.ruleCharacteristicsMock.getC1Confirmation()).thenReturn(-1.0);
+		when(this.ruleCharacteristicsMock.isConfidenceSet()).thenReturn(true);
 		when(this.ruleCharacteristicsMock.getConfidence()).thenReturn(1.0);
+		when(this.ruleCharacteristicsMock.isCoverageSet()).thenReturn(true);
 		when(this.ruleCharacteristicsMock.getCoverage()).thenReturn(1);
+		when(this.ruleCharacteristicsMock.isEpsilonSet()).thenReturn(true);
 		when(this.ruleCharacteristicsMock.getEpsilon()).thenReturn(-1.0);
+		when(this.ruleCharacteristicsMock.isEpsilonPrimeSet()).thenReturn(true);
 		when(this.ruleCharacteristicsMock.getEpsilonPrime()).thenReturn(1.0);
+		when(this.ruleCharacteristicsMock.isFConfirmationSet()).thenReturn(true);
 		when(this.ruleCharacteristicsMock.getFConfirmation()).thenReturn(1.0);
+		when(this.ruleCharacteristicsMock.isLConfirmationSet()).thenReturn(true);
 		when(this.ruleCharacteristicsMock.getLConfirmation()).thenReturn(1.0);
+		when(this.ruleCharacteristicsMock.isNegativeCoverageSet()).thenReturn(true);
 		when(this.ruleCharacteristicsMock.getNegativeCoverage()).thenReturn(1);
+		when(this.ruleCharacteristicsMock.isSConfirmationSet()).thenReturn(true);
 		when(this.ruleCharacteristicsMock.getSConfirmation()).thenReturn(-1.0);
+		when(this.ruleCharacteristicsMock.isStrengthSet()).thenReturn(true);
 		when(this.ruleCharacteristicsMock.getStrength()).thenReturn(1.0);
+		when(this.ruleCharacteristicsMock.isSupportSet()).thenReturn(true);
 		when(this.ruleCharacteristicsMock.getSupport()).thenReturn(1);
+		when(this.ruleCharacteristicsMock.isZConfirmationSet()).thenReturn(true);
 		when(this.ruleCharacteristicsMock.getZConfirmation()).thenReturn(-1.0);
+		when(this.ruleCharacteristicsMock.isCoverageFactorSet()).thenReturn(true);
+		when(this.ruleCharacteristicsMock.getCoverageFactor()).thenReturn(0.0);
 		this.ruleCharacteristicsRuleML = "<evaluation measure=\"Support\" value=\"1.0\"/>\n" + 
 				"<evaluation measure=\"Strength\" value=\"1.0\"/>\n" + 
 				"<evaluation measure=\"Confidence\" value=\"1.0\"/>\n" + 
 				"<evaluation measure=\"CoverageFactor\" value=\"0.0\"/>\n" + 
 				"<evaluation measure=\"Coverage\" value=\"1.0\"/>\n" + 
 				"<evaluation measure=\"NegativeCoverage\" value=\"1.0\"/>\n" + 
-				"<evaluation measure=\"InconsistencyMeasure\" value=\"-1.0\"/>\n" + 
-				"<evaluation measure=\"EpsilonPrimMeasure\" value=\"1.0\"/>\n" + 
+				"<evaluation measure=\"EpsilonMeasure\" value=\"-1.0\"/>\n" + 
+				"<evaluation measure=\"EpsilonPrimeMeasure\" value=\"1.0\"/>\n" + 
 				"<evaluation measure=\"f-ConfirmationMeasure\" value=\"1.0\"/>\n" + 
 				"<evaluation measure=\"A-ConfirmationMeasure\" value=\"1.0\"/>\n" + 
 				"<evaluation measure=\"Z-ConfirmationMeasure\" value=\"-1.0\"/>\n" + 
 				"<evaluation measure=\"l-ConfirmationMeasure\" value=\"1.0\"/>\n" + 
 				"<evaluation measure=\"c1-ConfirmationMeasure\" value=\"-1.0\"/>\n" + 
-				"<evaluation measure=\"s-ConfirmationMeasure\" value=\"-1.0\"/>\n";	
+				"<evaluation measure=\"s-ConfirmationMeasure\" value=\"-1.0\"/>\n";
+		
+		// set mock for not fully specified rule characteristics
+		when(this.notAllSetRuleCharacteristicsMock.isAConfirmationSet()).thenReturn(false);
+		when(this.notAllSetRuleCharacteristicsMock.getAConfirmation()).thenThrow(new UnknownValueException("Value of rule confirmation measure 'a' is unknown."));
+		when(this.notAllSetRuleCharacteristicsMock.isC1ConfirmationSet()).thenReturn(false);
+		when(this.notAllSetRuleCharacteristicsMock.getC1Confirmation()).thenThrow(new UnknownValueException("Value of rule confirmation measure 'c_1' is unknown."));
+		when(this.notAllSetRuleCharacteristicsMock.isConfidenceSet()).thenReturn(true);
+		when(this.notAllSetRuleCharacteristicsMock.getConfidence()).thenReturn(1.0);
+		when(this.notAllSetRuleCharacteristicsMock.isCoverageSet()).thenReturn(true);
+		when(this.notAllSetRuleCharacteristicsMock.getCoverage()).thenReturn(1);
+		when(this.notAllSetRuleCharacteristicsMock.isEpsilonSet()).thenReturn(true);
+		when(this.notAllSetRuleCharacteristicsMock.getEpsilon()).thenReturn(0.0);
+		when(this.notAllSetRuleCharacteristicsMock.isEpsilonPrimeSet()).thenReturn(false);
+		when(this.notAllSetRuleCharacteristicsMock.getEpsilonPrime()).thenThrow(new UnknownValueException("Value of rule confirmation measure epsilon' is unknown."));
+		when(this.notAllSetRuleCharacteristicsMock.isFConfirmationSet()).thenReturn(false);
+		when(this.notAllSetRuleCharacteristicsMock.getFConfirmation()).thenThrow(new UnknownValueException("Value of rule confirmation measure 'f' is unknown."));
+		when(this.notAllSetRuleCharacteristicsMock.isLConfirmationSet()).thenReturn(false);
+		when(this.notAllSetRuleCharacteristicsMock.getLConfirmation()).thenThrow(new UnknownValueException("Value of rule confirmation measure 'l' is unknown."));
+		when(this.notAllSetRuleCharacteristicsMock.isNegativeCoverageSet()).thenReturn(true);
+		when(this.notAllSetRuleCharacteristicsMock.getNegativeCoverage()).thenReturn(1);
+		when(this.notAllSetRuleCharacteristicsMock.isSConfirmationSet()).thenReturn(true);
+		when(this.notAllSetRuleCharacteristicsMock.getSConfirmation()).thenReturn(1.0);
+		when(this.notAllSetRuleCharacteristicsMock.isStrengthSet()).thenReturn(true);
+		when(this.notAllSetRuleCharacteristicsMock.getStrength()).thenReturn(1.0);
+		when(this.notAllSetRuleCharacteristicsMock.isSupportSet()).thenReturn(true);
+		when(this.notAllSetRuleCharacteristicsMock.getSupport()).thenReturn(1);
+		when(this.notAllSetRuleCharacteristicsMock.isZConfirmationSet()).thenReturn(false);
+		when(this.notAllSetRuleCharacteristicsMock.getZConfirmation()).thenThrow(new UnknownValueException("Value of rule confirmation measure 'z' is unknown."));
+		when(this.notAllSetRuleCharacteristicsMock.isCoverageFactorSet()).thenReturn(true);
+		when(this.notAllSetRuleCharacteristicsMock.getCoverageFactor()).thenReturn(0.0);
+		this.notAllSetRuleCharacteristicsRuleML = "<evaluation measure=\"Support\" value=\"1.0\"/>\n" + 
+				"<evaluation measure=\"Strength\" value=\"1.0\"/>\n" + 
+				"<evaluation measure=\"Confidence\" value=\"1.0\"/>\n" + 
+				"<evaluation measure=\"CoverageFactor\" value=\"0.0\"/>\n" + 
+				"<evaluation measure=\"Coverage\" value=\"1.0\"/>\n" + 
+				"<evaluation measure=\"NegativeCoverage\" value=\"1.0\"/>\n" + 
+				"<evaluation measure=\"EpsilonMeasure\" value=\"0.0\"/>\n" + 
+				"<evaluation measure=\"s-ConfirmationMeasure\" value=\"1.0\"/>\n";
 	}
 	
 	/**
@@ -269,6 +326,15 @@ class RuleMLBuilderTest {
 	void testRuleMLBuilderRuleCharacteristics() {
 		//System.out.println(ruleMLBuilder.toRuleMLString(this.ruleCharacteristicsMock, 0));
 		assertEquals(this.ruleCharacteristicsRuleML, ruleMLBuilder.toRuleMLString(this.ruleCharacteristicsMock, 0));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.ruleml.RuleMLBuilder#toRuleMLString(RuleCharacteristics, int)}.
+	 */
+	@Test
+	void testRuleMLBuilderNotAllSetRuleCharacteristics() {
+		//System.out.println(ruleMLBuilder.toRuleMLString(this.ruleCharacteristicsMock, 0));
+		assertEquals(this.notAllSetRuleCharacteristicsRuleML, ruleMLBuilder.toRuleMLString(this.notAllSetRuleCharacteristicsMock, 0));
 	}
 	
 	/**
@@ -509,8 +575,8 @@ class RuleMLBuilderTest {
 				"\t\t\t<evaluation measure=\"CoverageFactor\" value=\"0.0\"/>\n" + 
 				"\t\t\t<evaluation measure=\"Coverage\" value=\"1.0\"/>\n" + 
 				"\t\t\t<evaluation measure=\"NegativeCoverage\" value=\"1.0\"/>\n" + 
-				"\t\t\t<evaluation measure=\"InconsistencyMeasure\" value=\"-1.0\"/>\n" + 
-				"\t\t\t<evaluation measure=\"EpsilonPrimMeasure\" value=\"1.0\"/>\n" + 
+				"\t\t\t<evaluation measure=\"EpsilonMeasure\" value=\"-1.0\"/>\n" + 
+				"\t\t\t<evaluation measure=\"EpsilonPrimeMeasure\" value=\"1.0\"/>\n" + 
 				"\t\t\t<evaluation measure=\"f-ConfirmationMeasure\" value=\"1.0\"/>\n" + 
 				"\t\t\t<evaluation measure=\"A-ConfirmationMeasure\" value=\"1.0\"/>\n" + 
 				"\t\t\t<evaluation measure=\"Z-ConfirmationMeasure\" value=\"-1.0\"/>\n" + 

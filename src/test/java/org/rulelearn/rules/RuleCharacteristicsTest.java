@@ -16,7 +16,8 @@
 
 package org.rulelearn.rules;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -106,6 +107,18 @@ class RuleCharacteristicsTest {
 	}
 	
 	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isSupportSet()}.
+	 */
+	@Test
+	void testIsSupportSet() {
+		ruleCharacteristics.setSupport(RuleCharacteristics.UNKNOWN_INT_VALUE);
+		assertEquals(false, ruleCharacteristics.isSupportSet());
+		
+		ruleCharacteristics.setSupport(1);
+		assertEquals(true, ruleCharacteristics.isSupportSet());
+	}
+	
+	/**
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#getStrength()}.
 	 */
 	@Test
@@ -180,6 +193,18 @@ class RuleCharacteristicsTest {
 		double strength = 1;
 		ruleCharacteristics.setStrength(strength);
 		assertEquals(ruleCharacteristics.getStrength(), strength);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isStrengthSet()}.
+	 */
+	@Test
+	void testIsStrengthSet() {
+		ruleCharacteristics.setStrength(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		assertEquals(false, ruleCharacteristics.isStrengthSet());
+		
+		ruleCharacteristics.setStrength(1.0);
+		assertEquals(true, ruleCharacteristics.isStrengthSet());
 	}
 
 	/**
@@ -303,6 +328,18 @@ class RuleCharacteristicsTest {
 			//exception is correctly thrown => do nothing
 		}
 	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isConfidenceSet()}.
+	 */
+	@Test
+	void testIsConfidenceSet() {
+		ruleCharacteristics.setConfidence(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		assertEquals(false, ruleCharacteristics.isConfidenceSet());
+		
+		ruleCharacteristics.setConfidence(1.0);
+		assertEquals(true, ruleCharacteristics.isConfidenceSet());
+	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#getCoverageFactor()}.
@@ -380,6 +417,18 @@ class RuleCharacteristicsTest {
 		ruleCharacteristics.setCoverageFactor(coverageFactor);
 		assertEquals(ruleCharacteristics.getCoverageFactor(), coverageFactor);
 	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isCoverageFactorSet()}.
+	 */
+	@Test
+	void testIsCoverageFactorSet() {
+		ruleCharacteristics.setCoverageFactor(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		assertEquals(false, ruleCharacteristics.isCoverageFactorSet());
+		
+		ruleCharacteristics.setCoverageFactor(1.0);
+		assertEquals(true, ruleCharacteristics.isCoverageFactorSet());
+	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#getCoverage()}.
@@ -445,6 +494,18 @@ class RuleCharacteristicsTest {
 	}
 
 	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isCoverageSet()}.
+	 */
+	@Test
+	void testIsCoverageSet() {
+		ruleCharacteristics.setCoverage(RuleCharacteristics.UNKNOWN_INT_VALUE);
+		assertEquals(false, ruleCharacteristics.isCoverageSet());
+		
+		ruleCharacteristics.setCoverage(1);
+		assertEquals(true, ruleCharacteristics.isCoverageSet());
+	}
+	
+	/**
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#getNegativeCoverage()}.
 	 */
 	@Test
@@ -506,6 +567,18 @@ class RuleCharacteristicsTest {
 		int negativeCoverage = 2;
 		ruleCharacteristics.setNegativeCoverage(negativeCoverage);
 		assertEquals(ruleCharacteristics.getNegativeCoverage(), negativeCoverage);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isNegativeCoverageSet()}.
+	 */
+	@Test
+	void testIsNegativeCoverageSet() {
+		ruleCharacteristics.setNegativeCoverage(RuleCharacteristics.UNKNOWN_INT_VALUE);
+		assertEquals(false, ruleCharacteristics.isNegativeCoverageSet());
+		
+		ruleCharacteristics.setNegativeCoverage(1);
+		assertEquals(true, ruleCharacteristics.isNegativeCoverageSet());
 	}
 
 	/**
@@ -584,6 +657,18 @@ class RuleCharacteristicsTest {
 		ruleCharacteristics.setEpsilon(epsilon);
 		assertEquals(ruleCharacteristics.getEpsilon(), epsilon);
 	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isEpsilonSet()}.
+	 */
+	@Test
+	void testIsEpsilonSet() {
+		ruleCharacteristics.setEpsilon(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		assertEquals(false, ruleCharacteristics.isEpsilonSet());
+		
+		ruleCharacteristics.setEpsilon(1.0);
+		assertEquals(true, ruleCharacteristics.isEpsilonSet());
+	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#getEpsilonPrime()}.
@@ -658,6 +743,18 @@ class RuleCharacteristicsTest {
 		double epsilonPrime = 2;
 		ruleCharacteristics.setEpsilonPrime(epsilonPrime);
 		assertEquals(ruleCharacteristics.getEpsilonPrime(), epsilonPrime);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isEpsilonPrimeSet()}.
+	 */
+	@Test
+	void testIsEpsilonPrimeSet() {
+		ruleCharacteristics.setEpsilonPrime(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		assertEquals(false, ruleCharacteristics.isEpsilonPrimeSet());
+		
+		ruleCharacteristics.setEpsilonPrime(1.0);
+		assertEquals(true, ruleCharacteristics.isEpsilonPrimeSet());
 	}
 
 	/**
@@ -736,6 +833,18 @@ class RuleCharacteristicsTest {
 		ruleCharacteristics.setFConfirmation(fConfirmation);
 		assertEquals(ruleCharacteristics.getFConfirmation(), fConfirmation);
 	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isFConfirmationSet()}.
+	 */
+	@Test
+	void testIsFConfirmationSet() {
+		ruleCharacteristics.setFConfirmation(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		assertEquals(false, ruleCharacteristics.isFConfirmationSet());
+		
+		ruleCharacteristics.setFConfirmation(1.0);
+		assertEquals(true, ruleCharacteristics.isFConfirmationSet());
+	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#getAConfirmation()}.
@@ -812,6 +921,18 @@ class RuleCharacteristicsTest {
 		double aConfirmation = 1;
 		ruleCharacteristics.setAConfirmation(aConfirmation);
 		assertEquals(ruleCharacteristics.getAConfirmation(), aConfirmation);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isAConfirmationSet()}.
+	 */
+	@Test
+	void testIsAConfirmationSet() {
+		ruleCharacteristics.setAConfirmation(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		assertEquals(false, ruleCharacteristics.isAConfirmationSet());
+		
+		ruleCharacteristics.setAConfirmation(1.0);
+		assertEquals(true, ruleCharacteristics.isAConfirmationSet());
 	}
 
 	/**
@@ -890,6 +1011,18 @@ class RuleCharacteristicsTest {
 		ruleCharacteristics.setZConfirmation(zConfirmation);
 		assertEquals(ruleCharacteristics.getZConfirmation(), zConfirmation);
 	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isZConfirmationSet()}.
+	 */
+	@Test
+	void testIsZConfirmationSet() {
+		ruleCharacteristics.setZConfirmation(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		assertEquals(false, ruleCharacteristics.isZConfirmationSet());
+		
+		ruleCharacteristics.setZConfirmation(1.0);
+		assertEquals(true, ruleCharacteristics.isZConfirmationSet());
+	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#getLConfirmation()}.
@@ -954,6 +1087,18 @@ class RuleCharacteristicsTest {
 		ruleCharacteristics.setLConfirmation(lConfirmation);
 		assertEquals(ruleCharacteristics.getLConfirmation(), lConfirmation);
 	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isLConfirmationSet()}.
+	 */
+	@Test
+	void testIsLConfirmationSet() {
+		ruleCharacteristics.setLConfirmation(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		assertEquals(false, ruleCharacteristics.isLConfirmationSet());
+		
+		ruleCharacteristics.setLConfirmation(1.0);
+		assertEquals(true, ruleCharacteristics.isLConfirmationSet());
+	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#getC1Confirmation()}.
@@ -986,6 +1131,18 @@ class RuleCharacteristicsTest {
 		double c1Confirmation = 2;
 		ruleCharacteristics.setC1Confirmation(c1Confirmation);
 		assertEquals(ruleCharacteristics.getC1Confirmation(), c1Confirmation);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isC1ConfirmationSet()}.
+	 */
+	@Test
+	void testIsC1ConfirmationSet() {
+		ruleCharacteristics.setC1Confirmation(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		assertEquals(false, ruleCharacteristics.isC1ConfirmationSet());
+		
+		ruleCharacteristics.setC1Confirmation(1.0);
+		assertEquals(true, ruleCharacteristics.isC1ConfirmationSet());
 	}
 
 	/**
@@ -1065,4 +1222,16 @@ class RuleCharacteristicsTest {
 		assertEquals(ruleCharacteristics.getSConfirmation(), sConfirmation);
 	}
 
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isSConfirmationSet()}.
+	 */
+	@Test
+	void testIsSConfirmationSet() {
+		ruleCharacteristics.setSConfirmation(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE);
+		assertEquals(false, ruleCharacteristics.isSConfirmationSet());
+		
+		ruleCharacteristics.setSConfirmation(1.0);
+		assertEquals(true, ruleCharacteristics.isSConfirmationSet());
+	}
+	
 }

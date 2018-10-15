@@ -16,9 +16,9 @@
 
 package org.rulelearn.rules.ruleml;
 
-import java.util.UUID;
-
 import static org.rulelearn.core.Precondition.notNull;
+
+import java.util.UUID;
 
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.Rule;
@@ -304,36 +304,66 @@ public class RuleMLBuilder {
 	String toRuleMLString(RuleCharacteristics ruleCharacteristics, int indenture) {
 		notNull(ruleCharacteristics, "Rule characteristics to be transfomed into a RuleML string are null.");
 		final StringBuilder result = new StringBuilder();
-		
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-				RuleMLElements.getEvaluationTag("Support", ruleCharacteristics.getSupport()));
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-				RuleMLElements.getEvaluationTag("Strength", ruleCharacteristics.getStrength()));
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-				RuleMLElements.getEvaluationTag("Confidence", ruleCharacteristics.getConfidence()));
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-				RuleMLElements.getEvaluationTag("CoverageFactor", String.valueOf(ruleCharacteristics.getCoverageFactor())));
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-				RuleMLElements.getEvaluationTag("Coverage", ruleCharacteristics.getCoverage()));
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-				RuleMLElements.getEvaluationTag("NegativeCoverage", ruleCharacteristics.getNegativeCoverage()));
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-				RuleMLElements.getEvaluationTag("InconsistencyMeasure", ruleCharacteristics.getEpsilon()));
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-				RuleMLElements.getEvaluationTag("EpsilonPrimMeasure", ruleCharacteristics.getEpsilonPrime()));		
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-				RuleMLElements.getEvaluationTag("f-ConfirmationMeasure", ruleCharacteristics.getFConfirmation()));
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-				RuleMLElements.getEvaluationTag("A-ConfirmationMeasure", ruleCharacteristics.getAConfirmation()));
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-				RuleMLElements.getEvaluationTag("Z-ConfirmationMeasure", ruleCharacteristics.getZConfirmation()));
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-				RuleMLElements.getEvaluationTag("l-ConfirmationMeasure", ruleCharacteristics.getLConfirmation()));
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-				RuleMLElements.getEvaluationTag("c1-ConfirmationMeasure", ruleCharacteristics.getC1Confirmation()));
-		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-				RuleMLElements.getEvaluationTag("s-ConfirmationMeasure", ruleCharacteristics.getSConfirmation()));
+
+		if (ruleCharacteristics.isSupportSet()) {
+			result.append(evaluationToRuleMLString("Support", ruleCharacteristics.getSupport(), indenture));
+		}
+		if (ruleCharacteristics.isStrengthSet()) {
+			result.append(evaluationToRuleMLString("Strength", ruleCharacteristics.getStrength(), indenture));
+		}
+		if (ruleCharacteristics.isConfidenceSet()) {
+			result.append(evaluationToRuleMLString("Confidence", ruleCharacteristics.getConfidence(), indenture));
+		}
+		if (ruleCharacteristics.isCoverageFactorSet()) {
+			result.append(evaluationToRuleMLString("CoverageFactor", ruleCharacteristics.getCoverageFactor(), indenture));
+		}
+		if (ruleCharacteristics.isCoverageSet()) {
+			result.append(evaluationToRuleMLString("Coverage", ruleCharacteristics.getCoverage(), indenture));
+		}
+		if (ruleCharacteristics.isNegativeCoverageSet()) {
+			result.append(evaluationToRuleMLString("NegativeCoverage", ruleCharacteristics.getNegativeCoverage(), indenture));
+		}
+		if (ruleCharacteristics.isEpsilonSet()) {
+			// it was InconsistencyMeasure in previous version
+			result.append(evaluationToRuleMLString("EpsilonMeasure", ruleCharacteristics.getEpsilon(), indenture));
+		}
+		if (ruleCharacteristics.isEpsilonPrimeSet()) {
+			// it was EpsilonPrimMeasure in previous version
+			result.append(evaluationToRuleMLString("EpsilonPrimeMeasure", ruleCharacteristics.getEpsilonPrime(), indenture));
+		}
+		if (ruleCharacteristics.isFConfirmationSet()) {
+			result.append(evaluationToRuleMLString("f-ConfirmationMeasure", ruleCharacteristics.getFConfirmation(), indenture));
+		}
+		if (ruleCharacteristics.isAConfirmationSet()) {
+			result.append(evaluationToRuleMLString("A-ConfirmationMeasure", ruleCharacteristics.getAConfirmation(), indenture));
+		}
+		if (ruleCharacteristics.isZConfirmationSet()) {
+			result.append(evaluationToRuleMLString("Z-ConfirmationMeasure", ruleCharacteristics.getZConfirmation(), indenture));
+		}
+		if (ruleCharacteristics.isLConfirmationSet()) {
+			result.append(evaluationToRuleMLString("l-ConfirmationMeasure", ruleCharacteristics.getLConfirmation(), indenture));
+		}
+		if (ruleCharacteristics.isC1ConfirmationSet()) {
+			result.append(evaluationToRuleMLString("c1-ConfirmationMeasure", ruleCharacteristics.getC1Confirmation(), indenture));
+		}
+		if (ruleCharacteristics.isSConfirmationSet()) {
+			result.append(evaluationToRuleMLString("s-ConfirmationMeasure", ruleCharacteristics.getSConfirmation(), indenture));
+		}
 				
+		return result.toString();
+	}
+	
+	/**
+	 * Construct a RuleML string representing evaluation of a rule. 
+	 *  
+	 * @param name name of evaluation
+	 * @param value value of evaluation 
+	 * @param indenture how many tabs should be added to pretty print the document
+	 * @return RuleML representation of the rule evaluation 
+	 */
+	String evaluationToRuleMLString(String name, double value, int indenture) {
+		final StringBuilder result = new StringBuilder();
+		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(RuleMLElements.getEvaluationTag(name, value));
 		return result.toString();
 	}
 	
