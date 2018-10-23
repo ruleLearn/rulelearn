@@ -15,7 +15,7 @@
  */
 
 /**
- * Provides classes and interfaces representing basic field types allowing to represent identifiers and evaluations of objects.
+ * Provides classes and interfaces representing basic field types. These types allow to represent identifiers and evaluations of objects.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

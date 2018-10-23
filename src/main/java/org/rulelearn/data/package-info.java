@@ -16,9 +16,9 @@
 
 /**
  * Provides classes and interfaces for working with data stored in information tables composed of fields representing identifiers/evaluations 
- * of all considered objects on all specified attributes, among which we distinguish:
- * (1) identification attributes,
- * (2) evaluation attributes: condition, decision and description ones,
+ * of all considered objects on all specified attributes, among which we distinguish:<br>
+ * (1) identification attributes,<br>
+ * (2) evaluation attributes: condition, decision and description ones,<br>
  * both active and non-active.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)

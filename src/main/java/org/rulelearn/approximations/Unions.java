@@ -41,20 +41,20 @@ public class Unions extends ApproximatedSets {
 	/**
 	 * Array containing all meaningful (i.e., not containing all objects) upward unions which can be defined for information table.
 	 * Unions are sorted from the most specific to the least specific.
-	 * For example - if possible values of decision criterion are: 1, 2 and 3
+	 * For example - if possible values of a decision criterion are: 1, 2 and 3
 	 * and preference type for this criterion is gain then:<br>
-	 * upwardUnions[0] => union "class 3 and better"<br>
-	 * upwardUnions[1] => union "class 2 and better"
+	 * upwardUnions[0] gets union "class 3 and better"<br>
+	 * upwardUnions[1] gets union "class 2 and better"
 	 */
 	Union[] upwardUnions = null;
 	
 	/**
 	 * Array containing all meaningful (i.e., not containing all objects) downward unions which can be defined for information table.
 	 * Unions are sorted from the most specific to the least specific.
-	 * For example, if possible values of decision criterion are: 1, 2 and 3
+	 * For example, if possible values of a decision criterion are: 1, 2 and 3
 	 * and preference type for this criterion is gain, then:<br>
-	 * downwardUnions[0] => union "class 1 and worse"<br>
-	 * downwardUnions[1] => union "class 2 and worse"
+	 * downwardUnions[0] gets union "class 1 and worse"<br>
+	 * downwardUnions[1] gets union "class 2 and worse"
 	 */
 	Union[] downwardUnions = null;
 	
@@ -241,8 +241,13 @@ public class Unions extends ApproximatedSets {
 	/**
 	 * Gets array containing all meaningful (i.e., not containing all objects) upward unions which can be defined for information table.
 	 * Unions are sorted from the most specific (i.e., containing the smallest number of objects)
-	 * to the least specific (i.e., containing the greatest number of objects). Returned array represents a partial order of unions.
-	 * That order is such that TODO
+	 * to the least specific (i.e., containing the greatest number of objects). In general, returned array represents a partial order of upward unions.
+	 * For example - if possible values of a decision criterion are: 1, 2 and 3
+	 * and preference type for this criterion is gain, then:<br>
+	 * {@code upwardUnions[0]} gets union "class 3 and better"<br>
+	 * {@code upwardUnions[1]} gets union "class 2 and better".
+	 * In case of more than one decision criterion, a union at index {@code i} is either included in or uncomparable with
+	 * each union at index {@code i + j}, where {@code j &gt; 0}.
 	 * 
 	 * @return array containing all upward unions which can be defined for information table
 	 */
@@ -253,8 +258,13 @@ public class Unions extends ApproximatedSets {
 	/**
 	 * Gets array containing all meaningful (i.e., not containing all objects) upward unions which can be defined for information table.
 	 * Unions are sorted from the most specific (i.e., containing the smallest number of objects)
-	 * to the least specific (i.e., containing the greatest number of objects). Returned array represents a partial order of unions.
-	 * That order is such that TODO 
+	 * to the least specific (i.e., containing the greatest number of objects). In general, returned array represents a partial order of upward unions.
+	 * For example - if possible values of a decision criterion are: 1, 2 and 3
+	 * and preference type for this criterion is gain, then:<br>
+	 * {@code upwardUnions[0]} gets union "class 3 and better"<br>
+	 * {@code upwardUnions[1]} gets union "class 2 and better".
+	 * In case of more than one decision criterion, a union at index {@code i} is either included in or uncomparable with
+	 * each union at index {@code i + j}, where {@code j &gt; 0}.
 	 * 
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
 	 *        at the cost of returning a read-only array, or should return a safe array (that can be
@@ -269,8 +279,13 @@ public class Unions extends ApproximatedSets {
 	/**
 	 * Gets array containing all meaningful (i.e., not containing all objects) downward unions which can be defined for information table.
 	 * Unions are sorted from the most specific (i.e., containing the smallest number of objects)
-	 * to the least specific (i.e., containing the greatest number of objects). Returned array represents a partial order of unions.
-	 * That order is such that TODO
+	 * to the least specific (i.e., containing the greatest number of objects). In general, returned array represents a partial order of downward unions.
+	 * For example - if possible values of a decision criterion are: 1, 2 and 3
+	 * and preference type for this criterion is gain, then:<br>
+	 * {@code upwardUnions[0]} gets union "class 1 and worse"<br>
+	 * {@code upwardUnions[1]} gets union "class 2 and worse".
+	 * In case of more than one decision criterion, a union at index {@code i} is either included in or uncomparable with
+	 * each union at index {@code i + j}, where {@code j &gt; 0}.
 	 * 
 	 * @return array containing all downward unions which can be defined for information table
 	 */
@@ -281,8 +296,13 @@ public class Unions extends ApproximatedSets {
 	/**
 	 * Gets array containing all meaningful (i.e., not containing all objects) downward unions which can be defined for information table.
 	 * Unions are sorted from the most specific (i.e., containing the smallest number of objects)
-	 * to the least specific (i.e., containing the greatest number of objects). Returned array represents a partial order of unions.
-	 * That order is such that TODO
+	 * to the least specific (i.e., containing the greatest number of objects). In general, returned array represents a partial order of downward unions.
+	 * For example - if possible values of a decision criterion are: 1, 2 and 3
+	 * and preference type for this criterion is gain, then:<br>
+	 * {@code upwardUnions[0]} gets union "class 1 and worse"<br>
+	 * {@code upwardUnions[1]} gets union "class 2 and worse".
+	 * In case of more than one decision criterion, a union at index {@code i} is either included in or uncomparable with
+	 * each union at index {@code i + j}, where {@code j &gt; 0}.
 	 * 
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
 	 *        at the cost of returning a read-only array, or should return a safe array (that can be
