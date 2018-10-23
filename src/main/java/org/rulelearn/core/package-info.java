@@ -15,10 +15,9 @@
  */
 
 /**
- * Provides classes and interfaces allowing to calculate and operate with different dominance-based consistency measures. These measures are capable of measuring consistency 
- * of an object from an information table with respect to a single union of ordered decision classes.
+ * Provides classes and interfaces defining some core operations, types and exceptions.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-package org.rulelearn.measures.dominance;
+package org.rulelearn.core;
