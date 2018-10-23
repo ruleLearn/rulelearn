@@ -52,11 +52,22 @@ public class ObjectBuilder {
 	 * Encoding of text data in JSON file.
 	 */
 	protected String encoding = ObjectBuilder.DEFAULT_ENCODING; 
-					
+	
+	/**
+	 * Constructs object builder, and sets attributes.
+	 * 
+	 * @param attributes array of attributes {@link Attribute} which describe objects
+	 */
 	public ObjectBuilder (Attribute [] attributes) {
 		this.attributes = attributes;
 	}
 	
+	/**
+	 * Constructs object builder, sets attributes and encoding.
+	 * 
+	 * @param attributes array of attributes {@link Attribute} which describe objects
+	 * @param encoding encoding of text data in JSON file
+	 */
 	public ObjectBuilder (Attribute [] attributes, String encoding) {
 		this.attributes = attributes;
 		this.encoding = encoding;

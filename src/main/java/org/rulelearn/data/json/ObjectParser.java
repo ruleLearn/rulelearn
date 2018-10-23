@@ -62,15 +62,33 @@ public class ObjectParser {
 	 */
 	protected String missingValueString = ObjectParser.MISSING_VALUE_STRING;
 	
+	/**
+	 * Constructs object parser, and sets attributes.
+	 * 
+	 * @param attributes array of attributes {@link Attribute} which describe parsed objects
+	 */
 	public ObjectParser (Attribute [] attributes) {
 		this.attributes = attributes;
 	}
 	
+	/**
+	 * Constructs object parser, sets attributes, and string representation of missing value.
+	 * 
+	 * @param attributes array of attributes {@link Attribute} which describe parsed objects
+	 * @param missingValueString string representation of missing value in JSON
+	 */
 	public ObjectParser (Attribute [] attributes, String missingValueString) {
 		this(attributes);
 		this.missingValueString = missingValueString;
 	}
 	
+	/**
+	 * Constructs object parser, sets attributes, string representation of missing value, and encoding.
+	 * 
+	 * @param attributes array of attributes {@link Attribute} which describe parsed objects
+	 * @param missingValueString string representation of missing value in JSON
+	 * @param encoding encoding of text data in JSON
+	 */
 	public ObjectParser (Attribute [] attributes, String missingValueString, String encoding) {
 		this(attributes, missingValueString);
 		this.encoding = encoding;

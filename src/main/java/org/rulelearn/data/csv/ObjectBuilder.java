@@ -53,40 +53,83 @@ public class ObjectBuilder {
 	protected String encoding = ObjectBuilder.DEFAULT_ENCODING; 
 			
 	/**
-	 * Indication of header in CSV file.
+	 * Indication of presence of a header in CSV file.
 	 */
 	boolean header = false;
 	
+	/**
+	 * Constructs object builder.
+	 */
 	public ObjectBuilder () {}
 	
+	/**
+	 * Constructs object builder, and sets attributes.
+	 * 
+	 * @param attributes array of attributes {@link Attribute} which describe objects
+	 */
 	public ObjectBuilder (Attribute [] attributes) {
 		this.attributes = attributes;
 	}
 	
+	/**
+	 * Constructs object builder, and sets encoding.
+	 * 
+	 * @param encoding encoding of text data in CSV file
+	 */
 	public ObjectBuilder (String encoding) {
 		this.encoding = encoding; 
 	}
 	
+	/**
+	 * Constructs object builder, and sets header option.
+	 * 
+	 * @param header indication of presence of a header in CSV file
+	 */
 	public ObjectBuilder (boolean header) {
 		this.header = header; 
 	}
 	
+	/**
+	 * Constructs object builder, sets attributes and encoding.
+	 * 
+	 * @param attributes array of attributes {@link Attribute} which describe objects
+	 * @param encoding encoding of text data in CSV file
+	 */
 	public ObjectBuilder (Attribute [] attributes, String encoding) {
 		this.attributes = attributes;
 		this.encoding = encoding;
 	}
 	
+	/**
+	 * Constructs object builder, sets attributes and header option.
+	 * 
+	 * @param attributes array of attributes {@link Attribute} which describe objects
+	 * @param header indication of presence of a header in CSV file
+	 */
 	public ObjectBuilder (Attribute [] attributes, boolean header) {
 		this.attributes = attributes;
 		this.header = header;
 	}
 	
+	/**
+	 * Constructs object builder, sets attributes, encoding and header option.
+	 * 
+	 * @param attributes array of attributes {@link Attribute} which describe objects
+	 * @param encoding encoding of text data in CSV file
+	 * @param header indication of presence of a header in CSV file
+	 */
 	public ObjectBuilder (Attribute [] attributes, String encoding, boolean header) {
 		this.attributes = attributes;
 		this.encoding = encoding;
 		this.header = header;
 	}
 	
+	/**
+	 * Constructs object builder, sets encoding and header option.
+	 * 
+	 * @param encoding encoding of text data in CSV file
+	 * @param header indication of presence of a header in CSV file
+	 */
 	public ObjectBuilder (String encoding, boolean header) {
 		this.encoding = encoding;
 		this.header = header;
