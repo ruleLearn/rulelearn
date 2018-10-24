@@ -16,7 +16,10 @@
 
 package org.rulelearn.rules.ruleml;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,6 +34,7 @@ import org.rulelearn.data.json.AttributeDeserializer;
 import org.rulelearn.data.json.EvaluationAttributeSerializer;
 import org.rulelearn.data.json.IdentificationAttributeSerializer;
 import org.rulelearn.rules.RuleSet;
+import org.rulelearn.rules.RuleSetWithCharacteristics;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -46,10 +50,10 @@ import com.google.gson.stream.JsonReader;
 class RuleParserTest {
 
 	/**
-	 * Tests parsing RuleML file.
+	 * Tests parsing RuleML file with {@link RuleParser#parseRules(java.io.InputStream)}.
 	 */
 	@Test
-	public void testLoading01() {
+	public void testParsingRules01() {
 		Attribute [] attributes = null;
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
@@ -92,10 +96,58 @@ class RuleParserTest {
 	}
 	
 	/**
-	 * Tests parsing RuleML file.
+	 * Tests parsing RuleML file with {@link RuleParser#parseRulesWithCharacteristics(java.io.InputStream)}.
 	 */
 	@Test
-	public void testLoading03() {
+	public void testParsingRulesWithCharacteristics01() {
+		Attribute [] attributes = null;
+		
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		gsonBuilder.registerTypeAdapter(IdentificationAttribute.class, new IdentificationAttributeSerializer());
+		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
+		Gson gson = gsonBuilder.create();
+		
+		JsonReader jsonReader = null;
+		try {
+			jsonReader = new JsonReader(new FileReader("src/test/resources/data/csv/prioritisation.json"));
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		
+		Map<Integer, RuleSetWithCharacteristics> rules = null;
+		if (jsonReader != null) {
+			attributes = gson.fromJson(jsonReader, Attribute[].class);
+			RuleParser ruleParser = new RuleParser(attributes);
+			try {
+				rules = ruleParser.parseRulesWithCharacteristics(new FileInputStream("src/test/resources/data/ruleml/prioritisation1.rules.xml"));
+				assertEquals(rules.size(), 1);
+				RuleSetWithCharacteristics firstRuleSet = rules.get(1);
+				assertEquals(firstRuleSet.size(), 2);
+				assertTrue(firstRuleSet.getRuleCharacteristics(1).isStrengthSet());
+				assertFalse(firstRuleSet.getRuleCharacteristics(1).isSupportSet());
+			}
+			catch (FileNotFoundException ex) {
+				System.out.println(ex.toString());
+			}
+			if (rules != null) {
+				
+			}
+			else {
+				fail("Unable to load RuleML file.");
+			}
+		}
+		else {
+			fail("Unable to load JSON file with attributes.");
+		}		
+	}
+	
+	/**
+	 * Tests parsing RuleML file with {@link RuleParser#parseRules(java.io.InputStream)}.
+	 */
+	@Test
+	public void testParsingRules03() {
 		Attribute [] attributes = null;
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
@@ -121,6 +173,54 @@ class RuleParserTest {
 				assertEquals(rules.size(), 1);
 				RuleSet firstRuleSet = rules.get(1);
 				assertEquals(firstRuleSet.size(), 2);
+			}
+			catch (FileNotFoundException ex) {
+				System.out.println(ex.toString());
+			}
+			if (rules != null) {
+				
+			}
+			else {
+				fail("Unable to load RuleML file.");
+			}
+		}
+		else {
+			fail("Unable to load JSON file with attributes.");
+		}		
+	}
+	
+	/**
+	 * Tests parsing RuleML file with {@link RuleParser#parseRulesWithCharacteristics(java.io.InputStream)}.
+	 */
+	@Test
+	public void testParsingRulesWithCharacteristics03() {
+		Attribute [] attributes = null;
+		
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		gsonBuilder.registerTypeAdapter(IdentificationAttribute.class, new IdentificationAttributeSerializer());
+		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
+		Gson gson = gsonBuilder.create();
+		
+		JsonReader jsonReader = null;
+		try {
+			jsonReader = new JsonReader(new FileReader("src/test/resources/data/csv/prioritisation.json"));
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		
+		Map<Integer, RuleSetWithCharacteristics> rules = null;
+		if (jsonReader != null) {
+			attributes = gson.fromJson(jsonReader, Attribute[].class);
+			RuleParser ruleParser = new RuleParser(attributes);
+			try {
+				rules = ruleParser.parseRulesWithCharacteristics(new FileInputStream("src/test/resources/data/ruleml/prioritisation3.rules.xml"));
+				assertEquals(rules.size(), 1);
+				RuleSetWithCharacteristics firstRuleSet = rules.get(1);
+				assertEquals(firstRuleSet.size(), 2);
+				assertTrue(firstRuleSet.getRuleCharacteristics(0).isStrengthSet());
+				assertFalse(firstRuleSet.getRuleCharacteristics(0).isSupportSet());
 			}
 			catch (FileNotFoundException ex) {
 				System.out.println(ex.toString());

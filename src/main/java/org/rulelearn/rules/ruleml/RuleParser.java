@@ -16,6 +16,9 @@
 
 package org.rulelearn.rules.ruleml;
 
+import static org.rulelearn.core.Precondition.nonEmpty;
+import static org.rulelearn.core.Precondition.notNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -32,8 +35,10 @@ import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.Rule;
+import org.rulelearn.rules.RuleCharacteristics;
 import org.rulelearn.rules.RuleSemantics;
 import org.rulelearn.rules.RuleSet;
+import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.rules.RuleType;
 import org.rulelearn.rules.SimpleConditionAtLeast;
 import org.rulelearn.rules.SimpleConditionAtMost;
@@ -50,6 +55,7 @@ import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.SimpleField;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -58,9 +64,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
-import static org.rulelearn.core.Precondition.nonEmpty;
-import static org.rulelearn.core.Precondition.notNull;
 
 /**
  * Parser of decision rules stored in RuleML format. 
@@ -87,7 +90,7 @@ public class RuleParser {
 	final static RuleType DEFAULT_RULE_TYPE = RuleType.CERTAIN;
 	
 	/**
-	 * All attributes which may be present in conditions, which are forming decision rules.
+	 * All attributes {@link Attribute} which may be present in elementary conditions, that are forming decision rules.
 	 */
 	protected Attribute [] attributes = null;
 	
@@ -106,18 +109,31 @@ public class RuleParser {
 	 */
 	protected Object2IntMap<String> attributeNamesMap = null;
 	
-	
+	/**
+	 * Constructs rule parser, sets attributes and initializes parser.
+	 * 
+	 * @param attributes array of attributes {@link Attribute} which may be present in elementary conditions, that are forming decision rules
+	 */
 	public RuleParser (Attribute [] attributes) {
 		this.attributes = attributes;
 		this.initializeParser();
 	}
 	
+	/**
+	 * Constructs rule parser, sets attributes, encoding and initializes parser.
+	 * 
+	 * @param attributes array of attributes {@link Attribute} which may be present in elementary conditions, that are forming decision rules
+	 * @param encoding encoding of text data in RuleML
+	 */
 	public RuleParser (Attribute [] attributes, String encoding) {
 		this.attributes = attributes;
 		this.encoding = encoding;
 		this.initializeParser();
 	}
 	
+	/**
+	 * Initializes rule parser.
+	 */
 	protected void initializeParser () {
 		notNull(this.attributes, "Null set of attributes was passed to RuleML parser.");
 		nonEmpty(this.attributes, "Empty set of attributes was passed to RuleML parser.");
@@ -211,6 +227,57 @@ public class RuleParser {
 		return ruleSets;
 	}
 	
+	/**
+	 * Parses all rules from RuleML source with characteristics and returns a map {@link Object2ObjectRBTreeMap} with each rule sets from RuleML placed on different index. 
+	 * 
+	 * @param inputStream stream with RuleML
+	 * @return map {@link Object2ObjectRBTreeMap} with each rule sets with characteristics (may have not set values) from RuleML placed on different index
+	 */
+	public Map<Integer, RuleSetWithCharacteristics> parseRulesWithCharacteristics (InputStream inputStream)  {
+		Map<Integer, RuleSetWithCharacteristics> ruleSets = null;
+		
+		notNull(this.attributesWithContext, "Attributes were not specified in RuleML parser.");
+		notNull(this.attributeNamesMap, "Attributes were not specified in RuleML parser.");
+		Document ruleMLDocument =  getRuleMLDocument(inputStream);
+		// RuleML has been parsed
+		if (ruleMLDocument != null) {
+			Element root = ruleMLDocument.getDocumentElement();
+            int lowestAvailableIndex = 0;
+            ruleSets = new Object2ObjectRBTreeMap<Integer, RuleSetWithCharacteristics> ();
+            // iterate through sets of rules
+            for (Node act : new NodeListWrapper(root.getElementsByTagName("act"))) {
+                if (act.getNodeType() == Node.ELEMENT_NODE) {
+                    int index;
+                    try {
+                        index = Integer.parseInt(act.getAttributes().getNamedItem("index").getNodeValue());
+                    } catch (NumberFormatException ex) {
+                        index = lowestAvailableIndex;
+                    }
+                    if (index >= lowestAvailableIndex)
+                        lowestAvailableIndex = index + 1;
+                    //parse set of rules and rule characteristics
+                    List<Rule> rules = new ObjectArrayList<Rule> ();
+                    List<RuleCharacteristics> ruleCharacteristics = new ObjectArrayList<RuleCharacteristics> ();
+                    for (Node actChild = ((Element)act).getFirstChild(); actChild != null; actChild = actChild.getNextSibling()) {
+                        if (actChild.getNodeType() == Node.ELEMENT_NODE && "assert".equals(actChild.getNodeName())) {
+                        		try {
+                        			rules.add(parseRule((Element) actChild));
+                        			ruleCharacteristics.add(parseRuleEvaluations((Element) actChild));
+                        		}
+                        		catch (RuleParseException ex) {
+								System.out.println("Error while parsing RuleML. " + ex.toString());
+							}
+                        }
+                    }
+                    //add parsed sets of rules and rule characteristics to the map
+                    ruleSets.put(index, new RuleSetWithCharacteristics(rules.toArray(new Rule[rules.size()]), 
+                    													 ruleCharacteristics.toArray(new RuleCharacteristics[ruleCharacteristics.size()])));
+                }
+            }
+		}
+		return ruleSets;
+	}
+	
 	/** 
 	 * Parses a single rule from RuleML.
 	 * 
@@ -231,7 +298,7 @@ public class RuleParser {
 					if (impliesClause.getNodeType() == Node.ELEMENT_NODE) {
                         if ("if".equals(impliesClause.getNodeName())) {
                             if (conditions == null) {
-                                conditions = parseRuleConditionPart((Element) impliesClause);
+                            	conditions = parseRuleConditionPart((Element) impliesClause);
                             } else {
                                 throw new RuleParseException("More than one 'if' node inside an 'implies' node detected in RuleML.");
                             }
@@ -242,14 +309,6 @@ public class RuleParser {
                             } else {
                                 throw new RuleParseException("More than one 'then' node in an 'implies' node detected in RuleML.");
                             }
-                        }
-                        else if ("evaluations".equals(impliesClause.getNodeName())) {
-                        		// TODO parse evaluations
-                            /*if (evaluations == null) {
-                         
-                            } else {
-                                throw new RuleParserException("More than one 'evaluations' node detected in RuleML.");
-                            }*/
                         }
                         else if ("ruleSemantics".equals(impliesClause.getNodeName())) {
                         		ruleSemantics = parseRuleSemantics((Element) impliesClause);
@@ -295,6 +354,34 @@ public class RuleParser {
 			rule = new Rule(ruleType, ruleSemantics, conditions, decisions);
 		}
 		return rule;
+	}
+	
+	/** 
+	 * Parses rule evaluations from RuleML.
+	 * 
+	 * @param assertElement RuleML element representing a single rule
+	 * @return rule characteristics {@link RuleCharacteristics}
+	 * @throws RuleParseException if any of the rules can't bex parsed
+	 */
+	protected RuleCharacteristics parseRuleEvaluations (Element assertElement) throws RuleParseException {
+		RuleCharacteristics ruleCharacteristics = null;
+		
+		for (Node assertClause = assertElement.getFirstChild(); assertClause != null; assertClause = assertClause.getNextSibling()) {
+			if (assertClause.getNodeType() == Node.ELEMENT_NODE && "implies".equals(assertClause.getNodeName())) {
+				for (Node impliesClause = assertClause.getFirstChild(); impliesClause != null; impliesClause = impliesClause.getNextSibling()) {
+					if (impliesClause.getNodeType() == Node.ELEMENT_NODE) {
+                        if ("evaluations".equals(impliesClause.getNodeName())) {
+                            if (ruleCharacteristics == null) {
+                            	ruleCharacteristics = parseEachRuleEvaluation((Element) impliesClause);
+                            } else {
+                                throw new RuleParseException("More than one 'evaluations' node detected in RuleML.");
+                            }
+                        }
+					}
+				}
+			}
+		}
+		return ruleCharacteristics;
 	}
 	
 	/**
@@ -506,6 +593,83 @@ public class RuleParser {
 	}
 	
 	/**
+	 * Parses each evaluation characterizing a rule from RuleML.
+	 * 
+	 * @param evaluationsElement RuleML element representing evaluations of a rule
+	 * @return rule characteristics {@link RuleCharacteristics} of a rule
+	 * @throws RuleParseException if any of evaluations of rules can't be parsed
+	 */
+	protected RuleCharacteristics parseEachRuleEvaluation (Element evaluationsElement) throws RuleParseException {
+		RuleCharacteristics ruleCharacteristics = new RuleCharacteristics();
+		for (Node evaluationElement = evaluationsElement.getFirstChild(); evaluationElement != null; evaluationElement = evaluationElement.getNextSibling()) {
+            if (evaluationElement.getNodeType() == Node.ELEMENT_NODE) {
+                if ("evaluation".equals(evaluationElement.getNodeName())) {
+                		if (evaluationElement.hasAttributes()) {
+                			NamedNodeMap attributes = evaluationElement.getAttributes();
+                			// we only consider two attributes: measure and value
+                			String measure, value;
+                			if (attributes.getLength() == 2) {
+                				if (("measure".equals(attributes.item(0).getNodeName())) && ("value".equals(attributes.item(1).getNodeName()))) {
+	                				measure = attributes.item(0).getNodeValue();
+	                				value = attributes.item(1).getNodeValue();
+	                				if ("Support".equals(measure)) {
+	                					ruleCharacteristics.setSupport(Integer.parseInt(value));
+	                				}
+	                				else if ("Strength".equals(measure)) {
+	                					ruleCharacteristics.setStrength(Double.parseDouble(value));
+	                				}
+	                				else if ("Confidence".equals(measure)) {
+	                					ruleCharacteristics.setConfidence(Double.parseDouble(value));
+	                				}
+	                				else if ("CoverageFactor".equals(measure)) {
+	                					ruleCharacteristics.setCoverageFactor(Double.parseDouble(value));
+	                				}
+	                				else if ("Coverage".equals(measure)) {
+	                					ruleCharacteristics.setCoverage(Integer.parseInt(value));
+	                				}
+	                				else if ("NegativeCoverage".equals(measure)) {
+	                					ruleCharacteristics.setNegativeCoverage(Integer.parseInt(value));
+	                				}
+	                				else if ("EpsilonMeasure".equals(measure)) {
+	                					ruleCharacteristics.setEpsilon(Double.parseDouble(value));
+	                				}
+	                				else if ("InconsistencyMeasure".equals(measure)) {
+	                					ruleCharacteristics.setEpsilon(Double.parseDouble(value));
+	                				}
+	                				else if ("EpsilonPrimMeasure".equals(measure)) {
+	                					ruleCharacteristics.setEpsilonPrime(Double.parseDouble(value));
+	                				}
+	                				else if ("EpsilonPrimeMeasure".equals(measure)) {
+	                					ruleCharacteristics.setEpsilonPrime(Double.parseDouble(value));
+	                				}
+	                				else if ("f-ConfirmationMeasure".equals(measure)) {
+	                					ruleCharacteristics.setFConfirmation(Double.parseDouble(value));
+	                				}
+	                				else if ("A-ConfirmationMeasure".equals(measure)) {
+	                					ruleCharacteristics.setAConfirmation(Double.parseDouble(value));
+	                				}
+	                				else if ("Z-ConfirmationMeasure".equals(measure)) {
+	                					ruleCharacteristics.setZConfirmation(Double.parseDouble(value));
+	                				}
+	                				else if ("l-ConfirmationMeasure".equals(measure)) {
+	                					ruleCharacteristics.setLConfirmation(Double.parseDouble(value));
+	                				}
+	                				else if ("c1-ConfirmationMeasure".equals(measure)) {
+	                					ruleCharacteristics.setC1Confirmation(Double.parseDouble(value));
+	                				}
+	                				else if ("s-ConfirmationMeasure".equals(measure)) {
+	                					ruleCharacteristics.setSConfirmation(Double.parseDouble(value));
+	                				}
+                				}
+                			}
+                		}
+                }
+            }
+		}
+		return ruleCharacteristics;
+	}
+	
+	/**
 	 * Parses semantics of a rule from RuleML.
 	 * 
 	 * @param ruleSemanticsElement RuleML element representing rule semantics
@@ -516,7 +680,7 @@ public class RuleParser {
         
 		Node valueNode = ruleSemanticsElement.getFirstChild();
 		if (valueNode != null) {
-	        String value = valueNode.getNodeValue();
+		        String value = valueNode.getNodeValue();
 	        if ("le".equals(value.toLowerCase())) {
 	        		ruleSemantics = RuleSemantics.AT_MOST;
 	        	}
