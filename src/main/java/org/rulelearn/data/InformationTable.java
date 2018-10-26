@@ -18,6 +18,7 @@ package org.rulelearn.data;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
@@ -29,6 +30,9 @@ import org.rulelearn.types.IdentificationField;
 import org.rulelearn.types.KnownSimpleField;
 import org.rulelearn.types.TextIdentificationField;
 import org.rulelearn.types.UUIDIdentificationField;
+
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 /**
  * Information table composed of fields storing identifiers/evaluations of all considered objects on all specified attributes, among which we distinguish:<br>
@@ -76,11 +80,6 @@ public class InformationTable {
 	 */
 	protected Decision[] decisions = null;
 	
-//	/**
-//	 * Index of the only active decision attribute used in calculations. If there is no such attribute, equals to -1.
-//	 */
-//	protected int activeDecisionAttributeIndex = -1;
-	
 	/**
 	 * Contains identifiers of objects assigned to them by the only active identification attribute.
 	 * Can be {@code null}, if there is no such attribute.
@@ -96,13 +95,13 @@ public class InformationTable {
 	 * Maps global index of an attribute of this information table to encoded local index of an active condition attribute (called AC-attribute)
 	 * or to encoded local index of a non-active/description attribute (called NA/D-attribute).
 	 * Encoding of a local index of an AC-attribute is done by adding 1.
-	 * Encoding of a local index of a NA/D-attribute is done by subtracting 1.<br>
+	 * Encoding of a local index of a NA/D-attribute is done by taking negative value and then subtracting 1.<br>
 	 * <br>
 	 * Suppose that the 3-rd global attribute (having global index 2) is the first AC-attribute (having local index 0).
-	 * Then, {@code attributeMap[2]} encodes 0, so it will be equal to 1.<br>
+	 * Then, {@code attributeMap[2]} encodes 0, so it will be equal to 0+1=1.<br>
 	 * <br>
-	 * Suppose that the 5-rd global attribute (having global index 4) is the first NA/D-attribute (having local index 0).
-	 * Then, {@code attributeMap[4]} encodes 0, so it will be equal to -1.<br>
+	 * Suppose that the 5-rd global attribute (having global index 4) is the second NA/D-attribute (having local index 1).
+	 * Then, {@code attributeMap[4]} encodes 1, so it will be equal to (-1)-1=-2.<br>
 	 * <br>
 	 * This map also marks active decision attributes (called AD-attributes) and the only active identification attribute (called AI-attribute),
 	 * if there are such attributes.<br>
@@ -124,6 +123,12 @@ public class InformationTable {
 	 * attributeMap = [1, -1, -2, 2, 0, -3, -4, 0, -5].
 	 */
 	protected int[] attributeMap;
+	
+	/**
+	 * Maps local index of an active condition attribute (called AC-attribute) to the global index of an attribute in the array of all attributes
+	 * of this information table.
+	 */
+	Int2IntMap activeConditionAttributeIndex2GlobalAttributeIndexMap;
 	
 	/**
 	 * Protected copy constructor for internal use only. Sets all data fields of this information table.
@@ -235,12 +240,14 @@ public class InformationTable {
 		int notActiveOrDescriptionAttributeIndex = 0;
 		
 		this.attributeMap = new int[attributes.length];
+		this.activeConditionAttributeIndex2GlobalAttributeIndexMap = new Int2IntOpenHashMap();
 		
 		//split attributes into two tables + mark active decision attributes (if there are any) and active identification attribute (if there is such an attribute)
 		for (int i = 0; i < attributes.length; i++) {
 			if (isActiveConditionAttribute(attributes[i])) {
 				activeConditionAttributes[activeConditionAttributeIndex] = (EvaluationAttribute)attributes[i];
 				this.attributeMap[i] = this.encodeActiveConditionAttributeIndex(activeConditionAttributeIndex);
+				this.activeConditionAttributeIndex2GlobalAttributeIndexMap.put(activeConditionAttributeIndex, i);
 				activeConditionAttributeIndex++;
 			} else if (isActiveDecisionAttribute(attributes[i])) {
 //				this.activeDecisionAttributeIndex = i;
@@ -746,4 +753,37 @@ public class InformationTable {
 	public int getActiveIdentificationAttributeIndex() {
 		return this.activeIdentificationAttributeIndex;
 	}
+	
+	/**
+	 * Gets local index of an active condition attribute (i.e., index of such attribute in the table returned by {@link #getActiveConditionAttributeFields()},
+	 * and translates it to the index that this attribute has in the array returned by {@link #getAttributes()}.<br>
+	 * <br>
+	 * Suppose there are nine attributes:<br>
+	 * - attr0: active {@link EvaluationAttribute} of type {@link AttributeType#CONDITION},<br>
+	 * - attr1: active {@link EvaluationAttribute} of type {@link AttributeType#DESCRIPTION},<br>
+	 * - attr2: non-active {@link EvaluationAttribute} of type {@link AttributeType#CONDITION},<br>
+	 * - attr3: active {@link EvaluationAttribute} of type {@link AttributeType#CONDITION},<br>
+	 * - attr4: active {@link EvaluationAttribute} of type {@link AttributeType#DECISION},<br>
+	 * - attr5: non-active {@link EvaluationAttribute} of type {@link AttributeType#DECISION},<br>
+	 * - attr6: non-active {@link EvaluationAttribute} of type {@link AttributeType#DESCRIPTION},<br>
+	 * - attr7: active {@link IdentificationAttribute} with value type {@link TextIdentificationField},<br>
+	 * - attr8: non-active {@link IdentificationAttribute} with value type {@link UUIDIdentificationField}.<br>
+	 * <br>
+	 * Then:<br>
+	 * - {@code translateActiveConditionAttributeIndex2GlobalAttributeIndex[0] == 0},<br>
+	 * - {@code translateActiveConditionAttributeIndex2GlobalAttributeIndex[1] == 3},<br>
+	 * and {@code translateActiveConditionAttributeIndex2GlobalAttributeIndex[i] == -1} for {@code i different than 0 and 1}.
+	 * 
+	 * @param activeConditionAttributeIndex index of an attribute in the table returned by {@link #getActiveConditionAttributeFields()}
+	 * @return index of the considered attribute in the array of attributes returned by {@link #getAttributes()},
+	 *         or -1 if given attribute index does not map to any global attribute index
+	 */
+	public int translateActiveConditionAttributeIndex2GlobalAttributeIndex(int activeConditionAttributeIndex) {
+		if (this.activeConditionAttributeIndex2GlobalAttributeIndexMap.containsKey(activeConditionAttributeIndex)) {
+			return this.activeConditionAttributeIndex2GlobalAttributeIndexMap.get(activeConditionAttributeIndex);
+		} else {
+			return -1;
+		}
+	}
+
 }

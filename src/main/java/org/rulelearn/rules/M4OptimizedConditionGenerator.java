@@ -17,6 +17,8 @@
 package org.rulelearn.rules;
 
 import org.rulelearn.core.Precondition;
+import org.rulelearn.data.Attribute;
+import org.rulelearn.data.Table;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.SimpleField;
 
@@ -77,7 +79,21 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		Precondition.notNull(consideredObjects, "List of objects considered in m4-optimized condition generator is null.");
 		Precondition.notNull(ruleConditions, "Rule conditions considered in m4-optimized condition generator is null.");
 		
-		// TODO implement
+		SimpleCondition simpleCondition;
+		Table<EvaluationField> data = ruleConditions.getLearningInformationTable().getActiveConditionAttributeFields();
+		Attribute[] activeConditionAttributes = data.getAttributes(true);
+		EvaluationField evaluation;
+		
+		for (int attributeIndex = 0; attributeIndex < activeConditionAttributes.length; attributeIndex++) {
+			//current attribute should be considered
+			if (!(ruleConditions.hasConditionForAttribute(attributeIndex) && this.skipUsedAttributes())) {
+				for (int objectIndex : consideredObjects) {
+					evaluation = data.getField(objectIndex, attributeIndex);
+					//TODO: implement
+				}
+			}
+		}
+		
 		return null;
 	}
 

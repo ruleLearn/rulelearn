@@ -27,7 +27,7 @@ import org.rulelearn.core.Precondition;
  */
 public class AttributeWithContext <T extends Attribute> {
 	/**
-	 * Number (index) of the attribute in the array of all attributes.
+	 * Number (index) of the attribute in the array of all attributes of an information table.
 	 */
 	protected int attributeIndex;
 
@@ -51,9 +51,9 @@ public class AttributeWithContext <T extends Attribute> {
 	}
 	
 	/**
-	 * Gets number (index) of the attribute.
+	 * Gets number (index) of the attribute in the array of all attributes of an information table.
 	 * 
-	 * @return number (index) of the attribute
+	 * @return number (index) of the attribute in the array of all attributes of an information table
 	 */
 	public int getAttributeIndex() {
 		return this.attributeIndex;
