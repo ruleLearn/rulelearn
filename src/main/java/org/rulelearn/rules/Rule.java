@@ -434,8 +434,8 @@ public class Rule {
 	 * In general, a rule can have several alternative compound decisions. Each of them can be composed of several elementary decisions.
 	 * This method returns {@code true} if at least one compound decision is satisfied, which, in turn, means, that each elementary decision
 	 * contributing to that compound decision, is satisfied. Suppose the following decision part of this rule:<br>
-	 * ((dec &gt;= 5) & (dec2 &lt;= 3)) OR ((dec &lt;= 3) & (dec2 &gt;= 5)).<br>
-	 * Then, this method returns {@code true} if considered object satisfies, e.g., both (dec <= 3) and (dec2 >= 5).
+	 * ((dec &gt;= 5) &amp; (dec2 &lt;= 3)) OR ((dec &lt;= 3) &amp; (dec2 &gt;= 5)).<br>
+	 * Then, this method returns {@code true} if considered object satisfies, e.g., both (dec &lt;= 3) and (dec2 &gt;= 5).
 	 * 
 	 * @param objectIndex index of an object in the given information table
 	 * @param informationTable information table containing object with given index

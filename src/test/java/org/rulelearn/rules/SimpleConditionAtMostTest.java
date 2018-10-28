@@ -28,6 +28,8 @@ import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.SimpleField;
+import org.rulelearn.types.UnknownSimpleFieldMV15;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 /**
  * Tests for {@link SimpleConditionAtMost}.
@@ -174,6 +176,22 @@ class SimpleConditionAtMostTest {
 	@Test
 	public void testSatisfiedBySimpleField_04() {
 		assertFalse(this.getCondition(AttributeType.CONDITION, AttributePreferenceType.COST, 1, 5).satisfiedBy(IntegerFieldFactory.getInstance().create(6, AttributePreferenceType.COST)));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.SimpleConditionAtMost#satisfiedBy(org.rulelearn.types.SimpleField)}.
+	 */
+	@Test
+	public void testSatisfiedBySimpleField_05() {
+		assertTrue(this.getCondition(AttributeType.CONDITION, AttributePreferenceType.COST, 1, 5).satisfiedBy(new UnknownSimpleFieldMV2()));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.SimpleConditionAtMost#satisfiedBy(org.rulelearn.types.SimpleField)}.
+	 */
+	@Test
+	public void testSatisfiedBySimpleField_06() {
+		assertFalse(this.getCondition(AttributeType.CONDITION, AttributePreferenceType.COST, 1, 5).satisfiedBy(new UnknownSimpleFieldMV15()));
 	}
 	
 	/**
