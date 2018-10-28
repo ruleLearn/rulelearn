@@ -16,29 +16,24 @@
 
 package org.rulelearn.rules;
 
-import static org.rulelearn.core.Precondition.notNull;
-
-import org.rulelearn.core.ComparisonResult;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttributeWithContext;
-import org.rulelearn.types.SimpleField;
+import org.rulelearn.types.EvaluationField;
 
 /**
- * Condition reflecting evaluations of type {@link SimpleField} and relation "&gt;=".
- * This condition is satisfied by a given {@link SimpleField} object's evaluation such that stored {@link SimpleField} limiting evaluation of this condition
- * is smaller than or equal to that evaluation.
+ * Condition reflecting relation "&gt;=".
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class SimpleConditionAtLeast extends SimpleCondition {
+public abstract class ConditionAtLeast<T extends EvaluationField> extends Condition<T> {
 	
 	/**
 	 * Symbolic representation of relation embodied in this condition.
 	 */
-	protected String relationSymbol = ">=";
+	String relationSymbol = ">=";
 	
 	/**
 	 * Constructs this condition.
@@ -48,47 +43,34 @@ public class SimpleConditionAtLeast extends SimpleCondition {
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public SimpleConditionAtLeast(EvaluationAttributeWithContext attributeWithContext, SimpleField limitingEvaluation) {
+	ConditionAtLeast(EvaluationAttributeWithContext attributeWithContext, T limitingEvaluation) {
 		super(attributeWithContext, limitingEvaluation);
 	}
 
 	/**
-     * {@inheritDoc}
-     * 
-     * @param evaluation {@inheritDoc}
-     * @return {@inheritDoc}
-     * 
-     * @throws NullPointerException {@inheritDoc}
-     */
-	@Override
-	public boolean satisfiedBy(SimpleField evaluation) {
-		//ComparisonResult comparisonResult = notNull(evaluation, "Evaluation to be verified against condition is null.").compareToEnum(this.limitingEvaluation);
-		ComparisonResult comparisonResult = this.limitingEvaluation.compareToEnum(notNull(evaluation, "Evaluation to be verified against condition is null."));
-		return (comparisonResult == ComparisonResult.SMALLER_THAN) || (comparisonResult == ComparisonResult.EQUAL);
-	}
-
-	/**
 	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
 	 */
 	@Override
-	public SimpleConditionAtLeast duplicate() {
-		return new SimpleConditionAtLeast(this.attributeWithContext, this.limitingEvaluation);
+	public String toString() {
+		return (new StringBuilder()).append(this.attributeWithContext.getAttributeName()).append(" ").append(this.getRelationSymbol()).append(" ").append(this.limitingEvaluation).toString();
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * Checks if the other object is a {@link SimpleConditionAtLeast} condition, defined for the attribute with the same index, and having the same limiting evaluation.
+	 * Checks if the other object is a {@link ConditionAtLeast} condition, defined for the attribute with the same index, and having the same limiting evaluation.
 	 * 
 	 * @param otherObject {@inheritDoc}
 	 * @return {@inheritDoc}
 	 */
 	@Override
 	public boolean equals(Object otherObject) {
-		return (otherObject instanceof SimpleConditionAtLeast) 
-				&& (((SimpleConditionAtLeast)otherObject).attributeWithContext.getAttributeIndex() == this.attributeWithContext.getAttributeIndex())
-				&& (((SimpleConditionAtLeast)otherObject).limitingEvaluation.equals(this.limitingEvaluation));
+		return (otherObject instanceof ConditionAtLeast) 
+				&& (((ConditionAtLeast<?>)otherObject).attributeWithContext.getAttributeIndex() == this.attributeWithContext.getAttributeIndex())
+				&& (((ConditionAtLeast<?>)otherObject).limitingEvaluation.equals(this.limitingEvaluation));
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -106,7 +88,7 @@ public class SimpleConditionAtLeast extends SimpleCondition {
 	@Override
 	public RuleSemantics getRuleSemantics() {
 		if (this.attributeWithContext.getAttributeType() != AttributeType.DECISION) {
-			throw new InvalidValueException("Cannot establish rule semantics given a simple 'at least' condition not defined on a decision attribute.");
+			throw new InvalidValueException("Cannot establish rule semantics given an 'at least' condition not defined on a decision attribute.");
 		}
 		
 		if (this.attributeWithContext.getAttributePreferenceType() == AttributePreferenceType.GAIN) {
@@ -114,7 +96,7 @@ public class SimpleConditionAtLeast extends SimpleCondition {
 		} else if (this.attributeWithContext.getAttributePreferenceType() == AttributePreferenceType.COST) {
 			return RuleSemantics.AT_MOST;
 		} else {
-			throw new InvalidValueException("Cannot establish rule semantics given a simple 'at least' condition w.r.t. a decision attribute without preference type.");
+			throw new InvalidValueException("Cannot establish rule semantics given an 'at least' condition w.r.t. a decision attribute without preference type.");
 			//TODO: do something else?
 		}
 	}

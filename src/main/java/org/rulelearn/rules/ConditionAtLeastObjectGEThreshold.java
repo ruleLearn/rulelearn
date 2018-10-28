@@ -16,17 +16,21 @@
 
 package org.rulelearn.rules;
 
+import static org.rulelearn.core.Precondition.notNull;
+
+import org.rulelearn.core.ComparisonResult;
 import org.rulelearn.data.EvaluationAttributeWithContext;
-import org.rulelearn.types.SimpleField;
+import org.rulelearn.types.EvaluationField;
 
 /**
- * Condition concerning evaluations of type {@link SimpleField}.
+ * At least condition that is satisfied by a given object's evaluation if that evaluation is greater than or equal to limiting evaluation of this condition.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class SimpleCondition extends Condition<SimpleField> {
-	
+//"at least" condition for possible rules
+public class ConditionAtLeastObjectGEThreshold<T extends EvaluationField> extends ConditionAtLeast<T> {
+
 	/**
 	 * Constructs this condition.
 	 * 
@@ -35,18 +39,30 @@ public abstract class SimpleCondition extends Condition<SimpleField> {
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	protected SimpleCondition(EvaluationAttributeWithContext attributeWithContext, SimpleField limitingEvaluation) {
+	public ConditionAtLeastObjectGEThreshold(EvaluationAttributeWithContext attributeWithContext, T limitingEvaluation) {
 		super(attributeWithContext, limitingEvaluation);
 	}
-	
+
+	/**
+     * {@inheritDoc}
+     * 
+     * @param evaluation {@inheritDoc}
+     * @return {@inheritDoc}
+     * 
+     * @throws NullPointerException {@inheritDoc}
+     */
+	@Override
+	public boolean satisfiedBy(EvaluationField evaluation) {
+		ComparisonResult comparisonResult = notNull(evaluation, "Evaluation to be verified against condition is null.").compareToEnum(this.limitingEvaluation);
+		return (comparisonResult == ComparisonResult.GREATER_THAN) || (comparisonResult == ComparisonResult.EQUAL);
+	}
+
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @return {@inheritDoc}
 	 */
 	@Override
-	public String toString() {
-		return (new StringBuilder()).append(this.attributeWithContext.getAttributeName()).append(" ").append(this.getRelationSymbol()).append(" ").append(this.limitingEvaluation).toString();
+	public ConditionAtLeastObjectGEThreshold<T> duplicate() {
+		return new ConditionAtLeastObjectGEThreshold<T>(this.attributeWithContext, this.limitingEvaluation);
 	}
-	
+
 }

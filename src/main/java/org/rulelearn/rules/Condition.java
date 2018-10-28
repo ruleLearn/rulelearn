@@ -16,13 +16,15 @@
 
 package org.rulelearn.rules;
 
+import static org.rulelearn.core.Precondition.notNull;
+
+import java.util.Objects;
+
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.data.AttributeWithContext;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.EvaluationField;
-import static org.rulelearn.core.Precondition.notNull;
-
-import org.rulelearn.core.InvalidValueException;
 
 /**
  * Condition of a decision rule. May be present both in the condition part and in the decision part of the rule.
@@ -37,12 +39,12 @@ public abstract class Condition<T extends EvaluationField> {
 	/**
 	 * Information about an attribute for which this condition has been created.
 	 */
-	protected EvaluationAttributeWithContext attributeWithContext;
+	EvaluationAttributeWithContext attributeWithContext;
 	
 	/**
 	 * Limiting evaluation with respect to which this condition is defined. E.g., in case of condition 'price &gt;= 5', limiting evaluation is equal to 5.
 	 */
-	protected T limitingEvaluation;
+	T limitingEvaluation;
 	
 	/**
 	 * Gets the limiting evaluation of this condition.
@@ -62,16 +64,16 @@ public abstract class Condition<T extends EvaluationField> {
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	protected Condition(EvaluationAttributeWithContext attributeWithContext, T limitingEvaluation) {
+	Condition(EvaluationAttributeWithContext attributeWithContext, T limitingEvaluation) {
 		this.attributeWithContext = notNull(attributeWithContext, "Attribute with context of constructed condition is null.");
 		this.limitingEvaluation = notNull(limitingEvaluation, "Limiting evaluation of constructed condition is null.");
 	}
 
 	/**
-     * Checks if given evaluation fulfills this condition.
+     * Checks if given evaluation of an object satisfies this condition.
      * 
      * @param evaluation evaluation (field) to check
-     * @return {@code true} if given evaluation fulfills this condition, {@code false} otherwise
+     * @return {@code true} if given evaluation satisfies this condition, {@code false} otherwise
      * 
      * @throws NullPointerException if given evaluation does not conform to {@link org.rulelearn.core.Precondition#notNull(Object, String)}
      */
@@ -101,6 +103,13 @@ public abstract class Condition<T extends EvaluationField> {
 	 * @return text representation of this condition
 	 */
 	public abstract String toString();
+	
+	/**
+	 * Gets symbol of relation embodied in this condition.
+	 * 
+	 * @return symbol of relation embodied in this condition
+	 */
+	public abstract String getRelationSymbol();
 	
 	/**
 	 * Gets a "meta" object storing attribute for which this condition is defined + context of that attribute.
@@ -135,7 +144,9 @@ public abstract class Condition<T extends EvaluationField> {
      * @return hash code of this condition
      */
 	@Override
-    public abstract int hashCode(); 
+    public int hashCode() {
+		return Objects.hash(this.getClass(), this.limitingEvaluation);
+	}
 	
 	/**
 	 * Gets semantics of a decision rule having this condition on the RHS, as the only condition.
