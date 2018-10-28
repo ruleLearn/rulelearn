@@ -256,7 +256,7 @@ class UnionTest {
 	 */
 	private void configureInformationTableMockEvaluations(InformationTable informationTableMock, List<EvaluationField[]> evaluationsList) {
 		@SuppressWarnings("unchecked")
-		Table<EvaluationField> evaluations = (Table<EvaluationField>)Mockito.mock(Table.class);
+		Table<EvaluationAttribute, EvaluationField> evaluations = (Table<EvaluationAttribute, EvaluationField>)Mockito.mock(Table.class);
 		
 		for (int i = 0; i < evaluationsList.size(); i++) {
 			Mockito.when(evaluations.getFields(i)).thenReturn(evaluationsList.get(i));

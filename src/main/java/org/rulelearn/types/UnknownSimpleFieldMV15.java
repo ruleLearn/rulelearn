@@ -18,6 +18,7 @@ package org.rulelearn.types;
 
 import java.util.Objects;
 
+import org.rulelearn.core.ComparableExt;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
 import org.rulelearn.types.SimpleField;
@@ -75,7 +76,7 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 	}
 
 	/**
-	 * Compares the other field to this field. Does the reverse comparison than {@link Comparable#compareTo(Object)}.
+	 * Compares the other field to this field. Does the reverse comparison than {@link ComparableExt#compareToEx(Object)}.
 	 * 
 	 * @param otherField other field to be compared to this field
 	 * @return zero, as any other non-null simple field is assumed to be equal to this field

@@ -100,7 +100,7 @@ class RuleTest {
 								new UnknownSimpleFieldMV2(),
 								preferenceTypeDec),
 						7),
-				IntegerFieldFactory.getInstance().create(7, preferenceTypeDec));
+				IntegerFieldFactory.getInstance().create(3, preferenceTypeDec));
 	}
 	
 	private Condition<? extends EvaluationField> getDecision2() {
@@ -130,7 +130,7 @@ class RuleTest {
 								new UnknownSimpleFieldMV15(),
 								preferenceTypeDec),
 						9),
-				IntegerFieldFactory.getInstance().create(1, preferenceTypeDec));
+				IntegerFieldFactory.getInstance().create(5, preferenceTypeDec));
 	}
 	
 	//constructs rule using longer constructor
@@ -339,7 +339,7 @@ class RuleTest {
 	void testToString03() {
 		Rule rule = getTestRule4();
 		System.out.println(rule);
-		assertEquals(rule.toString(), "(attr1 >= 3) & (attr3 <= -2.1) =>[c] ((dec >= 5) & (dec2 <= 3)) OR ((dec <= 7) & (dec2 >= 1))");
+		assertEquals(rule.toString(), "(attr1 >= 3) & (attr3 <= -2.1) =>[c] ((dec >= 5) & (dec2 <= 3)) OR ((dec <= 3) & (dec2 >= 5))");
 	}
 
 	/**

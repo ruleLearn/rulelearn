@@ -72,7 +72,7 @@ public class Rule {
 	/**
      * Array with elementary decisions building decision part of this rule.
      * Conditions in each row (for fixed first array index) are considered to be connected with AND connective.
-     * Rows are considered to be connected using OR connective. 
+     * Rows are considered to be connected using OR connective.
      */
     protected Condition<? extends EvaluationField>[][] decisions = null;
     
@@ -306,6 +306,8 @@ public class Rule {
 
 	/**
 	 * Gets array with decisions of this rule.
+	 * Conditions in each row (for fixed first array index) are considered to be connected with AND connective.
+     * Rows are considered to be connected using OR connective.
 	 * 
 	 * @return array with decisions of this rule
 	 */
@@ -314,7 +316,9 @@ public class Rule {
 	}
 	
 	/**
-	 * Gets array with decisions of this rule.<br>
+	 * Gets array with decisions of this rule.
+	 * Conditions in each row (for fixed first array index) are considered to be connected with AND connective.
+     * Rows are considered to be connected using OR connective.<br>
 	 * <br>
 	 * This method can be used in certain circumstances to accelerate calculations.
 	 * 
@@ -426,11 +430,16 @@ public class Rule {
 	}
 
 	/**
-	 * Verifies if (at least one) decision of this rule is verified by an object in an information table.
+	 * Verifies if decision part of this rule is verified by the object at given index in the given information table.
+	 * In general, a rule can have several alternative compound decisions. Each of them can be composed of several elementary decisions.
+	 * This method returns {@code true} if at least one compound decision is satisfied, which, in turn, means, that each elementary decision
+	 * contributing to that compound decision, is satisfied. Suppose the following decision part of this rule:<br>
+	 * ((dec &gt;= 5) & (dec2 &lt;= 3)) OR ((dec &lt;= 3) & (dec2 &gt;= 5)).<br>
+	 * Then, this method returns {@code true} if considered object satisfies, e.g., both (dec <= 3) and (dec2 >= 5).
 	 * 
 	 * @param objectIndex index of an object in the given information table
 	 * @param informationTable information table containing object with given index
-	 * @return {@code true} if at least one decision of this rule is verified by the considered object,
+	 * @return {@code true} if decision part of this rule is verified by the object at given index in the given information table,
 	 *         {@code false} otherwise
 	 * 
 	 * @throws IndexOutOfBoundsException see {@link Condition#satisfiedBy(int, InformationTable)}
@@ -445,7 +454,7 @@ public class Rule {
 			for (int j = 0; j < this.decisions[i].length; j++) {
 				if (!this.decisions[i][j].satisfiedBy(objectIndex, informationTable)) {
 					conjunctionSatisfied = false;
-					continue; //go the the next alternative
+					break; //go the the next alternative
 				}
 			}
 			if (conjunctionSatisfied) {

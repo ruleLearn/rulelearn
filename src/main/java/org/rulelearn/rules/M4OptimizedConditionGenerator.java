@@ -16,8 +16,11 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.core.InvalidTypeException;
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
-import org.rulelearn.data.Attribute;
+import org.rulelearn.data.EvaluationAttribute;
+import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.Table;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.SimpleField;
@@ -79,22 +82,76 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		Precondition.notNull(consideredObjects, "List of objects considered in m4-optimized condition generator is null.");
 		Precondition.notNull(ruleConditions, "Rule conditions considered in m4-optimized condition generator is null.");
 		
-		SimpleCondition simpleCondition;
-		Table<EvaluationField> data = ruleConditions.getLearningInformationTable().getActiveConditionAttributeFields();
-		Attribute[] activeConditionAttributes = data.getAttributes(true);
-		EvaluationField evaluation;
+		Condition<EvaluationField> bestCondition = null;
+		SimpleCondition candidateCondition;
+		Table<EvaluationAttribute, EvaluationField> data = ruleConditions.getLearningInformationTable().getActiveConditionAttributeFields();
+		EvaluationAttribute[] activeConditionAttributes = data.getAttributes(true);
+		SimpleField objectEvaluation;
+		int globalAttributeIndex;
+		int consideredObjectsSize;
 		
-		for (int attributeIndex = 0; attributeIndex < activeConditionAttributes.length; attributeIndex++) {
+		//initialize best condition
+		for (int localActiveConditionAttributeIndex = 0; localActiveConditionAttributeIndex < activeConditionAttributes.length; localActiveConditionAttributeIndex++) { //go through attributes
+			globalAttributeIndex = ruleConditions.getLearningInformationTable().translateLocalActiveConditionAttributeIndex2GlobalAttributeIndex(localActiveConditionAttributeIndex);
 			//current attribute should be considered
-			if (!(ruleConditions.hasConditionForAttribute(attributeIndex) && this.skipUsedAttributes())) {
-				for (int objectIndex : consideredObjects) {
-					evaluation = data.getField(objectIndex, attributeIndex);
+			if (!(ruleConditions.hasConditionForAttribute(globalAttributeIndex) && this.skipUsedAttributes())) {
+				//TODO: implement
+			}
+		}
+
+		//iteratively update best condition
+		for (int localActiveConditionAttributeIndex = 0; localActiveConditionAttributeIndex < activeConditionAttributes.length; localActiveConditionAttributeIndex++) { //go through attributes
+			globalAttributeIndex = ruleConditions.getLearningInformationTable().translateLocalActiveConditionAttributeIndex2GlobalAttributeIndex(localActiveConditionAttributeIndex);
+			//current attribute should be considered
+			if (!(ruleConditions.hasConditionForAttribute(globalAttributeIndex) && this.skipUsedAttributes())) {
+				consideredObjectsSize = consideredObjects.size();
+				for (int consideredObjectIndex = 0; consideredObjectIndex < consideredObjectsSize; consideredObjectIndex++) {
+					try {
+						objectEvaluation = (SimpleField)data.getField(consideredObjects.getInt(consideredObjectIndex), localActiveConditionAttributeIndex);
+						//TODO: skip evaluation if missing
+					} catch (ClassCastException exception) {
+						throw new InvalidTypeException("Evaluation of an active condition attribute is not a simple field.");
+					}
+					//TODO: handle PairField evaluations
+					candidateCondition = constructSimpleCondition(ruleConditions.getRuleSemantics(), activeConditionAttributes[localActiveConditionAttributeIndex],
+							objectEvaluation, globalAttributeIndex);
 					//TODO: implement
 				}
 			}
 		}
 		
-		return null;
+		return bestCondition;
+	}
+	
+	private SimpleCondition constructSimpleCondition(RuleSemantics ruleSemantics, EvaluationAttribute evaluationAttribute,  SimpleField limitingEvaluation, int globalAttributeIndex) {
+		switch(ruleSemantics) {
+		case AT_LEAST:
+			switch(evaluationAttribute.getPreferenceType()) {
+			case GAIN:
+				return new SimpleConditionAtLeast(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case COST:
+				return new SimpleConditionAtMost(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case NONE:
+				throw new InvalidValueException("Incorrect combination of rule semantics and attribute preference type.");
+			default:
+				throw new NullPointerException("Attribute preference type is null.");
+			}
+		case AT_MOST:
+			switch(evaluationAttribute.getPreferenceType()) {
+			case GAIN:
+				return new SimpleConditionAtMost(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case COST:
+				return new SimpleConditionAtLeast(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case NONE:
+				throw new InvalidValueException("Incorrect combination of rule semantics and attribute preference type.");
+			default:
+				throw new NullPointerException("Attribute preference type is null.");
+			}
+		case EQUAL:
+			return new SimpleConditionEqual(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+		default:
+			throw new NullPointerException("Rule semantics is null.");
+		}
 	}
 
 }

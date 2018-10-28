@@ -62,11 +62,11 @@ class TableTest {
 		return fields;
 	}
 	
-	private Table<Field> getTable(boolean accelerateByReadOnlyParams) {
+	private Table<Attribute, Field> getTable(boolean accelerateByReadOnlyParams) {
 		Field[][] fields = this.getFields(new int[]{0, 1, 2, 3});
 		Index2IdMapper mapper = new Index2IdMapper(UniqueIdGenerator.getInstance().getUniqueIds(fields.length));
 		
-		return new Table<Field>(this.getAttributes(), fields, mapper, accelerateByReadOnlyParams);
+		return new Table<Attribute, Field>(this.getAttributes(), fields, mapper, accelerateByReadOnlyParams);
 	}
 
 	/**
@@ -74,7 +74,7 @@ class TableTest {
 	 */
 	@Test
 	public void testGetField() {
-		Table<Field> table = getTable(false);
+		Table<Attribute, Field> table = getTable(false);
 		
 		assertEquals(table.getField(0, 0), IntegerFieldFactory.getInstance().create(fieldValues[0][0], attributePreferenceTypes[0]));
 		assertEquals(table.getField(0, 1), IntegerFieldFactory.getInstance().create(fieldValues[0][1], attributePreferenceTypes[1]));
@@ -98,7 +98,7 @@ class TableTest {
 	 */
 	@Test
 	public void testGetFields_01() {
-		Table<Field> table = getTable(true);
+		Table<Attribute, Field> table = getTable(true);
 		
 		for (int i = 0; i < fieldValues.length; i++) {
 			Field[] fields = table.getFields(i);
@@ -113,7 +113,7 @@ class TableTest {
 	 */
 	@Test
 	public void testGetFields_02() {
-		Table<Field> table = getTable(true);
+		Table<Attribute, Field> table = getTable(true);
 		
 		for (int i = 0; i < fieldValues.length; i++) {
 			Field[] fields = table.getFields(i, true);
@@ -128,10 +128,10 @@ class TableTest {
 	 */
 	@Test
 	public void testSelect_01() {
-		Table<Field> table = getTable(false);
+		Table<Attribute, Field> table = getTable(false);
 		
 		int[] objectIndices = new int[]{0, 2};
-		Table<Field> newTable = table.select(objectIndices);
+		Table<Attribute, Field> newTable = table.select(objectIndices);
 		
 		assertEquals(newTable.getNumberOfObjects(), objectIndices.length);
 		assertEquals(newTable.getNumberOfAttributes(), table.getNumberOfAttributes());
@@ -164,10 +164,10 @@ class TableTest {
 	 */
 	@Test
 	public void testSelect_02() {
-		Table<Field> table = getTable(false);
+		Table<Attribute, Field> table = getTable(false);
 		
 		int[] objectIndices = new int[]{1, 2, 3};
-		Table<Field> newTable = table.select(objectIndices, true);
+		Table<Attribute, Field> newTable = table.select(objectIndices, true);
 		
 		assertEquals(newTable.getNumberOfObjects(), objectIndices.length);
 		assertEquals(newTable.getNumberOfAttributes(), table.getNumberOfAttributes());
@@ -200,7 +200,7 @@ class TableTest {
 	 */
 	@Test
 	public void testGetNumberOfObjects() {
-		Table<Field> table = getTable(true);
+		Table<Attribute, Field> table = getTable(true);
 		assertEquals(table.getNumberOfObjects(), fieldValues.length);
 	}
 
@@ -209,7 +209,7 @@ class TableTest {
 	 */
 	@Test
 	public void testGetNumberOfAttributes() {
-		Table<Field> table = getTable(true);
+		Table<Attribute, Field> table = getTable(true);
 		assertEquals(table.getNumberOfAttributes(), attributePreferenceTypes.length);
 	}
 
@@ -218,7 +218,7 @@ class TableTest {
 	 */
 	@Test
 	public void testGetAttributes_01() {
-		Table<Field> table = getTable(true);
+		Table<Attribute, Field> table = getTable(true);
 		Attribute[] expectedAttributes = this.getAttributes();
 		Attribute[] attributes = table.getAttributes();
 		
@@ -234,7 +234,7 @@ class TableTest {
 	 */
 	@Test
 	public void testGetAttributes_02() {
-		Table<Field> table = getTable(false);
+		Table<Attribute, Field> table = getTable(false);
 		Attribute[] expectedAttributes = this.getAttributes();
 		Attribute[] attributes = table.getAttributes(true);
 		
@@ -250,7 +250,7 @@ class TableTest {
 	 */
 	@Test
 	public void testGetIndex2IdMapper() {
-		Table<Field> table = getTable(false);
+		Table<Attribute, Field> table = getTable(false);
 		Index2IdMapper mapper = table.getIndex2IdMapper();
 		
 		assertNotEquals(mapper.getId(0), mapper.getId(1));

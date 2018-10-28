@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.Table;
 import org.rulelearn.types.EvaluationField;
@@ -71,7 +72,7 @@ class DominanceCheckerTest {
 	 */
 	private InformationTable createInformationTableMock(int x, int y, EvaluationField[] xEvaluations, EvaluationField[] yEvaluations) {
 		@SuppressWarnings("unchecked")
-		Table<EvaluationField> evaluations = (Table<EvaluationField>)Mockito.mock(Table.class);
+		Table<EvaluationAttribute, EvaluationField> evaluations = (Table<EvaluationAttribute, EvaluationField>)Mockito.mock(Table.class);
 		
 		Mockito.when(evaluations.getFields(x)).thenReturn(xEvaluations);
 		Mockito.when(evaluations.getFields(y)).thenReturn(yEvaluations);

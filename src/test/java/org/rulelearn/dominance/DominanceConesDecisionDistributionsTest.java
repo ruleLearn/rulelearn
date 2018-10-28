@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.DecisionDistribution;
+import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.SimpleDecision;
 import org.rulelearn.data.Table;
@@ -76,7 +77,7 @@ class DominanceConesDecisionDistributionsTest {
 	 */
 	private InformationTable createInformationTableMock(List<EvaluationField[]> evaluationsList) {
 		@SuppressWarnings("unchecked")
-		Table<EvaluationField> evaluations = (Table<EvaluationField>)Mockito.mock(Table.class);
+		Table<EvaluationAttribute, EvaluationField> evaluations = (Table<EvaluationAttribute, EvaluationField>)Mockito.mock(Table.class);
 		
 		for (int i = 0; i < evaluationsList.size(); i++) {
 			Mockito.when(evaluations.getFields(i)).thenReturn(evaluationsList.get(i));
