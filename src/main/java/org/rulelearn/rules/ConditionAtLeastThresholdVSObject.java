@@ -23,13 +23,13 @@ import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.types.EvaluationField;
 
 /**
- * At least condition that is satisfied by a given object's evaluation if that evaluation is greater than or equal to limiting evaluation of this condition.
+ * At least condition that is satisfied by a given object's evaluation if limiting evaluation of this condition is smaller than or equal to that evaluation.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-//"at least" condition for possible rules
-public class ConditionAtLeastObjectGEThreshold<T extends EvaluationField> extends ConditionAtLeast<T> {
+//"at least" condition for certain rules
+public class ConditionAtLeastThresholdVSObject<T extends EvaluationField> extends ConditionAtLeast<T> {
 
 	/**
 	 * Constructs this condition.
@@ -39,10 +39,24 @@ public class ConditionAtLeastObjectGEThreshold<T extends EvaluationField> extend
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public ConditionAtLeastObjectGEThreshold(EvaluationAttributeWithContext attributeWithContext, T limitingEvaluation) {
+	public ConditionAtLeastThresholdVSObject(EvaluationAttributeWithContext attributeWithContext, T limitingEvaluation) {
 		super(attributeWithContext, limitingEvaluation);
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 * Checks if the other object is a {@link ConditionAtLeastThresholdVSObject} condition, defined for the attribute with the same index, and having the same limiting evaluation.
+	 * 
+	 * @param otherObject {@inheritDoc}
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object otherObject) {
+		return (otherObject instanceof ConditionAtLeastThresholdVSObject) 
+				&& (((ConditionAtLeastThresholdVSObject<?>)otherObject).attributeWithContext.getAttributeIndex() == this.attributeWithContext.getAttributeIndex())
+				&& (((ConditionAtLeastThresholdVSObject<?>)otherObject).limitingEvaluation.equals(this.limitingEvaluation));
+	}
+	
 	/**
      * {@inheritDoc}
      * 
@@ -53,16 +67,24 @@ public class ConditionAtLeastObjectGEThreshold<T extends EvaluationField> extend
      */
 	@Override
 	public boolean satisfiedBy(EvaluationField evaluation) {
-		ComparisonResult comparisonResult = notNull(evaluation, "Evaluation to be verified against condition is null.").compareToEnum(this.limitingEvaluation);
-		return (comparisonResult == ComparisonResult.GREATER_THAN) || (comparisonResult == ComparisonResult.EQUAL);
+		ComparisonResult comparisonResult = this.limitingEvaluation.compareToEnum(notNull(evaluation, "Evaluation to be verified against at least condition is null."));
+		return (comparisonResult == ComparisonResult.SMALLER_THAN) || (comparisonResult == ComparisonResult.EQUAL);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ConditionAtLeastObjectGEThreshold<T> duplicate() {
-		return new ConditionAtLeastObjectGEThreshold<T>(this.attributeWithContext, this.limitingEvaluation);
+	public String toString() {
+		return (new StringBuilder()).append(this.limitingEvaluation).append(" ").append(this.getRelationSymbol()).append(" ").append(this.attributeWithContext.getAttributeName()).toString();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ConditionAtLeastThresholdVSObject<T> duplicate() {
+		return new ConditionAtLeastThresholdVSObject<T>(this.attributeWithContext, this.limitingEvaluation);
 	}
 
 }

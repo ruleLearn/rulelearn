@@ -23,17 +23,17 @@ import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.types.EvaluationField;
 
 /**
- * Condition reflecting relation "&gt;=".
+ * Condition reflecting relation "&lt;=".
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public abstract class ConditionAtLeast<T extends EvaluationField> extends Condition<T> {
-	
+public abstract class ConditionAtMost<T extends EvaluationField> extends Condition<T> {
+
 	/**
 	 * Symbolic representation of relation embodied in this condition.
 	 */
-	String relationSymbol = ">=";
+	String relationSymbol = "<=";
 	
 	/**
 	 * Constructs this condition.
@@ -43,10 +43,10 @@ public abstract class ConditionAtLeast<T extends EvaluationField> extends Condit
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	ConditionAtLeast(EvaluationAttributeWithContext attributeWithContext, T limitingEvaluation) {
+	ConditionAtMost(EvaluationAttributeWithContext attributeWithContext, T limitingEvaluation) {
 		super(attributeWithContext, limitingEvaluation);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -54,7 +54,7 @@ public abstract class ConditionAtLeast<T extends EvaluationField> extends Condit
 	public String getRelationSymbol() {
 		return this.relationSymbol;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -64,17 +64,16 @@ public abstract class ConditionAtLeast<T extends EvaluationField> extends Condit
 	@Override
 	public RuleSemantics getRuleSemantics() {
 		if (this.attributeWithContext.getAttributeType() != AttributeType.DECISION) {
-			throw new InvalidValueException("Cannot establish rule semantics given an 'at least' condition not defined on a decision attribute.");
+			throw new InvalidValueException("Cannot establish rule semantics given an 'at most' condition not defined on a decision attribute.");
 		}
 		
 		if (this.attributeWithContext.getAttributePreferenceType() == AttributePreferenceType.GAIN) {
-			return RuleSemantics.AT_LEAST;
-		} else if (this.attributeWithContext.getAttributePreferenceType() == AttributePreferenceType.COST) {
 			return RuleSemantics.AT_MOST;
+		} else if (this.attributeWithContext.getAttributePreferenceType() == AttributePreferenceType.COST) {
+			return RuleSemantics.AT_LEAST;
 		} else {
-			throw new InvalidValueException("Cannot establish rule semantics given an 'at least' condition w.r.t. a decision attribute without preference type.");
+			throw new InvalidValueException("Cannot establish rule semantics given an 'at most' condition w.r.t. a decision attribute without preference type.");
 			//TODO: do something else?
 		}
 	}
-
 }

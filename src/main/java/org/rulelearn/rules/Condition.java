@@ -97,12 +97,12 @@ public abstract class Condition<T extends EvaluationField> {
     	return this.satisfiedBy((T)informationTable.getField(objectIndex, this.attributeWithContext.getAttributeIndex()));
     }
     
-	/**
-	 * Gets text representation of this condition
+    /**
+	 * Gets text representation of this condition.
 	 * 
 	 * @return text representation of this condition
 	 */
-	public abstract String toString();
+    public abstract String toString();
 	
 	/**
 	 * Gets symbol of relation embodied in this condition.
@@ -122,7 +122,7 @@ public abstract class Condition<T extends EvaluationField> {
 	}
 
 	/**
-	 * Returns duplicate of this condition
+	 * Returns duplicate of this condition.
 	 * 
 	 * @return duplicate of this condition
 	 */
