@@ -145,7 +145,7 @@ public abstract class Condition<T extends EvaluationField> {
      */
 	@Override
     public int hashCode() {
-		return Objects.hash(this.getClass(), this.limitingEvaluation);
+		return Objects.hash(this.getClass(), this.limitingEvaluation, this.attributeWithContext);
 	}
 	
 	/**
