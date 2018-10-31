@@ -85,4 +85,35 @@ public class EvaluationAndCoverageStoppingConditionChecker implements RuleInduct
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param ruleConditions {@inheritDoc}
+	 * @param conditionIndex {@inheritDoc}
+	 * @return {@inheritDoc}
+	 * 
+	 * @throws NullPointerException if given rule conditions are {@code null}
+	 */
+	@Override
+	public boolean isStoppingConditionSatisifiedWithoutCondition(RuleConditions ruleConditions, int conditionIndex) {
+		Precondition.notNull(ruleConditions, "Rule conditions for stopping condition checker are null.");
+		
+		if (!ruleConditionsEvaluator.evaluationSatisfiesThresholdWithoutCondition(ruleConditions, evaluationThreshold, conditionIndex)) {
+			return false;
+		} else {
+			IntSet indicesOfObjectsThatCanBeCovered = ruleConditions.getIndicesOfObjectsThatCanBeCovered();
+			IntList indicesOfCoveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithoutCondition(conditionIndex);
+			int coveredObjectIndex = 0;
+			int coveredObjectsCount = indicesOfCoveredObjects.size();
+			
+			while (coveredObjectIndex < coveredObjectsCount) {
+				if (!indicesOfObjectsThatCanBeCovered.contains(indicesOfCoveredObjects.getInt(coveredObjectIndex++))) {
+					return false;
+				}
+			}
+			
+			return true;
+		}
+	}
+
 }
