@@ -16,15 +16,17 @@
 
 package org.rulelearn.rules;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.AttributeType;
+import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.SimpleField;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 /**
  * Tests for {@link SimpleCondition}.
@@ -38,14 +40,19 @@ class SimpleConditionTest {
 	
 	private String attributeName = "testAttribute";
 	private String relationSymbol = "R";
-	private int value = 5;
+	private int limitingValue = 5;
+	private int attributeIndex = 0;
+	AttributePreferenceType attributePreferenceType = AttributePreferenceType.GAIN;
+	private boolean attributeIsActive = true;
 	
 	private SimpleCondition constructSimpleCondition() {
-		EvaluationAttributeWithContext attributeWithContext = Mockito.mock(EvaluationAttributeWithContext.class);
-		Mockito.when(attributeWithContext.getAttributeName()).thenReturn(attributeName);
-		IntegerField limitingEvaluation = IntegerFieldFactory.getInstance().create(value, AttributePreferenceType.COST);
+		EvaluationAttribute evaluationAttribute = new EvaluationAttribute(attributeName, attributeIsActive, AttributeType.CONDITION,
+				IntegerFieldFactory.getInstance().create(0, attributePreferenceType), new UnknownSimpleFieldMV2(), attributePreferenceType);
 		
-		return new SimpleCondition(attributeWithContext, limitingEvaluation) {
+		EvaluationAttributeWithContext evaluationAttributeWithContext = new EvaluationAttributeWithContext(evaluationAttribute, attributeIndex);
+		IntegerField limitingEvaluation = IntegerFieldFactory.getInstance().create(limitingValue, attributePreferenceType);
+		
+		return new SimpleCondition(evaluationAttributeWithContext, limitingEvaluation) {
 			
 			@Override
 			public boolean satisfiedBy(SimpleField evaluation) { //not used in tests
@@ -96,7 +103,7 @@ class SimpleConditionTest {
 	@Test
 	void testToString() {
 		String separator = " ";
-		assertEquals(simpleCondition.toString(), attributeName + separator + this.relationSymbol + separator + value);
+		assertEquals(simpleCondition.toString(), attributeName + separator + this.relationSymbol + separator + limitingValue);
 	}
 
 }

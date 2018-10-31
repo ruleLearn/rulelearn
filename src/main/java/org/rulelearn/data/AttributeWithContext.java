@@ -16,6 +16,8 @@
 
 package org.rulelearn.data;
 
+import java.util.Objects;
+
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
 
@@ -75,6 +77,16 @@ public class AttributeWithContext <T extends Attribute> {
 	 */
 	public T getAttribute() {
 		return this.attribute;
+	}
+	
+	/**
+     * Gets hash code of this object.
+     *
+     * @return hash code of this object
+     */
+	@Override
+    public int hashCode() {
+		return Objects.hash(this.getClass(), this.attribute, this.attributeIndex);
 	}
 	
 }
