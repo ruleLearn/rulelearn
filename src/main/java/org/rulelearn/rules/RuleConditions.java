@@ -82,9 +82,9 @@ public class RuleConditions {
 	InformationTable learningInformationTable;
 	
 	/**
-	 * Indices of attributes from learning information table for which conditions are already stored in {@link #conditions}.
+	 * Maps index of an attribute from learning information table to count of conditions concerning this attribute that are stored in {@link #conditions}.
 	 */
-	Int2IntMap attributeIndices;
+	Int2IntMap attributeIndex2ConditionsCount;
 	
 	/**
 	 * Indices of objects from learning information table covered by these rule conditions.
@@ -238,7 +238,7 @@ public class RuleConditions {
 		this.indicesOfNeutralObjects = notNull(indicesOfNeutralObjects, "Set of indices of neutral objects is null.");
 		
 		this.conditions = new ObjectArrayList<Condition<?>>();
-		this.attributeIndices = new Int2IntOpenHashMap();
+		this.attributeIndex2ConditionsCount = new Int2IntOpenHashMap();
 		this.indicesOfCoveredObjects = new IntArrayList();
 		
 		int objectsCount = learningInformationTable.getNumberOfObjects();
@@ -313,8 +313,8 @@ public class RuleConditions {
 		this.conditions.add(notNull(condition, "Condition is null."));
 		
 		int attributeIndex = condition.getAttributeWithContext().getAttributeIndex();
-		int count = this.attributeIndices.containsKey(attributeIndex) ? this.attributeIndices.get(attributeIndex) : 0;
-		this.attributeIndices.put(attributeIndex, count + 1);
+		int count = this.attributeIndex2ConditionsCount.containsKey(attributeIndex) ? this.attributeIndex2ConditionsCount.get(attributeIndex) : 0;
+		this.attributeIndex2ConditionsCount.put(attributeIndex, count + 1);
 		
 		updateCoveredObjectsWithCondition(this.indicesOfCoveredObjects, condition);
 		updateNotCoveringConditionsCountsWithCondition(condition);
@@ -456,7 +456,7 @@ public class RuleConditions {
 		this.updateCoveredObjectsWithoutCondition(this.indicesOfCoveredObjects, conditionIndex, true);
 		//...and only then remove that condition
 		this.conditions.remove(conditionIndex);
-		this.attributeIndices.put(attributeIndex, this.attributeIndices.get(attributeIndex) - 1); //decrease count
+		this.attributeIndex2ConditionsCount.put(attributeIndex, this.attributeIndex2ConditionsCount.get(attributeIndex) - 1); //decrease count
 	}
 	
 	/**
@@ -525,7 +525,7 @@ public class RuleConditions {
 	 *         {@code false} otherwise
 	 */
 	public boolean hasConditionForAttribute(int attributeIndex) {
-		return (this.attributeIndices.containsKey(attributeIndex) && (this.attributeIndices.get(attributeIndex) > 0));
+		return (this.attributeIndex2ConditionsCount.containsKey(attributeIndex) && (this.attributeIndex2ConditionsCount.get(attributeIndex) > 0));
 	}
 	
 	/**

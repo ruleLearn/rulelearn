@@ -16,6 +16,8 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.core.Precondition;
+
 /**
  * Pruner for rule conditions that analyzes conditions from the oldest (first added) to the newest one (last added). 
  *
@@ -44,6 +46,8 @@ public class FIFORuleConditionsPruner extends AbstractRuleConditionsPruner {
 	 */
 	@Override
 	public RuleConditions prune(RuleConditions ruleConditions) {
+		Precondition.notNull(ruleConditions, "Rule conditions for FIFO rule conditions pruner are null.");
+		
 		int conditionIndex = 0;
 		while (conditionIndex < ruleConditions.size()) {
 			if (stoppingConditionChecker.isStoppingConditionSatisifiedWithoutCondition(ruleConditions, conditionIndex)) {

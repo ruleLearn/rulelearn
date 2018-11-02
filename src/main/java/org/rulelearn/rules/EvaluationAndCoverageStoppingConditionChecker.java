@@ -93,6 +93,7 @@ public class EvaluationAndCoverageStoppingConditionChecker implements RuleInduct
 	 * @return {@inheritDoc}
 	 * 
 	 * @throws NullPointerException if given rule conditions are {@code null}
+	 * @throws IndexOutOfBoundsException if given condition index is less than zero or too big concerning the number of conditions present in given rule conditions
 	 */
 	@Override
 	public boolean isStoppingConditionSatisifiedWithoutCondition(RuleConditions ruleConditions, int conditionIndex) {

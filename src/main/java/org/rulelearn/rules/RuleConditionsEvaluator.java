@@ -40,10 +40,11 @@ public interface RuleConditionsEvaluator extends Measure {
 	 * Evaluates given rule conditions without a selected condition.
 	 * 
 	 * @param ruleConditions rule conditions to be evaluated
-	 * @param conditionIndex rule condition to be excluded
-	 * @return evaluation of given rule conditions without a selected condition
+	 * @param conditionIndex index of the condition to be excluded
+	 * @return evaluation of given rule conditions without the selected condition
 	 * 
 	 * @throws NullPointerException if given rule conditions are {@code null}
+	 * @throws IndexOutOfBoundsException if given condition index is less than zero or too big concerning the number of conditions present in given rule conditions
 	 */
 	public double evaluateWithoutCondition(RuleConditions ruleConditions, int conditionIndex);
 	
@@ -69,12 +70,13 @@ public interface RuleConditionsEvaluator extends Measure {
 	 * Takes into account type of this measure, as returned by {@link #getType()}.
 	 * 
 	 * @param ruleConditions rule conditions to evaluate
-	 * @param threshold threshold compared with evaluation of given rule conditions
-	 * @param conditionIndex rule condition to be excluded
-	 * @return {@code true} if evaluation of given rule conditions without a selected condition, as returned by {@link #evaluateWithoutCondition(RuleConditions, int)}, 
+	 * @param threshold threshold compared with evaluation of given rule conditions without the selected condition
+	 * @param conditionIndex index of the condition to be excluded
+	 * @return {@code true} if evaluation of given rule conditions without the selected condition, as returned by {@link #evaluateWithoutCondition(RuleConditions, int)}, 
 	 * 			satisfies given threshold, {@code false} otherwise
 	 * 
 	 * @throws NullPointerException if given rule conditions are {@code null}
+	 * @throws IndexOutOfBoundsException if given condition index is less than zero or too big concerning the number of conditions present in given rule conditions
 	 */
 	public default boolean evaluationSatisfiesThresholdWithoutCondition(RuleConditions ruleConditions, double threshold, int conditionIndex) {
 		return (this.getType() == MeasureType.GAIN ?

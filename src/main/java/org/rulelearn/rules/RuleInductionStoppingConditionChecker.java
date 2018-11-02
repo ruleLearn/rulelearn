@@ -25,23 +25,26 @@ package org.rulelearn.rules;
 public interface RuleInductionStoppingConditionChecker {
 	
 	/**
-	 * Checks if this stopping condition in satisfied by given rule conditions.
+	 * Checks if tested stopping condition in satisfied by given rule conditions.
 	 *  
 	 * @param ruleConditions rule conditions to be checked
-	 * @return {@code true} if this stopping condition in satisfied by given rule conditions, {@code false} otherwise
+	 * @return {@code true} if tested stopping condition in satisfied by given rule conditions,
+	 *         {@code false} otherwise
 	 * 
 	 * @throws NullPointerException if given rule conditions are {@code null}
 	 */
 	public boolean isStoppingConditionSatisified(RuleConditions ruleConditions);
 	
 	/**
-	 * Checks if this stopping condition in satisfied by given rule conditions even without a selected condition.
+	 * Checks if tested stopping condition in satisfied by given rule conditions without condition having given index.
 	 *  
 	 * @param ruleConditions rule conditions to be checked
-	 * @param conditionIndex rule condition to be excluded
-	 * @return {@code true} if this stopping condition in satisfied by given rule conditions without a selected condition, {@code false} otherwise
+	 * @param conditionIndex index of the condition to be excluded
+	 * @return {@code true} if tested stopping condition in satisfied by given rule conditions without condition having given index,
+	 *         {@code false} otherwise
 	 * 
 	 * @throws NullPointerException if given rule conditions are {@code null}
+	 * @throws IndexOutOfBoundsException if given condition index is less than zero or too big concerning the number of conditions present in given rule conditions
 	 */
 	public boolean isStoppingConditionSatisifiedWithoutCondition(RuleConditions ruleConditions, int conditionIndex);
 
