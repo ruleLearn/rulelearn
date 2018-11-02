@@ -90,9 +90,9 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 	 * @return set of indices of objects belonging to the lower approximation of this approximated set
 	 */
 	public IntSortedSet calculateLowerApproximationForReflexiveDominanceRelations(Union union) {
-		InformationTableWithDecisionDistributions infromationTable = union.getInformationTable(); 
+		InformationTableWithDecisionDistributions informationTable = union.getInformationTable(); 
 		IntIterator unionObjectIndicesIterator  = union.getObjects().iterator();
-		DominanceConesDecisionDistributions dominanceCDD = infromationTable.getDominanceConesDecisionDistributions();
+		DominanceConesDecisionDistributions dominanceCDD = informationTable.getDominanceConesDecisionDistributions();
 		IntSortedSet lowerApproximationObjects = null;  
 		boolean canBeAdded = false;
 		
@@ -152,9 +152,9 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 	 * @return set of indices of objects belonging to the lower approximation of this approximated set
 	 */
 	public IntSortedSet calculateLowerApproximationForNotReflexiveDominanceRelations(Union union) {
-		InformationTableWithDecisionDistributions infromationTable = union.getInformationTable(); 
-		int objectsCount = infromationTable.getNumberOfObjects();
-		DominanceConesDecisionDistributions dominanceCDD = infromationTable.getDominanceConesDecisionDistributions();
+		InformationTableWithDecisionDistributions informationTable = union.getInformationTable(); 
+		int objectsCount = informationTable.getNumberOfObjects();
+		DominanceConesDecisionDistributions dominanceCDD = informationTable.getDominanceConesDecisionDistributions();
 		IntSortedSet lowerApproximationObjects = null;  
 		boolean canBeAdded = false;
 		
@@ -211,9 +211,9 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 	 */
 	@Override
 	public IntSortedSet calculateUpperApproximation(Union union) {
-		InformationTableWithDecisionDistributions infromationTable = union.getInformationTable(); 
-		int objectsCount = infromationTable.getNumberOfObjects();
-		DominanceConesDecisionDistributions dominanceCDD = infromationTable.getDominanceConesDecisionDistributions();
+		InformationTableWithDecisionDistributions informationTable = union.getInformationTable(); 
+		int objectsCount = informationTable.getNumberOfObjects();
+		DominanceConesDecisionDistributions dominanceCDD = informationTable.getDominanceConesDecisionDistributions();
 		IntSortedSet upperApproximationObjects = null;
 		
 		if (union.getUnionType() == UnionType.AT_LEAST) {
