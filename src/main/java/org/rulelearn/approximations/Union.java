@@ -16,6 +16,12 @@
 
 package org.rulelearn.approximations;
 
+import static org.rulelearn.core.Precondition.notNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.Attribute;
@@ -27,11 +33,9 @@ import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConeCalculator;
 import org.rulelearn.rules.Condition;
-import org.rulelearn.rules.SimpleConditionAtLeast;
-import org.rulelearn.rules.SimpleConditionAtMost;
-import org.rulelearn.rules.SimpleConditionEqual;
+import org.rulelearn.rules.ConditionAtLeastThresholdVSObject;
+import org.rulelearn.rules.ConditionAtMostThresholdVSObject;
 import org.rulelearn.types.EvaluationField;
-import org.rulelearn.types.SimpleField;
 
 import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -40,13 +44,6 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSets;
-
-import static org.rulelearn.core.Precondition.notNull;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.rulelearn.core.InvalidTypeException;
 
 /**
  * Union of ordered decision classes, i.e., set of objects whose decision is not worse or not better than given limiting decision.
@@ -650,17 +647,15 @@ public class Union extends ApproximatedSet {
 	}
 
 	/**
-	 * Gets list of elementary decisions associated with this union, each dependent on the type of this union and one of the evaluations contributing to the limiting decision.<br>
-	 * <br>
-	 * Assumes that all the contributing evaluations are of type {@link SimpleField}.
+	 * Gets list of elementary decisions associated with this union.
+	 * Each elementary decision depends on type of this union, preference type of respective decision attribute, and evaluation on that attribute contributing to the limiting decision.
 	 * 
-	 * @return list of elementary decisions associated with this union, each dependent on the type of this union and one of the evaluations contributing to the limiting decision
-	 * @throws InvalidTypeException if any evaluation contributing to this union's limiting decision is not of type {@link SimpleField}
+	 * @return list of elementary decisions associated for this union; once all these elementary decisions are satisfied by a learning object, it belongs to this union 
 	 */
 	@Override
 	public List<Condition<? extends EvaluationField>> getElementaryDecisions() {
 		IntSet attributeIndices = this.limitingDecision.getAttributeIndices();
-		SimpleField evaluation;
+		EvaluationField evaluation;
 		EvaluationAttribute attribute;
 		int attributeIndex;
 		List<Condition<? extends EvaluationField>> elementaryDecisions = new ArrayList<>();
@@ -669,43 +664,41 @@ public class Union extends ApproximatedSet {
 		
 		while (attributeIndicesIterator.hasNext()) {
 			attributeIndex = attributeIndicesIterator.nextInt();
-			attribute = (EvaluationAttribute)this.informationTable.getAttribute(attributeIndex);
-			try {
-				evaluation = (SimpleField)this.limitingDecision.getEvaluation(attributeIndex); //assumes SimpleField eval
-			} catch (ClassCastException exception) {
-				throw new InvalidTypeException("Evaluation contributing to union's limiting decision is not a simple field.");
-			}
+			attribute = (EvaluationAttribute)this.informationTable.getAttribute(attributeIndex); //this cast should not throw an exception since type of attributes contributing to limiting decision is checked in class constructor
+			evaluation = this.limitingDecision.getEvaluation(attributeIndex);
 			
 			switch (this.unionType) {
 			case AT_LEAST:
 				switch (attribute.getPreferenceType()) {
 				case GAIN:
-					elementaryDecisions.add(new SimpleConditionAtLeast(
+					elementaryDecisions.add(new ConditionAtLeastThresholdVSObject<EvaluationField>(
 							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
 					break;
 				case COST:
-					elementaryDecisions.add(new SimpleConditionAtMost(
+					elementaryDecisions.add(new ConditionAtMostThresholdVSObject<EvaluationField>(
 							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
 					break;
 				case NONE:
-					elementaryDecisions.add(new SimpleConditionEqual(
-							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
+					//TODO: implement
+//					elementaryDecisions.add(new SimpleConditionEqual(
+//							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
 					break;
 				}
 				break;
 			case AT_MOST:
 				switch (attribute.getPreferenceType()) {
 				case GAIN:
-					elementaryDecisions.add(new SimpleConditionAtMost(
+					elementaryDecisions.add(new ConditionAtMostThresholdVSObject<EvaluationField>(
 							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
 					break;
 				case COST:
-					elementaryDecisions.add(new SimpleConditionAtLeast(
+					elementaryDecisions.add(new ConditionAtLeastThresholdVSObject<EvaluationField>(
 							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
 					break;
 				case NONE:
-					elementaryDecisions.add(new SimpleConditionEqual(
-							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
+					//TODO: implement
+//					elementaryDecisions.add(new SimpleConditionEqual(
+//							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
 					break;
 				}
 				break;
