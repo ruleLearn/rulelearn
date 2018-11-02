@@ -44,8 +44,16 @@ public class FIFORuleConditionsPruner extends AbstractRuleConditionsPruner {
 	 */
 	@Override
 	public RuleConditions prune(RuleConditions ruleConditions) {
-		// TODO: implement
-		return null;
+		int conditionIndex = 0;
+		while (conditionIndex < ruleConditions.size()) {
+			if (stoppingConditionChecker.isStoppingConditionSatisifiedWithoutCondition(ruleConditions, conditionIndex)) {
+				ruleConditions.removeCondition(conditionIndex);
+			}
+			else {
+				conditionIndex++;
+			}
+		}
+		return ruleConditions;
 	}
 
 }

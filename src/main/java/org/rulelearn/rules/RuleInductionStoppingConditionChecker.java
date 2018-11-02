@@ -33,5 +33,16 @@ public interface RuleInductionStoppingConditionChecker {
 	 * @throws NullPointerException if given rule conditions are {@code null}
 	 */
 	public boolean isStoppingConditionSatisified(RuleConditions ruleConditions);
+	
+	/**
+	 * Checks if this stopping condition in satisfied by given rule conditions even without a selected condition.
+	 *  
+	 * @param ruleConditions rule conditions to be checked
+	 * @param conditionIndex rule condition to be excluded
+	 * @return {@code true} if this stopping condition in satisfied by given rule conditions without a selected condition, {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given rule conditions are {@code null}
+	 */
+	public boolean isStoppingConditionSatisifiedWithoutCondition(RuleConditions ruleConditions, int conditionIndex);
 
 }
