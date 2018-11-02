@@ -35,6 +35,7 @@ import org.rulelearn.dominance.DominanceConeCalculator;
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.ConditionAtLeastThresholdVSObject;
 import org.rulelearn.rules.ConditionAtMostThresholdVSObject;
+import org.rulelearn.rules.ConditionEqualThresholdVSObject;
 import org.rulelearn.types.EvaluationField;
 
 import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
@@ -679,9 +680,8 @@ public class Union extends ApproximatedSet {
 							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
 					break;
 				case NONE:
-					//TODO: implement
-//					elementaryDecisions.add(new SimpleConditionEqual(
-//							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
+					elementaryDecisions.add(new ConditionEqualThresholdVSObject<EvaluationField>(
+							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
 					break;
 				}
 				break;
@@ -696,16 +696,15 @@ public class Union extends ApproximatedSet {
 							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
 					break;
 				case NONE:
-					//TODO: implement
-//					elementaryDecisions.add(new SimpleConditionEqual(
-//							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
+					elementaryDecisions.add(new ConditionEqualThresholdVSObject<EvaluationField>(
+							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
 					break;
 				}
 				break;
 			}
 		}
 		
-		//arrange elementary decisions in order
+		//arrange elementary decisions in order of respective attributes
 		elementaryDecisions.sort((x, y) -> {
 			int i = x.getAttributeWithContext().getAttributeIndex();
 			int j = y.getAttributeWithContext().getAttributeIndex();
