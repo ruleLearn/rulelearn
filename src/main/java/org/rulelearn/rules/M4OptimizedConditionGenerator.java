@@ -115,8 +115,8 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 						throw new InvalidTypeException("Evaluation of an active condition attribute is not a simple field.");
 					}
 					//TODO: handle PairField evaluations (decomposition!)
-					//candidateCondition = constructSimpleCondition(ruleConditions.getRuleSemantics(), activeConditionAttributes[localActiveConditionAttributeIndex],
-					//		objectEvaluation, globalAttributeIndex);
+					candidateCondition = constructCondition(ruleConditions.getRuleType(), ruleConditions.getRuleSemantics(), activeConditionAttributes[localActiveConditionAttributeIndex],
+							objectEvaluation, globalAttributeIndex);
 					//TODO: implement
 				}
 			}

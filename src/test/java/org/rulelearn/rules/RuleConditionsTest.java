@@ -43,12 +43,12 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 class RuleConditionsTest {
 
 	/**
-	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet))}.
+	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet, RuleType, RuleSemantics)}.
 	 */
 	@Test
 	void testRuleConditionsA01() {
 		try {
-			new RuleConditions(null, Mockito.mock(IntSet.class), Mockito.mock(IntSet.class), Mockito.mock(IntSet.class), RuleSemantics.AT_LEAST);
+			new RuleConditions(null, Mockito.mock(IntSet.class), Mockito.mock(IntSet.class), Mockito.mock(IntSet.class), RuleType.CERTAIN, RuleSemantics.AT_LEAST);
 			fail("Should not construct rule conditions for null parameter.");
 		} catch (NullPointerException exception) {
 			//exception is correctly thrown => do nothing
@@ -56,12 +56,12 @@ class RuleConditionsTest {
 	}
 	
 	/**
-	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet))}.
+	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet, RuleType, RuleSemantics)}.
 	 */
 	@Test
 	void testRuleConditionsA02() {
 		try {
-			new RuleConditions(Mockito.mock(InformationTable.class), null, Mockito.mock(IntSet.class), Mockito.mock(IntSet.class), RuleSemantics.AT_LEAST);
+			new RuleConditions(Mockito.mock(InformationTable.class), null, Mockito.mock(IntSet.class), Mockito.mock(IntSet.class), RuleType.CERTAIN, RuleSemantics.AT_LEAST);
 			fail("Should not construct rule conditions for null parameter.");
 		} catch (NullPointerException exception) {
 			//exception is correctly thrown => do nothing
@@ -69,12 +69,12 @@ class RuleConditionsTest {
 	}
 	
 	/**
-	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet))}.
+	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet, RuleType, RuleSemantics)}.
 	 */
 	@Test
 	void testRuleConditionsA03() {
 		try {
-			new RuleConditions(Mockito.mock(InformationTable.class), Mockito.mock(IntSet.class), null, Mockito.mock(IntSet.class), RuleSemantics.AT_LEAST);
+			new RuleConditions(Mockito.mock(InformationTable.class), Mockito.mock(IntSet.class), null, Mockito.mock(IntSet.class), RuleType.CERTAIN, RuleSemantics.AT_LEAST);
 			fail("Should not construct rule conditions for null parameter.");
 		} catch (NullPointerException exception) {
 			//exception is correctly thrown => do nothing
@@ -82,12 +82,12 @@ class RuleConditionsTest {
 	}
 	
 	/**
-	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet))}.
+	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet, RuleType, RuleSemantics)}.
 	 */
 	@Test
 	void testRuleConditionsA04() {
 		try {
-			new RuleConditions(Mockito.mock(InformationTable.class), Mockito.mock(IntSet.class), Mockito.mock(IntSet.class), null, RuleSemantics.AT_LEAST);
+			new RuleConditions(Mockito.mock(InformationTable.class), Mockito.mock(IntSet.class), Mockito.mock(IntSet.class), null, RuleType.CERTAIN, RuleSemantics.AT_LEAST);
 			fail("Should not construct rule conditions for null parameter.");
 		} catch (NullPointerException exception) {
 			//exception is correctly thrown => do nothing
@@ -95,28 +95,57 @@ class RuleConditionsTest {
 	}
 	
 	/**
-	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet))}, {@link RuleConditions#getLearningInformationTable()},
-	 * {@link RuleConditions#getIndicesOfPositiveObjects()}, {@link RuleConditions#getIndicesOfApproximationObjects()()}, {@link RuleConditions#getIndicesOfObjectsThatCanBeCovered()},
-	 * and {@link RuleConditions#getIndicesOfNeutralObjects()}.
+	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet, RuleType, RuleSemantics)}.
 	 */
 	@Test
 	void testRuleConditionsA05() {
+		try {
+			new RuleConditions(Mockito.mock(InformationTable.class), Mockito.mock(IntSet.class), Mockito.mock(IntSet.class), Mockito.mock(IntSet.class), null, RuleSemantics.AT_LEAST);
+			fail("Should not construct rule conditions for null parameter.");
+		} catch (NullPointerException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet, RuleType, RuleSemantics)}.
+	 */
+	@Test
+	void testRuleConditionsA06() {
+		try {
+			new RuleConditions(Mockito.mock(InformationTable.class), Mockito.mock(IntSet.class), Mockito.mock(IntSet.class), Mockito.mock(IntSet.class), RuleType.CERTAIN, null);
+			fail("Should not construct rule conditions for null parameter.");
+		} catch (NullPointerException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet, RuleType, RuleSemantics)}, {@link RuleConditions#getLearningInformationTable()},
+	 * {@link RuleConditions#getIndicesOfPositiveObjects()}, {@link RuleConditions#getIndicesOfApproximationObjects()()}, {@link RuleConditions#getIndicesOfObjectsThatCanBeCovered()},
+	 * {@link RuleConditions#getIndicesOfNeutralObjects()}, {@link RuleConditions#getRuleType()}, and {@link RuleConditions#getRuleSemantics()}.
+	 */
+	@Test
+	void testRuleConditionsA07() {
 		InformationTable informationTable = Mockito.mock(InformationTable.class);
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
 		IntSet indicesOfApproximationObjects = Mockito.mock(IntSet.class);
 		IntSet indicesOfObjectsThatCanBeCovered = Mockito.mock(IntSet.class);
 		
-		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, RuleSemantics.AT_LEAST);
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered,
+				RuleType.CERTAIN, RuleSemantics.AT_LEAST);
 		
 		assertEquals(ruleConditions.getLearningInformationTable(), informationTable);
 		assertEquals(ruleConditions.getIndicesOfPositiveObjects(), indicesOfPositiveObjects);
 		assertEquals(ruleConditions.getIndicesOfApproximationObjects(), indicesOfApproximationObjects);
 		assertEquals(ruleConditions.getIndicesOfObjectsThatCanBeCovered(), indicesOfObjectsThatCanBeCovered);
 		assertEquals(ruleConditions.getIndicesOfNeutralObjects(), IntSets.EMPTY_SET);
+		assertEquals(ruleConditions.getRuleType(), RuleType.CERTAIN);
+		assertEquals(ruleConditions.getRuleSemantics(), RuleSemantics.AT_LEAST);
 	}
 	
 	/**
-	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet, IntSet, RuleSemantics)}.
+	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet, IntSet, RuleType, RuleSemantics)}.
 	 */
 	@Test
 	void testRuleConditionsB01() {
@@ -127,12 +156,12 @@ class RuleConditionsTest {
 		IntSet indicesOfNeutralObjects = null;
 		
 		assertThrows(NullPointerException.class, () -> {
-			new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects, RuleSemantics.AT_LEAST);
+			new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects, RuleType.CERTAIN, RuleSemantics.AT_LEAST);
 		});
 	}
 	
 	/**
-	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet, IntSet, RuleSemantics)}.
+	 * Test method for {@link RuleConditions#RuleConditions(InformationTable, IntSet, IntSet, IntSet, IntSet, RuleType, RuleSemantics)}.
 	 */
 	@Test
 	void testRuleConditionsB02() {
@@ -141,15 +170,18 @@ class RuleConditionsTest {
 		IntSet indicesOfApproximationObjects = Mockito.mock(IntSet.class);
 		IntSet indicesOfObjectsThatCanBeCovered = Mockito.mock(IntSet.class);
 		IntSet indicesOfNeutralObjects = Mockito.mock(IntSet.class);
+		RuleType ruleType = RuleType.CERTAIN;
 		RuleSemantics ruleSemantics = RuleSemantics.AT_LEAST;
 		
-		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects, ruleSemantics);
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects,
+				ruleType, ruleSemantics);
 		
 		assertEquals(ruleConditions.getLearningInformationTable(), informationTable);
 		assertEquals(ruleConditions.getIndicesOfPositiveObjects(), indicesOfPositiveObjects);
 		assertEquals(ruleConditions.getIndicesOfApproximationObjects(), indicesOfApproximationObjects);
 		assertEquals(ruleConditions.getIndicesOfObjectsThatCanBeCovered(), indicesOfObjectsThatCanBeCovered);
 		assertEquals(ruleConditions.getIndicesOfNeutralObjects(), indicesOfNeutralObjects);
+		assertEquals(ruleConditions.getRuleType(), ruleType);
 		assertEquals(ruleConditions.getRuleSemantics(), ruleSemantics); 
 	}
 	
@@ -161,7 +193,7 @@ class RuleConditionsTest {
 		InformationTable informationTable = Mockito.mock(InformationTable.class);
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
 		
-		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleSemantics.AT_LEAST);
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleType.CERTAIN, RuleSemantics.AT_LEAST);
 		
 		try {
 			ruleConditions.addCondition(null);
@@ -179,7 +211,7 @@ class RuleConditionsTest {
 		InformationTable informationTable = Mockito.mock(InformationTable.class);
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
 		
-		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleSemantics.AT_LEAST);
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleType.POSSIBLE, RuleSemantics.AT_LEAST);
 		
 		EvaluationAttributeWithContext attributeWithContextMock1 = Mockito.mock(EvaluationAttributeWithContext.class);
 		Mockito.when(attributeWithContextMock1.getAttributeIndex()).thenReturn(1);
@@ -204,7 +236,7 @@ class RuleConditionsTest {
 		InformationTable informationTable = Mockito.mock(InformationTable.class);
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
 		
-		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleSemantics.AT_LEAST);
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleType.POSSIBLE, RuleSemantics.AT_LEAST);
 		
 		try {
 			ruleConditions.removeCondition(0);
@@ -222,7 +254,7 @@ class RuleConditionsTest {
 		InformationTable informationTable = Mockito.mock(InformationTable.class);
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
 		
-		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleSemantics.AT_LEAST);
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleType.POSSIBLE, RuleSemantics.AT_LEAST);
 		
 		EvaluationAttributeWithContext attributeWithContext1 = Mockito.mock(EvaluationAttributeWithContext.class);
 		Mockito.when(attributeWithContext1.getAttributeIndex()).thenReturn(1);
@@ -259,7 +291,7 @@ class RuleConditionsTest {
 		InformationTable informationTable = Mockito.mock(InformationTable.class);
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
 		
-		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleSemantics.AT_LEAST);
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleType.CERTAIN, RuleSemantics.AT_LEAST);
 		assertTrue(ruleConditions.getConditions().isEmpty());
 	}
 	
@@ -271,7 +303,7 @@ class RuleConditionsTest {
 		InformationTable informationTable = Mockito.mock(InformationTable.class);
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
 		
-		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleSemantics.AT_LEAST);
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleType.CERTAIN, RuleSemantics.AT_LEAST);
 		
 		EvaluationAttributeWithContext attributeWithContext1 = Mockito.mock(EvaluationAttributeWithContext.class);
 		Mockito.when(attributeWithContext1.getAttributeIndex()).thenReturn(1);
@@ -307,7 +339,7 @@ class RuleConditionsTest {
 		InformationTable informationTable = Mockito.mock(InformationTable.class);
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
 		
-		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleSemantics.AT_LEAST);
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleType.CERTAIN, RuleSemantics.AT_LEAST);
 		try {
 			ruleConditions.getCondition(0);
 			fail("Should not get a non-existing condition.");
@@ -324,7 +356,7 @@ class RuleConditionsTest {
 		InformationTable informationTable = Mockito.mock(InformationTable.class);
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
 		
-		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleSemantics.AT_LEAST);
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleType.CERTAIN, RuleSemantics.AT_LEAST);
 		
 		EvaluationAttributeWithContext attributeWithContextMock1 = Mockito.mock(EvaluationAttributeWithContext.class);
 		Mockito.when(attributeWithContextMock1.getAttributeIndex()).thenReturn(0);
@@ -348,7 +380,7 @@ class RuleConditionsTest {
 		InformationTable informationTable = Mockito.mock(InformationTable.class);
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
 		
-		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleSemantics.AT_LEAST);
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleType.CERTAIN, RuleSemantics.AT_LEAST);
 		
 		EvaluationAttributeWithContext attributeWithContextMock1 = Mockito.mock(EvaluationAttributeWithContext.class);
 		Mockito.when(attributeWithContextMock1.getAttributeIndex()).thenReturn(0);
@@ -378,7 +410,7 @@ class RuleConditionsTest {
 		InformationTable informationTable = Mockito.mock(InformationTable.class);
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
 		
-		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleSemantics.AT_LEAST);
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleType.POSSIBLE, RuleSemantics.AT_LEAST);
 		
 		EvaluationAttributeWithContext attributeWithContextMock1 = Mockito.mock(EvaluationAttributeWithContext.class);
 		Mockito.when(attributeWithContextMock1.getAttributeIndex()).thenReturn(1);
@@ -407,7 +439,7 @@ class RuleConditionsTest {
 		InformationTable informationTable = Mockito.mock(InformationTable.class);
 		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
 		
-		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleSemantics.AT_LEAST);
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleType.POSSIBLE, RuleSemantics.AT_LEAST);
 		
 		EvaluationAttributeWithContext attributeWithContext1 = Mockito.mock(EvaluationAttributeWithContext.class);
 		Mockito.when(attributeWithContext1.getAttributeIndex()).thenReturn(1);
