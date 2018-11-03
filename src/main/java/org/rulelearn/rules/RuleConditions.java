@@ -104,6 +104,8 @@ public class RuleConditions {
 	 */
 	RuleSemantics ruleSemantics;
 	
+	//TODO: add RuleType ruleType
+	
 	/**
 	 * Iterator among objects covered by the rule conditions.
 	 *

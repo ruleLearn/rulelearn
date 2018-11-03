@@ -66,9 +66,11 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 
 	/**
 	 * {@inheritDoc}
-	 * During search for best condition, scans all active condition attributes. For each such an attribute, optimizes scanning of values of considered objects (skips not relevant values).
-	 * During this scan, elementary conditions are lexicographically evaluated by the condition addition evaluators set in constructor.
-	 * Moreover, it is assumed that evaluations of elementary conditions are monotonically dependent on the preference order of that attribute.  
+	 * During search for the best condition, scans all active condition attributes. For each such an attribute (for one column of considered learning information able),
+	 * optimizes scanning of values of considered objects by skipping not relevant values.
+	 * During scanning of values in one column, elementary conditions are lexicographically evaluated by the condition addition evaluators set in constructor.
+	 * Moreover, it is assumed that evaluations of elementary conditions are monotonically dependent on the preference order of an attribute.
+	 * This relation enables to skip checking of some conditions and speed up search.
 	 * 
 	 * @param consideredObjects {@inheritDoc}
 	 * @param ruleConditions {@inheritDoc}
@@ -80,13 +82,13 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 	@Override
 	public Condition<EvaluationField> getBestCondition(IntList consideredObjects, RuleConditions ruleConditions) {
 		Precondition.notNull(consideredObjects, "List of objects considered in m4-optimized condition generator is null.");
-		Precondition.notNull(ruleConditions, "Rule conditions considered in m4-optimized condition generator is null.");
+		Precondition.notNull(ruleConditions, "Rule conditions considered in m4-optimized condition generator are null.");
 		
 		Condition<EvaluationField> bestCondition = null;
-		SimpleCondition candidateCondition;
+		Condition candidateCondition;
 		Table<EvaluationAttribute, EvaluationField> data = ruleConditions.getLearningInformationTable().getActiveConditionAttributeFields();
 		EvaluationAttribute[] activeConditionAttributes = data.getAttributes(true);
-		SimpleField objectEvaluation;
+		EvaluationField objectEvaluation;
 		int globalAttributeIndex;
 		int consideredObjectsSize;
 		
@@ -107,14 +109,14 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 				consideredObjectsSize = consideredObjects.size();
 				for (int consideredObjectIndex = 0; consideredObjectIndex < consideredObjectsSize; consideredObjectIndex++) {
 					try {
-						objectEvaluation = (SimpleField)data.getField(consideredObjects.getInt(consideredObjectIndex), localActiveConditionAttributeIndex);
+						objectEvaluation = data.getField(consideredObjects.getInt(consideredObjectIndex), localActiveConditionAttributeIndex);
 						//TODO: skip evaluation if missing
 					} catch (ClassCastException exception) {
 						throw new InvalidTypeException("Evaluation of an active condition attribute is not a simple field.");
 					}
-					//TODO: handle PairField evaluations
-					candidateCondition = constructSimpleCondition(ruleConditions.getRuleSemantics(), activeConditionAttributes[localActiveConditionAttributeIndex],
-							objectEvaluation, globalAttributeIndex);
+					//TODO: handle PairField evaluations (decomposition!)
+					//candidateCondition = constructSimpleCondition(ruleConditions.getRuleSemantics(), activeConditionAttributes[localActiveConditionAttributeIndex],
+					//		objectEvaluation, globalAttributeIndex);
 					//TODO: implement
 				}
 			}
@@ -123,35 +125,71 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		return bestCondition;
 	}
 	
-	private SimpleCondition constructSimpleCondition(RuleSemantics ruleSemantics, EvaluationAttribute evaluationAttribute,  SimpleField limitingEvaluation, int globalAttributeIndex) {
-		switch(ruleSemantics) {
-		case AT_LEAST:
-			switch(evaluationAttribute.getPreferenceType()) {
-			case GAIN:
-				return new SimpleConditionAtLeast(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-			case COST:
-				return new SimpleConditionAtMost(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-			case NONE:
-				throw new InvalidValueException("Incorrect combination of rule semantics and attribute preference type.");
+	private Condition<EvaluationField> constructCondition(RuleType ruleType, RuleSemantics ruleSemantics, EvaluationAttribute evaluationAttribute,  EvaluationField limitingEvaluation, int globalAttributeIndex) {
+		
+		switch (ruleType) {
+		case CERTAIN:
+			switch (ruleSemantics) {
+			case AT_LEAST:
+				switch (evaluationAttribute.getPreferenceType()) {
+				case GAIN:
+					return new ConditionAtLeastThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+				case COST:
+					return new ConditionAtMostThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+				case NONE:
+					return new ConditionEqualThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+				default:
+					throw new NullPointerException("Attribute preference type is null.");
+				}
+			case AT_MOST:
+				switch (evaluationAttribute.getPreferenceType()) {
+				case GAIN:
+					return new ConditionAtMostThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+				case COST:
+					return new ConditionAtLeastThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+				case NONE:
+					return new ConditionEqualThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+				default:
+					throw new NullPointerException("Attribute preference type is null.");
+				}
+			case EQUAL:
+				return new ConditionEqualThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
 			default:
-				throw new NullPointerException("Attribute preference type is null.");
+				throw new NullPointerException("Rule semantics is null.");
 			}
-		case AT_MOST:
-			switch(evaluationAttribute.getPreferenceType()) {
-			case GAIN:
-				return new SimpleConditionAtMost(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-			case COST:
-				return new SimpleConditionAtLeast(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-			case NONE:
-				throw new InvalidValueException("Incorrect combination of rule semantics and attribute preference type.");
+		case POSSIBLE:
+			switch (ruleSemantics) {
+			case AT_LEAST:
+				switch (evaluationAttribute.getPreferenceType()) {
+				case GAIN:
+					return new ConditionAtLeastObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+				case COST:
+					return new ConditionAtMostObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+				case NONE:
+					return new ConditionEqualObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+				default:
+					throw new NullPointerException("Attribute preference type is null.");
+				}
+			case AT_MOST:
+				switch (evaluationAttribute.getPreferenceType()) {
+				case GAIN:
+					return new ConditionAtMostObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+				case COST:
+					return new ConditionAtLeastObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+				case NONE:
+					return new ConditionEqualObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+				default:
+					throw new NullPointerException("Attribute preference type is null.");
+				}
+			case EQUAL:
+				return new ConditionEqualObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
 			default:
-				throw new NullPointerException("Attribute preference type is null.");
+				throw new NullPointerException("Rule semantics is null.");
 			}
-		case EQUAL:
-			return new SimpleConditionEqual(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
 		default:
-			throw new NullPointerException("Rule semantics is null.");
+			throw new InvalidValueException("Cannot construct condition if rule type is neither certain nor possible.");
 		}
+		
 	}
 
 }

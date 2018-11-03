@@ -16,15 +16,17 @@
 
 package org.rulelearn.rules;
 
+import static org.rulelearn.core.Precondition.nonEmpty;
+import static org.rulelearn.core.Precondition.notNull;
+
 import java.util.List;
+
 import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.EvaluationField;
-import static org.rulelearn.core.Precondition.notNull;
-import static org.rulelearn.core.Precondition.nonEmpty;
 
 /**
  * Decision rule composed of elementary conditions on the LHS, connected by "and", and elementary decisions on the RHS, connected by "or" (between lists of elementary decisions)
@@ -42,7 +44,7 @@ public class Rule {
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
-	public enum ConditionConnectiveType {
+	public static enum ConditionConnectiveType {
 		/**
 		 * Connective indicating that conditions from a considered list should be satisfied jointly.
 		 */
