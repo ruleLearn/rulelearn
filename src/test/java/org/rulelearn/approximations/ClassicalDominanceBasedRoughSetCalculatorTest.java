@@ -16,8 +16,10 @@
 
 package org.rulelearn.approximations;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -33,6 +35,7 @@ import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
 
 import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 /**
@@ -80,6 +83,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 		when(this.unionMock.getUnionType()).thenReturn(UnionType.AT_LEAST);
 		when(this.unionMock.isDecisionNegative(class1)).thenReturn(true);
 		when(this.unionMock.isDecisionNegative(class2)).thenReturn(false);
+		when(this.unionMock.getNeutralObjects()).thenReturn(new IntLinkedOpenHashSet());
 		// mock union objects iterator
 		when(this.unionMock.getObjects()).thenReturn(this.unionObjectsMock);
 		when(this.unionMock.getObjects().iterator()).thenReturn(this.unionObjectIndicesIteratorMock);
@@ -105,6 +109,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 		when(this.unionMock.getUnionType()).thenReturn(UnionType.AT_LEAST);
 		when(this.unionMock.isDecisionPositive(class1)).thenReturn(false);
 		when(this.unionMock.isDecisionPositive(class2)).thenReturn(true);
+		when(this.unionMock.getNeutralObjects()).thenReturn(new IntLinkedOpenHashSet());
 		// mock information table
 		when(this.unionMock.getInformationTable()).thenReturn(this.informationTableMock);
 		when(this.informationTableMock.getNumberOfObjects()).thenReturn(3);
@@ -138,6 +143,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 		when(this.unionMock.getUnionType()).thenReturn(UnionType.AT_MOST);
 		when(this.unionMock.isDecisionNegative(class1)).thenReturn(false);
 		when(this.unionMock.isDecisionNegative(class2)).thenReturn(true);
+		when(this.unionMock.getNeutralObjects()).thenReturn(new IntLinkedOpenHashSet());
 		// mock union objects iterator
 		when(this.unionMock.getObjects()).thenReturn(this.unionObjectsMock);
 		when(this.unionMock.getObjects().iterator()).thenReturn(this.unionObjectIndicesIteratorMock);
@@ -168,6 +174,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 		when(this.unionMock.getUnionType()).thenReturn(UnionType.AT_MOST);
 		when(this.unionMock.isDecisionPositive(class1)).thenReturn(true);
 		when(this.unionMock.isDecisionPositive(class2)).thenReturn(false);
+		when(this.unionMock.getNeutralObjects()).thenReturn(new IntLinkedOpenHashSet());
 		// mock information table
 		when(this.unionMock.getInformationTable()).thenReturn(this.informationTableMock);
 		when(this.informationTableMock.getNumberOfObjects()).thenReturn(3);
