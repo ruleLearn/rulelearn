@@ -30,11 +30,13 @@ public interface ConditionGenerator {
 
 	/**
 	 * Gets best condition that can be added to given rule conditions, constructed on the basis of evaluations of objects whose indices are on the given list.
-	 * Takes into account active condition attributes from the learning information table for which given rule conditions are defined, as returned by {@link RuleConditions#getLearningInformationTable()}.<br>
+	 * Takes into account active condition attributes from the learning information table for which given rule conditions are defined,
+	 * as returned by {@link RuleConditions#getLearningInformationTable()}.<br>
 	 * <br>
-	 * Remark that in general, the best condition is not guaranteed to improve evaluation of rule conditions (it can even deteriorate it).
+	 * Remark that, in general, the best condition is not guaranteed to improve evaluation of rule conditions (it can even deteriorate it).
 	 * 
-	 * @param consideredObjects list of indices of (positive) objects which are considered when generating candidate elementary conditions
+	 * @param consideredObjects list of indices of (positive) objects which are considered when generating candidate elementary conditions;
+	 *        each of these objects should be covered by given rule conditions
 	 * @param ruleConditions rule conditions for which best next condition is searched for
 	 * @return best condition that can be added to given rule conditions
 	 * 
