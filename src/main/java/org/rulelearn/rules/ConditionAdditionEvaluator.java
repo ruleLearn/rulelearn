@@ -34,9 +34,10 @@ public interface ConditionAdditionEvaluator extends Measure {
 	 * @param ruleConditions rule conditions being the context of evaluation of given condition
 	 * @param condition condition to be evaluated
 	 * 
-	 * @return evaluation of a hypothetical rule conditions obtained from the given ones by adding given condition
-	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @return evaluation of hypothetical rule conditions obtained from the given ones by adding given condition; if given condition is {@code null}, then returns {@link Double#MIN_VALUE} or
+	 *         {@link Double#MAX_VALUE}, when this evaluator is a gain-type or cost-type measure, respectively.
+	 * @throws NullPointerException if given rule conditions are {@code null}
 	 */
-	public double evaluateWithCondition(RuleConditions ruleConditions, Condition<EvaluationField> condition); //TODO: returns worst/best evaluation if condition is null
+	public double evaluateWithCondition(RuleConditions ruleConditions, Condition<EvaluationField> condition);
 
 }
