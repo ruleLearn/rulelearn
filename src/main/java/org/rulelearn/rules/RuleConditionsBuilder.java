@@ -52,7 +52,8 @@ public class RuleConditionsBuilder {
 	/**
 	 * Constructs this rule conditions builder by storing all the parameters for future use when building rule conditions.
 	 * 
-	 * @param indicesOfConsideredObjects list of indices of (positive) objects from learning information which are considered when generating candidate elementary conditions
+	 * @param indicesOfConsideredObjects list of indices of (positive) objects from learning information which are considered when generating candidate elementary conditions;
+	 *        this list is directly stored in this builder and iteratively modified when building rule conditions
 	 * @param learningInformationTable learning information table for which rule conditions are constructed
 	 * @param indicesOfPositiveObjects set of indices of positive objects from the given learning information table, i.e., all objects that satisfy right-hand side (RHS, decision part) of induced decision rule;
 	 *        in case of a certain/possible rule, these are the objects from considered approximated set

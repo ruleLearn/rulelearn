@@ -37,6 +37,6 @@ public interface ConditionAdditionEvaluator extends Measure {
 	 * @return evaluation of a hypothetical rule conditions obtained from the given ones by adding given condition
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public double evaluateWithCondition(RuleConditions ruleConditions, Condition<EvaluationField> condition);
+	public double evaluateWithCondition(RuleConditions ruleConditions, Condition<EvaluationField> condition); //TODO: returns worst/best evaluation if condition is null
 
 }
