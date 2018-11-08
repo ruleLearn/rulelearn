@@ -16,6 +16,7 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.types.SimpleField;
 
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -40,12 +41,15 @@ import it.unimi.dsi.fastutil.ints.IntList;
 public class M1AndM4OptimizedConditionGenerator extends M4OptimizedConditionGenerator {
 
 	/**
-	 * Constructor for this condition generator. Stores given evaluators for use in {@link #getBestCondition(IntList, RuleConditions)}.
+	 * Constructor for this condition generator. Stores given monotonic condition addition evaluators for use in {@link #getBestCondition(IntList, RuleConditions)}.
 	 * 
-	 * @param conditionEvaluators array with condition evaluators used lexicographically
+	 * @param conditionEvaluators array with monotonic condition addition evaluators used lexicographically
+	 * 
 	 * @throws NullPointerException if given array or any of its elements is {@code null}
+	 * @throws NullPointerException if type of any condition addition evaluator is {@code null}
+	 * @throws InvalidSizeException if given array is empty
 	 */
-	public M1AndM4OptimizedConditionGenerator(ConditionAdditionEvaluator[] conditionEvaluators) {
+	public M1AndM4OptimizedConditionGenerator(MonotonicConditionAdditionEvaluator[] conditionEvaluators) {
 		super(conditionEvaluators);
 	}
 	

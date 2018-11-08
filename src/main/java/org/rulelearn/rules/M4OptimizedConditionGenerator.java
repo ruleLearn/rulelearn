@@ -49,17 +49,65 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWithEvaluators {
 	
+	final private class LimitingEvaluationOfRestrictingCondition {
+		KnownSimpleField mostRestrictive;
+		KnownSimpleField sufficientlyRestrictive;
+		KnownSimpleField insufficientlyRestrictive;
+	}
+	
+	final private class LimitingEvaluationOfGeneralizingCondition {
+		KnownSimpleField mostGeneral;
+		KnownSimpleField sufficientlyGeneral;
+		KnownSimpleField insufficientlyGeneral;
+	}
+	
+	final private class BestCondition {
+		Condition<EvaluationField> condition;
+		double[] evaluations;
+		int validEvaluationsCount;
+		
+		BestCondition(int evaluationsCount) {
+			condition = null;
+			evaluations = new double[evaluationsCount];
+			validEvaluationsCount = 0;
+		}
+		
+		void updateWithBetterCondition(Condition<EvaluationField> betterCondition, int betterEvaluationIndex, double betterEvaluation) {
+			condition = betterCondition;
+			evaluations[betterEvaluationIndex] = betterEvaluation;
+			validEvaluationsCount = betterEvaluationIndex + 1;
+		}
+	}
+	
 	/**
-	 * Constructor for this condition generator. Stores given condition addition evaluators for use in {@link #getBestCondition(IntList, RuleConditions)}.
+	 * Tells if among considered monotonic condition addition evaluators there is at least one evaluator with monotonicity type different than the other evaluators.
+	 */
+	boolean containsEvaluatorsOfDifferentMonotonicityType;
+	
+	/**
+	 * Constructor for this condition generator. Stores given monotonic condition addition evaluators for use in {@link #getBestCondition(IntList, RuleConditions)}.
 	 * 
-	 * @param conditionaAdditionEvaluators array with condition addition evaluators used lexicographically
+	 * @param conditionAdditionEvaluators array with monotonic condition addition evaluators used lexicographically
 	 * 
 	 * @throws NullPointerException if given array or any of its elements is {@code null}
 	 * @throws NullPointerException if type of any condition addition evaluator is {@code null}
+	 * @throws NullPointerException if monotonicity type of any condition addition evaluator is {@code null}
 	 * @throws InvalidSizeException if given array is empty
 	 */
-	public M4OptimizedConditionGenerator(ConditionAdditionEvaluator[] conditionaAdditionEvaluators) {
-		super(conditionaAdditionEvaluators);
+	public M4OptimizedConditionGenerator(MonotonicConditionAdditionEvaluator[] conditionAdditionEvaluators) {
+		super(conditionAdditionEvaluators);
+		for (MonotonicConditionAdditionEvaluator conditionEvaluator : conditionAdditionEvaluators) {
+			Precondition.notNull(conditionEvaluator.getMonotonictyType(), "Monotonicty type of a monotonic condition addition evaluator is null.");
+		}
+		
+		containsEvaluatorsOfDifferentMonotonicityType = false;
+		for (int i = 1; i < conditionAdditionEvaluators.length; i++) {
+			if (conditionAdditionEvaluators[i].getMonotonictyType() != conditionAdditionEvaluators[i-1].getMonotonictyType()) {
+				containsEvaluatorsOfDifferentMonotonicityType = true;
+				break;
+			}
+		}
+		
 	}
 	
 	/**
@@ -91,7 +139,9 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		Precondition.notNull(consideredObjects, "List of objects considered in m4-optimized condition generator is null.");
 		Precondition.notNull(ruleConditions, "Rule conditions considered in m4-optimized condition generator are null.");
 		
-		Condition<EvaluationField> bestCondition = null;
+		MonotonicConditionAdditionEvaluator[] conditionAdditionEvaluators = (MonotonicConditionAdditionEvaluator[])this.conditionAdditionEvaluators; //cast on array of monotonic evaluators
+		
+		BestCondition bestCondition = new BestCondition(conditionAdditionEvaluators.length);
 		Condition<EvaluationField> candidateCondition = null;
 		
 		InformationTable learningInformationTable = ruleConditions.getLearningInformationTable();
@@ -101,11 +151,14 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		EvaluationField objectEvaluation;
 		KnownSimpleField extremeLimitingEvaluation; //least/most (depending on the type of the first condition addition evaluator) restrictive limiting evaluation found so far
 		KnownSimpleField candidateLimitingEvaluation; //current limiting evaluation to be compared with the most restrictive one
+		LimitingEvaluationOfRestrictingCondition limitingEvaluationOfRestrictingCondition = null;
+		LimitingEvaluationOfGeneralizingCondition limitingEvaluationOfGeneralizingCondition = null;
 		
 		int consideredObjectsCount = consideredObjects.size();
 		int consideredObjectsSuccessfullIndex;
 		int globalAttributeIndex;
 		int compareToMultiplier;
+		int candidateVSBestCondition;
 		
 		//TODO: handle PairField evaluations (decomposition!)
 		//TODO: skip evaluation if missing
@@ -132,24 +185,35 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 					}
 					
 					if (consideredObjectsSuccessfullIndex >= 0) {
+						switch (conditionAdditionEvaluators[0].getMonotonictyType()) {
+						case IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS:
+							limitingEvaluationOfGeneralizingCondition = new LimitingEvaluationOfGeneralizingCondition();
+							break;
+						case DETERIORATES_WITH_NUMBER_OF_COVERED_OBJECTS:
+							limitingEvaluationOfRestrictingCondition = new LimitingEvaluationOfRestrictingCondition();
+							break;
+						}
+						
 						//first, calculate multiplier used to compare two evaluations; if candidateEval.compareTo(referenceEval) * compareToMultiplier > 0, 
 						//then candidateEval is more restrictive limiting evaluation than referenceEval, w.r.t. the constructed condition;
 						//multiplier takes into account both rule's semantics and attribute's preference type
 						compareToMultiplier = (activeConditionAttributes[localActiveConditionAttributeIndex].getPreferenceType() == AttributePreferenceType.GAIN ? 1 : -1) *
 								(ruleConditions.getRuleSemantics() == RuleSemantics.AT_LEAST ? 1 : -1);
+						
 						//second, iterate through all considered objects to calculate least/most restrictive limiting evaluation of a condition,
 						//taking into account rule's semantics and attribute's preference type
 						for (int i = consideredObjectsSuccessfullIndex + 1; i < consideredObjectsCount; i++) { //continue loop at next index
 							objectEvaluation = data.getField(consideredObjects.getInt(i), localActiveConditionAttributeIndex);
 							if (objectEvaluation instanceof KnownSimpleField) { //non-missing evaluation found
 								candidateLimitingEvaluation = (KnownSimpleField)objectEvaluation;
-								switch(this.conditionAdditionEvaluators[0].getType()) {
-								case GAIN:
+								
+								switch (conditionAdditionEvaluators[0].getMonotonictyType()) {
+								case IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS:
 									if (candidateLimitingEvaluation.compareTo(extremeLimitingEvaluation) * compareToMultiplier < 0) { //less restrictive limiting evaluation found
 										extremeLimitingEvaluation = candidateLimitingEvaluation;
 									}
 									break;
-								case COST:
+								case DETERIORATES_WITH_NUMBER_OF_COVERED_OBJECTS:
 									if (candidateLimitingEvaluation.compareTo(extremeLimitingEvaluation) * compareToMultiplier > 0) { //more restrictive limiting evaluation found
 										extremeLimitingEvaluation = candidateLimitingEvaluation;
 									}
@@ -158,124 +222,179 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 							}
 						}
 						
-						//set limits
-						//TODO: implement
+						//set limiting evaluations
+						switch (conditionAdditionEvaluators[0].getMonotonictyType()) {
+						case IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS:
+							limitingEvaluationOfGeneralizingCondition.mostGeneral = extremeLimitingEvaluation;
+							limitingEvaluationOfGeneralizingCondition.sufficientlyGeneral = extremeLimitingEvaluation;
+							limitingEvaluationOfGeneralizingCondition.insufficientlyGeneral = null;
+							break;
+						case DETERIORATES_WITH_NUMBER_OF_COVERED_OBJECTS:
+							limitingEvaluationOfRestrictingCondition.mostRestrictive = extremeLimitingEvaluation;
+							limitingEvaluationOfRestrictingCondition.sufficientlyRestrictive = extremeLimitingEvaluation;
+							limitingEvaluationOfRestrictingCondition.insufficientlyRestrictive = null;
+							break;
+						}
 						
 						//at this point, least/most restrictive limiting evaluation among considered objects, for current criterion, has been calculated, so one can construct candidate condition
 						candidateCondition = constructCondition(ruleConditions.getRuleType(), ruleConditions.getRuleSemantics(),
 								activeConditionAttributes[localActiveConditionAttributeIndex], extremeLimitingEvaluation, globalAttributeIndex);
 						
-						bestCondition = getBetterCondition(ruleConditions, candidateCondition, bestCondition);
-						//TODO: check if can continue at this point, going to next attribute
+						candidateVSBestCondition = setBestCondition(ruleConditions, candidateCondition, bestCondition); //if result is > 0, then best condition was already updated inside the method
 						
-						//TODO: iterate through considered objects
+						if (candidateVSBestCondition >= 0 && containsEvaluatorsOfDifferentMonotonicityType) { //best condition can possibly be improved
+							//TODO: iterate through considered objects to check if best condition can be improved by taking more/less extreme evaluation
+							for (int i = 0; i < consideredObjectsCount; i++) {
+								objectEvaluation = data.getField(consideredObjects.getInt(i), localActiveConditionAttributeIndex);
+								if (objectEvaluation instanceof KnownSimpleField) { //non-missing evaluation found
+									//check limiting evaluations
+									switch (conditionAdditionEvaluators[0].getMonotonictyType()) {
+									case IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS:
+										//TODO
+										//if (objectEvaluation)
+										//limitingEvaluationOfGeneralizingCondition.mostGeneral = extremeLimitingEvaluation;
+										//limitingEvaluationOfGeneralizingCondition.sufficientlyGeneral = extremeLimitingEvaluation;
+										//limitingEvaluationOfGeneralizingCondition.insufficientlyGeneral = null;
+										break;
+									case DETERIORATES_WITH_NUMBER_OF_COVERED_OBJECTS:
+										//TODO
+										//if (objectEvaluation)
+										//limitingEvaluationOfRestrictingCondition.mostRestrictive = extremeLimitingEvaluation;
+										//limitingEvaluationOfRestrictingCondition.sufficientlyRestrictive = extremeLimitingEvaluation;
+										//limitingEvaluationOfRestrictingCondition.insufficientlyRestrictive = null;
+										break;
+									}
+								}
+							}
+						} else {
+							continue; //go to next active condition attribute as for the current attribute best condition cannot be improved
+						}
 					} else {
 						continue; //go to next active condition attribute as for the current attribute all considered objects miss an evaluation (have missing value)
 					}
 				} else { //proceed without optimization
-					//TODO: iterate through considered objects
+					//TODO: iterate through considered objects, without any optimization (check all conditions)
 				}
 			}
 		}
 		
-		return bestCondition;
-	}
-		
-	private Condition<EvaluationField> getBetterCondition(RuleConditions ruleConditions, Condition<EvaluationField> candidateCondition, Condition<EvaluationField> bestCondition) {
-		double bestConditionEvaluation;
-		try {
-			bestConditionEvaluation = conditionAdditionEvaluators[0].evaluateWithCondition(ruleConditions, bestCondition);
-		} catch (NullPointerException exception) {
-			return candidateCondition; //best condition is null
-		}
-		double candidateConditionEvaluation = conditionAdditionEvaluators[0].evaluateWithCondition(ruleConditions, candidateCondition);
-		
-		if (candidateConditionEvaluation > bestConditionEvaluation) {
-			return (conditionAdditionEvaluators[0].getType() == MeasureType.GAIN ? candidateCondition : bestCondition);
-		}
-		if (candidateConditionEvaluation < bestConditionEvaluation) {
-			return (conditionAdditionEvaluators[0].getType() == MeasureType.GAIN ? bestCondition: candidateCondition);
-		}
-		
-		for (int i = 1; i < conditionAdditionEvaluators.length; i++) {
-			bestConditionEvaluation = conditionAdditionEvaluators[i].evaluateWithCondition(ruleConditions, bestCondition);
-			candidateConditionEvaluation = conditionAdditionEvaluators[i].evaluateWithCondition(ruleConditions, candidateCondition);
-			
-			if (candidateConditionEvaluation > bestConditionEvaluation) {
-				return (conditionAdditionEvaluators[i].getType() == MeasureType.GAIN ? candidateCondition : bestCondition);
-			}
-			if (candidateConditionEvaluation < bestConditionEvaluation) {
-				return (conditionAdditionEvaluators[i].getType() == MeasureType.GAIN ? bestCondition: candidateCondition);
-			}
-		}
-		
-		return bestCondition; //return best condition if both conditions evaluate the same
+		return bestCondition.condition;
 	}
 	
-	private Condition<EvaluationField> constructCondition(RuleType ruleType, RuleSemantics ruleSemantics, EvaluationAttribute evaluationAttribute, 
+	/**
+	 * Compares candidate versus best condition found so far to establish which one of the two is better.
+	 * Updates {@code bestCondition} with {@code candidateCondition}, if the latter is better. 
+	 * 
+	 * @param ruleConditions rule conditions to which next condition should be ultimately added
+	 * @param candidateCondition candidate condition, to be compared with currently best condition
+	 * @param bestCondition currently best condition
+	 * 
+	 * @return value greater than zero if given candidate condition is more preferred than given best condition,
+	 *         value less than zero if given candidate condition is worse than given best condition,
+	 *         zero otherwise
+	 */
+	int setBestCondition(RuleConditions ruleConditions, Condition<EvaluationField> candidateCondition, BestCondition bestCondition) {
+		double candidateConditionEvaluation;
+		
+		for (int i = 0; i < conditionAdditionEvaluators.length; i++) {
+			candidateConditionEvaluation = conditionAdditionEvaluators[i].evaluateWithCondition(ruleConditions, candidateCondition);
+			if (i >= bestCondition.validEvaluationsCount) { //current evaluation of best condition is invalid
+				bestCondition.evaluations[i] = conditionAdditionEvaluators[i].evaluateWithCondition(ruleConditions, bestCondition.condition);
+			}
+			
+			if (candidateConditionEvaluation > bestCondition.evaluations[i]) {
+				if (conditionAdditionEvaluators[i].getType() == MeasureType.GAIN) { //candidate condition is better at i-th evaluation
+					bestCondition.updateWithBetterCondition(candidateCondition, i, candidateConditionEvaluation);
+					return 1; //best condition changed
+				} else { //COST
+					return -1; //best condition is better and thus did not change
+				}
+			}
+			if (candidateConditionEvaluation < bestCondition.evaluations[i]) {
+				if (conditionAdditionEvaluators[i].getType() == MeasureType.GAIN) { //candidate condition is worse at i-th evaluation
+					return -1; //best condition is better and thus did not change
+				} else { //COST
+					bestCondition.updateWithBetterCondition(candidateCondition, i, candidateConditionEvaluation);
+					return 1; //best condition changed
+				}
+			}
+		}
+		
+		return 0; //neither condition is better
+	}
+	
+	Condition<EvaluationField> constructCondition(RuleType ruleType, RuleSemantics ruleSemantics, EvaluationAttribute evaluationAttribute, 
 			EvaluationField limitingEvaluation, int globalAttributeIndex) {
 		switch (ruleType) {
 		case CERTAIN:
-			switch (ruleSemantics) {
-			case AT_LEAST:
-				switch (evaluationAttribute.getPreferenceType()) {
-				case GAIN:
-					return new ConditionAtLeastThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-				case COST:
-					return new ConditionAtMostThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-				case NONE:
-					return new ConditionEqualThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-				default:
-					throw new NullPointerException("Attribute preference type is null.");
-				}
-			case AT_MOST:
-				switch (evaluationAttribute.getPreferenceType()) {
-				case GAIN:
-					return new ConditionAtMostThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-				case COST:
-					return new ConditionAtLeastThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-				case NONE:
-					return new ConditionEqualThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-				default:
-					throw new NullPointerException("Attribute preference type is null.");
-				}
-			case EQUAL:
-				return new ConditionEqualThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-			default:
-				throw new NullPointerException("Rule semantics is null.");
-			}
+			return constructCertainRuleCondition(ruleSemantics, evaluationAttribute, limitingEvaluation, globalAttributeIndex);
 		case POSSIBLE:
-			switch (ruleSemantics) {
-			case AT_LEAST:
-				switch (evaluationAttribute.getPreferenceType()) {
-				case GAIN:
-					return new ConditionAtLeastObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-				case COST:
-					return new ConditionAtMostObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-				case NONE:
-					return new ConditionEqualObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-				default:
-					throw new NullPointerException("Attribute preference type is null.");
-				}
-			case AT_MOST:
-				switch (evaluationAttribute.getPreferenceType()) {
-				case GAIN:
-					return new ConditionAtMostObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-				case COST:
-					return new ConditionAtLeastObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-				case NONE:
-					return new ConditionEqualObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-				default:
-					throw new NullPointerException("Attribute preference type is null.");
-				}
-			case EQUAL:
-				return new ConditionEqualObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
-			default:
-				throw new NullPointerException("Rule semantics is null.");
-			}
+			constructPossibleRuleCondition(ruleSemantics, evaluationAttribute, limitingEvaluation, globalAttributeIndex);
 		default:
 			throw new InvalidValueException("Cannot construct condition if rule type is neither certain nor possible.");
 		}
 	}
-
+	
+	Condition<EvaluationField> constructCertainRuleCondition(RuleSemantics ruleSemantics, EvaluationAttribute evaluationAttribute, EvaluationField limitingEvaluation, int globalAttributeIndex) {
+		switch (ruleSemantics) {
+		case AT_LEAST:
+			switch (evaluationAttribute.getPreferenceType()) {
+			case GAIN:
+				return new ConditionAtLeastThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case COST:
+				return new ConditionAtMostThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case NONE:
+				return new ConditionEqualThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			default:
+				throw new NullPointerException("Attribute preference type is null.");
+			}
+		case AT_MOST:
+			switch (evaluationAttribute.getPreferenceType()) {
+			case GAIN:
+				return new ConditionAtMostThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case COST:
+				return new ConditionAtLeastThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case NONE:
+				return new ConditionEqualThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			default:
+				throw new NullPointerException("Attribute preference type is null.");
+			}
+		case EQUAL:
+			return new ConditionEqualThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+		default:
+			throw new NullPointerException("Rule semantics is null.");
+		}
+	}
+	
+	Condition<EvaluationField> constructPossibleRuleCondition(RuleSemantics ruleSemantics, EvaluationAttribute evaluationAttribute, EvaluationField limitingEvaluation, int globalAttributeIndex) {
+		switch (ruleSemantics) {
+		case AT_LEAST:
+			switch (evaluationAttribute.getPreferenceType()) {
+			case GAIN:
+				return new ConditionAtLeastObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case COST:
+				return new ConditionAtMostObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case NONE:
+				return new ConditionEqualObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			default:
+				throw new NullPointerException("Attribute preference type is null.");
+			}
+		case AT_MOST:
+			switch (evaluationAttribute.getPreferenceType()) {
+			case GAIN:
+				return new ConditionAtMostObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case COST:
+				return new ConditionAtLeastObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case NONE:
+				return new ConditionEqualObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			default:
+				throw new NullPointerException("Attribute preference type is null.");
+			}
+		case EQUAL:
+			return new ConditionEqualObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+		default:
+			throw new NullPointerException("Rule semantics is null.");
+		}
+	}
+	
 }
