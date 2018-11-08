@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.rulelearn.rules.Condition;
+import org.rulelearn.rules.MonotonicConditionAdditionEvaluator;
 import org.rulelearn.rules.RuleConditions;
 import org.rulelearn.types.EvaluationField;
 
@@ -67,10 +68,20 @@ class CoverageInApproximationMeasureTest {
 	 * Test for method {@link CoverageInApproximationMeasure#evaluateWithCondition(RuleConditions, Condition)}.
 	 */
 	@Test
-	void testEvalueateWithCondition() {
+	void testEvalueateWithCondition01() {
 		CoverageInApproximationMeasure coverageInApproximationMeasure = new CoverageInApproximationMeasure();
 		
 		assertEquals(5, coverageInApproximationMeasure.evaluateWithCondition(this.ruleConditionsMock, this.conditionMock));
+	}
+	
+	/**
+	 * Test for method {@link CoverageInApproximationMeasure#evaluateWithCondition(RuleConditions, Condition)}.
+	 */
+	@Test
+	void testEvalueateWithCondition02() {
+		CoverageInApproximationMeasure coverageInApproximationMeasure = new CoverageInApproximationMeasure();
+		
+		assertEquals(Double.MIN_VALUE, coverageInApproximationMeasure.evaluateWithCondition(this.ruleConditionsMock, null));
 	}
 
 	/**
@@ -81,5 +92,16 @@ class CoverageInApproximationMeasureTest {
 		CoverageInApproximationMeasure coverageInApproximationMeasure = new CoverageInApproximationMeasure();
 		
 		assertEquals(1, coverageInApproximationMeasure.evaluateWithoutCondition(this.ruleConditionsMock, 0));
+	}
+	
+	/**
+	 * Test for method {@link CoverageInApproximationMeasure#getMonotonictyType()}.
+	 */
+	@Test
+	void testGetMonotonicityType() {
+		CoverageInApproximationMeasure coverageInApproximationMeasure = new CoverageInApproximationMeasure(); 
+		
+		assertEquals(MonotonicConditionAdditionEvaluator.MonotonicityType.IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS, 
+				coverageInApproximationMeasure.getMonotonictyType());
 	}
 }

@@ -20,8 +20,8 @@ import static org.rulelearn.core.OperationsOnCollections.getNumberOfElementsFrom
 import static org.rulelearn.core.Precondition.notNull;
 
 import org.rulelearn.rules.Condition;
-import org.rulelearn.rules.ConditionAdditionEvaluator;
 import org.rulelearn.rules.ConditionRemovalEvaluator;
+import org.rulelearn.rules.MonotonicConditionAdditionEvaluator;
 import org.rulelearn.rules.RuleConditions;
 import org.rulelearn.rules.RuleConditionsEvaluator;
 import org.rulelearn.types.EvaluationField;
@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class CoverageInApproximationMeasure implements GainTypeMeasure, RuleConditionsEvaluator, ConditionAdditionEvaluator, ConditionRemovalEvaluator {
+public class CoverageInApproximationMeasure implements GainTypeMeasure, RuleConditionsEvaluator, MonotonicConditionAdditionEvaluator, ConditionRemovalEvaluator {
 	
 	/** 
 	 * {@inheritDoc}
@@ -66,10 +66,16 @@ public class CoverageInApproximationMeasure implements GainTypeMeasure, RuleCond
 	@Override
 	public double evaluateWithCondition(RuleConditions ruleConditions, Condition<EvaluationField> condition) {
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
-		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithCondition(condition);
-		IntSet approximationObjects = ruleConditions.getIndicesOfApproximationObjects();
 		
-		return getNumberOfElementsFromListInSet(coveredObjects, approximationObjects);
+		if (condition != null) {
+			IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithCondition(condition);
+			IntSet approximationObjects = ruleConditions.getIndicesOfApproximationObjects();
+			
+			return getNumberOfElementsFromListInSet(coveredObjects, approximationObjects);
+		}
+		else {
+			return Double.MIN_VALUE; 
+		}
 	}
 
 	/** 
@@ -90,6 +96,16 @@ public class CoverageInApproximationMeasure implements GainTypeMeasure, RuleCond
 		IntSet approximationObjects = ruleConditions.getIndicesOfApproximationObjects();
 		
 		return getNumberOfElementsFromListInSet(coveredObjects, approximationObjects);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public MonotonicityType getMonotonictyType() {
+		return MonotonicityType.IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS;
 	}
 	
 }

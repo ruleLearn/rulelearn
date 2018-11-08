@@ -16,14 +16,13 @@
 
 package org.rulelearn.measures.dominance;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 import java.util.Iterator;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -36,6 +35,7 @@ import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
 import org.rulelearn.measures.Measure;
 import org.rulelearn.rules.Condition;
+import org.rulelearn.rules.MonotonicConditionAdditionEvaluator;
 import org.rulelearn.rules.RuleConditions;
 import org.rulelearn.rules.RuleCoverageInformation;
 import org.rulelearn.types.EvaluationField;
@@ -203,8 +203,16 @@ class EpsilonConsistencyMeasureTest {
 	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#evaluateWithCondition(RuleConditions, Condition)}.
 	 */
 	@Test
-	void testEvalueateWithCondition() {
+	void testEvalueateWithCondition01() {
 		assertEquals(0, this.measure.evaluateWithCondition(this.ruleConditionsMock, this.conditionMock));
+	}
+	
+	/**
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#evaluateWithCondition(RuleConditions, Condition)}.
+	 */
+	@Test
+	void testEvalueateWithCondition02() {
+		assertEquals(Double.MAX_VALUE, this.measure.evaluateWithCondition(this.ruleConditionsMock, null));
 	}
 
 	/**
@@ -213,5 +221,14 @@ class EpsilonConsistencyMeasureTest {
 	@Test
 	void testEvalueateWithoutCondition() {
 		assertEquals(0.2, this.measure.evaluateWithoutCondition(this.ruleConditionsMock, 0));
+	}
+	
+	/**
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#getMonotonictyType()}.
+	 */
+	@Test
+	void testGetMonotonicityType() {
+		assertEquals(MonotonicConditionAdditionEvaluator.MonotonicityType.DETERIORATES_WITH_NUMBER_OF_COVERED_OBJECTS, 
+				this.measure.getMonotonictyType());
 	}
 }
