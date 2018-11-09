@@ -49,16 +49,50 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWithEvaluators {
 	
-	final private class LimitingEvaluationOfRestrictingCondition {
-		KnownSimpleField mostRestrictive;
-		KnownSimpleField sufficientlyRestrictive;
-		KnownSimpleField insufficientlyRestrictive;
+	final private class RestrictingConditionLimitingEvaluationInterval {
+		//KnownSimpleField mostRestrictiveEvaluation;
+		KnownSimpleField sufficientlyRestrictiveEvaluation;
+		KnownSimpleField insufficientlyRestrictiveEvaluation;
+		
+		/**
+		 * Checks if given evaluation is inside interval<br>
+		 * {@code (insufficientlyRestrictiveEvaluation, sufficientlyRestrictiveEvaluation)}, for condition of type >=, or<br>
+		 * inside interval {@code (sufficientlyRestrictiveEvaluation, insufficientlyRestrictiveEvaluation)}, for condition of type <=.
+		 * Assumes sufficientlyRestrictiveEvaluation is not {@code null}.
+		 * 
+		 * @param evaluation evaluation to be checked for its inclusion inside this interval
+		 * @param compareToMultiplier multiplier taking into account both rule's semantics and attribute's preference type;
+		 *        enables to compare given evaluation to limits of this interval just as if >= condition would be searched for 
+		 * @return {@code true} if given evaluation is inside this interval,
+		 *         {@code false} otherwise
+		 */
+		boolean includes(KnownSimpleField evaluation, int compareToMultiplier) {
+			return (insufficientlyRestrictiveEvaluation == null || evaluation.compareTo(insufficientlyRestrictiveEvaluation) * compareToMultiplier > 0) &&
+					(evaluation.compareTo(sufficientlyRestrictiveEvaluation) * compareToMultiplier < 0);
+		}
 	}
 	
-	final private class LimitingEvaluationOfGeneralizingCondition {
-		KnownSimpleField mostGeneral;
-		KnownSimpleField sufficientlyGeneral;
-		KnownSimpleField insufficientlyGeneral;
+	final private class GeneralizingConditionLimitingEvaluationInterval {
+		//KnownSimpleField mostGeneral;
+		KnownSimpleField sufficientlyGeneralEvaluation;
+		KnownSimpleField insufficientlyGeneralEvaluation;
+		
+		/**
+		 * Checks if given evaluation is inside interval<br>
+		 * {@code (sufficientlyGeneralEvaluation, insufficientlyGeneralEvaluation)}, for condition of type >=, or<br>
+		 * inside interval {@code (insufficientlyGeneralEvaluation, sufficientlyGeneralEvaluation)}, for condition of type <=.
+		 * Assumes sufficientlyGeneralEvaluation is not {@code null}.
+		 * 
+		 * @param evaluation evaluation to be checked for its inclusion inside this interval
+		 * @param compareToMultiplier multiplier taking into account both rule's semantics and attribute's preference type;
+		 *        enables to compare given evaluation to limits of this interval just as if >= condition would be searched for 
+		 * @return {@code true} if given evaluation is inside this interval,
+		 *         {@code false} otherwise
+		 */
+		boolean includes(KnownSimpleField evaluation, int compareToMultiplier) {
+			return (evaluation.compareTo(sufficientlyGeneralEvaluation) * compareToMultiplier > 0) &&
+					(insufficientlyGeneralEvaluation == null || evaluation.compareTo(insufficientlyGeneralEvaluation) * compareToMultiplier < 0);
+		}
 	}
 	
 	final private class BestCondition {
@@ -107,7 +141,6 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 				break;
 			}
 		}
-		
 	}
 	
 	/**
@@ -139,7 +172,8 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		Precondition.notNull(consideredObjects, "List of objects considered in m4-optimized condition generator is null.");
 		Precondition.notNull(ruleConditions, "Rule conditions considered in m4-optimized condition generator are null.");
 		
-		MonotonicConditionAdditionEvaluator[] conditionAdditionEvaluators = (MonotonicConditionAdditionEvaluator[])this.conditionAdditionEvaluators; //cast on array of monotonic evaluators
+		//cast on array of monotonic evaluators (this should work, as parameter passed in constructor is of type MonotonicConditionAdditionEvaluator[])
+		MonotonicConditionAdditionEvaluator[] conditionAdditionEvaluators = (MonotonicConditionAdditionEvaluator[])this.conditionAdditionEvaluators;
 		
 		BestCondition bestCondition = new BestCondition(conditionAdditionEvaluators.length);
 		Condition<EvaluationField> candidateCondition = null;
@@ -151,8 +185,17 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		EvaluationField objectEvaluation;
 		KnownSimpleField extremeLimitingEvaluation; //least/most (depending on the type of the first condition addition evaluator) restrictive limiting evaluation found so far
 		KnownSimpleField candidateLimitingEvaluation; //current limiting evaluation to be compared with the most restrictive one
-		LimitingEvaluationOfRestrictingCondition limitingEvaluationOfRestrictingCondition = null;
-		LimitingEvaluationOfGeneralizingCondition limitingEvaluationOfGeneralizingCondition = null;
+		RestrictingConditionLimitingEvaluationInterval restrictingConditionLimitingEvaluationInterval = null;
+		GeneralizingConditionLimitingEvaluationInterval generalizingConditionLimitingEvaluationInterval = null;
+		
+		switch (conditionAdditionEvaluators[0].getMonotonictyType()) {
+		case IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS:
+			generalizingConditionLimitingEvaluationInterval = new GeneralizingConditionLimitingEvaluationInterval();
+			break;
+		case DETERIORATES_WITH_NUMBER_OF_COVERED_OBJECTS:
+			restrictingConditionLimitingEvaluationInterval = new RestrictingConditionLimitingEvaluationInterval();
+			break;
+		}
 		
 		int consideredObjectsCount = consideredObjects.size();
 		int consideredObjectsSuccessfullIndex;
@@ -160,9 +203,6 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		int compareToMultiplier;
 		int candidateVSBestCondition;
 		
-		//TODO: handle PairField evaluations (decomposition!)
-		//TODO: skip evaluation if missing
-
 		//go through active condition attributes
 		for (int localActiveConditionAttributeIndex = 0; localActiveConditionAttributeIndex < activeConditionAttributes.length; localActiveConditionAttributeIndex++) {
 			globalAttributeIndex = learningInformationTable.translateLocalActiveConditionAttributeIndex2GlobalAttributeIndex(localActiveConditionAttributeIndex);
@@ -185,15 +225,6 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 					}
 					
 					if (consideredObjectsSuccessfullIndex >= 0) {
-						switch (conditionAdditionEvaluators[0].getMonotonictyType()) {
-						case IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS:
-							limitingEvaluationOfGeneralizingCondition = new LimitingEvaluationOfGeneralizingCondition();
-							break;
-						case DETERIORATES_WITH_NUMBER_OF_COVERED_OBJECTS:
-							limitingEvaluationOfRestrictingCondition = new LimitingEvaluationOfRestrictingCondition();
-							break;
-						}
-						
 						//first, calculate multiplier used to compare two evaluations; if candidateEval.compareTo(referenceEval) * compareToMultiplier > 0, 
 						//then candidateEval is more restrictive limiting evaluation than referenceEval, w.r.t. the constructed condition;
 						//multiplier takes into account both rule's semantics and attribute's preference type
@@ -225,14 +256,14 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 						//set limiting evaluations
 						switch (conditionAdditionEvaluators[0].getMonotonictyType()) {
 						case IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS:
-							limitingEvaluationOfGeneralizingCondition.mostGeneral = extremeLimitingEvaluation;
-							limitingEvaluationOfGeneralizingCondition.sufficientlyGeneral = extremeLimitingEvaluation;
-							limitingEvaluationOfGeneralizingCondition.insufficientlyGeneral = null;
+							//limitingEvaluationOfGeneralizingCondition.mostGeneral = extremeLimitingEvaluation;
+							generalizingConditionLimitingEvaluationInterval.sufficientlyGeneralEvaluation = extremeLimitingEvaluation;
+							generalizingConditionLimitingEvaluationInterval.insufficientlyGeneralEvaluation = null;
 							break;
 						case DETERIORATES_WITH_NUMBER_OF_COVERED_OBJECTS:
-							limitingEvaluationOfRestrictingCondition.mostRestrictive = extremeLimitingEvaluation;
-							limitingEvaluationOfRestrictingCondition.sufficientlyRestrictive = extremeLimitingEvaluation;
-							limitingEvaluationOfRestrictingCondition.insufficientlyRestrictive = null;
+							//limitingEvaluationOfRestrictingCondition.mostRestrictiveEvaluation = extremeLimitingEvaluation;
+							restrictingConditionLimitingEvaluationInterval.sufficientlyRestrictiveEvaluation = extremeLimitingEvaluation;
+							restrictingConditionLimitingEvaluationInterval.insufficientlyRestrictiveEvaluation = null;
 							break;
 						}
 						
@@ -244,39 +275,52 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 						
 						if (candidateVSBestCondition >= 0 && containsEvaluatorsOfDifferentMonotonicityType) { //best condition can possibly be improved
 							//TODO: iterate through considered objects to check if best condition can be improved by taking more/less extreme evaluation
-							for (int i = 0; i < consideredObjectsCount; i++) {
-								objectEvaluation = data.getField(consideredObjects.getInt(i), localActiveConditionAttributeIndex);
+							for (int consideredObjectIndex : consideredObjects) {
+								objectEvaluation = data.getField(consideredObjectIndex, localActiveConditionAttributeIndex);
 								if (objectEvaluation instanceof KnownSimpleField) { //non-missing evaluation found
-									//check limiting evaluations
+									candidateLimitingEvaluation = (KnownSimpleField)objectEvaluation;
+									//check if current evaluation is strictly inside current range of interest
 									switch (conditionAdditionEvaluators[0].getMonotonictyType()) {
 									case IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS:
-										//TODO
-										//if (objectEvaluation)
-										//limitingEvaluationOfGeneralizingCondition.mostGeneral = extremeLimitingEvaluation;
-										//limitingEvaluationOfGeneralizingCondition.sufficientlyGeneral = extremeLimitingEvaluation;
-										//limitingEvaluationOfGeneralizingCondition.insufficientlyGeneral = null;
+										if (generalizingConditionLimitingEvaluationInterval.includes(candidateLimitingEvaluation, compareToMultiplier)) {
+											candidateCondition = constructCondition(ruleConditions.getRuleType(), ruleConditions.getRuleSemantics(),
+													activeConditionAttributes[localActiveConditionAttributeIndex], candidateLimitingEvaluation, globalAttributeIndex);
+											candidateVSBestCondition = setBestCondition(ruleConditions, candidateCondition, bestCondition); //if result is > 0, then condition already updated
+											if (candidateVSBestCondition >= 0) {
+												generalizingConditionLimitingEvaluationInterval.sufficientlyGeneralEvaluation = candidateLimitingEvaluation; //TODO: check
+											} else {
+												generalizingConditionLimitingEvaluationInterval.insufficientlyGeneralEvaluation = candidateLimitingEvaluation; //TODO: check
+											}
+										}
 										break;
 									case DETERIORATES_WITH_NUMBER_OF_COVERED_OBJECTS:
-										//TODO
-										//if (objectEvaluation)
-										//limitingEvaluationOfRestrictingCondition.mostRestrictive = extremeLimitingEvaluation;
-										//limitingEvaluationOfRestrictingCondition.sufficientlyRestrictive = extremeLimitingEvaluation;
-										//limitingEvaluationOfRestrictingCondition.insufficientlyRestrictive = null;
+										if (restrictingConditionLimitingEvaluationInterval.includes(candidateLimitingEvaluation, compareToMultiplier)) {
+											candidateCondition = constructCondition(ruleConditions.getRuleType(), ruleConditions.getRuleSemantics(),
+													activeConditionAttributes[localActiveConditionAttributeIndex], candidateLimitingEvaluation, globalAttributeIndex);
+											candidateVSBestCondition = setBestCondition(ruleConditions, candidateCondition, bestCondition); //if result is > 0, then condition already updated
+										}
+										if (candidateVSBestCondition >= 0) {
+											restrictingConditionLimitingEvaluationInterval.sufficientlyRestrictiveEvaluation = candidateLimitingEvaluation; //TODO: check
+										} else {
+											restrictingConditionLimitingEvaluationInterval.insufficientlyRestrictiveEvaluation = candidateLimitingEvaluation; //TODO: check
+										}
 										break;
 									}
-								}
-							}
+								} //if
+							} //for
 						} else {
-							continue; //go to next active condition attribute as for the current attribute best condition cannot be improved
+							//continue; //go to next active condition attribute as for the current attribute best condition cannot be improved
 						}
 					} else {
-						continue; //go to next active condition attribute as for the current attribute all considered objects miss an evaluation (have missing value)
+						//continue; //go to next active condition attribute as for the current attribute all considered objects miss an evaluation (have missing value)
 					}
 				} else { //proceed without optimization
 					//TODO: iterate through considered objects, without any optimization (check all conditions)
+					//TODO: skip evaluation if missing
+					//TODO: handle PairField evaluations (decomposition!)
 				}
-			}
-		}
+			} //if
+		} //for
 		
 		return bestCondition.condition;
 	}
