@@ -25,6 +25,7 @@ import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.Table;
 import org.rulelearn.measures.Measure.MeasureType;
+import org.rulelearn.rules.MonotonicConditionAdditionEvaluator.MonotonicityType;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.KnownSimpleField;
 import org.rulelearn.types.SimpleField;
@@ -48,14 +49,28 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWithEvaluators {
+
+	enum ConditionComparisonResult {
+		CANDIDATE_CONDITION_IS_BETTER,
+		CANDIDATE_CONDITION_IS_EQUAL,
+		CANDIDATE_CONDITION_IS_WORSE
+	}
 	
-	final private class RestrictingConditionLimitingEvaluationInterval {
-		//KnownSimpleField mostRestrictiveEvaluation;
+	abstract class ConditionLimitingEvaluationInterval {
+		KnownSimpleField sufficientEvaluation;
+		KnownSimpleField insufficientEvaluation;
+		
+		abstract boolean includes(KnownSimpleField evaluation, int compareToMultiplier);
+	}
+	
+	final class RestrictingConditionLimitingEvaluationInterval extends ConditionLimitingEvaluationInterval {
+		//sufficientEvaluation denotes sufficientlyRestrictiveEvaluation
+		//insufficientEvaluation denotes insufficientlyRestrictiveEvaluation
 		KnownSimpleField sufficientlyRestrictiveEvaluation;
-		KnownSimpleField insufficientlyRestrictiveEvaluation;
+		KnownSimpleField insufficientlyRestrictiveEvaluation; //TODO
 		
 		/**
-		 * Checks if given evaluation is inside interval<br>
+		 * Checks if given evaluation is inside open interval<br>
 		 * {@code (insufficientlyRestrictiveEvaluation, sufficientlyRestrictiveEvaluation)}, for condition of type >=, or<br>
 		 * inside interval {@code (sufficientlyRestrictiveEvaluation, insufficientlyRestrictiveEvaluation)}, for condition of type <=.
 		 * Assumes sufficientlyRestrictiveEvaluation is not {@code null}.
@@ -72,13 +87,14 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		}
 	}
 	
-	final private class GeneralizingConditionLimitingEvaluationInterval {
-		//KnownSimpleField mostGeneral;
+	final class GeneralizingConditionLimitingEvaluationInterval extends ConditionLimitingEvaluationInterval {
+		//sufficientEvaluation denotes sufficientlyGeneralEvaluation
+		//insufficientEvaluation denotes insufficientlyGeneralEvaluation
 		KnownSimpleField sufficientlyGeneralEvaluation;
-		KnownSimpleField insufficientlyGeneralEvaluation;
+		KnownSimpleField insufficientlyGeneralEvaluation; //TODO
 		
 		/**
-		 * Checks if given evaluation is inside interval<br>
+		 * Checks if given evaluation is inside open interval<br>
 		 * {@code (sufficientlyGeneralEvaluation, insufficientlyGeneralEvaluation)}, for condition of type >=, or<br>
 		 * inside interval {@code (insufficientlyGeneralEvaluation, sufficientlyGeneralEvaluation)}, for condition of type <=.
 		 * Assumes sufficientlyGeneralEvaluation is not {@code null}.
@@ -95,21 +111,44 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		}
 	}
 	
-	final private class BestCondition {
+	final class ConditionWithEvaluations {
 		Condition<EvaluationField> condition;
 		double[] evaluations;
 		int validEvaluationsCount;
+		RuleConditions ruleConditions;
 		
-		BestCondition(int evaluationsCount) {
+		ConditionWithEvaluations(RuleConditions ruleConditions) {
 			condition = null;
-			evaluations = new double[evaluationsCount];
+			evaluations = new double[conditionAdditionEvaluators.length];
 			validEvaluationsCount = 0;
+			this.ruleConditions = ruleConditions;
 		}
 		
-		void updateWithBetterCondition(Condition<EvaluationField> betterCondition, int betterEvaluationIndex, double betterEvaluation) {
-			condition = betterCondition;
-			evaluations[betterEvaluationIndex] = betterEvaluation;
-			validEvaluationsCount = betterEvaluationIndex + 1;
+		void setCondition(Condition<EvaluationField> condition) {
+			this.condition = condition;
+			this.validEvaluationsCount = 0;
+		}
+		
+		void copy(ConditionWithEvaluations conditionWithEvaluations) {
+			this.condition = conditionWithEvaluations.condition;
+			for (int i = 0; i < conditionWithEvaluations.validEvaluationsCount; i++) {
+				this.evaluations[i] = conditionWithEvaluations.evaluations[i];
+			}
+			this.validEvaluationsCount = conditionWithEvaluations.validEvaluationsCount;
+			//this.ruleConditions = conditionWithEvaluations.ruleConditions; //not necessary as both objects are defined for the same rule conditions
+		}
+		
+		double getEvaluation(int evaluationIndex) {
+			if (evaluationIndex < validEvaluationsCount) {
+				return evaluations[evaluationIndex];
+			}
+			if (evaluationIndex == validEvaluationsCount) {
+				evaluations[evaluationIndex] = conditionAdditionEvaluators[evaluationIndex].evaluateWithCondition(ruleConditions, condition);
+				validEvaluationsCount++;
+				return evaluations[evaluationIndex];
+			} else { //not subsequent evaluation is retrieved
+				throw new InvalidValueException("Not subsequent evaluation of condition by condition addittion evaluator is being retrieved.");
+			}
 		}
 	}
 	
@@ -127,6 +166,7 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 	 * @throws NullPointerException if type of any condition addition evaluator is {@code null}
 	 * @throws NullPointerException if monotonicity type of any condition addition evaluator is {@code null}
 	 * @throws InvalidSizeException if given array is empty
+	 * @throws InvalidValueException if more than one switch of monotonicity type occurred when iterating from the first to the last of given monotonic condition addition evaluators
 	 */
 	public M4OptimizedConditionGenerator(MonotonicConditionAdditionEvaluator[] conditionAdditionEvaluators) {
 		super(conditionAdditionEvaluators);
@@ -134,12 +174,18 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 			Precondition.notNull(conditionEvaluator.getMonotonictyType(), "Monotonicty type of a monotonic condition addition evaluator is null.");
 		}
 		
-		containsEvaluatorsOfDifferentMonotonicityType = false;
+		int monotonicityTypeSwitchCount = 0; //tells how many times monotonicity type is switched when iterating from the first to the last evaluator
+		this.containsEvaluatorsOfDifferentMonotonicityType = false;
 		for (int i = 1; i < conditionAdditionEvaluators.length; i++) {
 			if (conditionAdditionEvaluators[i].getMonotonictyType() != conditionAdditionEvaluators[i-1].getMonotonictyType()) {
-				containsEvaluatorsOfDifferentMonotonicityType = true;
-				break;
+				this.containsEvaluatorsOfDifferentMonotonicityType = true;
+				monotonicityTypeSwitchCount++;
+				//break;
 			}
+		}
+		
+		if (monotonicityTypeSwitchCount > 1) {
+			throw new InvalidValueException("More than one switch of monotonicity type occurred when iterating from the first to the last monotonic condition addition evaluator.");
 		}
 	}
 	
@@ -174,8 +220,10 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		
 		//cast on array of monotonic evaluators (this should work, as parameter passed in constructor is of type MonotonicConditionAdditionEvaluator[])
 		MonotonicConditionAdditionEvaluator[] conditionAdditionEvaluators = (MonotonicConditionAdditionEvaluator[])this.conditionAdditionEvaluators;
+		MonotonicityType firstEvaluatorMonotonicityType = conditionAdditionEvaluators[0].getMonotonictyType();
 		
-		BestCondition bestCondition = new BestCondition(conditionAdditionEvaluators.length);
+		ConditionWithEvaluations bestConditionWithEvaluations = new ConditionWithEvaluations(ruleConditions);
+		ConditionWithEvaluations candidateConditionWithEvaluations = new ConditionWithEvaluations(ruleConditions);
 		Condition<EvaluationField> candidateCondition = null;
 		
 		InformationTable learningInformationTable = ruleConditions.getLearningInformationTable();
@@ -188,7 +236,7 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		RestrictingConditionLimitingEvaluationInterval restrictingConditionLimitingEvaluationInterval = null;
 		GeneralizingConditionLimitingEvaluationInterval generalizingConditionLimitingEvaluationInterval = null;
 		
-		switch (conditionAdditionEvaluators[0].getMonotonictyType()) {
+		switch (firstEvaluatorMonotonicityType) {
 		case IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS:
 			generalizingConditionLimitingEvaluationInterval = new GeneralizingConditionLimitingEvaluationInterval();
 			break;
@@ -201,7 +249,8 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		int consideredObjectsSuccessfullIndex;
 		int globalAttributeIndex;
 		int compareToMultiplier;
-		int candidateVSBestCondition;
+		ConditionComparisonResult candidateVSBestConditionComparisonResult;
+		boolean checkLessExtremeEvaluations;
 		
 		//go through active condition attributes
 		for (int localActiveConditionAttributeIndex = 0; localActiveConditionAttributeIndex < activeConditionAttributes.length; localActiveConditionAttributeIndex++) {
@@ -213,7 +262,7 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 						activeConditionAttributes[localActiveConditionAttributeIndex].getValueType() instanceof SimpleField) { //or KnownSimpleField
 					
 					extremeLimitingEvaluation = null;
-					consideredObjectsSuccessfullIndex = -1; //index of consideredObjects corresponding to first non-missing evaluation
+					consideredObjectsSuccessfullIndex = -1; //index of consideredObjects corresponding to the first non-missing evaluation
 					
 					for (int i = 0; i < consideredObjectsCount; i++) {
 						objectEvaluation = data.getField(consideredObjects.getInt(i), localActiveConditionAttributeIndex);
@@ -238,7 +287,7 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 							if (objectEvaluation instanceof KnownSimpleField) { //non-missing evaluation found
 								candidateLimitingEvaluation = (KnownSimpleField)objectEvaluation;
 								
-								switch (conditionAdditionEvaluators[0].getMonotonictyType()) {
+								switch (firstEvaluatorMonotonicityType) {
 								case IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS:
 									if (candidateLimitingEvaluation.compareTo(extremeLimitingEvaluation) * compareToMultiplier < 0) { //less restrictive limiting evaluation found
 										extremeLimitingEvaluation = candidateLimitingEvaluation;
@@ -254,7 +303,7 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 						}
 						
 						//set limiting evaluations
-						switch (conditionAdditionEvaluators[0].getMonotonictyType()) {
+						switch (firstEvaluatorMonotonicityType) {
 						case IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS:
 							//limitingEvaluationOfGeneralizingCondition.mostGeneral = extremeLimitingEvaluation;
 							generalizingConditionLimitingEvaluationInterval.sufficientlyGeneralEvaluation = extremeLimitingEvaluation;
@@ -269,27 +318,56 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 						
 						//at this point, least/most restrictive limiting evaluation among considered objects, for current criterion, has been calculated, so one can construct candidate condition
 						candidateCondition = constructCondition(ruleConditions.getRuleType(), ruleConditions.getRuleSemantics(),
-								activeConditionAttributes[localActiveConditionAttributeIndex], extremeLimitingEvaluation, globalAttributeIndex);
+								activeConditionAttributes[localActiveConditionAttributeIndex], extremeLimitingEvaluation, globalAttributeIndex); //construct extreme condition
+						candidateConditionWithEvaluations.setCondition(candidateCondition); //reset candidate condition with evaluations
 						
-						candidateVSBestCondition = setBestCondition(ruleConditions, candidateCondition, bestCondition); //if result is > 0, then best condition was already updated inside the method
+						//compare candidate and best condition w.r.t. the first evaluator only
+						candidateVSBestConditionComparisonResult = compareCandidateAndBestCondition(candidateConditionWithEvaluations, bestConditionWithEvaluations, 1);
+						//candidateVSBestCondition = setBestCondition(ruleConditions, candidateCondition, bestConditionWithEvaluations, 1); //if result is > 0, then best condition was already updated inside the method
+
+						checkLessExtremeEvaluations = true;
+						switch (candidateVSBestConditionComparisonResult) {
+						case CANDIDATE_CONDITION_IS_BETTER: //candidate condition is better already w.r.t. the first evaluator
+							bestConditionWithEvaluations.copy(candidateConditionWithEvaluations); //update best condition
+							checkLessExtremeEvaluations = containsEvaluatorsOfDifferentMonotonicityType ? true : false;
+							break;
+						case CANDIDATE_CONDITION_IS_EQUAL:
+							candidateVSBestConditionComparisonResult = compareCandidateAndBestCondition(candidateConditionWithEvaluations, bestConditionWithEvaluations,
+									conditionAdditionEvaluators.length); //compare conditions w.r.t. all evaluators (using already stored evaluations for the first evaluator)
+							if (candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_BETTER) {
+								bestConditionWithEvaluations.copy(candidateConditionWithEvaluations); //update best condition
+							}
+							checkLessExtremeEvaluations = containsEvaluatorsOfDifferentMonotonicityType ? true : false;
+							break;
+						case CANDIDATE_CONDITION_IS_WORSE: //candidate condition is worse already w.r.t. the first evaluator
+							checkLessExtremeEvaluations = false; //go to next active condition attribute as for the current attribute best condition cannot be improved
+							break;
+						}
 						
-						if (candidateVSBestCondition >= 0 && containsEvaluatorsOfDifferentMonotonicityType) { //best condition can possibly be improved
-							//TODO: iterate through considered objects to check if best condition can be improved by taking more/less extreme evaluation
+						if (checkLessExtremeEvaluations) {
 							for (int consideredObjectIndex : consideredObjects) {
 								objectEvaluation = data.getField(consideredObjectIndex, localActiveConditionAttributeIndex);
 								if (objectEvaluation instanceof KnownSimpleField) { //non-missing evaluation found
 									candidateLimitingEvaluation = (KnownSimpleField)objectEvaluation;
 									//check if current evaluation is strictly inside current range of interest
-									switch (conditionAdditionEvaluators[0].getMonotonictyType()) {
+									switch (firstEvaluatorMonotonicityType) {
 									case IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS:
 										if (generalizingConditionLimitingEvaluationInterval.includes(candidateLimitingEvaluation, compareToMultiplier)) {
 											candidateCondition = constructCondition(ruleConditions.getRuleType(), ruleConditions.getRuleSemantics(),
 													activeConditionAttributes[localActiveConditionAttributeIndex], candidateLimitingEvaluation, globalAttributeIndex);
-											candidateVSBestCondition = setBestCondition(ruleConditions, candidateCondition, bestCondition); //if result is > 0, then condition already updated
-											if (candidateVSBestCondition >= 0) {
-												generalizingConditionLimitingEvaluationInterval.sufficientlyGeneralEvaluation = candidateLimitingEvaluation; //TODO: check
+											candidateConditionWithEvaluations.setCondition(candidateCondition); //reset candidate condition with evaluations
+											candidateVSBestConditionComparisonResult = compareCandidateAndBestCondition(candidateConditionWithEvaluations, bestConditionWithEvaluations,
+													conditionAdditionEvaluators.length); //compare conditions w.r.t. all evaluators (using already stored evaluations for the first evaluator)
+											
+											if (candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_BETTER) {
+												bestConditionWithEvaluations.copy(candidateConditionWithEvaluations); //update best condition
+											}
+											
+											if (candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_BETTER ||
+													candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_EQUAL) {
+												generalizingConditionLimitingEvaluationInterval.sufficientlyGeneralEvaluation = candidateLimitingEvaluation;
 											} else {
-												generalizingConditionLimitingEvaluationInterval.insufficientlyGeneralEvaluation = candidateLimitingEvaluation; //TODO: check
+												generalizingConditionLimitingEvaluationInterval.insufficientlyGeneralEvaluation = candidateLimitingEvaluation;
 											}
 										}
 										break;
@@ -297,12 +375,20 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 										if (restrictingConditionLimitingEvaluationInterval.includes(candidateLimitingEvaluation, compareToMultiplier)) {
 											candidateCondition = constructCondition(ruleConditions.getRuleType(), ruleConditions.getRuleSemantics(),
 													activeConditionAttributes[localActiveConditionAttributeIndex], candidateLimitingEvaluation, globalAttributeIndex);
-											candidateVSBestCondition = setBestCondition(ruleConditions, candidateCondition, bestCondition); //if result is > 0, then condition already updated
-										}
-										if (candidateVSBestCondition >= 0) {
-											restrictingConditionLimitingEvaluationInterval.sufficientlyRestrictiveEvaluation = candidateLimitingEvaluation; //TODO: check
-										} else {
-											restrictingConditionLimitingEvaluationInterval.insufficientlyRestrictiveEvaluation = candidateLimitingEvaluation; //TODO: check
+											candidateConditionWithEvaluations.setCondition(candidateCondition); //reset candidate condition with evaluations
+											candidateVSBestConditionComparisonResult = compareCandidateAndBestCondition(candidateConditionWithEvaluations, bestConditionWithEvaluations,
+													conditionAdditionEvaluators.length); //compare conditions w.r.t. all evaluators (using already stored evaluations for the first evaluator)
+											
+											if (candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_BETTER) {
+												bestConditionWithEvaluations.copy(candidateConditionWithEvaluations); //update best condition
+											}
+											
+											if (candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_BETTER ||
+													candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_EQUAL) {
+												restrictingConditionLimitingEvaluationInterval.sufficientlyRestrictiveEvaluation = candidateLimitingEvaluation;
+											} else {
+												restrictingConditionLimitingEvaluationInterval.insufficientlyRestrictiveEvaluation = candidateLimitingEvaluation;
+											}
 										}
 										break;
 									}
@@ -315,56 +401,57 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 						//continue; //go to next active condition attribute as for the current attribute all considered objects miss an evaluation (have missing value)
 					}
 				} else { //proceed without optimization
-					//TODO: iterate through considered objects, without any optimization (check all conditions)
+					for (int consideredObjectIndex : consideredObjects) {
+						objectEvaluation = data.getField(consideredObjectIndex, localActiveConditionAttributeIndex);
+						//TODO: iterate through considered objects, without any optimization (check all conditions)
+					}
 					//TODO: skip evaluation if missing
 					//TODO: handle PairField evaluations (decomposition!)
 				}
 			} //if
 		} //for
 		
-		return bestCondition.condition;
+		return bestConditionWithEvaluations.condition;
 	}
 	
 	/**
 	 * Compares candidate versus best condition found so far to establish which one of the two is better.
-	 * Updates {@code bestCondition} with {@code candidateCondition}, if the latter is better. 
+	 * Lexicographically employs considered condition addition evaluators.
 	 * 
-	 * @param ruleConditions rule conditions to which next condition should be ultimately added
-	 * @param candidateCondition candidate condition, to be compared with currently best condition
-	 * @param bestCondition currently best condition
+	 * @param candidateConditionWithEvaluations candidate condition (with its already calculated evaluations), to be compared with currently best condition
+	 * @param bestConditionWithEvaluations currently best condition (with its already calculated evaluations)
+	 * @param usedEvaluatorsCount number of consecutive condition addition evaluators used in the comparison; has to be {@code >= 0} and {@code <= conditionAdditionEvaluators.length}
 	 * 
-	 * @return value greater than zero if given candidate condition is more preferred than given best condition,
-	 *         value less than zero if given candidate condition is worse than given best condition,
-	 *         zero otherwise
+	 * @return {@link ConditionComparisonResult#CANDIDATE_CONDITION_IS_BETTER} if given candidate condition is better than given best condition,
+	 *         {@link ConditionComparisonResult#CANDIDATE_CONDITION_IS_WORSE} if given candidate condition is worse than given best condition,
+	 *         {@link ConditionComparisonResult#CANDIDATE_CONDITION_IS_EQUAL} otherwise
 	 */
-	int setBestCondition(RuleConditions ruleConditions, Condition<EvaluationField> candidateCondition, BestCondition bestCondition) {
+	ConditionComparisonResult compareCandidateAndBestCondition(ConditionWithEvaluations candidateConditionWithEvaluations, ConditionWithEvaluations bestConditionWithEvaluations, int usedEvaluatorsCount) {
 		double candidateConditionEvaluation;
+		double bestConditionEvaluation;
 		
-		for (int i = 0; i < conditionAdditionEvaluators.length; i++) {
-			candidateConditionEvaluation = conditionAdditionEvaluators[i].evaluateWithCondition(ruleConditions, candidateCondition);
-			if (i >= bestCondition.validEvaluationsCount) { //current evaluation of best condition is invalid
-				bestCondition.evaluations[i] = conditionAdditionEvaluators[i].evaluateWithCondition(ruleConditions, bestCondition.condition);
+		for (int i = 0; i < usedEvaluatorsCount; i++) {
+			candidateConditionEvaluation = candidateConditionWithEvaluations.getEvaluation(i);
+			bestConditionEvaluation = bestConditionWithEvaluations.getEvaluation(i);
+			
+			if (candidateConditionEvaluation > bestConditionEvaluation) {
+				if (conditionAdditionEvaluators[i].getType() == MeasureType.GAIN) { //candidate condition is better at i-th evaluation
+					return ConditionComparisonResult.CANDIDATE_CONDITION_IS_BETTER;
+				} else { //COST
+					return ConditionComparisonResult.CANDIDATE_CONDITION_IS_WORSE;
+				}
 			}
 			
-			if (candidateConditionEvaluation > bestCondition.evaluations[i]) {
-				if (conditionAdditionEvaluators[i].getType() == MeasureType.GAIN) { //candidate condition is better at i-th evaluation
-					bestCondition.updateWithBetterCondition(candidateCondition, i, candidateConditionEvaluation);
-					return 1; //best condition changed
-				} else { //COST
-					return -1; //best condition is better and thus did not change
-				}
-			}
-			if (candidateConditionEvaluation < bestCondition.evaluations[i]) {
+			if (candidateConditionEvaluation < bestConditionWithEvaluations.evaluations[i]) {
 				if (conditionAdditionEvaluators[i].getType() == MeasureType.GAIN) { //candidate condition is worse at i-th evaluation
-					return -1; //best condition is better and thus did not change
+					return ConditionComparisonResult.CANDIDATE_CONDITION_IS_WORSE;
 				} else { //COST
-					bestCondition.updateWithBetterCondition(candidateCondition, i, candidateConditionEvaluation);
-					return 1; //best condition changed
+					return ConditionComparisonResult.CANDIDATE_CONDITION_IS_BETTER;
 				}
 			}
-		}
+		} //for
 		
-		return 0; //neither condition is better
+		return ConditionComparisonResult.CANDIDATE_CONDITION_IS_EQUAL; //neither condition is better
 	}
 	
 	Condition<EvaluationField> constructCondition(RuleType ruleType, RuleSemantics ruleSemantics, EvaluationAttribute evaluationAttribute, 
