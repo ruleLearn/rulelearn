@@ -535,7 +535,7 @@ public class RuleConditions {
 	 * @return {@code true} if the attribute with given index is involved in at least one of elementary conditions,
 	 *         {@code false} otherwise
 	 */
-	public boolean hasConditionForAttribute(int attributeIndex) {
+	public boolean containsConditionForAttribute(int attributeIndex) {
 		return (this.attributeIndex2ConditionsCount.containsKey(attributeIndex) && (this.attributeIndex2ConditionsCount.get(attributeIndex) > 0));
 	}
 	
