@@ -38,6 +38,8 @@ import org.rulelearn.types.EvaluationField;
  */
 public class Rule {
 	
+	//TODO: handle connectives of elementary decisions in more general way
+	
 	/**
 	 * Type of connective between conditions from a considered list.
 	 *

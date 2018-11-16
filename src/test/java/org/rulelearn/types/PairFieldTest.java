@@ -16,13 +16,20 @@
 
 package org.rulelearn.types;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.atMost;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.Test;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.AttributePreferenceType;
-import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link PairField}.
@@ -632,6 +639,55 @@ class PairFieldTest {
 		IntegerField secondField1 = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN);
 		PairField<IntegerField> pairField = new PairField<IntegerField>(firstField1, secondField1);
 		assertEquals(pairField.toString(), "(1,2)");		
+	}
+	
+	/**
+	 * Tests {@link PairField#isUnknown()} method.
+	 */
+	@Test
+	public void testIsUnknown01() {
+		IntegerField firstField1 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		IntegerField secondField1 = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN);
+		PairField<IntegerField> pairField = new PairField<IntegerField>(firstField1, secondField1);
+		assertFalse(pairField.isUnknown());
+	}
+	
+	/**
+	 * Tests {@link PairField#isUnknown()} method.
+	 */
+	@Test
+	public void testIsUnknown02() {
+		IntegerField secondField1 = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN);
+		PairField<SimpleField> pairField = new PairField<>(new UnknownSimpleFieldMV2(), secondField1);
+		assertFalse(pairField.isUnknown());
+	}
+	
+	/**
+	 * Tests {@link PairField#isUnknown()} method.
+	 */
+	@Test
+	public void testIsUnknown03() {
+		IntegerField firstField1 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		PairField<SimpleField> pairField = new PairField<>(firstField1, new UnknownSimpleFieldMV2());
+		assertFalse(pairField.isUnknown());
+	}
+	
+	/**
+	 * Tests {@link PairField#isUnknown()} method.
+	 */
+	@Test
+	public void testIsUnknown04() {
+		PairField<SimpleField> pairField = new PairField<>(new UnknownSimpleFieldMV2(), new UnknownSimpleFieldMV2());
+		assertTrue(pairField.isUnknown());
+	}
+	
+	/**
+	 * Tests {@link PairField#isUnknown()} method.
+	 */
+	@Test
+	public void testIsUnknown05() {
+		PairField<SimpleField> pairField = new PairField<>(new UnknownSimpleFieldMV15(), new UnknownSimpleFieldMV15());
+		assertTrue(pairField.isUnknown());
 	}
 
 }

@@ -23,5 +23,12 @@ package org.rulelearn.types;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public abstract class CompositeField extends EvaluationField {
-
+	
+	/**
+	 * Verifies component simple fields to check if all of them are missing an evaluation.
+	 * 
+	 * @return {@code true} if all component simple fields have missing evaluation (are instances of {@link UnknownSimpleField})
+	 *         {@code false} if at least one of the component simple fields has a non-missing evaluation
+	 */
+	public abstract boolean isUnknown();
 }

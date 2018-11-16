@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 public abstract class AbstractConditionGeneratorWithEvaluators implements ConditionGenerator {
 
 	/**
-	 * Condition evaluators used lexicographically to evaluate each condition by assuming its addition to considered rule conditions.
+	 * Condition addition evaluators used lexicographically to evaluate each condition by assuming its addition to considered rule conditions.
 	 */
 	ConditionAdditionEvaluator[] conditionAdditionEvaluators = null;
 	

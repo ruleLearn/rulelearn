@@ -59,8 +59,10 @@ public class PairField<T extends SimpleField> extends CompositeField {
 			throw new NullPointerException("The second value in the pair is null.");
 		}
 		
-		if (!firstValue.getClass().equals(secondValue.getClass())) {
-			throw new InvalidTypeException("Types of fields in a pair have to be the same.");
+		if (firstValue instanceof KnownSimpleField && secondValue instanceof KnownSimpleField) {
+			if (!firstValue.getClass().equals(secondValue.getClass())) {
+				throw new InvalidTypeException("Types of fields in a pair have to be the same.");
+			}
 		}
 		
 		this.firstValue = firstValue;
@@ -207,6 +209,16 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	@Override
 	public String toString() {
 		return new StringBuilder().append("(").append(this.firstValue.toString()).append(",").append(this.secondValue.toString()).append(")").toString();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public boolean isUnknown() {
+		return (firstValue instanceof UnknownSimpleField && secondValue instanceof UnknownSimpleField);
 	}
 
 }

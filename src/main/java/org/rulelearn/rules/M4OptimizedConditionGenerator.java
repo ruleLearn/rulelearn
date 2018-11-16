@@ -26,15 +26,19 @@ import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.Table;
 import org.rulelearn.measures.Measure.MeasureType;
 import org.rulelearn.rules.MonotonicConditionAdditionEvaluator.MonotonicityType;
+import org.rulelearn.types.CompositeField;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.KnownSimpleField;
 import org.rulelearn.types.SimpleField;
 
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 /**
  * Condition generator taking advantage of the assumption that for any gain/cost-type condition attribute having {@link SimpleField} evaluations (i.e., evaluations which can be completely ordered),
- * the order of elementary conditions involving that attribute, implied by each considered condition addition evaluator, is consistent with the preference order in the value set of that attribute.<br>
+ * the order of elementary conditions involving that attribute, implied by each considered condition addition evaluator, is consistent with the preference order in the value set of that attribute.
+ * It assumes that each considered condition addition evaluator has monotonicity property (m4), which enables to speed up search for conditions related to gain/cost-type condition attributes having {@link SimpleField} evaluations.<br>
  * <br>
  * For example, given attribute q with integer values, the following monotonic relationships are assumed:
  * <ul>
@@ -215,15 +219,6 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 	}
 	
 	/**
-	 * Tells if attributes already present in rule conditions can be skipped when generating next best condition.
-	 * 
-	 * @return {@code false}
-	 */
-	boolean skipUsedAttributes() {
-		return false;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 * During search for the best condition, scans all active condition attributes. For each such an attribute (for one column of considered learning information able),
 	 * optimizes scanning of values of considered objects by skipping not relevant values.
@@ -236,7 +231,7 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 	 * @return {@inheritDoc}
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
-	 * @throws ElementaryConditionNotFoundException when it is impossible to find any new condition that could be added to given rule conditions //TODO: throw this exception when necessary
+	 * @throws ElementaryConditionNotFoundException when it is impossible to find any new condition that could be added to given rule conditions
 	 */
 	@Override
 	public Condition<EvaluationField> getBestCondition(IntList consideredObjects, RuleConditions ruleConditions) {
@@ -250,27 +245,29 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		EvaluationAttribute[] activeConditionAttributes = learningInformationTable.getActiveConditionAttributeFields().getAttributes(true);
 		
 		int globalAttributeIndex;
-		boolean firstConditionForAttribute;
 		
 		//go through active condition attributes
 		for (int localActiveConditionAttributeIndex = 0; localActiveConditionAttributeIndex < activeConditionAttributes.length; localActiveConditionAttributeIndex++) {
 			globalAttributeIndex = learningInformationTable.translateLocalActiveConditionAttributeIndex2GlobalAttributeIndex(localActiveConditionAttributeIndex);
 			//current attribute should be considered
-			firstConditionForAttribute = !ruleConditions.containsConditionForAttribute(globalAttributeIndex);
-			if (firstConditionForAttribute || !this.skipUsedAttributes()) {
+			if (!ruleConditions.containsConditionForAttribute(globalAttributeIndex)) { //TODO: verify if this is safe for attributes that do not have totally ordered value set
 				//optimization is possible for current attribute - it is a criterion whose evaluations can be linearly ordered
 				if (activeConditionAttributes[localActiveConditionAttributeIndex].getPreferenceType() != AttributePreferenceType.NONE && activeConditionAttributes[localActiveConditionAttributeIndex].getValueType() instanceof SimpleField) { //or KnownSimpleField
-					searchForBestConditionForOptimizableAttribute(consideredObjects, ruleConditions, localActiveConditionAttributeIndex, globalAttributeIndex, bestConditionWithEvaluations, candidateConditionWithEvaluations, firstConditionForAttribute); //check criterion, possibly updating bestCondition
+					searchForBestConditionForOptimizableAttribute(consideredObjects, ruleConditions, localActiveConditionAttributeIndex, globalAttributeIndex, bestConditionWithEvaluations, candidateConditionWithEvaluations); //check criterion, possibly updating bestCondition
 				} else { //proceed without optimization
 					searchForBestConditionForRegularAttribute(consideredObjects, ruleConditions, localActiveConditionAttributeIndex, globalAttributeIndex, bestConditionWithEvaluations, candidateConditionWithEvaluations); //check criterion, possibly updating bestCondition
 				}
 			} //if
 		} //for
 		
-		return bestConditionWithEvaluations.condition;
+		if (bestConditionWithEvaluations.condition == null) {
+			throw new ElementaryConditionNotFoundException("Could not find any new elementary conditon to be added to constructed rule conditions.");
+		} else {
+			return bestConditionWithEvaluations.condition;
+		}
 	}
 	
-	void searchForBestConditionForOptimizableAttribute(IntList consideredObjects, RuleConditions ruleConditions, int localActiveConditionAttributeIndex, int globalAttributeIndex, ConditionWithEvaluations bestConditionWithEvaluations, ConditionWithEvaluations candidateConditionWithEvaluations, boolean firstConditionForAttribute) {
+	void searchForBestConditionForOptimizableAttribute(IntList consideredObjects, RuleConditions ruleConditions, int localActiveConditionAttributeIndex, int globalAttributeIndex, ConditionWithEvaluations bestConditionWithEvaluations, ConditionWithEvaluations candidateConditionWithEvaluations) {
 		MonotonicityType firstEvaluatorMonotonicityType = ((MonotonicConditionAdditionEvaluator[])this.conditionAdditionEvaluators)[0].getMonotonictyType(); //casting should work, as constructor parameter is of type MonotonicConditionAdditionEvaluator[])
 		
 		Table<EvaluationAttribute, EvaluationField> data = ruleConditions.getLearningInformationTable().getActiveConditionAttributeFields();
@@ -293,12 +290,9 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		for (int i = 0; i < consideredObjectsCount; i++) {
 			objectEvaluation = data.getField(consideredObjects.getInt(i), localActiveConditionAttributeIndex);
 			if (objectEvaluation instanceof KnownSimpleField) { //non-missing evaluation found
-				if (firstConditionForAttribute || //rule conditions do not contain condition for current global attribute index, or does not contain condition for current object evaluation
-						!ruleConditions.containsCondition(constructCondition(ruleConditions.getRuleType(), ruleConditions.getRuleSemantics(), activeConditionAttribute, objectEvaluation, globalAttributeIndex))) {
-					extremeLimitingEvaluation = (KnownSimpleField)objectEvaluation;
-					consideredObjectsSuccessfullIndex = i; //remember last considered index, so next search can start from the following index
-					break;
-				}
+				extremeLimitingEvaluation = (KnownSimpleField)objectEvaluation;
+				consideredObjectsSuccessfullIndex = i; //remember last considered index, so next search can start from the following index
+				break;
 			}
 		}
 		
@@ -324,10 +318,9 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 			//initialize limits
 			conditionLimitingEvaluationInterval.initialize(extremeLimitingEvaluation, null);
 			
-			//at this point, least/most restrictive limiting evaluation among considered objects, for considered criterion, has been calculated, so one can construct candidate condition;
-			//as all supplied considered objects have to be covered by rule conditions, if extreme limiting evaluation was established, then condition employing that limiting evaluation
-			//cannot be already contained in rule conditions, so it is not necessary to check it now
-			candidateConditionWithEvaluations.setCondition(constructCondition(ruleConditions.getRuleType(), ruleConditions.getRuleSemantics(), activeConditionAttribute, extremeLimitingEvaluation, globalAttributeIndex)); //set extreme condition
+			//at this point, least/most restrictive limiting evaluation among considered objects, for considered criterion, has been calculated, so one can construct candidate condition employing that limiting evaluation;
+			candidateCondition = constructCondition(ruleConditions.getRuleType(), ruleConditions.getRuleSemantics(), activeConditionAttribute, extremeLimitingEvaluation, globalAttributeIndex);
+			candidateConditionWithEvaluations.setCondition(candidateCondition); //set extreme condition
 			candidateVSBestConditionComparisonResult = compareCandidateAndBestCondition(candidateConditionWithEvaluations, bestConditionWithEvaluations, 1); //compare candidate and best condition w.r.t. the first evaluator only
 
 			//check comparison result and update best condition if needed
@@ -357,20 +350,14 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 						//check if current evaluation is strictly inside current range of interest
 						if (conditionLimitingEvaluationInterval.includes(candidateLimitingEvaluation, compareToMultiplier)) {
 							candidateCondition = constructCondition(ruleConditions.getRuleType(), ruleConditions.getRuleSemantics(), activeConditionAttribute, candidateLimitingEvaluation, globalAttributeIndex);
+							candidateConditionWithEvaluations.setCondition(candidateCondition); //reset candidate condition with evaluations
+							candidateVSBestConditionComparisonResult = compareCandidateAndBestCondition(candidateConditionWithEvaluations, bestConditionWithEvaluations, conditionAdditionEvaluators.length); //compare conditions w.r.t. all evaluators (using already stored evaluations for the first evaluator)
 							
-							if (firstConditionForAttribute || //rule conditions do not contain condition for current global attribute index, or does not contain condition for current object evaluation
-									!ruleConditions.containsCondition(candidateCondition)) {
-								candidateConditionWithEvaluations.setCondition(candidateCondition); //reset candidate condition with evaluations
-								candidateVSBestConditionComparisonResult = compareCandidateAndBestCondition(candidateConditionWithEvaluations, bestConditionWithEvaluations, conditionAdditionEvaluators.length); //compare conditions w.r.t. all evaluators (using already stored evaluations for the first evaluator)
-								
-								if (candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_BETTER) {
-									bestConditionWithEvaluations.copy(candidateConditionWithEvaluations); //update best condition
-								}
-								
-								conditionLimitingEvaluationInterval.update(candidateVSBestConditionComparisonResult, candidateLimitingEvaluation); //update interval
-							} else {
-								conditionLimitingEvaluationInterval.insufficientEvaluation = candidateLimitingEvaluation; //exclude limiting evaluation of condition already present in rule conditions
+							if (candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_BETTER) {
+								bestConditionWithEvaluations.copy(candidateConditionWithEvaluations); //update best condition
 							}
+							
+							conditionLimitingEvaluationInterval.update(candidateVSBestConditionComparisonResult, candidateLimitingEvaluation); //update interval
 						} //if
 					} //if
 				} //for
@@ -384,12 +371,31 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 
 		Condition<EvaluationField> candidateCondition = null;
 		EvaluationField objectEvaluation;
+		ConditionComparisonResult candidateVSBestConditionComparisonResult;
+		
+		ObjectSet<EvaluationField> alreadyTestedObjectEvaluations = new ObjectOpenHashSet<>();
 		
 		for (int consideredObjectIndex : consideredObjects) {
 			objectEvaluation = data.getField(consideredObjectIndex, localActiveConditionAttributeIndex);
-			//TODO: iterate through considered objects, without any optimization (check all conditions)
-			//TODO: skip evaluation if missing
-			//TODO: handle PairField evaluations (decomposition!)
+			
+			if (objectEvaluation instanceof KnownSimpleField) { //non-missing evaluation found
+				if (!alreadyTestedObjectEvaluations.contains(objectEvaluation)) { //new (i.e., not seen for any previously considered object) evaluation found
+					candidateCondition = constructCondition(ruleConditions.getRuleType(), ruleConditions.getRuleSemantics(), activeConditionAttribute, objectEvaluation, globalAttributeIndex);
+					candidateConditionWithEvaluations.setCondition(candidateCondition); //reset candidate condition with evaluations
+					candidateVSBestConditionComparisonResult = compareCandidateAndBestCondition(candidateConditionWithEvaluations, bestConditionWithEvaluations, conditionAdditionEvaluators.length); //compare conditions w.r.t. all evaluators
+					
+					if (candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_BETTER) {
+						bestConditionWithEvaluations.copy(candidateConditionWithEvaluations); //update best condition
+					}
+					
+					alreadyTestedObjectEvaluations.add(objectEvaluation); //remember already tested evaluation on considered attribute, not to test it again if occurs for another considered object
+				}
+			} else {
+				if ((objectEvaluation instanceof CompositeField) && !((CompositeField)objectEvaluation).isUnknown()) {
+					//TODO: handle PairField evaluations with both evaluations known
+					//TODO: handle partially known pairs of evaluations (with only one evaluation known)
+				}
+			}
 		}
 	}
 	

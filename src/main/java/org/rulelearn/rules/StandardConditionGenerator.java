@@ -22,7 +22,8 @@ import org.rulelearn.types.EvaluationField;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
- * Condition generator used when no assumptions can be made with respect to evaluations of elementary conditions (checking each unique elementary conditions for every considered attribute).
+ * Condition generator used when no assumptions can be made with respect to evaluations of elementary conditions (it is necessary to check each unique evaluation for every considered attribute).
+ * Due to the lack of knowledge concerning monotonicity (m4) of the considered condition addition evaluators, when generating next best condition, it is also necessary to reconsider attributes already present in rule conditions. 
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -32,22 +33,13 @@ public class StandardConditionGenerator extends AbstractConditionGeneratorWithEv
 	/**
 	 * Constructor for this condition generator. Stores given evaluators for use in {@link #getBestCondition(IntList, RuleConditions)}.
 	 * 
-	 * @param conditionEvaluators array with condition evaluators used lexicographically
+	 * @param conditionAdditionEvaluators array with condition addition evaluators used lexicographically
 	 * @throws NullPointerException if given array or any of its elements is {@code null}
 	 */
-	public StandardConditionGenerator(ConditionAdditionEvaluator[] conditionEvaluators) {
-		super(conditionEvaluators);
+	public StandardConditionGenerator(ConditionAdditionEvaluator[] conditionAdditionEvaluators) {
+		super(conditionAdditionEvaluators);
 	}
 	
-	/**
-	 * Tells if attributes already present in rule conditions can be skipped when generating next best condition.
-	 * 
-	 * @return {@code false}
-	 */
-	boolean skipUsedAttributes() {
-		return false;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 * 

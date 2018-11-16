@@ -103,6 +103,7 @@ public class RuleConditionsBuilder {
 		while (!ruleInductionStoppingConditionChecker.isStoppingConditionSatisified(ruleConditions)) {
 			try {
 				bestCondition = conditionGenerator.getBestCondition(indicesOfConsideredObjects, ruleConditions);
+				//TODO: handle decomposition of condition with PairField limiting evaluation (by decomposition to two simpler conditions)
 				ruleConditions.addCondition(bestCondition);
 				
 				//update indices of considered objects
