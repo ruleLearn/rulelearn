@@ -176,14 +176,14 @@ class SimpleRuleClassifierTest {
 				this.classifier.classify(1, this.informationTableMock).getSuggestedDecision());
 		// case 3 (rules 1 and 5 are covering object)
 		assertEquals(new SimpleDecision(EnumerationFieldFactory.getInstance().create(this.domain, 3, this.decisionAttribute.getAttributePreferenceType()), this.decisionAttribute.getAttributeIndex()),
-						this.classifier.classify(2, this.informationTableMock).getSuggestedDecision());
+				this.classifier.classify(2, this.informationTableMock).getSuggestedDecision());
 		// case 4 (rules 2 and 6 are covering object)
 		assertEquals(new SimpleDecision(EnumerationFieldFactory.getInstance().create(this.domain, 2, this.decisionAttribute.getAttributePreferenceType()), this.decisionAttribute.getAttributeIndex()),
 				this.classifier.classify(3, this.informationTableMock).getSuggestedDecision());
 	}
 	
 	/**
-	 * Test for {@link SimpleRuleClassifier#classify(int, InformationTable)} when decision attribute is of gain type.
+	 * Test for {@link SimpleRuleClassifier#classify(int, InformationTable)} when decision attribute is of cost type.
 	 */
 	@Test
 	void testClassifyWithCostTypeDecisionAttribute() {
@@ -196,12 +196,33 @@ class SimpleRuleClassifierTest {
 				this.classifier.classify(1, this.informationTableMock).getSuggestedDecision());
 		// case 3 (rules 1 and 5 are covering object)
 		assertEquals(new SimpleDecision(EnumerationFieldFactory.getInstance().create(this.domain, 3, this.decisionAttribute.getAttributePreferenceType()), this.decisionAttribute.getAttributeIndex()),
-						this.classifier.classify(2, this.informationTableMock).getSuggestedDecision());
+				this.classifier.classify(2, this.informationTableMock).getSuggestedDecision());
 		// case 4 (rules 2 and 6 are covering object)
 		assertEquals(new SimpleDecision(EnumerationFieldFactory.getInstance().create(this.domain, 2, this.decisionAttribute.getAttributePreferenceType()), this.decisionAttribute.getAttributeIndex()),
 				this.classifier.classify(3, this.informationTableMock).getSuggestedDecision());
 	}
 	
+	/**
+	 * Test for {@link SimpleRuleClassifier#classifyAll(InformationTable) when decision attribute is of gain type.
+	 */
+	@Test
+	void testClassifyAllWithGainTypeDecisionAttribute() {
+		this.setUpForTestWithGainTypeDecisionAttribute(AttributePreferenceType.GAIN);
+		
+		SimpleClassificationResult [] results = this.classifier.classifyAll(informationTableMock);
+		// case 1 (rules 1, 2, 3 are covering object)
+		assertEquals(new SimpleDecision(EnumerationFieldFactory.getInstance().create(this.domain, 3, this.decisionAttribute.getAttributePreferenceType()), this.decisionAttribute.getAttributeIndex()),
+				results[0].getSuggestedDecision());
+		// case 2 (rules 4, 5, 6 are covering object)
+		assertEquals(new SimpleDecision(EnumerationFieldFactory.getInstance().create(this.domain, 1, this.decisionAttribute.getAttributePreferenceType()), this.decisionAttribute.getAttributeIndex()),
+				results[1].getSuggestedDecision());
+		// case 3 (rules 1 and 5 are covering object)
+		assertEquals(new SimpleDecision(EnumerationFieldFactory.getInstance().create(this.domain, 3, this.decisionAttribute.getAttributePreferenceType()), this.decisionAttribute.getAttributeIndex()),
+				results[2].getSuggestedDecision());
+		// case 4 (rules 2 and 6 are covering object)
+		assertEquals(new SimpleDecision(EnumerationFieldFactory.getInstance().create(this.domain, 2, this.decisionAttribute.getAttributePreferenceType()), this.decisionAttribute.getAttributeIndex()),
+				results[3].getSuggestedDecision());
+	}
 	
 	/**
 	 * Tests parsing RuleML file and using rules to classify objects loaded from JSON.
