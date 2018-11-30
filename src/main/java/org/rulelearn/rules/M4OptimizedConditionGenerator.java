@@ -250,12 +250,12 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		for (int localActiveConditionAttributeIndex = 0; localActiveConditionAttributeIndex < activeConditionAttributes.length; localActiveConditionAttributeIndex++) {
 			globalAttributeIndex = learningInformationTable.translateLocalActiveConditionAttributeIndex2GlobalAttributeIndex(localActiveConditionAttributeIndex);
 			//current attribute should be considered
-			if (!ruleConditions.containsConditionForAttribute(globalAttributeIndex)) { //TODO: verify if this is safe for attributes that do not have totally ordered value set
+			if (!ruleConditions.containsConditionForAttribute(globalAttributeIndex)) { //this should be safe for all attributes that do not have weak order in their value set
 				//optimization is possible for current attribute - it is a criterion whose evaluations can be linearly ordered
 				if (activeConditionAttributes[localActiveConditionAttributeIndex].getPreferenceType() != AttributePreferenceType.NONE && activeConditionAttributes[localActiveConditionAttributeIndex].getValueType() instanceof SimpleField) { //or KnownSimpleField
 					searchForBestConditionForOptimizableAttribute(consideredObjects, ruleConditions, localActiveConditionAttributeIndex, globalAttributeIndex, bestConditionWithEvaluations, candidateConditionWithEvaluations); //check criterion, possibly updating bestCondition
 				} else { //proceed without optimization
-					searchForBestConditionForRegularAttribute(consideredObjects, ruleConditions, localActiveConditionAttributeIndex, globalAttributeIndex, bestConditionWithEvaluations, candidateConditionWithEvaluations); //check criterion, possibly updating bestCondition
+					searchForBestConditionForNonOptimizableAttribute(consideredObjects, ruleConditions, localActiveConditionAttributeIndex, globalAttributeIndex, bestConditionWithEvaluations, candidateConditionWithEvaluations); //check criterion, possibly updating bestCondition
 				}
 			} //if
 		} //for
@@ -365,7 +365,7 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		} //if
 	}
 	
-	void searchForBestConditionForRegularAttribute(IntList consideredObjects, RuleConditions ruleConditions, int localActiveConditionAttributeIndex, int globalAttributeIndex, ConditionWithEvaluations bestConditionWithEvaluations, ConditionWithEvaluations candidateConditionWithEvaluations) {
+	void searchForBestConditionForNonOptimizableAttribute(IntList consideredObjects, RuleConditions ruleConditions, int localActiveConditionAttributeIndex, int globalAttributeIndex, ConditionWithEvaluations bestConditionWithEvaluations, ConditionWithEvaluations candidateConditionWithEvaluations) {
 		Table<EvaluationAttribute, EvaluationField> data = ruleConditions.getLearningInformationTable().getActiveConditionAttributeFields();
 		EvaluationAttribute activeConditionAttribute = data.getAttributes(true)[localActiveConditionAttributeIndex];
 
@@ -378,7 +378,8 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		for (int consideredObjectIndex : consideredObjects) {
 			objectEvaluation = data.getField(consideredObjectIndex, localActiveConditionAttributeIndex);
 			
-			if (objectEvaluation instanceof KnownSimpleField) { //non-missing evaluation found
+			if ( objectEvaluation instanceof KnownSimpleField || ((objectEvaluation instanceof CompositeField) && !((CompositeField)objectEvaluation).isUnknown()) ) { //non-missing evaluation found
+				//this handles PairField evaluations with both evaluations known or partially known pairs of evaluations (with only one evaluation known)
 				if (!alreadyTestedObjectEvaluations.contains(objectEvaluation)) { //new (i.e., not seen for any previously considered object) evaluation found
 					candidateCondition = constructCondition(ruleConditions.getRuleType(), ruleConditions.getRuleSemantics(), activeConditionAttribute, objectEvaluation, globalAttributeIndex);
 					candidateConditionWithEvaluations.setCondition(candidateCondition); //reset candidate condition with evaluations
@@ -389,11 +390,6 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 					}
 					
 					alreadyTestedObjectEvaluations.add(objectEvaluation); //remember already tested evaluation on considered attribute, not to test it again if occurs for another considered object
-				}
-			} else {
-				if ((objectEvaluation instanceof CompositeField) && !((CompositeField)objectEvaluation).isUnknown()) {
-					//TODO: handle PairField evaluations with both evaluations known
-					//TODO: handle partially known pairs of evaluations (with only one evaluation known)
 				}
 			}
 		}
