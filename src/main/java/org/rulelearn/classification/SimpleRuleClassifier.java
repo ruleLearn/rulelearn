@@ -18,13 +18,14 @@ package org.rulelearn.classification;
 
 import org.rulelearn.core.CentralTendencyCalculator;
 import org.rulelearn.core.TernaryLogicValue;
+import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.SimpleDecision;
+import org.rulelearn.rules.Condition;
+import org.rulelearn.rules.ConditionAtLeast;
+import org.rulelearn.rules.ConditionAtMost;
 import org.rulelearn.rules.RuleSet;
-import org.rulelearn.rules.SimpleCondition;
-import org.rulelearn.rules.SimpleConditionAtLeast;
-import org.rulelearn.rules.SimpleConditionAtMost;
-import org.rulelearn.types.SimpleField;
+import org.rulelearn.types.EvaluationField;
 
 /**
  * Simple classifier using decision rules to classify each object from an information table to exactly one decision class.
@@ -69,31 +70,44 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 	@Override
 	public SimpleClassificationResult classify(int objectIndex, InformationTable informationTable) {
 		SimpleClassificationResult result = this.getDefaultClassificationResult();
+		int decisionAttributeIndex = -1;
 		
 		// calculate classification interval [downLimit, upLimit]
-		SimpleCondition decision = null;
-		SimpleField upLimit = null, downLimit = null;
-		RuleSet rules = this.getRuleSet();
-		for (int i = 0; i < rules.size(); i++) {
-			if (rules.getRule(i).covers(objectIndex, informationTable)) {
-				decision = (SimpleCondition)rules.getRule(i).getDecision();
-				if (decision instanceof SimpleConditionAtLeast) {
+		Condition<? extends EvaluationField> decision = null;
+		EvaluationField upLimit = null, downLimit = null;
+		for (int i = 0; i < this.ruleSet.size(); i++) {
+			if (this.ruleSet.getRule(i).covers(objectIndex, informationTable)) {
+				decision = this.ruleSet.getRule(i).getDecision();
+				if (decisionAttributeIndex == -1) { // TODO what if decision attribute index changes (for now index from the first covering rule is assigned)
+					decisionAttributeIndex = decision.getAttributeWithContext().getAttributeIndex();
+				}
+				if (decision instanceof ConditionAtLeast<?>) {
 					if (upLimit == null) {
 						upLimit = decision.getLimitingEvaluation();
 					}
 					else {
-						if (decision.getLimitingEvaluation().isAtMostAsGoodAs(upLimit) == TernaryLogicValue.TRUE) {
-							upLimit = decision.getLimitingEvaluation();
+						try {
+							if (decision.getLimitingEvaluation().compareToEx(upLimit) > 0) {
+								upLimit = decision.getLimitingEvaluation();
+							}
+						}
+						catch (UncomparableException ex) {
+							System.out.println("Uncomparable decision values detected during comparison: " + ex.toString());
 						}
 					}
 				}
-				else if (decision instanceof SimpleConditionAtMost) {
+				else if (decision instanceof ConditionAtMost<?>) {
 					if (downLimit == null) {
 						downLimit = decision.getLimitingEvaluation();
 					}
 					else {
-						if (decision.getLimitingEvaluation().isAtLeastAsGoodAs(downLimit) == TernaryLogicValue.TRUE) {
-							downLimit = decision.getLimitingEvaluation();
+						try {
+							if (decision.getLimitingEvaluation().compareToEx(downLimit) < 0) {
+								downLimit = decision.getLimitingEvaluation();
+							}
+						}
+						catch (UncomparableException ex) {
+							System.out.println("Uncomparable decision values detected during comparison: " + ex.toString());
 						}
 					}
 				}
@@ -103,21 +117,21 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 		if (upLimit != null) {
 			if (downLimit != null) {
 				if (upLimit.isEqualTo(downLimit) == TernaryLogicValue.TRUE) {
-					result = new SimpleClassificationResult(new SimpleDecision(upLimit, decision.getAttributeWithContext().getAttributeIndex()));
+					result = new SimpleClassificationResult(new SimpleDecision(upLimit, decisionAttributeIndex));
 				}	
 				else {
-					SimpleField mean = CentralTendencyCalculator.calculateMean(upLimit, downLimit);
+					EvaluationField mean = CentralTendencyCalculator.calculateMean(upLimit, downLimit);
 					if (mean != null) {
-						result = new SimpleClassificationResult(new SimpleDecision(mean, decision.getAttributeWithContext().getAttributeIndex()));
+						result = new SimpleClassificationResult(new SimpleDecision(mean, decisionAttributeIndex));
 					}
 				}
 			}
 			else {
-				result = new SimpleClassificationResult(new SimpleDecision(upLimit, decision.getAttributeWithContext().getAttributeIndex()));
+				result = new SimpleClassificationResult(new SimpleDecision(upLimit, decisionAttributeIndex));
 			}
 		}
 		else if (downLimit != null) {
-			result = new SimpleClassificationResult(new SimpleDecision(downLimit, decision.getAttributeWithContext().getAttributeIndex()));
+			result = new SimpleClassificationResult(new SimpleDecision(downLimit, decisionAttributeIndex));
 		}
 		
 		return result;
