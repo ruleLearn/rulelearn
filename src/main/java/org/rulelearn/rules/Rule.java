@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.data.InformationTable;
@@ -37,6 +38,130 @@ import org.rulelearn.types.EvaluationField;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class Rule {
+	
+	/**
+	 * Abstract rule's RHS.
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	abstract static class RuleRHS {
+	    /**
+	     * Checks if an object from the information table, defined by its index, fulfills this rule's RHS.
+	     * 
+	     * @param objectIndex index of an object in the given information table
+	     * @param informationTable information table containing the object to check
+	     * 
+	     * @return {@code true} if considered object satisfies this rule's RHS, {@code false} otherwise
+	     * 
+	     * @throws IndexOutOfBoundsException if given object index does not correspond to any object in the given information table
+	     * @throws NullPointerException if given information table is {@code null}
+	     */
+	    public abstract boolean satisfiedBy(int objectIndex, InformationTable informationTable);
+	}
+	
+	/**
+	 * Rule's RHS composed of a single elementary decision.
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	public static class ElementaryDecision extends RuleRHS {
+		Condition<? extends EvaluationField> elementaryDecision;
+		
+		/**
+		 * Constructs rule's RHS composed of a single elementary decision.
+		 * 
+		 * @param elementaryDecision elementary decision representing rule's RHS
+		 * @throws NullPointerException if given object is {@code null}
+		 */
+		public ElementaryDecision(Condition<? extends EvaluationField> elementaryDecision) {
+			this.elementaryDecision = Precondition.notNull(elementaryDecision, "Elementary decision for rule's RHS is null.");
+		}
+
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @throws IndexOutOfBoundsException {@inheritDoc}
+	     * @throws NullPointerException {@inheritDoc}
+		 */
+		@Override
+		public boolean satisfiedBy(int objectIndex, InformationTable informationTable) {
+			return this.elementaryDecision.satisfiedBy(objectIndex, informationTable);
+		}
+	}
+	
+	/**
+	 * Compound rule's RHS composed of AND-connected objects of type {@link RuleRHS}.
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	public static class ANDConnectedRuleRHS extends RuleRHS {
+		List<RuleRHS> ruleRHSs;
+		
+		/**
+		 * Constructs compound rule's RHS composed of AND-connected objects of type {@link RuleRHS}.
+		 * 
+		 * @param ruleRHSs list of objects that should be connected with AND connective to form rule's RHS
+		 * @throws NullPointerException if given list is {@code null}
+		 * @throws InvalidSizeException if given list is empty
+		 */
+		public ANDConnectedRuleRHS(List<RuleRHS> ruleRHSs) {
+			this.ruleRHSs = Precondition.nonEmpty(Precondition.notNull(ruleRHSs, "List with AND-connected rule's RHS objects is null."), "List with AND-connected rule's RHS objects is empty.");
+		}
+
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @throws IndexOutOfBoundsException {@inheritDoc}
+	     * @throws NullPointerException {@inheritDoc}
+		 */
+		public boolean satisfiedBy(int objectIndex, InformationTable informationTable) {
+			for (RuleRHS ruleRHS : ruleRHSs) {
+				if (!ruleRHS.satisfiedBy(objectIndex, informationTable)) {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+	
+	/**
+	 * Compound rule's RHS composed of OR-connected objects of type {@link RuleRHS}.
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	public static class ORConnectedRuleRHS extends RuleRHS {
+		List<RuleRHS> ruleRHSs;
+		
+		/**
+		 * Constructs compound rule's RHS composed of OR-connected objects of type {@link RuleRHS}.
+		 * 
+		 * @param ruleRHSs list of objects that should be connected with OR connective to form rule's RHS
+		 * @throws NullPointerException if given list is {@code null}
+		 * @throws InvalidSizeException if given list is empty
+		 */
+		public ORConnectedRuleRHS(List<RuleRHS> ruleRHSs) {
+			this.ruleRHSs = Precondition.nonEmpty(Precondition.notNull(ruleRHSs, "List with OR-connected rule's RHS objects is null."), "List with OR-connected rule's RHS objects is empty.");
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @throws IndexOutOfBoundsException {@inheritDoc}
+	     * @throws NullPointerException {@inheritDoc}
+		 */
+		public boolean satisfiedBy(int objectIndex, InformationTable informationTable) {
+			for (RuleRHS ruleRHS : ruleRHSs) {
+				if (ruleRHS.satisfiedBy(objectIndex, informationTable)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
 	
 	//TODO: handle connectives of elementary decisions in more general way
 	
@@ -112,7 +237,7 @@ public class Rule {
      * @throws NullPointerException if any list with elementary decisions is {@code null}, or any elementary decision is {@code null}
      * @throws InvalidSizeException if any list with elementary decisions is empty
      */
-    private void saveDecisions(List<List<Condition<? extends EvaluationField>>> decisions) {
+    private void saveDecisions(List<List<Condition<? extends EvaluationField>>> decisions) { //TODO: save decisions in more general way
     	nonEmpty(notNull(decisions, "Rule's decisions are null."), "Rule's decisions are empty.");
     	
     	int numberOfAlternativeDecisions = decisions.size();
@@ -135,7 +260,7 @@ public class Rule {
      * @throws NullPointerException if any of the parameters is {@code null}, or any elementary decision from the given list is {@code null}
      * @throws InvalidSizeException if the given list with elementary decisions is empty
      */
-    private void saveDecisions(List<Condition<? extends EvaluationField>> decisions, ConditionConnectiveType decisionConnectiveType) {
+    private void saveDecisions(List<Condition<? extends EvaluationField>> decisions, ConditionConnectiveType decisionConnectiveType) { //TODO: save decisions in more general way
     	nonEmpty(notNull(decisions, "Rule's decisions are null."), "Rule's decisions are empty.");
     	
     	switch (notNull(decisionConnectiveType, "Decision connective type is null.")) {
@@ -193,7 +318,8 @@ public class Rule {
      * @throws NullPointerException if any of the parameters is {@code null}, or any elementary decision from the given list is {@code null}
      * @throws InvalidSizeException if the given list with elementary decisions is empty
      */
-    public Rule(RuleType type, RuleSemantics semantics, List<Condition<? extends EvaluationField>> conditions, List<Condition<? extends EvaluationField>> decisions, ConditionConnectiveType decisionConnectiveType) {
+    public Rule(RuleType type, RuleSemantics semantics, List<Condition<? extends EvaluationField>> conditions, List<Condition<? extends EvaluationField>> decisions,
+    		ConditionConnectiveType decisionConnectiveType) {
     	this.type = notNull(type, "Rule's type is null.");
     	this.semantics = notNull(semantics, "Rule's semantics is null.");
     	this.conditions = notNull(conditions, "Rule's conditions are null.").toArray(new Condition<?>[0]);
@@ -358,7 +484,7 @@ public class Rule {
 	 * 
 	 * @return text representation of this rule
 	 */
-	public String toString() {
+	public String toString() { //TODO: take into account more general configuration of decisions
 		StringBuilder sB = new StringBuilder();
 		
 		//start rule
@@ -449,7 +575,7 @@ public class Rule {
 	 * @throws IndexOutOfBoundsException see {@link Condition#satisfiedBy(int, InformationTable)}
 	 * @throws NullPointerException see {@link Condition#satisfiedBy(int, InformationTable)}
 	 */
-	public boolean decisionsMatchedBy(int objectIndex, InformationTable informationTable) {
+	public boolean decisionsMatchedBy(int objectIndex, InformationTable informationTable) { //TODO: take into account more general configuration of decisions
 		boolean conjunctionSatisfied;
 		
 		//check if at least one alternative is satisfied by the considered object

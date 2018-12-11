@@ -20,7 +20,9 @@ import static org.rulelearn.core.Precondition.notNull;
 
 import org.rulelearn.core.Precondition;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.types.CompositeField;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.SimpleField;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -48,6 +50,7 @@ public class RuleConditionsBuilder {
 	RuleSemantics ruleSemantics;
 	ConditionGenerator conditionGenerator;
 	RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker;
+	ConditionSeparator conditionSeparator; //can be null
 	
 	/**
 	 * Constructs this rule conditions builder by storing all the parameters for future use when building rule conditions.
@@ -67,13 +70,16 @@ public class RuleConditionsBuilder {
 	 * @param ruleInductionStoppingConditionChecker stopping condition checker iteratively used to verify if rule conditions
 	 *        (after extending with a new best elementary condition coming from condition generator)
 	 *        satisfy stopping condition(s)
+	 * @param conditionSeparator condition separator splitting compound conditions (i.e., conditions with limiting evaluation of type {@link CompositeField})
+	 *        into a list (array) of simple conditions (i.e., conditions with limiting evaluations of type {@link SimpleField}); see {@link ConditionSeparator};
+	 *        can be {@code null}, in which case compound conditions are leaved as they are (i.e., no split is performed) 
 	 * 
-	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws NullPointerException if any of the parameters, except {@code conditionSeparator}, is {@code null}
 	 */
 	public RuleConditionsBuilder(IntList indicesOfConsideredObjects, InformationTable learningInformationTable,
 			IntSet indicesOfPositiveObjects, IntSet indicesOfApproximationObjects, IntSet indicesOfObjectsThatCanBeCovered, IntSet indicesOfNeutralObjects,
 			RuleType ruleType, RuleSemantics ruleSemantics,
-			ConditionGenerator conditionGenerator, RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker) {
+			ConditionGenerator conditionGenerator, RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker, ConditionSeparator conditionSeparator) {
 		this.indicesOfConsideredObjects = Precondition.notNull(indicesOfConsideredObjects, "Indices of considered objects are null.");
 		this.learningInformationTable = Precondition.notNull(learningInformationTable, "Learning information table is null.");
 		this.indicesOfPositiveObjects = Precondition.notNull(indicesOfPositiveObjects, "Indices of positive objects are null.");
@@ -84,6 +90,7 @@ public class RuleConditionsBuilder {
 		this.ruleSemantics = notNull(ruleSemantics, "Rule semantics is null.");
 		this.conditionGenerator = Precondition.notNull(conditionGenerator, "Condition generator is null.");
 		this.ruleInductionStoppingConditionChecker = Precondition.notNull(ruleInductionStoppingConditionChecker, "Rule induction stopping condition checker is null.");
+		this.conditionSeparator = conditionSeparator; //can be null
 	}
 	
 	/**
@@ -103,7 +110,7 @@ public class RuleConditionsBuilder {
 		while (!ruleInductionStoppingConditionChecker.isStoppingConditionSatisified(ruleConditions)) {
 			try {
 				bestCondition = conditionGenerator.getBestCondition(indicesOfConsideredObjects, ruleConditions);
-				//TODO: handle decomposition of condition with PairField limiting evaluation (by decomposition to two simpler conditions)
+				//TODO: handle decomposition of compound conditions (e.g., with PairField limiting evaluation) to simpler conditions, using conditionSeparator
 				ruleConditions.addCondition(bestCondition);
 				
 				//update indices of considered objects

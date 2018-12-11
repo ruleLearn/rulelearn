@@ -158,6 +158,11 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 			this.validEvaluationsCount = 0;
 		}
 		
+		/**
+		 * Copies fields from given condition with evaluations to this object.
+		 * 
+		 * @param conditionWithEvaluations other condition with evaluations that contains fields that should be copied to this object
+		 */
 		void copy(ConditionWithEvaluations conditionWithEvaluations) {
 			this.condition = conditionWithEvaluations.condition;
 			for (int i = 0; i < conditionWithEvaluations.validEvaluationsCount; i++) {
@@ -267,7 +272,9 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		}
 	}
 	
-	void searchForBestConditionForOptimizableAttribute(IntList consideredObjects, RuleConditions ruleConditions, int localActiveConditionAttributeIndex, int globalAttributeIndex, ConditionWithEvaluations bestConditionWithEvaluations, ConditionWithEvaluations candidateConditionWithEvaluations) {
+	//can update bestConditionWithEvaluations
+	void searchForBestConditionForOptimizableAttribute(IntList consideredObjects, RuleConditions ruleConditions, int localActiveConditionAttributeIndex, int globalAttributeIndex,
+			ConditionWithEvaluations bestConditionWithEvaluations, ConditionWithEvaluations candidateConditionWithEvaluations) {
 		MonotonicityType firstEvaluatorMonotonicityType = ((MonotonicConditionAdditionEvaluator[])this.conditionAdditionEvaluators)[0].getMonotonictyType(); //casting should work, as constructor parameter is of type MonotonicConditionAdditionEvaluator[])
 		
 		Table<EvaluationAttribute, EvaluationField> data = ruleConditions.getLearningInformationTable().getActiveConditionAttributeFields();
@@ -299,8 +306,8 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		if (consideredObjectsSuccessfullIndex >= 0) {
 			conditionLimitingEvaluationInterval = (firstEvaluatorMonotonicityType == MonotonicityType.IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS ? new GeneralizingConditionLimitingEvaluationInterval() : new RestrictingConditionLimitingEvaluationInterval());
 			
-			//first, calculate multiplier used to compare two evaluations; it takes into account both rule's semantics and attribute's preference type
-			compareToMultiplier = (activeConditionAttribute.getPreferenceType() == AttributePreferenceType.GAIN ? 1 : -1) * (ruleConditions.getRuleSemantics() == RuleSemantics.AT_LEAST ? 1 : -1);
+			//first, calculate multiplier used to compare two evaluations on the considered attribute; it takes into account both rule's semantics and attribute's preference type
+			compareToMultiplier = calculateCompareToMultiplier(activeConditionAttribute, ruleConditions); 
 			
 			//second, iterate through all considered objects to calculate least/most restrictive limiting evaluation of a condition
 			//taking into account rule's semantics and attribute's preference type
@@ -365,6 +372,18 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		} //if
 	}
 	
+	/**
+	 * Calculates multiplier used to compare two evaluations on the same condition attribute; it takes into account both attribute's preference type and rule's semantics.
+	 * 
+	 * @param attribute considered condition attribute
+	 * @param ruleConditions rule conditions for which next best conditions is search for
+	 * @return multiplier used to compare two evaluations on the same condition attribute
+	 */
+	int calculateCompareToMultiplier(EvaluationAttribute attribute, RuleConditions ruleConditions) {
+		return (attribute.getPreferenceType() == AttributePreferenceType.GAIN ? 1 : -1) * (ruleConditions.getRuleSemantics() == RuleSemantics.AT_LEAST ? 1 : -1);
+	}
+	
+	//can update bestConditionWithEvaluations
 	void searchForBestConditionForNonOptimizableAttribute(IntList consideredObjects, RuleConditions ruleConditions, int localActiveConditionAttributeIndex, int globalAttributeIndex, ConditionWithEvaluations bestConditionWithEvaluations, ConditionWithEvaluations candidateConditionWithEvaluations) {
 		Table<EvaluationAttribute, EvaluationField> data = ruleConditions.getLearningInformationTable().getActiveConditionAttributeFields();
 		EvaluationAttribute activeConditionAttribute = data.getAttributes(true)[localActiveConditionAttributeIndex];

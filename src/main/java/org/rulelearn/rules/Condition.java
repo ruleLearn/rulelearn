@@ -24,7 +24,9 @@ import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.data.AttributeWithContext;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.types.CompositeField;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.SimpleField;
 
 /**
  * Condition of a decision rule. May be present both in the condition part and in the decision part of the rule.
@@ -83,7 +85,7 @@ public abstract class Condition<T extends EvaluationField> {
      * Checks if an object from the information table, defined by its index, fulfills this condition.
      * 
      * @param objectIndex index of an object in the given information table
-     * @param informationTable information table containing the object to check (and possibly also other objects)
+     * @param informationTable information table containing the object to check
      * 
      * @return {@code true} if considered object fulfills this condition, {@code false} otherwise
      * 
@@ -155,4 +157,14 @@ public abstract class Condition<T extends EvaluationField> {
 	 * @throws InvalidValueException if the type of the attribute for which this condition is defined is not decision one
 	 */
 	public abstract RuleSemantics getRuleSemantics();
+	
+	/**
+	 * Tells if this condition can be decomposed to an array of simpler conditions, each corresponding to a {@link SimpleField}.
+	 * 
+	 * @return {@code true} if this condition can be decomposed to an array of simpler conditions, {@code false} otherwise
+	 */
+	public boolean isDecomposable() {
+		return this.limitingEvaluation instanceof CompositeField;
+	}
+	
 }

@@ -62,6 +62,8 @@ class VCDomLemTest {
 		ConditionGenerator conditionGenerator = new StandardConditionGenerator(conditionAdditionEvaluators);
 		RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker = new EvaluationAndCoverageStoppingConditionChecker(ruleConditionsEvaluator, consistencyThreshold);
 		
+		ConditionSeparator conditionSeparator = null; //no separation required - all conditions concern limiting evaluations of type SimpleField
+		
 		AbstractRuleConditionsPruner ruleConditionsPruner = new FIFORuleConditionsPruner(ruleInductionStoppingConditionChecker); //enforce RuleInductionStoppingConditionChecker
 		//---
 		@SuppressWarnings("unused")
@@ -92,7 +94,7 @@ class VCDomLemTest {
 		
 		for (ApproximatedSet approximatedSet : approximatedSets) {
 			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, ruleType, ruleSemantics, allowedObjectsType,
-					ruleInductionStoppingConditionChecker, conditionGenerator, ruleConditionsPruner, ruleConditionsSetPruner);
+					conditionGenerator, ruleInductionStoppingConditionChecker, conditionSeparator, ruleConditionsPruner, ruleConditionsSetPruner);
 			
 			verifiedRuleConditionsWithApproximatedSet = new ObjectArrayList<RuleConditionsWithApproximatedSet>();
 			for (RuleConditions ruleConditions : approximatedSetRuleConditions) { //verify minimality of each rule conditions
@@ -112,7 +114,7 @@ class VCDomLemTest {
 		
 		for (RuleConditionsWithApproximatedSet minimalRuleConditionsWithApproximatedSet : minimalRuleConditionsWithApproximatedSets ) {
 			decisions = new ObjectArrayList<>(); //TODO: optimize to create less objects
-			decisions.add(minimalRuleConditionsWithApproximatedSet.getApproximatedSet().getElementaryDecisions());
+			decisions.add(minimalRuleConditionsWithApproximatedSet.getApproximatedSet().getElementaryDecisions()); //this way of constructing decisions is restricted to certain and possible rules
 			rules[ruleIndex] = new Rule(ruleType, ruleSemantics, minimalRuleConditionsWithApproximatedSet.getRuleConditions(), decisions);
 			ruleCoverageInformationArray[ruleIndex] = minimalRuleConditionsWithApproximatedSet.getRuleConditions().getRuleCoverageInformation();
 			ruleIndex++;
@@ -122,8 +124,8 @@ class VCDomLemTest {
 	}
 	
 	private List<RuleConditions> calculateApproximatedSetRuleConditionsList(ApproximatedSet approximatedSet, RuleType ruleType, RuleSemantics ruleSemantics, AllowedObjectsType allowedObjectsType,
-			RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker, ConditionGenerator conditionGenerator, AbstractRuleConditionsPruner ruleConditionsPruner,
-			RuleConditionsSetPruner ruleConditionsSetPruner) {
+			ConditionGenerator conditionGenerator, RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker, ConditionSeparator conditionSeparator,
+			AbstractRuleConditionsPruner ruleConditionsPruner, RuleConditionsSetPruner ruleConditionsSetPruner) {
 		
 		List<RuleConditions> approximatedSetRuleConditions = new ObjectArrayList<RuleConditions>(); //the result
 		
@@ -178,7 +180,7 @@ class VCDomLemTest {
 					indicesOfConsideredObjects, approximatedSet.getInformationTable(),
 					approximatedSet.getObjects(), indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, approximatedSet.getNeutralObjects(),
 					ruleType, ruleSemantics,
-					conditionGenerator, ruleInductionStoppingConditionChecker);
+					conditionGenerator, ruleInductionStoppingConditionChecker, conditionSeparator);
 			ruleConditions = ruleConditionsBuilder.build(); //build rule conditions
 			
 			ruleConditions = ruleConditionsPruner.prune(ruleConditions); //prune built rule conditions by removing redundant elementary conditions

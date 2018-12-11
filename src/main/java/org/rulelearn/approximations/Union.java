@@ -654,7 +654,7 @@ public class Union extends ApproximatedSet {
 	 * @return list of elementary decisions associated for this union; once all these elementary decisions are satisfied by a learning object, it belongs to this union 
 	 */
 	@Override
-	public List<Condition<? extends EvaluationField>> getElementaryDecisions() {
+	public List<Condition<? extends EvaluationField>> getElementaryDecisions() { //TODO: handle more general elementary decisions
 		IntSet attributeIndices = this.limitingDecision.getAttributeIndices();
 		EvaluationField evaluation;
 		EvaluationAttribute attribute;
