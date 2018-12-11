@@ -34,15 +34,19 @@ import org.rulelearn.data.AttributeWithContext;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.rules.Condition;
+import org.rulelearn.rules.ConditionAtLeast;
+import org.rulelearn.rules.ConditionAtLeastObjectVSThreshold;
+import org.rulelearn.rules.ConditionAtLeastThresholdVSObject;
+import org.rulelearn.rules.ConditionAtMostObjectVSThreshold;
+import org.rulelearn.rules.ConditionAtMostThresholdVSObject;
+import org.rulelearn.rules.ConditionEqualObjectVSThreshold;
+import org.rulelearn.rules.ConditionEqualThresholdVSObject;
 import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleCharacteristics;
 import org.rulelearn.rules.RuleSemantics;
 import org.rulelearn.rules.RuleSet;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.rules.RuleType;
-import org.rulelearn.rules.SimpleConditionAtLeast;
-import org.rulelearn.rules.SimpleConditionAtMost;
-import org.rulelearn.rules.SimpleConditionEqual;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
@@ -297,6 +301,25 @@ public class RuleParser {
 				for (Node impliesClause = assertClause.getFirstChild(); impliesClause != null; impliesClause = impliesClause.getNextSibling()) {
 					if (impliesClause.getNodeType() == Node.ELEMENT_NODE) {
                         if ("if".equals(impliesClause.getNodeName())) {
+                        	if (impliesClause.hasAttributes()) {
+                        		NamedNodeMap attributes = impliesClause.getAttributes();
+                    			// we only consider one attribute: type
+                    			String type;
+                    			if (attributes.getLength() == 1) {
+                    				if ("type".equals(attributes.item(0).getNodeName())) {
+    	                				type = attributes.item(0).getNodeValue();
+    	                				if (type.equalsIgnoreCase("certain")) {
+    	                					ruleType = RuleType.CERTAIN;
+    	                				}
+    	                				else if (type.equalsIgnoreCase("possible")) {
+    	                					ruleType = RuleType.POSSIBLE;
+    	                				}
+    	                				else if (type.equalsIgnoreCase("approximate")) {
+    	                					ruleType = RuleType.APPROXIMATE;
+    	                				}
+                    				}
+                    			}
+                        	}
                             if (conditions == null) {
                             	conditions = parseRuleConditionPart((Element) impliesClause);
                             } else {
@@ -314,7 +337,9 @@ public class RuleParser {
                         		ruleSemantics = parseRuleSemantics((Element) impliesClause);
                         }
                         else if ("ruleType".equals(impliesClause.getNodeName())) {
+                        	if (ruleType == null) { // rule type not set yet
                         		ruleType = parseRuleType((Element) impliesClause);
+                        	}
                         }
 	                }
 	             }
@@ -335,7 +360,7 @@ public class RuleParser {
 					ruleSemantics = RuleSemantics.EQUAL;
 				}
 				else if (preferenceType == AttributePreferenceType.GAIN) {
-					if (firstDecisionCondition instanceof SimpleConditionAtLeast) { // TODO works only for SimpleCondition
+					if (firstDecisionCondition instanceof ConditionAtLeast<?>) { 
 						ruleSemantics = RuleSemantics.AT_LEAST;
 					}
 					else {
@@ -343,7 +368,7 @@ public class RuleParser {
 					}
 				}
 				else { //cost-type attribute
-					if (firstDecisionCondition instanceof SimpleConditionAtLeast) { // TODO works only for SimpleCondition
+					if (firstDecisionCondition instanceof ConditionAtLeast<?>) { 
 						ruleSemantics = RuleSemantics.AT_MOST;
 					}
 					else {
@@ -491,6 +516,7 @@ public class RuleParser {
 	 */
 	protected Condition<? extends EvaluationField> parseRuleCondition (Element atomElement) throws RuleParseException {
 		Condition<? extends EvaluationField> condition = null;
+		boolean relationThresholdVSObject = false; // by default relation is of type object versus value
         NodeList relationList = atomElement.getElementsByTagName("rel");
         if (relationList.getLength() > 1) {
             throw new RuleParseException("More than one relation ('rel' node) inside an 'atom' node detected in RuleML.");
@@ -499,6 +525,21 @@ public class RuleParser {
             throw new RuleParseException("No 'rel' node was detected inside an 'atom' node in RuleML.");
         }
         String relation = relationList.item(0).getTextContent();
+        // check type of relation
+        if (relationList.item(0).hasAttributes()) {
+    		NamedNodeMap attributes = relationList.item(0).getAttributes();
+			// we only consider one attribute: type
+			String type;
+			if (attributes.getLength() == 1) {
+				if ("type".equals(attributes.item(0).getNodeName())) {
+    				type = attributes.item(0).getNodeValue();
+    				if (type.equalsIgnoreCase("value-object")) {
+    					relationThresholdVSObject = true;
+    				}
+				}
+			}
+    	}
+        
         NodeList attributeList = atomElement.getElementsByTagName("var");
         if (attributeList.getLength() > 1) {
             throw new RuleParseException("More than one attribute name ('var' node) was detected inside an 'atom' node in RuleML.");
@@ -518,19 +559,8 @@ public class RuleParser {
         
         int attributeIndex = this.attributeNamesMap.getInt(attributeName);
         if (attributeIndex != RuleParser.DEFAULT_INDEX) {
-        		if ((this.attributes[attributeIndex] instanceof EvaluationAttribute) && (this.attributesWithContext[attributeIndex] instanceof EvaluationAttributeWithContext)) { 
-		        	if ("le".equals(relation.toLowerCase())) {
-		        		condition = new SimpleConditionAtMost((EvaluationAttributeWithContext)this.attributesWithContext[attributeIndex], 
-		        						((SimpleField)parseEvaluation(value, (EvaluationAttribute)this.attributes[attributeIndex])));
-		        	}
-		        	else if ("ge".equals(relation.toLowerCase())) {
-		        		condition = new SimpleConditionAtLeast((EvaluationAttributeWithContext)this.attributesWithContext[attributeIndex], 
-		        						((SimpleField)parseEvaluation(value, (EvaluationAttribute)this.attributes[attributeIndex])));
-		        	}
-		        	else {
-		        		condition = new SimpleConditionEqual((EvaluationAttributeWithContext)this.attributesWithContext[attributeIndex], 
-		        						((SimpleField)parseEvaluation(value, (EvaluationAttribute)this.attributes[attributeIndex])));
-		        }
+        		if ((this.attributes[attributeIndex] instanceof EvaluationAttribute) && (this.attributesWithContext[attributeIndex] instanceof EvaluationAttributeWithContext)) {
+        			condition = constructCondition(relation, value, relationThresholdVSObject, (EvaluationAttributeWithContext)attributesWithContext[attributeIndex]);
         		}
 		    else {
 		    		throw new RuleParseException("Attribute used in a RuleML decision rule is not an evaluation attribute.");
@@ -541,16 +571,103 @@ public class RuleParser {
         }
 	    return condition;
     }
+	
+	/**
+	 * Constructs a condition {@link Condition} for a given relation, value, relation type and attribute (with context) {@link AttributeWithContext}.
+	 * 
+	 * @param relation string representation of relation
+	 * @param value string representation of value
+	 * @param relationThresholdVSObject type of relation (relation object versus value when false or value versus object when true)
+	 * @param attributeWithContext attribute for which condition is constructed
+	 * @return constructed condition 
+	 */
+	protected Condition<? extends EvaluationField> constructCondition (String relation, String value, boolean relationThresholdVSObject, EvaluationAttributeWithContext attributeWithContext) {
+		Condition<? extends EvaluationField> condition = null;
+		if (attributeWithContext.getAttribute().getValueType() instanceof SimpleField) {
+			Field valueType = attributeWithContext.getAttribute().getValueType();
+			if (!relationThresholdVSObject) { // standard object versus value relation
+				if ("le".equals(relation.toLowerCase())) {
+					if (valueType instanceof IntegerField) {
+						condition = new ConditionAtMostObjectVSThreshold<IntegerField>(attributeWithContext, (IntegerField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+					else if (valueType instanceof RealField) {
+						condition = new ConditionAtMostObjectVSThreshold<RealField>(attributeWithContext, (RealField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+					else if (valueType instanceof EnumerationField) {
+						condition = new ConditionAtMostObjectVSThreshold<EnumerationField>(attributeWithContext, (EnumerationField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+	        	}
+	        	else if ("ge".equals(relation.toLowerCase())) {
+	        		if (valueType instanceof IntegerField) {
+						condition = new ConditionAtLeastObjectVSThreshold<IntegerField>(attributeWithContext, (IntegerField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+					else if (valueType instanceof RealField) {
+						condition = new ConditionAtLeastObjectVSThreshold<RealField>(attributeWithContext, (RealField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+					else if (valueType instanceof EnumerationField) {
+						condition = new ConditionAtLeastObjectVSThreshold<EnumerationField>(attributeWithContext, (EnumerationField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+	        	}
+	        	else {
+	        		if (valueType instanceof IntegerField) {
+						condition = new ConditionEqualObjectVSThreshold<IntegerField>(attributeWithContext, (IntegerField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+					else if (valueType instanceof RealField) {
+						condition = new ConditionEqualObjectVSThreshold<RealField>(attributeWithContext, (RealField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+					else if (valueType instanceof EnumerationField) {
+						condition = new ConditionEqualObjectVSThreshold<EnumerationField>(attributeWithContext, (EnumerationField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+	        	}
+			}
+			else { // value (threshold) versus object relation
+				if ("le".equals(relation.toLowerCase())) {
+					if (valueType instanceof IntegerField) {
+						condition = new ConditionAtMostThresholdVSObject<IntegerField>(attributeWithContext, (IntegerField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+					else if (valueType instanceof RealField) {
+						condition = new ConditionAtMostThresholdVSObject<RealField>(attributeWithContext, (RealField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+					else if (valueType instanceof EnumerationField) {
+						condition = new ConditionAtMostThresholdVSObject<EnumerationField>(attributeWithContext, (EnumerationField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+	        	}
+	        	else if ("ge".equals(relation.toLowerCase())) {
+	        		if (valueType instanceof IntegerField) {
+						condition = new ConditionAtLeastThresholdVSObject<IntegerField>(attributeWithContext, (IntegerField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+					else if (valueType instanceof RealField) {
+						condition = new ConditionAtLeastThresholdVSObject<RealField>(attributeWithContext, (RealField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+					else if (valueType instanceof EnumerationField) {
+						condition = new ConditionAtLeastThresholdVSObject<EnumerationField>(attributeWithContext, (EnumerationField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+	        	}
+	        	else {
+	        		if (valueType instanceof IntegerField) {
+						condition = new ConditionEqualThresholdVSObject<IntegerField>(attributeWithContext, (IntegerField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+					else if (valueType instanceof RealField) {
+						condition = new ConditionEqualThresholdVSObject<RealField>(attributeWithContext, (RealField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+					else if (valueType instanceof EnumerationField) {
+						condition = new ConditionEqualThresholdVSObject<EnumerationField>(attributeWithContext, (EnumerationField)constructEvaluation(value, attributeWithContext.getAttribute()));
+					}
+	        	}
+			}
+		}
+		return condition;
+	}
 
 	/**
-	 * Parses a string {@link String} representation of evaluation to evaluation field {@link EvaluationField}.
+	 * Constructs an evaluation field {@link EvaluationField} basing on a string {@link String} representation of evaluation.
 	 * 
 	 * @param evaluation string representation of evaluation
 	 * @param attribute attribute, which evaluation is parsed
 	 * @return evaluation field {@link EvaluationField}
 	 */
 	// TODO should be propagated somewhere else and used also in InformationTableBuilder
-	protected EvaluationField parseEvaluation (String evaluation, EvaluationAttribute attribute) {
+	protected EvaluationField constructEvaluation (String evaluation, EvaluationAttribute attribute) {
 		EvaluationField field = null;
 		if (attribute.getValueType() instanceof SimpleField) {
 			Field valueType = attribute.getValueType();
