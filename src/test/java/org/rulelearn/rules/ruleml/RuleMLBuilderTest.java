@@ -32,15 +32,15 @@ import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.rules.Condition;
+import org.rulelearn.rules.ConditionAtLeast;
+import org.rulelearn.rules.ConditionAtMost;
+import org.rulelearn.rules.ConditionEqual;
 import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleCharacteristics;
 import org.rulelearn.rules.RuleSemantics;
 import org.rulelearn.rules.RuleSet;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.rules.RuleType;
-import org.rulelearn.rules.SimpleConditionAtLeast;
-import org.rulelearn.rules.SimpleConditionAtMost;
-import org.rulelearn.rules.SimpleConditionEqual;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
@@ -65,15 +65,15 @@ class RuleMLBuilderTest {
     private RuleSet ruleSetMock;
 	
 	@Mock
-	private SimpleConditionAtLeast conditionAtLeastMock;
+	private ConditionAtLeast<IntegerField> conditionAtLeastMock;
 	@Mock
-	private SimpleConditionAtMost conditionAtMostMock;
+	private ConditionAtMost<IntegerField> conditionAtMostMock;
 	@Mock
-	private SimpleConditionEqual conditionEqualMock;
+	private ConditionEqual<IntegerField> conditionEqualMock;
 	@Mock
-	private SimpleConditionAtLeast decisionAtLeastMock;
+	private ConditionAtLeast<EnumerationField> decisionAtLeastMock;
 	@Mock
-	private SimpleConditionAtMost decisionAtMostMock;
+	private ConditionAtMost<EnumerationField> decisionAtMostMock;
 	
 	@Mock
 	private Rule ruleAtLeastMock;
@@ -351,7 +351,7 @@ class RuleMLBuilderTest {
 		when(this.ruleAtLeastMock.getType()).thenReturn(RuleType.CERTAIN);
 		
 		String ruleRuleML = "<assert>\n" + 
-				"\t<implies>\n" + 
+				"\t<implies type=\"certain\">\n" + 
 				"\t\t<if>\n" + 
 				"\t\t\t\t<atom>\n" + 
 				"\t\t\t\t<op>\n" + 
@@ -371,7 +371,6 @@ class RuleMLBuilderTest {
 				"\t\t\t\t\t</atom>\n" + 
 				"\t\t</then>\n" +
 				"\t\t<ruleSemantics>ge</ruleSemantics>\n" +
-				"\t\t<ruleType>certain</ruleType>\n" +
 				"\t</implies>\n" + 
 				"</assert>\n";
 		
@@ -393,7 +392,7 @@ class RuleMLBuilderTest {
 		when(this.ruleAtMostMock.getType()).thenReturn(RuleType.POSSIBLE);
 		
 		String ruleRuleML = "<assert>\n" + 
-				"\t<implies>\n" + 
+				"\t<implies type=\"possible\">\n" + 
 				"\t\t<if>\n" +
 				"\t\t\t<and>\n" +
 				"\t\t\t\t<atom>\n" + 
@@ -422,7 +421,6 @@ class RuleMLBuilderTest {
 				"\t\t\t\t\t</atom>\n" + 
 				"\t\t</then>\n" +
 				"\t\t<ruleSemantics>le</ruleSemantics>\n" +
-				"\t\t<ruleType>possible</ruleType>\n" +
 				"\t</implies>\n" + 
 				"</assert>\n";
 		
@@ -462,7 +460,7 @@ class RuleMLBuilderTest {
 				"<RuleML xmlns=\"http://ruleml.org/spec\">\n" + 
 				"<act index=\"1\">\n" + 
 				"<assert>\n" + 
-				"\t<implies>\n" + 
+				"\t<implies type=\"certain\">\n" + 
 				"\t\t<if>\n" + 
 				"\t\t\t\t<atom>\n" + 
 				"\t\t\t\t<op>\n" + 
@@ -482,11 +480,10 @@ class RuleMLBuilderTest {
 				"\t\t\t\t\t</atom>\n" + 
 				"\t\t</then>\n" + 
 				"\t\t<ruleSemantics>ge</ruleSemantics>\n" +
-				"\t\t<ruleType>certain</ruleType>\n" +
 				"\t</implies>\n" + 
 				"</assert>\n" +
 				"<assert>\n" + 
-				"\t<implies>\n" + 
+				"\t<implies type=\"certain\">\n" + 
 				"\t\t<if>\n" +
 				"\t\t\t<and>\n" +
 				"\t\t\t\t<atom>\n" + 
@@ -515,7 +512,6 @@ class RuleMLBuilderTest {
 				"\t\t\t\t\t</atom>\n" + 
 				"\t\t</then>\n" +
 				"\t\t<ruleSemantics>le</ruleSemantics>\n" +
-				"\t\t<ruleType>certain</ruleType>\n" +
 				"\t</implies>\n" + 
 				"</assert>\n" +
 				"</act>\n" + 
@@ -547,7 +543,7 @@ class RuleMLBuilderTest {
 				"<RuleML xmlns=\"http://ruleml.org/spec\">\n" + 
 				"<act index=\"00000000-0000-0000-0000-000000000001\">\n" + 
 				"<assert>\n" + 
-				"\t<implies>\n" + 
+				"\t<implies type=\"approximate\">\n" + 
 				"\t\t<if>\n" + 
 				"\t\t\t\t<atom>\n" + 
 				"\t\t\t\t<op>\n" + 
@@ -567,7 +563,6 @@ class RuleMLBuilderTest {
 				"\t\t\t\t\t</atom>\n" + 
 				"\t\t</then>\n" + 
 				"\t\t<ruleSemantics>ge</ruleSemantics>\n" +
-				"\t\t<ruleType>approximate</ruleType>\n" +
 				"\t\t<evaluations>\n" + 
 				"\t\t\t<evaluation measure=\"Support\" value=\"1\"/>\n" + 
 				"\t\t\t<evaluation measure=\"Strength\" value=\"1.0\"/>\n" + 

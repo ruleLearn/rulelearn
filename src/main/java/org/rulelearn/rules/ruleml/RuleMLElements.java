@@ -19,6 +19,8 @@ package org.rulelearn.rules.ruleml;
 import java.util.UUID;
 
 import org.rulelearn.rules.RuleCharacteristics;
+import org.rulelearn.rules.RuleType;
+import org.rulelearn.rules.UnknownRuleSemanticsException;
 
 /**
  * Definitions of tags and keywords which are used to construct RuleML documents according to: <a href="http://wiki.ruleml.org/index.php/Specification_of_Deliberation_RuleML_1.01">Deliberation RuleML specification</a>.
@@ -36,40 +38,43 @@ public class RuleMLElements {
      * 
      * Note that these definitions extend standard definition to allow incorporate into a RuleML document information specific for decision rules (e.g. {@link RuleCharacteristics}.
      */
-    static final String Assert = "assert";
-    static final String Implies = "implies";
-    static final String If = "if";
-    static final String Then = "then";
-    static final String And = "and";
-    static final String Or = "or";
-    static final String Atom = "atom";
-    static final String Operation = "op";
-    static final String Relation = "rel";
-    static final String AtLeast = "ge";
-    static final String Greater = "g";
-    static final String AtMost = "le";
-    static final String Less = "l";
-    static final String Equals = "eq";
-    static final String NotEquals = "neq";
-    static final String Constant = "ind";
-    static final String Variable = "var";	
-    static final String Evaluations = "evaluations";
-    static final String Evaluation = "evaluation";
-    static final String PositiveCovered = "positiveCovered";
-    static final String NegativeCovered = "negativeCovered";
-    static final String Case = "case";
-    static final String RuleSemantics = "ruleSemantics";
-    static final String RuleType = "ruleType";
-    static final String Certain = "certain";
-    static final String Possible = "possible";
-    static final String Approximate = "approximate";
+    static final String ASSERT = "assert";
+    static final String IMPLIES = "implies";
+    static final String IF = "if";
+    static final String THEN = "then";
+    static final String AND = "and";
+    static final String OR = "or";
+    static final String ATOM = "atom";
+    static final String OPERATION = "op";
+    static final String RELATION = "rel";
+    static final String AT_LEAST = "ge";
+    static final String GREATER = "g";
+    static final String AT_MOST = "le";
+    static final String LESS = "l";
+    static final String EQUALS = "eq";
+    static final String NOT_EQUALS = "neq";
+    static final String CONSTANT = "ind";
+    static final String VARIABLE = "var";	
+    static final String EVALUATIONS = "evaluations";
+    static final String EVALUATION = "evaluation";
+    static final String POSITIVE_COVERED = "positiveCovered";
+    static final String NEGATIVE_COVERED = "negativeCovered";
+    static final String CASE = "case";
+    static final String RULE_SEMANTICS = "ruleSemantics";
+    static final String RULE_TYPE = "ruleType";
+    static final String CERTAIN = "certain";
+    static final String POSSIBLE = "possible";
+    static final String APPROXIMATE = "approximate";
+    static final String TYPE = "type";
+    static final String OBJECT_VS_THRESHOLD = "object-threshold";
+    static final String THRESHOLD_VS_OBJECT = "threshold-object";
     
     /** 
      * Declarations of character sequences used for white spaces.
      */
-    static final String NewLine = System.lineSeparator();
-    static final String UnixNewLine = "\n";
-    static final String Tab = "\t";
+    static final String NEW_LINE = System.lineSeparator();
+    static final String UNIX_NEW_LINE = "\n";
+    static final String TAB = "\t";
     
     /**
      * Constructs RuleML header tag, which should be placed at the beginning of any RuleML document.
@@ -136,6 +141,20 @@ public class RuleMLElements {
     }
     
     /**
+     * Constructs beginning of a specified RuleML tag followed by indication of a new line.
+     * @param ruleMLTag RuleML tag to be started
+     * @param parameter name of parameter to be added to the tag
+     * @param parameterValue value of the parameter
+     * 
+     * @return beginning of specified RuleML tag
+     */
+    public static String getBeginningTagWithParameter (String ruleMLTag, String parameter, String parameterValue) {
+    		StringBuffer buffer = new StringBuffer();
+    		buffer.append("<").append(ruleMLTag).append(" ").append(parameter).append("=\"").append(parameterValue).append("\">").append(getNewLine());
+    		return buffer.toString();
+    }
+    
+    /**
      * Constructs beginning of a specified RuleML tag in an in-line style (i.e., the whole tag is represented in one line of the RuleML document). 
      * @param ruleMLTag RuleML tag to be started
      * 
@@ -147,6 +166,19 @@ public class RuleMLElements {
 		return buffer.toString();
     }
     
+    /**
+     * Constructs beginning of a specified RuleML tag in an in-line style (i.e., the whole tag is represented in one line of the RuleML document). 
+     * @param ruleMLTag RuleML tag to be started
+     * @param parameter name of parameter to be added to the tag
+     * @param parameterValue value of the parameter
+     * 
+     * @return beginning of specified RuleML tag
+     */
+    public static String getBeginnigInlineTagWithParameter (String ruleMLTag, String parameter, String parameterValue) {
+    		StringBuffer buffer = new StringBuffer();
+		buffer.append("<").append(ruleMLTag).append(" ").append(parameter).append("=\"").append(parameterValue).append("\">");
+		return buffer.toString();
+    }
     
     /**
      * Constructs a multiplication (i.e., a set of copies) of a specified RuleML tag.  
@@ -233,7 +265,7 @@ public class RuleMLElements {
      */
     public static String getCaseTag (int id) {
 	    	StringBuffer buffer = new StringBuffer();
-	    	buffer.append(getBeginnigInlineTag(Case)).append(id).append(getEndTag(Case));
+	    	buffer.append(getBeginnigInlineTag(CASE)).append(id).append(getEndTag(CASE));
 	    	return buffer.toString();
     }
     
@@ -248,7 +280,7 @@ public class RuleMLElements {
      */
     public static String getCaseTag (UUID id) {
 	    	StringBuffer buffer = new StringBuffer();
-	    	buffer.append(getBeginnigInlineTag(Case)).append(id.toString()).append(getEndTag(Case));
+	    	buffer.append(getBeginnigInlineTag(CASE)).append(id.toString()).append(getEndTag(CASE));
 	    	return buffer.toString();
     }
 
@@ -256,203 +288,244 @@ public class RuleMLElements {
 	 * @return the assert keyword
 	 */
 	public static String getAssertKeyword() {
-		return Assert;
+		return ASSERT;
 	}
 
 	/**
 	 * @return the implies keyword
 	 */
 	public static String getImpliesKeyword() {
-		return Implies;
+		return IMPLIES;
 	}
 
 	/**
 	 * @return the if
 	 */
 	public static String getIfKeyword() {
-		return If;
+		return IF;
 	}
 
 	/**
 	 * @return the and keyword
 	 */
 	public static String getAndKeyword() {
-		return And;
+		return AND;
 	}
 	
 	/**
 	 * @return the or keyword
 	 */
 	public static String getOrKeyword() {
-		return Or;
+		return OR;
 	}
 
 	/**
 	 * @return the atom keyword
 	 */
 	public static String getAtomKeyword() {
-		return Atom;
+		return ATOM;
 	}
 
 	/**
 	 * @return the operation keyword
 	 */
 	public static String getOperationKeyword() {
-		return Operation;
+		return OPERATION;
 	}
 
 	/**
 	 * @return the relation keyword
 	 */
 	public static String getRelationKeyword() {
-		return Relation;
+		return RELATION;
 	}
 
 	/**
 	 * @return the constant keyword
 	 */
 	public static String getConstantKeyword() {
-		return Constant;
+		return CONSTANT;
 	}
 
 	/**
 	 * @return the variable keyword
 	 */
 	public static String getVariableKeyword() {
-		return Variable;
+		return VARIABLE;
 	}
 
 	/**
 	 * @return the then keyword
 	 */
 	public static String getThenKeyword() {
-		return Then;
+		return THEN;
 	}
 
 	/**
 	 * @return the evaluation keyword
 	 */
 	public static String getEvaluationKeyword() {
-		return Evaluation;
+		return EVALUATION;
 	}
 
 	/**
 	 * @return the evaluations keyword
 	 */
 	public static String getEvaluationsKeyword() {
-		return Evaluations;
+		return EVALUATIONS;
 	}
 
 	/**
 	 * @return the positive covered keyword
 	 */
 	public static String getPositiveCoveredKeyword() {
-		return PositiveCovered;
+		return POSITIVE_COVERED;
 	}
 
 	/**
 	 * @return the negative covered keyword
 	 */
 	public static String getNegativeCoveredKeyword() {
-		return NegativeCovered;
+		return NEGATIVE_COVERED;
 	}
 
 	/**
 	 * @return the case keyword
 	 */
 	public static String getCaseKeyword() {
-		return Case;
+		return CASE;
 	}
 
 	/**
 	 * @return the at least keyword
 	 */
 	public static String getAtLeastKeyword() {
-		return AtLeast;
+		return AT_LEAST;
 	}
 
 	/**
 	 * @return the greater keyword
 	 */
 	public static String getGreaterKeyword() {
-		return Greater;
+		return GREATER;
 	}
 
 	/**
 	 * @return the at most keyword
 	 */
 	public static String getAtMostKeyword() {
-		return AtMost;
+		return AT_MOST;
 	}
 
 	/**
 	 * @return the less keyword
 	 */
 	public static String getLessKeyword() {
-		return Less;
+		return LESS;
 	}
 
 	/**
 	 * @return the equals keyword
 	 */
 	public static String getEqualsKeyword() {
-		return Equals;
+		return EQUALS;
 	}
 
 	/**
 	 * @return the not equals keyword
 	 */
 	public static String getNotEqualsKeyword() {
-		return NotEquals;
+		return NOT_EQUALS;
 	}
 	
 	/**
 	 * @return the rule semantics keyword
 	 */
 	public static String getRuleSemanticsKeyword() {
-		return RuleSemantics;
+		return RULE_SEMANTICS;
 	}
 	
 	/**
 	 * @return the rule type keyword
 	 */
 	public static String getRuleTypeKeyword() {
-		return RuleType;
+		return RULE_TYPE;
+	}
+	
+	/**
+	 * @param ruleType type of a rule
+	 * @return keyword representing rule type value 
+	 * @throws UnknownRuleSemanticsException when rule type is unknown
+	 */
+	public static String getKeywordForRuleType (RuleType ruleType) {
+		if (ruleType == RuleType.CERTAIN) {
+     		return RuleMLElements.getCertainKeyword();
+	     }
+	     else if (ruleType == RuleType.POSSIBLE) {
+	     	return RuleMLElements.getPossibleKeyword();
+	     }
+	     else if (ruleType == RuleType.APPROXIMATE) {
+	     	return RuleMLElements.getApproximateKeyword();
+	     }
+	     else {
+	     		throw new UnknownRuleSemanticsException("Rule type " + ruleType + " is unknown.");
+	     }
+	}
+	
+	/**
+	 * @return the type keyword
+	 */
+	public static String getTypeKeyword() {
+		return TYPE;
 	}
 	
 	/**
 	 * @return the certain keyword
 	 */
 	public static String getCertainKeyword() {
-		return Certain;
+		return CERTAIN;
 	}
 	
 	/**
 	 * @return the possible keyword
 	 */
 	public static String getPossibleKeyword() {
-		return Possible;
+		return POSSIBLE;
 	}
 	
 	/**
 	 * @return the approximate keyword
 	 */
 	public static String getApproximateKeyword() {
-		return Approximate;
+		return APPROXIMATE;
+	}
+	
+	/**
+	 * @return the object versus threshold keyword
+	 */
+	public static String getObjectVSThresholdKeyword() {
+		return OBJECT_VS_THRESHOLD;
+	}
+	
+	/**
+	 * @return the threshold versus object keyword
+	 */
+	public static String getThresholdVSObjectKeyword() {
+		return THRESHOLD_VS_OBJECT;
 	}
 
 	/**
 	 * @return the new line keyword
 	 */
 	public static String getNewLine() {
-		return UnixNewLine;
+		return UNIX_NEW_LINE;
 	}
 
 	/**
 	 * @return the tab keyword
 	 */
 	public static String getTab() {
-		return Tab;
+		return TAB;
 	}   
     
 }
