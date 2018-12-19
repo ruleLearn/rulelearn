@@ -19,8 +19,8 @@ package org.rulelearn.types;
 import java.util.Objects;
 
 import org.rulelearn.core.ComparableExt;
+import org.rulelearn.core.MeanCalculator;
 import org.rulelearn.core.TernaryLogicValue;
-import org.rulelearn.types.SimpleField;
 
 /**
  * Class implementing a missing attribute value handled according to approach denoted by mv_2. This approach is described in:<br>
@@ -163,6 +163,16 @@ public class UnknownSimpleFieldMV2 extends UnknownSimpleField {
 	@Override
 	public String toString() {
 		return "?";
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public SimpleField getMean(MeanCalculator calculator, SimpleField otherValue) {
+		return calculator.calculate(this, otherValue);
 	}
 
 }

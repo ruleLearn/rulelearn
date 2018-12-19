@@ -67,7 +67,7 @@ class CentralTendencyCalculatorTest {
 	
 	private EvaluationField evField, evField0n, evField0c, evField0g;
 	private EvaluationField evField1n, evField1c, evField1g;
-	private EnumerationField evField2n, evField2c, evField2g;
+	private EvaluationField evField2n, evField2c, evField2g;
 	
 	/**
 	 * Set up.
