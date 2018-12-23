@@ -17,29 +17,50 @@
 package org.rulelearn.classification;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static org.rulelearn.core.Precondition.notNull;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.rulelearn.data.Attribute;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.EvaluationAttributeWithContext;
+import org.rulelearn.data.IdentificationAttribute;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.data.InformationTableBuilder;
 import org.rulelearn.data.SimpleDecision;
+import org.rulelearn.data.json.AttributeDeserializer;
+import org.rulelearn.data.json.EvaluationAttributeSerializer;
+import org.rulelearn.data.json.IdentificationAttributeSerializer;
+import org.rulelearn.data.json.ObjectBuilder;
 import org.rulelearn.rules.ConditionAtLeast;
 import org.rulelearn.rules.ConditionAtMost;
 import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleSet;
+import org.rulelearn.rules.ruleml.RuleParser;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 
 /**
  * Tests for {@link SimpleRuleClassifier}.
@@ -227,7 +248,7 @@ class SimpleRuleClassifierTest {
 	/**
 	 * Tests parsing RuleML file and using rules to classify objects loaded from JSON.
 	 */
-	/*@Test
+	@Test
 	void testLoading() {
 		Attribute [] attributes = null;
 		
@@ -312,6 +333,6 @@ class SimpleRuleClassifierTest {
 		else {
 			fail("Unable to load JSON file with attributes.");
 		}
-	}*/
+	}
 	
 }

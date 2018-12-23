@@ -32,9 +32,12 @@ import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.rules.Condition;
-import org.rulelearn.rules.ConditionAtLeast;
-import org.rulelearn.rules.ConditionAtMost;
-import org.rulelearn.rules.ConditionEqual;
+import org.rulelearn.rules.ConditionAtLeastObjectVSThreshold;
+import org.rulelearn.rules.ConditionAtLeastThresholdVSObject;
+import org.rulelearn.rules.ConditionAtMostObjectVSThreshold;
+import org.rulelearn.rules.ConditionAtMostThresholdVSObject;
+import org.rulelearn.rules.ConditionEqualObjectVSThreshold;
+import org.rulelearn.rules.ConditionEqualThresholdVSObject;
 import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleCharacteristics;
 import org.rulelearn.rules.RuleSemantics;
@@ -65,15 +68,21 @@ class RuleMLBuilderTest {
     private RuleSet ruleSetMock;
 	
 	@Mock
-	private ConditionAtLeast<IntegerField> conditionAtLeastMock;
+	private ConditionAtLeastObjectVSThreshold<IntegerField> conditionAtLeastMock;
 	@Mock
-	private ConditionAtMost<IntegerField> conditionAtMostMock;
+	private ConditionAtMostObjectVSThreshold<IntegerField> conditionAtMostMock;
 	@Mock
-	private ConditionEqual<IntegerField> conditionEqualMock;
+	private ConditionEqualObjectVSThreshold<IntegerField> conditionEqualMock;
 	@Mock
-	private ConditionAtLeast<EnumerationField> decisionAtLeastMock;
+	private ConditionAtLeastThresholdVSObject<RealField> conditionAtLeastThresholdMock;
 	@Mock
-	private ConditionAtMost<EnumerationField> decisionAtMostMock;
+	private ConditionAtMostThresholdVSObject<RealField> conditionAtMostThresholdMock;
+	@Mock
+	private ConditionEqualThresholdVSObject<RealField> conditionEqualThresholdMock;
+	@Mock
+	private ConditionAtLeastObjectVSThreshold<EnumerationField> decisionAtLeastMock;
+	@Mock
+	private ConditionAtMostObjectVSThreshold<EnumerationField> decisionAtMostMock;
 	
 	@Mock
 	private Rule ruleAtLeastMock;
@@ -89,9 +98,9 @@ class RuleMLBuilderTest {
 	private RuleSetWithCharacteristics ruleSetWithCharacteristicsMock;
 	
 	
-	private String conditionAtLeastRuleML;
-	private String conditionAtMostRuleML;
-	private String conditionEqualRuleML;
+	private String conditionAtLeastRuleML, conditionAtLeastThresholdRuleML;
+	private String conditionAtMostRuleML, conditionAtMostThresholdRuleML;
+	private String conditionEqualRuleML, conditionEqualThresholdRuleML;
 	private String decisionAtLeastRuleML;
 	private String decisionAtMostRuleML;
 	
@@ -120,10 +129,30 @@ class RuleMLBuilderTest {
 				1));
 		this.conditionAtLeastRuleML = "<atom>\n" + 
 				"<op>\n" + 
-				"\t<rel>ge</rel>\n" + 
+				"\t<rel type=\"object-threshold\">ge</rel>\n" + 
 				"</op>\n" + 
 				"<ind>3</ind>\n" + 
 				"\t<var>gc1</var>\n" + 
+				"</atom>\n";
+		
+		// set mock for condition at least with relation of type threshold versus object
+		when(this.conditionAtLeastThresholdMock.getRuleSemantics()).thenReturn(RuleSemantics.AT_LEAST);
+		when(this.conditionAtLeastThresholdMock.getLimitingEvaluation()).thenReturn(RealFieldFactory.getInstance().create(3.0, AttributePreferenceType.GAIN));
+		when(this.conditionAtLeastThresholdMock.getAttributeWithContext()).thenReturn(new EvaluationAttributeWithContext(
+				new EvaluationAttribute(
+						"gc1d",
+						true,
+						AttributeType.CONDITION,
+						RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN),
+						new UnknownSimpleFieldMV2(),
+						AttributePreferenceType.GAIN),
+				1));
+		this.conditionAtLeastThresholdRuleML = "<atom>\n" + 
+				"<op>\n" + 
+				"\t<rel type=\"threshold-object\">ge</rel>\n" + 
+				"</op>\n" + 
+				"<ind>3.0</ind>\n" + 
+				"\t<var>gc1d</var>\n" + 
 				"</atom>\n";
 		
 		// set mock for condition at most
@@ -134,16 +163,36 @@ class RuleMLBuilderTest {
 						"cc1",
 						true,
 						AttributeType.CONDITION,
-						RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.COST),
+						IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.COST),
 						new UnknownSimpleFieldMV2(),
 						AttributePreferenceType.COST),
 				1));
 		this.conditionAtMostRuleML = "<atom>\n" + 
 				"<op>\n" + 
-				"\t<rel>le</rel>\n" + 
+				"\t<rel type=\"object-threshold\">le</rel>\n" + 
 				"</op>\n" + 
 				"<ind>2</ind>\n" + 
 				"\t<var>cc1</var>\n" + 
+				"</atom>\n";
+		
+		// set mock for condition at most with relation of type threshold versus object
+		when(this.conditionAtMostThresholdMock.getRuleSemantics()).thenReturn(RuleSemantics.AT_MOST);
+		when(this.conditionAtMostThresholdMock.getLimitingEvaluation()).thenReturn(RealFieldFactory.getInstance().create(2.0, AttributePreferenceType.COST));
+		when(this.conditionAtMostThresholdMock.getAttributeWithContext()).thenReturn(new EvaluationAttributeWithContext(
+				new EvaluationAttribute(
+						"cc1d",
+						true,
+						AttributeType.CONDITION,
+						RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.COST),
+						new UnknownSimpleFieldMV2(),
+						AttributePreferenceType.COST),
+				1));
+		this.conditionAtMostThresholdRuleML = "<atom>\n" + 
+				"<op>\n" + 
+				"\t<rel type=\"threshold-object\">le</rel>\n" + 
+				"</op>\n" + 
+				"<ind>2.0</ind>\n" + 
+				"\t<var>cc1d</var>\n" + 
 				"</atom>\n";
 		
 		// set mock for condition equal
@@ -160,10 +209,30 @@ class RuleMLBuilderTest {
 				1));
 		this.conditionEqualRuleML = "<atom>\n" + 
 				"<op>\n" + 
-				"\t<rel>eq</rel>\n" + 
+				"\t<rel type=\"object-threshold\">eq</rel>\n" + 
 				"</op>\n" + 
 				"<ind>1</ind>\n" + 
 				"\t<var>a1</var>\n" + 
+				"</atom>\n";
+		
+		// set mock for condition equal with relation of type threshold versus object
+		when(this.conditionEqualThresholdMock.getRuleSemantics()).thenReturn(RuleSemantics.EQUAL);
+		when(this.conditionEqualThresholdMock.getLimitingEvaluation()).thenReturn(RealFieldFactory.getInstance().create(1.0, AttributePreferenceType.NONE));
+		when(this.conditionEqualThresholdMock.getAttributeWithContext()).thenReturn(new EvaluationAttributeWithContext(
+				new EvaluationAttribute(
+						"a1d",
+						true,
+						AttributeType.CONDITION,
+						RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.NONE),
+						new UnknownSimpleFieldMV2(),
+						AttributePreferenceType.NONE),
+				1));
+		this.conditionEqualThresholdRuleML = "<atom>\n" + 
+				"<op>\n" + 
+				"\t<rel type=\"threshold-object\">eq</rel>\n" + 
+				"</op>\n" + 
+				"<ind>1.0</ind>\n" + 
+				"\t<var>a1d</var>\n" + 
 				"</atom>\n";
 
 		String [] labels = {"a", "b", "c"};
@@ -189,7 +258,7 @@ class RuleMLBuilderTest {
 		}
 		this.decisionAtLeastRuleML = "<atom>\n" + 
 				"<op>\n" + 
-				"\t<rel>ge</rel>\n" + 
+				"\t<rel type=\"object-threshold\">ge</rel>\n" + 
 				"</op>\n" + 
 				"<ind>b</ind>\n" + 
 				"\t<var>gd1</var>\n" + 
@@ -216,7 +285,7 @@ class RuleMLBuilderTest {
 		}
 		this.decisionAtMostRuleML = "<atom>\n" + 
 				"<op>\n" + 
-				"\t<rel>le</rel>\n" + 
+				"\t<rel type=\"object-threshold\">le</rel>\n" + 
 				"</op>\n" + 
 				"<ind>a</ind>\n" + 
 				"\t<var>cd1</var>\n" + 
@@ -314,6 +383,9 @@ class RuleMLBuilderTest {
 		assertEquals(this.conditionAtLeastRuleML, ruleMLBuilder.toRuleMLString(this.conditionAtLeastMock, 0));
 		assertEquals(this.conditionAtMostRuleML, ruleMLBuilder.toRuleMLString(this.conditionAtMostMock, 0));
 		assertEquals(this.conditionEqualRuleML, ruleMLBuilder.toRuleMLString(this.conditionEqualMock, 0));
+		assertEquals(this.conditionAtLeastThresholdRuleML, ruleMLBuilder.toRuleMLString(this.conditionAtLeastThresholdMock, 0));
+		assertEquals(this.conditionAtMostThresholdRuleML, ruleMLBuilder.toRuleMLString(this.conditionAtMostThresholdMock, 0));
+		assertEquals(this.conditionEqualThresholdRuleML, ruleMLBuilder.toRuleMLString(this.conditionEqualThresholdMock, 0));
 		//System.out.println(ruleMLBuilder.toRuleMLString(this.decisionAtLeast, 0));
 		assertEquals(this.decisionAtLeastRuleML, ruleMLBuilder.toRuleMLString(this.decisionAtLeastMock, 0));
 		assertEquals(this.decisionAtMostRuleML, ruleMLBuilder.toRuleMLString(this.decisionAtMostMock, 0));
@@ -355,7 +427,7 @@ class RuleMLBuilderTest {
 				"\t\t<if>\n" + 
 				"\t\t\t\t<atom>\n" + 
 				"\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t<rel>ge</rel>\n" + 
+				"\t\t\t\t\t<rel type=\"object-threshold\">ge</rel>\n" + 
 				"\t\t\t\t</op>\n" + 
 				"\t\t\t\t<ind>3</ind>\n" + 
 				"\t\t\t\t\t<var>gc1</var>\n" + 
@@ -364,7 +436,7 @@ class RuleMLBuilderTest {
 				"\t\t<then>\n" + 
 				"\t\t\t\t\t<atom>\n" + 
 				"\t\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t\t<rel>ge</rel>\n" + 
+				"\t\t\t\t\t\t<rel type=\"object-threshold\">ge</rel>\n" + 
 				"\t\t\t\t\t</op>\n" + 
 				"\t\t\t\t\t<ind>b</ind>\n" + 
 				"\t\t\t\t\t\t<var>gd1</var>\n" + 
@@ -397,14 +469,14 @@ class RuleMLBuilderTest {
 				"\t\t\t<and>\n" +
 				"\t\t\t\t<atom>\n" + 
 				"\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t<rel>le</rel>\n" + 
+				"\t\t\t\t\t<rel type=\"object-threshold\">le</rel>\n" + 
 				"\t\t\t\t</op>\n" + 
 				"\t\t\t\t<ind>2</ind>\n" + 
 				"\t\t\t\t\t<var>cc1</var>\n" + 
 				"\t\t\t\t</atom>\n" +
 				"\t\t\t\t<atom>\n" + 
 				"\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t<rel>eq</rel>\n" + 
+				"\t\t\t\t\t<rel type=\"object-threshold\">eq</rel>\n" + 
 				"\t\t\t\t</op>\n" + 
 				"\t\t\t\t<ind>1</ind>\n" + 
 				"\t\t\t\t\t<var>a1</var>\n" + 
@@ -414,7 +486,57 @@ class RuleMLBuilderTest {
 				"\t\t<then>\n" + 
 				"\t\t\t\t\t<atom>\n" + 
 				"\t\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t\t<rel>le</rel>\n" + 
+				"\t\t\t\t\t\t<rel type=\"object-threshold\">le</rel>\n" + 
+				"\t\t\t\t\t</op>\n" + 
+				"\t\t\t\t\t<ind>a</ind>\n" + 
+				"\t\t\t\t\t\t<var>cd1</var>\n" + 
+				"\t\t\t\t\t</atom>\n" + 
+				"\t\t</then>\n" +
+				"\t\t<ruleSemantics>le</ruleSemantics>\n" +
+				"\t</implies>\n" + 
+				"</assert>\n";
+		
+		//System.out.println(ruleMLBuilder.toRuleMLString(this.rule));
+		assertEquals(ruleMLBuilder.toRuleMLString(this.ruleAtMostMock), ruleRuleML);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.ruleml.RuleMLBuilder#toRuleMLString(org.rulelearn.rules.Rule)}.
+	 */
+	@Test
+	void testRuleMLBuilderRule3() {
+		Condition<? extends EvaluationField>[] conditions = new Condition<?>[] {this.conditionAtMostThresholdMock, this.conditionEqualThresholdMock};
+		Condition<? extends EvaluationField>[][] decisions = new Condition<?>[][] {{this.decisionAtMostMock}};
+		
+		when(this.ruleAtMostMock.getConditions()).thenReturn(conditions);
+		when(this.ruleAtMostMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtMostMock.getSemantics()).thenReturn(RuleSemantics.AT_MOST);
+		when(this.ruleAtMostMock.getType()).thenReturn(RuleType.POSSIBLE);
+		
+		String ruleRuleML = "<assert>\n" + 
+				"\t<implies type=\"possible\">\n" + 
+				"\t\t<if>\n" +
+				"\t\t\t<and>\n" +
+				"\t\t\t\t<atom>\n" + 
+				"\t\t\t\t<op>\n" + 
+				"\t\t\t\t\t<rel type=\"threshold-object\">le</rel>\n" + 
+				"\t\t\t\t</op>\n" + 
+				"\t\t\t\t<ind>2.0</ind>\n" + 
+				"\t\t\t\t\t<var>cc1d</var>\n" + 
+				"\t\t\t\t</atom>\n" +
+				"\t\t\t\t<atom>\n" + 
+				"\t\t\t\t<op>\n" + 
+				"\t\t\t\t\t<rel type=\"threshold-object\">eq</rel>\n" + 
+				"\t\t\t\t</op>\n" + 
+				"\t\t\t\t<ind>1.0</ind>\n" + 
+				"\t\t\t\t\t<var>a1d</var>\n" + 
+				"\t\t\t\t</atom>\n" +
+				"\t\t\t</and>\n" +
+				"\t\t</if>\n" + 
+				"\t\t<then>\n" + 
+				"\t\t\t\t\t<atom>\n" + 
+				"\t\t\t\t\t<op>\n" + 
+				"\t\t\t\t\t\t<rel type=\"object-threshold\">le</rel>\n" + 
 				"\t\t\t\t\t</op>\n" + 
 				"\t\t\t\t\t<ind>a</ind>\n" + 
 				"\t\t\t\t\t\t<var>cd1</var>\n" + 
@@ -464,7 +586,7 @@ class RuleMLBuilderTest {
 				"\t\t<if>\n" + 
 				"\t\t\t\t<atom>\n" + 
 				"\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t<rel>ge</rel>\n" + 
+				"\t\t\t\t\t<rel type=\"object-threshold\">ge</rel>\n" + 
 				"\t\t\t\t</op>\n" + 
 				"\t\t\t\t<ind>3</ind>\n" + 
 				"\t\t\t\t\t<var>gc1</var>\n" + 
@@ -473,7 +595,7 @@ class RuleMLBuilderTest {
 				"\t\t<then>\n" + 
 				"\t\t\t\t\t<atom>\n" + 
 				"\t\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t\t<rel>ge</rel>\n" + 
+				"\t\t\t\t\t\t<rel type=\"object-threshold\">ge</rel>\n" + 
 				"\t\t\t\t\t</op>\n" + 
 				"\t\t\t\t\t<ind>b</ind>\n" + 
 				"\t\t\t\t\t\t<var>gd1</var>\n" + 
@@ -488,14 +610,14 @@ class RuleMLBuilderTest {
 				"\t\t\t<and>\n" +
 				"\t\t\t\t<atom>\n" + 
 				"\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t<rel>le</rel>\n" + 
+				"\t\t\t\t\t<rel type=\"object-threshold\">le</rel>\n" + 
 				"\t\t\t\t</op>\n" + 
 				"\t\t\t\t<ind>2</ind>\n" + 
 				"\t\t\t\t\t<var>cc1</var>\n" + 
 				"\t\t\t\t</atom>\n" +
 				"\t\t\t\t<atom>\n" + 
 				"\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t<rel>eq</rel>\n" + 
+				"\t\t\t\t\t<rel type=\"object-threshold\">eq</rel>\n" + 
 				"\t\t\t\t</op>\n" + 
 				"\t\t\t\t<ind>1</ind>\n" + 
 				"\t\t\t\t\t<var>a1</var>\n" + 
@@ -505,7 +627,7 @@ class RuleMLBuilderTest {
 				"\t\t<then>\n" + 
 				"\t\t\t\t\t<atom>\n" + 
 				"\t\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t\t<rel>le</rel>\n" + 
+				"\t\t\t\t\t\t<rel type=\"object-threshold\">le</rel>\n" + 
 				"\t\t\t\t\t</op>\n" + 
 				"\t\t\t\t\t<ind>a</ind>\n" + 
 				"\t\t\t\t\t\t<var>cd1</var>\n" + 
@@ -547,7 +669,7 @@ class RuleMLBuilderTest {
 				"\t\t<if>\n" + 
 				"\t\t\t\t<atom>\n" + 
 				"\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t<rel>ge</rel>\n" + 
+				"\t\t\t\t\t<rel type=\"object-threshold\">ge</rel>\n" + 
 				"\t\t\t\t</op>\n" + 
 				"\t\t\t\t<ind>3</ind>\n" + 
 				"\t\t\t\t\t<var>gc1</var>\n" + 
@@ -556,7 +678,7 @@ class RuleMLBuilderTest {
 				"\t\t<then>\n" + 
 				"\t\t\t\t\t<atom>\n" + 
 				"\t\t\t\t\t<op>\n" + 
-				"\t\t\t\t\t\t<rel>ge</rel>\n" + 
+				"\t\t\t\t\t\t<rel type=\"object-threshold\">ge</rel>\n" + 
 				"\t\t\t\t\t</op>\n" + 
 				"\t\t\t\t\t<ind>b</ind>\n" + 
 				"\t\t\t\t\t\t<var>gd1</var>\n" + 
