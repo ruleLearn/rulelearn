@@ -28,7 +28,11 @@ import org.rulelearn.core.MeanCalculator;
 public abstract class SimpleField extends EvaluationField {
 	
 	/**
-	 * Calculates mean value of this field's value and other field's value using the provided calculator {@link MeanCalculator}.
+	 * Calculates mean value of this field's value and other field's value using the provided calculator {@link MeanCalculator}.<br>
+	 * <br>
+	 * Should be implemented as<br>
+	 * 
+	 * {@code return calculator.calculate(this, otherValue);}
 	 * 
 	 * @param calculator mean calculator class {@link MeanCalculator} 
 	 * @param otherValue other field

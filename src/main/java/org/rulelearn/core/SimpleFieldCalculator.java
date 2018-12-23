@@ -25,6 +25,7 @@ import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 /**
  * Contract to make calculations for simple fields {@link SimpleField} and inherent fields.
+ * Contributes to realization of visitor design pattern.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
