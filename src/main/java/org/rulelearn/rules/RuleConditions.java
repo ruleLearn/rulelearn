@@ -321,7 +321,12 @@ public class RuleConditions {
 	 * @throws NullPointerException if given condition is {@code null}
 	 */
 	public int addCondition(Condition<?> condition) {
-		this.conditions.add(notNull(condition, "Condition is null."));
+		if (condition.isDecomposable()) {
+			//TODO: implement
+			this.conditions.add(notNull(condition, "Condition is null."));
+		} else {
+			this.conditions.add(notNull(condition, "Condition is null."));
+		}
 		
 		int attributeIndex = condition.getAttributeWithContext().getAttributeIndex();
 		int count = this.attributeIndex2ConditionsCount.containsKey(attributeIndex) ? this.attributeIndex2ConditionsCount.get(attributeIndex) : 0;
