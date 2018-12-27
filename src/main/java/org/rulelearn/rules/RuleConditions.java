@@ -322,7 +322,7 @@ public class RuleConditions {
 	 */
 	public int addCondition(Condition<?> condition) {
 		if (condition.isDecomposable()) {
-			//TODO: implement
+			//TODO: implement decomposition of a compound condition
 			this.conditions.add(notNull(condition, "Condition is null."));
 		} else {
 			this.conditions.add(notNull(condition, "Condition is null."));
