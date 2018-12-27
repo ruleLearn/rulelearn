@@ -40,30 +40,29 @@ import org.rulelearn.types.UnknownSimpleFieldMV2;
 public class MeanCalculator implements EvaluationFieldCalculator {
 
 	/**
-	 * Calculates mean for integer fields {@link IntegerField}. Returns {@code null} when it is impossible to calculate mean value.
-	 * It is impossible to calculate mean value of two null values and values of fields which have different preference type {@link AttributePreferenceType}.
+	 * Calculates mean for integer fields {@link IntegerField}. 
+	 * The preference type {@link AttributePreferenceType} of returned field is the same as the preference type of the first field.
 	 * 
 	 * @param firstField first filed to make calculations 
 	 * @param secondField second filed to make calculations
-	 * @return mean of arguments or {@code null} if mean is not possible to calculate
-	 * @throws ClassCastException when it is impossible to cast secondField to {@link IntegerField}
+	 * @return mean of arguments or {@link UnknownSimpleField} if second field is unknown
+	 * @throws ClassCastException when it is impossible to cast second field to {@link IntegerField}
+	 * @throws NullPointerException when at least one of fields is {@code null}
 	 */
 	@Override
 	public EvaluationField calculate(IntegerField firstField, EvaluationField secondField) {
-		IntegerField mean = null;
-		if ((firstField == null)) {
-			if (secondField != null) {
-				mean = (IntegerField)secondField;
-			}
+		EvaluationField mean = null;
+		if ((firstField == null) || (secondField == null)) {
+			throw new NullPointerException("At least one of fields is null.");
 		}
-		else if ((secondField == null) || (secondField instanceof UnknownSimpleField)) {
-			mean = firstField;
+		else if (secondField instanceof UnknownSimpleField) {
+			mean = secondField;
 		}
 		else {
 			if ((firstField.isEqualTo(secondField) == TernaryLogicValue.TRUE)) {
 				mean = firstField;
 			}
-			else if (firstField.getPreferenceType() == ((IntegerField)secondField).getPreferenceType()) {
+			else {
 				mean = IntegerFieldFactory.getInstance().create((firstField.getValue() + ((IntegerField)secondField).getValue())/2, firstField.getPreferenceType());
 			}
 		}
@@ -71,30 +70,29 @@ public class MeanCalculator implements EvaluationFieldCalculator {
 	}
 
 	/**
-	 * Calculates mean for real fields {@link RealField}. Returns {@code null} when it is impossible to calculate mean value.
-	 * It is impossible to calculate mean value of two null values and values of fields which have different preference type {@link AttributePreferenceType}.
+	 * Calculates mean for real fields {@link RealField}.
+	 * The preference type {@link AttributePreferenceType} of returned field is the same as the preference type of the first field.
 	 * 
 	 * @param firstField first filed to make calculations 
 	 * @param secondField second filed to make calculations
-	 * @return mean of arguments or {@code null} if mean is not possible to calculate
-	 * @throws ClassCastException when it is impossible to cast secondField to {@link RealField}
+	 * @return mean of arguments or {@link UnknownSimpleField} if second field is unknown
+	 * @throws ClassCastException when it is impossible to cast second field to {@link RealField}
+	 * @throws NullPointerException when at least one of fields is {@code null}
 	 */
 	@Override
 	public EvaluationField calculate(RealField firstField, EvaluationField secondField) {
-		RealField mean = null;
-		if ((firstField == null)) {
-			if (secondField != null) {
-				mean = (RealField)secondField;
-			}
+		EvaluationField mean = null;
+		if ((firstField == null) || (secondField == null)) {
+			throw new NullPointerException("At least one of fields is null.");
 		}
-		else if ((secondField == null) || (secondField instanceof UnknownSimpleField)) {
-			mean = firstField;
+		else if (secondField instanceof UnknownSimpleField) {
+			mean = secondField;
 		}
 		else {
 			if ((firstField.isEqualTo(secondField) == TernaryLogicValue.TRUE)) {
 				mean = firstField;
 			}
-			else if (firstField.getPreferenceType() == ((RealField)secondField).getPreferenceType()) {
+			else {
 				mean = RealFieldFactory.getInstance().create((firstField.getValue() + ((RealField)secondField).getValue())/2, firstField.getPreferenceType());
 			}
 		}
@@ -102,104 +100,89 @@ public class MeanCalculator implements EvaluationFieldCalculator {
 	}
 
 	/**
-	 * Calculates mean for enumeration fields {@link EnumerationField}. Returns {@code null} when it is impossible to calculate mean value. 
-	 * It is impossible to calculate mean value of two null values and values of fields which have different preference type {@link AttributePreferenceType} or 
-	 * different domains {@link ElementList}.
+	 * Calculates mean for enumeration fields {@link EnumerationField}. 
+	 * The preference type {@link AttributePreferenceType} of returned field is the same as the preference type of the first field.
 	 * 
 	 * @param firstField first filed to make calculations 
 	 * @param secondField second filed to make calculations
-	 * @return mean of arguments or {@code null} if mean is not possible to calculate
-	 * @throws ClassCastException when it is impossible to cast secondField to {@link RealField}
+	 * @return mean of arguments or {@link UnknownSimpleField} if second field is unknown
+	 * @throws ClassCastException when it is impossible to cast second field to {@link EnumerationField}
+	 * @throws NullPointerException when at least one of fields is {@code null}
+	 * @throws InvalidValueException when fields have different element lists {@link ElementList}
 	 */
 	@Override
 	public EvaluationField calculate(EnumerationField firstField, EvaluationField secondField) {
-		EnumerationField mean = null;
-		if ((firstField == null)) {
-			if (secondField != null) {
-				mean = (EnumerationField)secondField;
-			}
+		EvaluationField mean = null;
+		if ((firstField == null) || (secondField == null)) {
+			throw new NullPointerException("At least one of fields is null.");
 		}
-		else if ((secondField == null) || (secondField instanceof UnknownSimpleField)) {
-			mean = firstField;
+		else if (secondField instanceof UnknownSimpleField) {
+			mean = secondField;
 		}
 		else {
-			if ((firstField.isEqualTo(secondField) == TernaryLogicValue.TRUE) &&
-				(firstField.hasEqualHashOfElementList((EnumerationField)secondField) == TernaryLogicValue.TRUE)) {
-				mean = firstField;
+			if (firstField.isEqualTo(secondField) == TernaryLogicValue.TRUE) {
+				if (firstField.hasEqualHashOfElementList((EnumerationField)secondField) == TernaryLogicValue.TRUE) {
+					mean = firstField;
+				}
+				else {
+					throw new InvalidValueException("Fields have different element lists.");
+				}
 			}
-			else if ((firstField.getPreferenceType() == ((EnumerationField)secondField).getPreferenceType()) && 
-					 (firstField.hasEqualHashOfElementList((EnumerationField)secondField) == TernaryLogicValue.TRUE)) {
+			else if (firstField.hasEqualHashOfElementList((EnumerationField)secondField) == TernaryLogicValue.TRUE) {
 				mean = EnumerationFieldFactory.getInstance().create(firstField.getElementList(), (firstField.getValue() + ((EnumerationField)secondField).getValue())/2, firstField.getPreferenceType());
+			}
+			else {
+				throw new InvalidValueException("Fields have different element lists.");
 			}
 		}
 		return mean;
 	}
 	
 	/**
-	 * Calculates mean for integer fields {@link PairField}. Returns {@code null} when it is impossible to calculate mean value.
-	 * It is impossible to calculate mean value of two null values and values of fields which have different preference type {@link AttributePreferenceType}.
+	 * Calculates mean for integer fields {@link PairField}. 
+	 * The preference type {@link AttributePreferenceType} of returned field is the same as the preference type of the first field.
 	 * 
 	 * @param firstField first filed to make calculations 
 	 * @param secondField second filed to make calculations
-	 * @return mean of arguments or {@code null} if mean is not possible to calculate
-	 * @throws ClassCastException when it is impossible to cast secondField to {@link PairField}
+	 * @return mean of arguments or {@link UnknownSimpleField} if second field is unknown
+	 * @throws ClassCastException when it is impossible to cast second field to {@link PairField}
 	 */
 	@Override
 	public EvaluationField calculate(PairField<? extends SimpleField> firstField, EvaluationField secondField) {
-		PairField<?> mean = null;
+		EvaluationField mean = null;
+		if ((firstField == null) || (secondField == null)) {
+			throw new NullPointerException("At least one of fields is null.");
+		}
+		else if (secondField instanceof UnknownSimpleField) {
+			mean = secondField;
+		}
 		// TODO implementation
 		
 		return mean;
 	}
 
 	/**
-	 * Calculates mean for unknown fields representing missing attribute values handled according to approach denoted as mv_{1.5} {@link UnknownSimpleFieldMV15}.
-	 * Returns {@code null} when it is impossible to calculate mean value.	
+	 * Calculates mean as equal to first field passed as parameter. 
 	 * 
 	 * @param firstField first filed to make calculations 
 	 * @param secondField second filed to make calculations
-	 * @return mean of arguments or {@code null} if mean is not possible to calculate
+	 * @return first field {@link UnknownSimpleFieldMV15}
 	 */
 	@Override
 	public EvaluationField calculate(UnknownSimpleFieldMV15 firstField, EvaluationField secondField) {
-		EvaluationField mean = null;
-		if ((firstField == null)) {
-			if (secondField != null) {
-				mean = secondField;
-			}
-		}
-		else if ((secondField == null) || (secondField instanceof UnknownSimpleField)) {
-			mean = firstField;
-		}
-		else {
-			mean = secondField;
-		}
-		return mean;
+		return firstField;
 	}
 
 	/**
-	 * Calculates mean for unknown fields representing missing attribute values handled according to approach denoted as mv_{2} {@link UnknownSimpleFieldMV2}.
-	 * Returns {@code null} when it is impossible to calculate mean value.
+	 * Calculates mean as equal to first field passed as parameter.
 	 * 
 	 * @param firstField first filed to make calculations 
 	 * @param secondField second filed to make calculations
-	 * @return mean of arguments or {@code null} if mean is not possible to calculate
+	 * @return first field {@link UnknownSimpleFieldMV2}
 	 */
 	@Override
 	public EvaluationField calculate(UnknownSimpleFieldMV2 firstField, EvaluationField secondField) {
-		EvaluationField mean = null;
-		if ((firstField == null)) {
-			if (secondField != null) {
-				mean = secondField;
-			}
-		}
-		else if ((secondField == null) || (secondField instanceof UnknownSimpleField)) {
-			mean = firstField;
-		}
-		else {
-			mean = secondField;
-		}
-		return mean;
+		return firstField;
 	}
 
 }
