@@ -186,7 +186,7 @@ public abstract class EnumerationField extends KnownSimpleField {
 	 * @return {@inheritDoc}
 	 */
 	@Override
-	public SimpleField getMean(MeanCalculator calculator, SimpleField otherValue) {
+	public EvaluationField getMean(MeanCalculator calculator, EvaluationField otherValue) {
 		return calculator.calculate(this, otherValue);
 	}
 }

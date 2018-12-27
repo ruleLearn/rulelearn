@@ -20,8 +20,10 @@ import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
+import org.rulelearn.types.PairField;
 import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.SimpleField;
@@ -30,12 +32,12 @@ import org.rulelearn.types.UnknownSimpleFieldMV15;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 /**
- * Central tendency (mean) calculator for different field {@link SimpleField} types.
+ * Central tendency (mean) calculator for different field {@link EvaluationField} types.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class MeanCalculator implements SimpleFieldCalculator {
+public class MeanCalculator implements EvaluationFieldCalculator {
 
 	/**
 	 * Calculates mean for integer fields {@link IntegerField}. Returns {@code null} when it is impossible to calculate mean value.
@@ -47,7 +49,7 @@ public class MeanCalculator implements SimpleFieldCalculator {
 	 * @throws ClassCastException when it is impossible to cast secondField to {@link IntegerField}
 	 */
 	@Override
-	public SimpleField calculate(IntegerField firstField, SimpleField secondField) {
+	public EvaluationField calculate(IntegerField firstField, EvaluationField secondField) {
 		IntegerField mean = null;
 		if ((firstField == null)) {
 			if (secondField != null) {
@@ -78,7 +80,7 @@ public class MeanCalculator implements SimpleFieldCalculator {
 	 * @throws ClassCastException when it is impossible to cast secondField to {@link RealField}
 	 */
 	@Override
-	public SimpleField calculate(RealField firstField, SimpleField secondField) {
+	public EvaluationField calculate(RealField firstField, EvaluationField secondField) {
 		RealField mean = null;
 		if ((firstField == null)) {
 			if (secondField != null) {
@@ -110,7 +112,7 @@ public class MeanCalculator implements SimpleFieldCalculator {
 	 * @throws ClassCastException when it is impossible to cast secondField to {@link RealField}
 	 */
 	@Override
-	public SimpleField calculate(EnumerationField firstField, SimpleField secondField) {
+	public EvaluationField calculate(EnumerationField firstField, EvaluationField secondField) {
 		EnumerationField mean = null;
 		if ((firstField == null)) {
 			if (secondField != null) {
@@ -132,6 +134,23 @@ public class MeanCalculator implements SimpleFieldCalculator {
 		}
 		return mean;
 	}
+	
+	/**
+	 * Calculates mean for integer fields {@link PairField}. Returns {@code null} when it is impossible to calculate mean value.
+	 * It is impossible to calculate mean value of two null values and values of fields which have different preference type {@link AttributePreferenceType}.
+	 * 
+	 * @param firstField first filed to make calculations 
+	 * @param secondField second filed to make calculations
+	 * @return mean of arguments or {@code null} if mean is not possible to calculate
+	 * @throws ClassCastException when it is impossible to cast secondField to {@link PairField}
+	 */
+	@Override
+	public EvaluationField calculate(PairField<? extends SimpleField> firstField, EvaluationField secondField) {
+		PairField<?> mean = null;
+		// TODO implementation
+		
+		return mean;
+	}
 
 	/**
 	 * Calculates mean for unknown fields representing missing attribute values handled according to approach denoted as mv_{1.5} {@link UnknownSimpleFieldMV15}.
@@ -142,8 +161,8 @@ public class MeanCalculator implements SimpleFieldCalculator {
 	 * @return mean of arguments or {@code null} if mean is not possible to calculate
 	 */
 	@Override
-	public SimpleField calculate(UnknownSimpleFieldMV15 firstField, SimpleField secondField) {
-		SimpleField mean = null;
+	public EvaluationField calculate(UnknownSimpleFieldMV15 firstField, EvaluationField secondField) {
+		EvaluationField mean = null;
 		if ((firstField == null)) {
 			if (secondField != null) {
 				mean = secondField;
@@ -167,8 +186,8 @@ public class MeanCalculator implements SimpleFieldCalculator {
 	 * @return mean of arguments or {@code null} if mean is not possible to calculate
 	 */
 	@Override
-	public SimpleField calculate(UnknownSimpleFieldMV2 firstField, SimpleField secondField) {
-		SimpleField mean = null;
+	public EvaluationField calculate(UnknownSimpleFieldMV2 firstField, EvaluationField secondField) {
+		EvaluationField mean = null;
 		if ((firstField == null)) {
 			if (secondField != null) {
 				mean = secondField;

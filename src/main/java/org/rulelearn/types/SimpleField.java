@@ -16,9 +16,6 @@
 
 package org.rulelearn.types;
 
-import org.rulelearn.core.MeanCalculator;
-
-
 /**
  * Top level class for all (known and unknown) simple evaluations in an information table.
  * 
@@ -27,12 +24,4 @@ import org.rulelearn.core.MeanCalculator;
  */
 public abstract class SimpleField extends EvaluationField {
 	
-	/**
-	 * Calculates mean value of this field's value and other field's value using the provided calculator {@link MeanCalculator}.
-	 * 
-	 * @param calculator mean calculator class {@link MeanCalculator} 
-	 * @param otherValue other field
-	 * @return mean calculated by calculator
-	 */
-	public abstract SimpleField getMean(MeanCalculator calculator, SimpleField otherValue);
 }

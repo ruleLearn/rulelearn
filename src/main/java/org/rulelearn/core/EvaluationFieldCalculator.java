@@ -17,19 +17,21 @@
 package org.rulelearn.core;
 
 import org.rulelearn.types.EnumerationField;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerField;
+import org.rulelearn.types.PairField;
 import org.rulelearn.types.RealField;
 import org.rulelearn.types.SimpleField;
 import org.rulelearn.types.UnknownSimpleFieldMV15;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 /**
- * Contract to make calculations for simple fields {@link SimpleField} and inherent fields.
+ * Contract to make calculations for simple fields {@link EvaluationField} and inherent fields.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface SimpleFieldCalculator {
+public interface EvaluationFieldCalculator {
 
 	/**
 	 * Make calculations for integer fields {@link IntegerField}.
@@ -38,7 +40,7 @@ public interface SimpleFieldCalculator {
 	 * @param secondField second filed to make calculations
 	 * @return result of calculations
 	 */
-	SimpleField calculate (IntegerField firstField, SimpleField secondField);
+	public EvaluationField calculate (IntegerField firstField, EvaluationField secondField);
 	
 	/**
 	 * Make calculations for real fields {@link RealField}.
@@ -47,7 +49,7 @@ public interface SimpleFieldCalculator {
 	 * @param secondField second filed to make calculations
 	 * @return result of calculations
 	 */
-	SimpleField calculate (RealField firstField, SimpleField secondField);
+	public EvaluationField calculate (RealField firstField, EvaluationField secondField);
 	
 	/**
 	 * Make calculations for enumeration fields {@link EnumerationField}.
@@ -56,7 +58,16 @@ public interface SimpleFieldCalculator {
 	 * @param secondField second filed to make calculations
 	 * @return result of calculations
 	 */
-	SimpleField calculate (EnumerationField firstField, SimpleField secondField);
+	public EvaluationField calculate (EnumerationField firstField, EvaluationField secondField);
+	
+	/**
+	 * Make calculations for enumeration fields {@link EvaluationField}.
+	 * 
+	 * @param firstField first filed to make calculations 
+	 * @param secondField second filed to make calculations
+	 * @return result of calculations
+	 */
+	public EvaluationField calculate(PairField<? extends SimpleField> firstField, EvaluationField secondField);
 	
 	/**
 	 * Make calculations for unknown fields representing missing attribute values handled according to approach denoted as mv_{1.5} {@link UnknownSimpleFieldMV15}.
@@ -65,7 +76,7 @@ public interface SimpleFieldCalculator {
 	 * @param secondField second filed to make calculations
 	 * @return result of calculations
 	 */
-	SimpleField calculate (UnknownSimpleFieldMV15 firstField, SimpleField secondField);
+	public EvaluationField calculate (UnknownSimpleFieldMV15 firstField, EvaluationField secondField);
 	
 	/**
 	 * Make calculations for unknown fields representing missing attribute values handled according to approach denoted as mv_{2} {@link UnknownSimpleFieldMV2}.
@@ -74,5 +85,5 @@ public interface SimpleFieldCalculator {
 	 * @param secondField second filed to make calculations
 	 * @return result of calculations
 	 */
-	SimpleField calculate (UnknownSimpleFieldMV2 firstField, SimpleField secondField);
+	public EvaluationField calculate (UnknownSimpleFieldMV2 firstField, EvaluationField secondField);
 }
