@@ -18,7 +18,7 @@ package org.rulelearn.types;
 
 import java.util.Objects;
 
-import org.rulelearn.core.MeanCalculator;
+import org.rulelearn.core.EvaluationFieldCalculator;
 import org.rulelearn.data.AttributePreferenceType;
 
 /**
@@ -133,8 +133,8 @@ public abstract class IntegerField extends KnownSimpleField {
 	 * @return {@inheritDoc}
 	 */
 	@Override
-	public EvaluationField getMean(MeanCalculator calculator, EvaluationField otherValue) {
-		return calculator.calculate(this, otherValue);
+	public EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField) {
+		return calculator.calculate(this, otherField);
 	}
 	
 }

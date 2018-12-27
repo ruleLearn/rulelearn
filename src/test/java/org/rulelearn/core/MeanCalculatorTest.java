@@ -213,33 +213,33 @@ class MeanCalculatorTest {
 		this.setUnknownFields();
 		this.setSimpleFieldsToIntegers();
 		assertThrows(NullPointerException.class, () -> {
-			sField0n.getMean(calculator, sField);
+			sField0n.calculate(calculator, sField);
 		});
 		assertThrows(ClassCastException.class, () -> {
-			sField0n.getMean(calculator, kField0);
+			sField0n.calculate(calculator, kField0);
 		});
-		assertEquals(2, ((IntegerField)sField0n.getMean(calculator, sField0n)).getValue());
-		assertEquals(3, ((IntegerField)sField0n.getMean(calculator, sField1n)).getValue());
-		assertEquals(3, ((IntegerField)sField0c.getMean(calculator, sField1c)).getValue());
-		assertEquals(3, ((IntegerField)sField0g.getMean(calculator, sField1g)).getValue());
-		assertEquals(3, ((IntegerField)sField1n.getMean(calculator, sField0n)).getValue());
-		assertEquals(3, ((IntegerField)sField1c.getMean(calculator, sField0c)).getValue());
-		assertEquals(3, ((IntegerField)sField1g.getMean(calculator, sField0g)).getValue());
-		assertEquals(3, ((IntegerField)sField0n.getMean(calculator, sField1c)).getValue());
-		assertEquals(3, ((IntegerField)sField0c.getMean(calculator, sField1c)).getValue());
-		assertEquals(3, ((IntegerField)sField0g.getMean(calculator, sField1n)).getValue());
-		assertEquals(3, ((IntegerField)sField1n.getMean(calculator, sField0c)).getValue());
-		assertEquals(3, ((IntegerField)sField1c.getMean(calculator, sField0g)).getValue());
-		assertEquals(3, ((IntegerField)sField1g.getMean(calculator, sField0n)).getValue());
-		assertEquals(4, ((IntegerField)sField1g.getMean(calculator, sField1c)).getValue());
-		assertEquals(uFieldMV15, uFieldMV15.getMean(calculator, sField1n));
-		assertEquals(uFieldMV2, uFieldMV2.getMean(calculator, sField1c));
-		assertEquals(uFieldMV15, uFieldMV15.getMean(calculator, sField0g));
-		assertEquals(uFieldMV2, uFieldMV2.getMean(calculator, sField0n));
-		assertEquals(uFieldMV15, sField1n.getMean(calculator, uFieldMV15));
-		assertEquals(uFieldMV2, sField1c.getMean(calculator, uFieldMV2));
-		assertEquals(uFieldMV15, sField0g.getMean(calculator, uFieldMV15));
-		assertEquals(uFieldMV2, sField0n.getMean(calculator, uFieldMV2));
+		assertEquals(2, ((IntegerField)sField0n.calculate(calculator, sField0n)).getValue());
+		assertEquals(3, ((IntegerField)sField0n.calculate(calculator, sField1n)).getValue());
+		assertEquals(3, ((IntegerField)sField0c.calculate(calculator, sField1c)).getValue());
+		assertEquals(3, ((IntegerField)sField0g.calculate(calculator, sField1g)).getValue());
+		assertEquals(3, ((IntegerField)sField1n.calculate(calculator, sField0n)).getValue());
+		assertEquals(3, ((IntegerField)sField1c.calculate(calculator, sField0c)).getValue());
+		assertEquals(3, ((IntegerField)sField1g.calculate(calculator, sField0g)).getValue());
+		assertEquals(3, ((IntegerField)sField0n.calculate(calculator, sField1c)).getValue());
+		assertEquals(3, ((IntegerField)sField0c.calculate(calculator, sField1c)).getValue());
+		assertEquals(3, ((IntegerField)sField0g.calculate(calculator, sField1n)).getValue());
+		assertEquals(3, ((IntegerField)sField1n.calculate(calculator, sField0c)).getValue());
+		assertEquals(3, ((IntegerField)sField1c.calculate(calculator, sField0g)).getValue());
+		assertEquals(3, ((IntegerField)sField1g.calculate(calculator, sField0n)).getValue());
+		assertEquals(4, ((IntegerField)sField1g.calculate(calculator, sField1c)).getValue());
+		assertEquals(uFieldMV15, uFieldMV15.calculate(calculator, sField1n));
+		assertEquals(uFieldMV2, uFieldMV2.calculate(calculator, sField1c));
+		assertEquals(uFieldMV15, uFieldMV15.calculate(calculator, sField0g));
+		assertEquals(uFieldMV2, uFieldMV2.calculate(calculator, sField0n));
+		assertEquals(uFieldMV15, sField1n.calculate(calculator, uFieldMV15));
+		assertEquals(uFieldMV2, sField1c.calculate(calculator, uFieldMV2));
+		assertEquals(uFieldMV15, sField0g.calculate(calculator, uFieldMV15));
+		assertEquals(uFieldMV2, sField0n.calculate(calculator, uFieldMV2));
 	}
 	
 	/**
@@ -251,33 +251,33 @@ class MeanCalculatorTest {
 		this.setUnknownFields();
 		this.setSimpleFieldsToReal();
 		assertThrows(NullPointerException.class, () -> {
-			sField0c.getMean(calculator, sField);
+			sField0c.calculate(calculator, sField);
 		});
 		assertThrows(ClassCastException.class, () -> {
-			sField0c.getMean(calculator, kField1);
+			sField0c.calculate(calculator, kField1);
 		});
-		assertEquals(2.0, ((RealField)sField0n.getMean(calculator, sField0n)).getValue());
-		assertEquals(3.0, ((RealField)sField0n.getMean(calculator, sField1n)).getValue());
-		assertEquals(3.0, ((RealField)sField0c.getMean(calculator, sField1c)).getValue());
-		assertEquals(3.0, ((RealField)sField0g.getMean(calculator, sField1g)).getValue());
-		assertEquals(3.0, ((RealField)sField1n.getMean(calculator, sField0n)).getValue());
-		assertEquals(3.0, ((RealField)sField1c.getMean(calculator, sField0c)).getValue());
-		assertEquals(3.0, ((RealField)sField1g.getMean(calculator, sField0g)).getValue());
-		assertEquals(3.0, ((RealField)sField0n.getMean(calculator, sField1c)).getValue());
-		assertEquals(3.0, ((RealField)sField0c.getMean(calculator, sField1n)).getValue());
-		assertEquals(3.0, ((RealField)sField0g.getMean(calculator, sField1n)).getValue());
-		assertEquals(3.0, ((RealField)sField1n.getMean(calculator, sField0c)).getValue());
-		assertEquals(3.0, ((RealField)sField1c.getMean(calculator, sField0g)).getValue());
-		assertEquals(3.0, ((RealField)sField1g.getMean(calculator, sField0n)).getValue());
-		assertEquals(4.0, ((RealField)sField1g.getMean(calculator, sField1n)).getValue());
-		assertEquals(uFieldMV15, uFieldMV15.getMean(calculator, sField1n));
-		assertEquals(uFieldMV2, uFieldMV2.getMean(calculator, sField1c));
-		assertEquals(uFieldMV15, uFieldMV15.getMean(calculator, sField0g));
-		assertEquals(uFieldMV2, uFieldMV2.getMean(calculator, sField0n));
-		assertEquals(uFieldMV15, sField1n.getMean(calculator, uFieldMV15));
-		assertEquals(uFieldMV2, sField1c.getMean(calculator, uFieldMV2));
-		assertEquals(uFieldMV15, sField0g.getMean(calculator, uFieldMV15));
-		assertEquals(uFieldMV2, sField0n.getMean(calculator, uFieldMV2));
+		assertEquals(2.0, ((RealField)sField0n.calculate(calculator, sField0n)).getValue());
+		assertEquals(3.0, ((RealField)sField0n.calculate(calculator, sField1n)).getValue());
+		assertEquals(3.0, ((RealField)sField0c.calculate(calculator, sField1c)).getValue());
+		assertEquals(3.0, ((RealField)sField0g.calculate(calculator, sField1g)).getValue());
+		assertEquals(3.0, ((RealField)sField1n.calculate(calculator, sField0n)).getValue());
+		assertEquals(3.0, ((RealField)sField1c.calculate(calculator, sField0c)).getValue());
+		assertEquals(3.0, ((RealField)sField1g.calculate(calculator, sField0g)).getValue());
+		assertEquals(3.0, ((RealField)sField0n.calculate(calculator, sField1c)).getValue());
+		assertEquals(3.0, ((RealField)sField0c.calculate(calculator, sField1n)).getValue());
+		assertEquals(3.0, ((RealField)sField0g.calculate(calculator, sField1n)).getValue());
+		assertEquals(3.0, ((RealField)sField1n.calculate(calculator, sField0c)).getValue());
+		assertEquals(3.0, ((RealField)sField1c.calculate(calculator, sField0g)).getValue());
+		assertEquals(3.0, ((RealField)sField1g.calculate(calculator, sField0n)).getValue());
+		assertEquals(4.0, ((RealField)sField1g.calculate(calculator, sField1n)).getValue());
+		assertEquals(uFieldMV15, uFieldMV15.calculate(calculator, sField1n));
+		assertEquals(uFieldMV2, uFieldMV2.calculate(calculator, sField1c));
+		assertEquals(uFieldMV15, uFieldMV15.calculate(calculator, sField0g));
+		assertEquals(uFieldMV2, uFieldMV2.calculate(calculator, sField0n));
+		assertEquals(uFieldMV15, sField1n.calculate(calculator, uFieldMV15));
+		assertEquals(uFieldMV2, sField1c.calculate(calculator, uFieldMV2));
+		assertEquals(uFieldMV15, sField0g.calculate(calculator, uFieldMV15));
+		assertEquals(uFieldMV2, sField0n.calculate(calculator, uFieldMV2));
 	}
 	
 	/**
@@ -289,33 +289,33 @@ class MeanCalculatorTest {
 		this.setUnknownFields();
 		this.setSimpleFieldsToEnumeration();
 		assertThrows(NullPointerException.class, () -> {
-			sField0g.getMean(calculator, sField);
+			sField0g.calculate(calculator, sField);
 		});
 		assertThrows(ClassCastException.class, () -> {
-			sField0g.getMean(calculator, kField0);
+			sField0g.calculate(calculator, kField0);
 		});
-		assertEquals(2, ((EnumerationField)sField0n.getMean(calculator, sField0n)).getValue());
-		assertEquals(3, ((EnumerationField)sField0n.getMean(calculator, sField1n)).getValue());
-		assertEquals(3, ((EnumerationField)sField0c.getMean(calculator, sField1c)).getValue());
-		assertEquals(3, ((EnumerationField)sField0g.getMean(calculator, sField1g)).getValue());
-		assertEquals(3, ((EnumerationField)sField1n.getMean(calculator, sField0n)).getValue());
-		assertEquals(3, ((EnumerationField)sField1c.getMean(calculator, sField0c)).getValue());
-		assertEquals(3, ((EnumerationField)sField1g.getMean(calculator, sField0g)).getValue());
-		assertEquals(3, ((EnumerationField)sField0n.getMean(calculator, sField1g)).getValue());
-		assertEquals(3, ((EnumerationField)sField0c.getMean(calculator, sField1n)).getValue());
-		assertEquals(3, ((EnumerationField)sField0g.getMean(calculator, sField1n)).getValue());
-		assertEquals(3, ((EnumerationField)sField1n.getMean(calculator, sField0g)).getValue());
-		assertEquals(3, ((EnumerationField)sField1c.getMean(calculator, sField0g)).getValue());
-		assertEquals(3, ((EnumerationField)sField1g.getMean(calculator, sField0c)).getValue());
-		assertEquals(4, ((EnumerationField)sField1g.getMean(calculator, sField1n)).getValue());
-		assertEquals(uFieldMV15, uFieldMV15.getMean(calculator, sField1n));
-		assertEquals(uFieldMV2, uFieldMV2.getMean(calculator, sField1c));
-		assertEquals(uFieldMV15, uFieldMV15.getMean(calculator, sField0g));
-		assertEquals(uFieldMV2, uFieldMV2.getMean(calculator, sField0n));
-		assertEquals(uFieldMV15, sField1n.getMean(calculator, uFieldMV15));
-		assertEquals(uFieldMV2, sField1c.getMean(calculator, uFieldMV2));
-		assertEquals(uFieldMV15, sField0g.getMean(calculator, uFieldMV15));
-		assertEquals(uFieldMV2, sField0n.getMean(calculator, uFieldMV2));
+		assertEquals(2, ((EnumerationField)sField0n.calculate(calculator, sField0n)).getValue());
+		assertEquals(3, ((EnumerationField)sField0n.calculate(calculator, sField1n)).getValue());
+		assertEquals(3, ((EnumerationField)sField0c.calculate(calculator, sField1c)).getValue());
+		assertEquals(3, ((EnumerationField)sField0g.calculate(calculator, sField1g)).getValue());
+		assertEquals(3, ((EnumerationField)sField1n.calculate(calculator, sField0n)).getValue());
+		assertEquals(3, ((EnumerationField)sField1c.calculate(calculator, sField0c)).getValue());
+		assertEquals(3, ((EnumerationField)sField1g.calculate(calculator, sField0g)).getValue());
+		assertEquals(3, ((EnumerationField)sField0n.calculate(calculator, sField1g)).getValue());
+		assertEquals(3, ((EnumerationField)sField0c.calculate(calculator, sField1n)).getValue());
+		assertEquals(3, ((EnumerationField)sField0g.calculate(calculator, sField1n)).getValue());
+		assertEquals(3, ((EnumerationField)sField1n.calculate(calculator, sField0g)).getValue());
+		assertEquals(3, ((EnumerationField)sField1c.calculate(calculator, sField0g)).getValue());
+		assertEquals(3, ((EnumerationField)sField1g.calculate(calculator, sField0c)).getValue());
+		assertEquals(4, ((EnumerationField)sField1g.calculate(calculator, sField1n)).getValue());
+		assertEquals(uFieldMV15, uFieldMV15.calculate(calculator, sField1n));
+		assertEquals(uFieldMV2, uFieldMV2.calculate(calculator, sField1c));
+		assertEquals(uFieldMV15, uFieldMV15.calculate(calculator, sField0g));
+		assertEquals(uFieldMV2, uFieldMV2.calculate(calculator, sField0n));
+		assertEquals(uFieldMV15, sField1n.calculate(calculator, uFieldMV15));
+		assertEquals(uFieldMV2, sField1c.calculate(calculator, uFieldMV2));
+		assertEquals(uFieldMV15, sField0g.calculate(calculator, uFieldMV15));
+		assertEquals(uFieldMV2, sField0n.calculate(calculator, uFieldMV2));
 	}
 	
 	/**
@@ -327,22 +327,22 @@ class MeanCalculatorTest {
 		this.setUnknownFields();
 		this.setIntegerFields();
 		assertThrows(NullPointerException.class, () -> {
-			iField0c.getMean(calculator, iField);
+			iField0c.calculate(calculator, iField);
 		});
-		assertEquals(3, ((IntegerField)iField0n.getMean(calculator, iField1n)).getValue());
-		assertEquals(3, ((IntegerField)iField0c.getMean(calculator, iField1c)).getValue());
-		assertEquals(3, ((IntegerField)iField0g.getMean(calculator, iField1g)).getValue());
-		assertEquals(3, ((IntegerField)iField1n.getMean(calculator, iField0n)).getValue());
-		assertEquals(3, ((IntegerField)iField1c.getMean(calculator, iField0c)).getValue());
-		assertEquals(3, ((IntegerField)iField1g.getMean(calculator, iField0g)).getValue());
-		assertEquals(uFieldMV15, uFieldMV15.getMean(calculator, iField1n));
-		assertEquals(uFieldMV2, uFieldMV2.getMean(calculator, iField1c));
-		assertEquals(uFieldMV15, uFieldMV15.getMean(calculator, iField0g));
-		assertEquals(uFieldMV2, uFieldMV2.getMean(calculator, iField0n));
-		assertEquals(uFieldMV15, iField1n.getMean(calculator, uFieldMV15));
-		assertEquals(uFieldMV2, iField1n.getMean(calculator, uFieldMV2));
-		assertEquals(uFieldMV15, iField0g.getMean(calculator, uFieldMV15));
-		assertEquals(uFieldMV2, iField0n.getMean(calculator, uFieldMV2));
+		assertEquals(3, ((IntegerField)iField0n.calculate(calculator, iField1n)).getValue());
+		assertEquals(3, ((IntegerField)iField0c.calculate(calculator, iField1c)).getValue());
+		assertEquals(3, ((IntegerField)iField0g.calculate(calculator, iField1g)).getValue());
+		assertEquals(3, ((IntegerField)iField1n.calculate(calculator, iField0n)).getValue());
+		assertEquals(3, ((IntegerField)iField1c.calculate(calculator, iField0c)).getValue());
+		assertEquals(3, ((IntegerField)iField1g.calculate(calculator, iField0g)).getValue());
+		assertEquals(uFieldMV15, uFieldMV15.calculate(calculator, iField1n));
+		assertEquals(uFieldMV2, uFieldMV2.calculate(calculator, iField1c));
+		assertEquals(uFieldMV15, uFieldMV15.calculate(calculator, iField0g));
+		assertEquals(uFieldMV2, uFieldMV2.calculate(calculator, iField0n));
+		assertEquals(uFieldMV15, iField1n.calculate(calculator, uFieldMV15));
+		assertEquals(uFieldMV2, iField1n.calculate(calculator, uFieldMV2));
+		assertEquals(uFieldMV15, iField0g.calculate(calculator, uFieldMV15));
+		assertEquals(uFieldMV2, iField0n.calculate(calculator, uFieldMV2));
 	}
 	
 	/**
@@ -353,12 +353,12 @@ class MeanCalculatorTest {
 		this.setCalculator();
 		this.setUnknownFields();
 		this.setMoreIntegerFields();
-		assertEquals(3, ((IntegerField)iField0n.getMean(calculator, iField1n)).getValue());
-		assertEquals(3, ((IntegerField)iField0c.getMean(calculator, iField1c)).getValue());
-		assertEquals(3, ((IntegerField)iField0g.getMean(calculator, iField1g)).getValue());
-		assertEquals(3, ((IntegerField)iField1n.getMean(calculator, iField0n)).getValue());
-		assertEquals(3, ((IntegerField)iField1c.getMean(calculator, iField0c)).getValue());
-		assertEquals(3, ((IntegerField)iField1g.getMean(calculator, iField0g)).getValue());
+		assertEquals(3, ((IntegerField)iField0n.calculate(calculator, iField1n)).getValue());
+		assertEquals(3, ((IntegerField)iField0c.calculate(calculator, iField1c)).getValue());
+		assertEquals(3, ((IntegerField)iField0g.calculate(calculator, iField1g)).getValue());
+		assertEquals(3, ((IntegerField)iField1n.calculate(calculator, iField0n)).getValue());
+		assertEquals(3, ((IntegerField)iField1c.calculate(calculator, iField0c)).getValue());
+		assertEquals(3, ((IntegerField)iField1g.calculate(calculator, iField0g)).getValue());
 	}
 
 	/**
@@ -370,22 +370,22 @@ class MeanCalculatorTest {
 		this.setUnknownFields();
 		this.setRealFields();
 		assertThrows(NullPointerException.class, () -> {
-			rField0g.getMean(calculator, rField);
+			rField0g.calculate(calculator, rField);
 		});
-		assertEquals(3.0, ((RealField)rField0n.getMean(calculator, rField1n)).getValue());
-		assertEquals(3.0, ((RealField)rField0c.getMean(calculator, rField1c)).getValue());
-		assertEquals(3.0, ((RealField)rField0g.getMean(calculator, rField1g)).getValue());
-		assertEquals(3.0, ((RealField)rField1n.getMean(calculator, rField0n)).getValue());
-		assertEquals(3.0, ((RealField)rField1c.getMean(calculator, rField0c)).getValue());
-		assertEquals(3.0, ((RealField)rField1g.getMean(calculator, rField0g)).getValue());
-		assertEquals(uFieldMV15, uFieldMV15.getMean(calculator, rField1n));
-		assertEquals(uFieldMV2, uFieldMV2.getMean(calculator, rField1c));
-		assertEquals(uFieldMV15, uFieldMV15.getMean(calculator, rField0g));
-		assertEquals(uFieldMV2, uFieldMV2.getMean(calculator, rField0n));
-		assertEquals(uFieldMV15, rField1n.getMean(calculator, uFieldMV15));
-		assertEquals(uFieldMV2, rField1n.getMean(calculator, uFieldMV2));
-		assertEquals(uFieldMV15, rField0g.getMean(calculator, uFieldMV15));
-		assertEquals(uFieldMV2, rField0n.getMean(calculator, uFieldMV2));
+		assertEquals(3.0, ((RealField)rField0n.calculate(calculator, rField1n)).getValue());
+		assertEquals(3.0, ((RealField)rField0c.calculate(calculator, rField1c)).getValue());
+		assertEquals(3.0, ((RealField)rField0g.calculate(calculator, rField1g)).getValue());
+		assertEquals(3.0, ((RealField)rField1n.calculate(calculator, rField0n)).getValue());
+		assertEquals(3.0, ((RealField)rField1c.calculate(calculator, rField0c)).getValue());
+		assertEquals(3.0, ((RealField)rField1g.calculate(calculator, rField0g)).getValue());
+		assertEquals(uFieldMV15, uFieldMV15.calculate(calculator, rField1n));
+		assertEquals(uFieldMV2, uFieldMV2.calculate(calculator, rField1c));
+		assertEquals(uFieldMV15, uFieldMV15.calculate(calculator, rField0g));
+		assertEquals(uFieldMV2, uFieldMV2.calculate(calculator, rField0n));
+		assertEquals(uFieldMV15, rField1n.calculate(calculator, uFieldMV15));
+		assertEquals(uFieldMV2, rField1n.calculate(calculator, uFieldMV2));
+		assertEquals(uFieldMV15, rField0g.calculate(calculator, uFieldMV15));
+		assertEquals(uFieldMV2, rField0n.calculate(calculator, uFieldMV2));
 	}
 	
 	/**
@@ -397,31 +397,31 @@ class MeanCalculatorTest {
 		this.setUnknownFields();
 		this.setEnumerationFields();
 		assertThrows(NullPointerException.class, () -> {
-			eField0n.getMean(calculator, eField);
+			eField0n.calculate(calculator, eField);
 		});
 		assertThrows(InvalidValueException.class, () -> {
-			eField0n.getMean(calculator, eField2n);
+			eField0n.calculate(calculator, eField2n);
 		});
 		assertThrows(InvalidValueException.class, () -> {
-			eField0c.getMean(calculator, eField2g);
+			eField0c.calculate(calculator, eField2g);
 		});
 		assertThrows(InvalidValueException.class, () -> {
-			eField0g.getMean(calculator, eField2c);
+			eField0g.calculate(calculator, eField2c);
 		});
-		assertEquals(3, ((EnumerationField)eField0n.getMean(calculator, eField1n)).getValue());
-		assertEquals(3, ((EnumerationField)eField0c.getMean(calculator, eField1c)).getValue());
-		assertEquals(3, ((EnumerationField)eField0g.getMean(calculator, eField1g)).getValue());
-		assertEquals(3, ((EnumerationField)eField1n.getMean(calculator, eField0n)).getValue());
-		assertEquals(3, ((EnumerationField)eField1c.getMean(calculator, eField0c)).getValue());
-		assertEquals(3, ((EnumerationField)eField1g.getMean(calculator, eField0g)).getValue());
-		assertEquals(uFieldMV15, uFieldMV15.getMean(calculator, eField1n));
-		assertEquals(uFieldMV2, uFieldMV2.getMean(calculator, eField1c));
-		assertEquals(uFieldMV15, uFieldMV15.getMean(calculator, eField0g));
-		assertEquals(uFieldMV2, uFieldMV2.getMean(calculator, eField0n));
-		assertEquals(uFieldMV15, eField1n.getMean(calculator, uFieldMV15));
-		assertEquals(uFieldMV2, eField1n.getMean(calculator, uFieldMV2));
-		assertEquals(uFieldMV15, eField0g.getMean(calculator, uFieldMV15));
-		assertEquals(uFieldMV2, eField0n.getMean(calculator, uFieldMV2));
+		assertEquals(3, ((EnumerationField)eField0n.calculate(calculator, eField1n)).getValue());
+		assertEquals(3, ((EnumerationField)eField0c.calculate(calculator, eField1c)).getValue());
+		assertEquals(3, ((EnumerationField)eField0g.calculate(calculator, eField1g)).getValue());
+		assertEquals(3, ((EnumerationField)eField1n.calculate(calculator, eField0n)).getValue());
+		assertEquals(3, ((EnumerationField)eField1c.calculate(calculator, eField0c)).getValue());
+		assertEquals(3, ((EnumerationField)eField1g.calculate(calculator, eField0g)).getValue());
+		assertEquals(uFieldMV15, uFieldMV15.calculate(calculator, eField1n));
+		assertEquals(uFieldMV2, uFieldMV2.calculate(calculator, eField1c));
+		assertEquals(uFieldMV15, uFieldMV15.calculate(calculator, eField0g));
+		assertEquals(uFieldMV2, uFieldMV2.calculate(calculator, eField0n));
+		assertEquals(uFieldMV15, eField1n.calculate(calculator, uFieldMV15));
+		assertEquals(uFieldMV2, eField1n.calculate(calculator, uFieldMV2));
+		assertEquals(uFieldMV15, eField0g.calculate(calculator, uFieldMV15));
+		assertEquals(uFieldMV2, eField0n.calculate(calculator, uFieldMV2));
 	}
 	
 }

@@ -17,7 +17,7 @@
 package org.rulelearn.types;
 
 import org.rulelearn.core.ComparableExt;
-import org.rulelearn.core.MeanCalculator;
+import org.rulelearn.core.EvaluationFieldCalculator;
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
@@ -53,11 +53,11 @@ public abstract class EvaluationField extends Field implements ComparableExt<Eva
 	abstract public TernaryLogicValue isAtMostAsGoodAs(Field otherField);
 
 	/**
-	 * Calculates mean value of this field's value and other field's value using the provided calculator {@link MeanCalculator}.
+	 * Calculates a value (represented by a new field) according to the value of this field and other field's value using the provided calculator {@link EvaluationFieldCalculator}.
 	 * 
-	 * @param calculator mean calculator class {@link MeanCalculator} 
-	 * @param otherValue other field
-	 * @return mean calculated by calculator
+	 * @param calculator calculator class {@link EvaluationFieldCalculator} 
+	 * @param otherField other field
+	 * @return a value calculated by the calculator; this value is represented as a new field
 	 */
-	public abstract EvaluationField getMean(MeanCalculator calculator, EvaluationField otherValue);
+	public abstract EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField);
 }
