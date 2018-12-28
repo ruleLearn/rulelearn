@@ -54,6 +54,10 @@ public abstract class EvaluationField extends Field implements ComparableExt<Eva
 
 	/**
 	 * Calculates a value (represented by a new field) according to the value of this field and other field's value using the provided calculator {@link EvaluationFieldCalculator}.
+	 * <br>
+	 * Should be implemented as<br>
+	 * 
+	 * {@code return calculator.calculate(this, otherField);}
 	 * 
 	 * @param calculator calculator class {@link EvaluationFieldCalculator} 
 	 * @param otherField other field

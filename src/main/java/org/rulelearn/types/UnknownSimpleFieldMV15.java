@@ -199,5 +199,25 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 	public EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField) {
 		return calculator.calculate(this, otherField);
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@code true}
+	 */
+	@Override
+	public boolean equalWhenComparedToAnyEvaluation() {
+		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@code false}
+	 */
+	@Override
+	public boolean equalWhenReverseComparedToAnyEvaluation() {
+		return false;
+	}
 
 }

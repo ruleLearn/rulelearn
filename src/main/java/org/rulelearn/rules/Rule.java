@@ -30,8 +30,9 @@ import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.EvaluationField;
 
 /**
- * Decision rule composed of elementary conditions on the LHS, connected by "and", and elementary decisions on the RHS, connected by "or" (between lists of elementary decisions)
- * and "and" (inside lists of elementary decisions).
+ * Decision rule composed of elementary conditions on the left-hand-side (LHS), connected by "and" connective, and elementary decisions on the right-hand-side (RHS)
+ * represented by {@link RuleDecisions} object.<br>
+ * <br>
  * The rule is immutable, i.e., it has all conditions and decisions fixed in constructor.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
@@ -45,7 +46,7 @@ public class Rule {
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
-	abstract static class RuleRHS {
+	abstract static class RuleDecisions {
 	    /**
 	     * Checks if an object from the information table, defined by its index, fulfills this rule's RHS.
 	     * 
@@ -66,7 +67,7 @@ public class Rule {
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
-	public static class ElementaryDecision extends RuleRHS {
+	public static class ElementaryDecision extends RuleDecisions {
 		Condition<? extends EvaluationField> elementaryDecision;
 		
 		/**
@@ -92,22 +93,22 @@ public class Rule {
 	}
 	
 	/**
-	 * Compound rule's RHS composed of AND-connected objects of type {@link RuleRHS}.
+	 * Compound rule's RHS composed of AND-connected objects of type {@link RuleDecisions}.
 	 *
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
-	public static class ANDConnectedRuleRHS extends RuleRHS {
-		List<RuleRHS> ruleRHSs;
+	public static class ANDConnectedRuleDecisions extends RuleDecisions {
+		List<RuleDecisions> ruleRHSs;
 		
 		/**
-		 * Constructs compound rule's RHS composed of AND-connected objects of type {@link RuleRHS}.
+		 * Constructs compound rule's RHS composed of AND-connected objects of type {@link RuleDecisions}.
 		 * 
 		 * @param ruleRHSs list of objects that should be connected with AND connective to form rule's RHS
 		 * @throws NullPointerException if given list is {@code null}
 		 * @throws InvalidSizeException if given list is empty
 		 */
-		public ANDConnectedRuleRHS(List<RuleRHS> ruleRHSs) {
+		public ANDConnectedRuleDecisions(List<RuleDecisions> ruleRHSs) {
 			this.ruleRHSs = Precondition.nonEmpty(Precondition.notNull(ruleRHSs, "List with AND-connected rule's RHS objects is null."), "List with AND-connected rule's RHS objects is empty.");
 		}
 
@@ -118,7 +119,7 @@ public class Rule {
 	     * @throws NullPointerException {@inheritDoc}
 		 */
 		public boolean satisfiedBy(int objectIndex, InformationTable informationTable) {
-			for (RuleRHS ruleRHS : ruleRHSs) {
+			for (RuleDecisions ruleRHS : ruleRHSs) {
 				if (!ruleRHS.satisfiedBy(objectIndex, informationTable)) {
 					return false;
 				}
@@ -128,22 +129,22 @@ public class Rule {
 	}
 	
 	/**
-	 * Compound rule's RHS composed of OR-connected objects of type {@link RuleRHS}.
+	 * Compound rule's RHS composed of OR-connected objects of type {@link RuleDecisions}.
 	 *
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
-	public static class ORConnectedRuleRHS extends RuleRHS {
-		List<RuleRHS> ruleRHSs;
+	public static class ORConnectedRuleDecisions extends RuleDecisions {
+		List<RuleDecisions> ruleRHSs;
 		
 		/**
-		 * Constructs compound rule's RHS composed of OR-connected objects of type {@link RuleRHS}.
+		 * Constructs compound rule's RHS composed of OR-connected objects of type {@link RuleDecisions}.
 		 * 
 		 * @param ruleRHSs list of objects that should be connected with OR connective to form rule's RHS
 		 * @throws NullPointerException if given list is {@code null}
 		 * @throws InvalidSizeException if given list is empty
 		 */
-		public ORConnectedRuleRHS(List<RuleRHS> ruleRHSs) {
+		public ORConnectedRuleDecisions(List<RuleDecisions> ruleRHSs) {
 			this.ruleRHSs = Precondition.nonEmpty(Precondition.notNull(ruleRHSs, "List with OR-connected rule's RHS objects is null."), "List with OR-connected rule's RHS objects is empty.");
 		}
 		
@@ -154,7 +155,7 @@ public class Rule {
 	     * @throws NullPointerException {@inheritDoc}
 		 */
 		public boolean satisfiedBy(int objectIndex, InformationTable informationTable) {
-			for (RuleRHS ruleRHS : ruleRHSs) {
+			for (RuleDecisions ruleRHS : ruleRHSs) {
 				if (ruleRHS.satisfiedBy(objectIndex, informationTable)) {
 					return true;
 				}
@@ -203,7 +204,7 @@ public class Rule {
      * Conditions in each row (for fixed first array index) are considered to be connected with AND connective.
      * Rows are considered to be connected using OR connective.
      */
-    protected Condition<? extends EvaluationField>[][] decisions = null;
+    protected Condition<? extends EvaluationField>[][] decisions = null; //TODO: rewrite to use RuleRHS object
     
     /**
      * Value appended to the beginning of a rule while transforming the rule to text form.

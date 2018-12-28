@@ -16,6 +16,8 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.ComparableExt;
+import org.rulelearn.core.ComparisonResult;
 import org.rulelearn.core.ReverseComparableExt;
 import org.rulelearn.core.TernaryLogicValue;
 
@@ -62,5 +64,23 @@ public abstract class UnknownSimpleField extends SimpleField implements ReverseC
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	abstract public TernaryLogicValue reverseIsEqualTo(KnownSimpleField otherField);
+	
+	/**
+	 * Informs if this unknown value always turns out to be equal to any compared evaluation of an object from an information table.
+	 * It tests if implemented method {@link ComparableExt#compareToEnum(Object)} returns {@link ComparisonResult#EQUAL}.
+	 * 
+	 * @return {@code true} if this unknown value is equal to any compared evaluation of an object from an information table
+	 *         {@code false} otherwise
+	 */
+	abstract public boolean equalWhenComparedToAnyEvaluation();
+	
+	/**
+	 * Informs if this unknown value always turns out to be equal to any reverse compared evaluation of an object from an information table.
+	 * It tests if implemented method {@link ReverseComparableExt#reverseCompareToEnum(Object)} returns {@link ComparisonResult#EQUAL}.
+	 * 
+	 * @return {@code true} if this unknown value is equal to any reverse compared evaluation of an object from an information table
+	 *         {@code false} otherwise
+	 */
+	abstract public boolean equalWhenReverseComparedToAnyEvaluation();
 	
 }
