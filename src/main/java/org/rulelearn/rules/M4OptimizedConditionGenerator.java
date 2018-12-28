@@ -283,6 +283,18 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		return (attribute.getPreferenceType() == AttributePreferenceType.GAIN ? 1 : -1) * (ruleConditions.getRuleSemantics() == RuleSemantics.AT_LEAST ? 1 : -1);
 	}
 	
+	//informs if missing value should be considered for current attribute (i.e., if condition thresholding that value can restrict set of covered objects)
+	boolean shouldSkipMissingValue(EvaluationAttribute evaluationAttribute, RuleType ruleType) {
+		switch (ruleType) {
+		case CERTAIN:
+			return evaluationAttribute.getMissingValueType().equalWhenComparedToAnyEvaluation();
+		case POSSIBLE:
+			return evaluationAttribute.getMissingValueType().equalWhenReverseComparedToAnyEvaluation();
+		default:
+			throw new InvalidValueException("Cannot assess if missing value should be skipped if rule type is neither certain nor possible.");
+		}
+	}
+	
 	//can update bestConditionWithEvaluations
 	void searchForBestConditionForOptimizableAttribute(IntList consideredObjects, RuleConditions ruleConditions, int localActiveConditionAttributeIndex, int globalAttributeIndex,
 			ConditionWithEvaluations bestConditionWithEvaluations, ConditionWithEvaluations candidateConditionWithEvaluations) {
@@ -304,7 +316,7 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		ConditionComparisonResult candidateVSBestConditionComparisonResult;
 		boolean checkLessExtremeEvaluations;
 		
-		boolean missingValueConditionTested = false; //TODO: initialize with true if condition with missing value makes no sense
+		boolean missingValueConditionTested = shouldSkipMissingValue(activeConditionAttribute, ruleConditions.getRuleType());
 		
 		//establish if there is at least one non-missing evaluation for considered criterion, among considered objects
 		for (int i = 0; i < consideredObjectsCount; i++) {
@@ -315,8 +327,8 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 				break;
 			} else {
 				if (!missingValueConditionTested) {
-					//TODO: handle condition w.r.t. a missing value, in case of possible rule and approach mv_{1.5}
-					//missingValueConditionTested = true;
+					testBestCondition(ruleConditions, activeConditionAttribute, objectEvaluation, globalAttributeIndex, bestConditionWithEvaluations, candidateConditionWithEvaluations); //update best condition, if necessary
+					missingValueConditionTested = true;
 				}
 			}
 		}
@@ -339,8 +351,8 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 					}
 				} else {
 					if (!missingValueConditionTested) {
-						//TODO: handle condition w.r.t. a missing value, in case of possible rule and approach mv_{1.5}
-						//missingValueConditionTested = true;
+						testBestCondition(ruleConditions, activeConditionAttribute, objectEvaluation, globalAttributeIndex, bestConditionWithEvaluations, candidateConditionWithEvaluations); //update best condition, if necessary
+						missingValueConditionTested = true;
 					}
 				}
 			}
@@ -392,13 +404,14 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 	}
 	
 	//can update bestConditionWithEvaluations
-	void searchForBestConditionForNonOptimizableAttribute(IntList consideredObjects, RuleConditions ruleConditions, int localActiveConditionAttributeIndex, int globalAttributeIndex, ConditionWithEvaluations bestConditionWithEvaluations, ConditionWithEvaluations candidateConditionWithEvaluations) {
+	void searchForBestConditionForNonOptimizableAttribute(IntList consideredObjects, RuleConditions ruleConditions, int localActiveConditionAttributeIndex, int globalAttributeIndex,
+			ConditionWithEvaluations bestConditionWithEvaluations, ConditionWithEvaluations candidateConditionWithEvaluations) {
 		Table<EvaluationAttribute, EvaluationField> data = ruleConditions.getLearningInformationTable().getActiveConditionAttributeFields();
 		EvaluationAttribute activeConditionAttribute = data.getAttributes(true)[localActiveConditionAttributeIndex];
 		EvaluationField objectEvaluation;
 		ObjectSet<EvaluationField> alreadyTestedObjectEvaluations = new ObjectOpenHashSet<>();
 		
-		boolean missingValueConditionTested = false; //TODO: initialize with true if condition with missing value makes no sense
+		boolean missingValueConditionTested = shouldSkipMissingValue(activeConditionAttribute, ruleConditions.getRuleType());
 		
 		for (int consideredObjectIndex : consideredObjects) {
 			objectEvaluation = data.getField(consideredObjectIndex, localActiveConditionAttributeIndex);
@@ -411,8 +424,8 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 				}
 			} else {
 				if (!missingValueConditionTested) {
-					//TODO: handle condition w.r.t. a missing value, in case of possible rule and approach mv_{1.5}
-					//missingValueConditionTested = true;
+					testBestCondition(ruleConditions, activeConditionAttribute, objectEvaluation, globalAttributeIndex, bestConditionWithEvaluations, candidateConditionWithEvaluations); //update best condition, if necessary
+					missingValueConditionTested = true;
 				}
 			}
 		}
