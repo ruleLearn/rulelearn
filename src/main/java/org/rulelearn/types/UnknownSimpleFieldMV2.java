@@ -175,4 +175,24 @@ public class UnknownSimpleFieldMV2 extends UnknownSimpleField {
 		return calculator.calculate(this, otherValue);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@code true}
+	 */
+	@Override
+	public boolean equalWhenComparedToAnyEvaluation() {
+		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@code true}
+	 */
+	@Override
+	public boolean equalWhenReverseComparedToAnyEvaluation() {
+		return true;
+	}
+
 }

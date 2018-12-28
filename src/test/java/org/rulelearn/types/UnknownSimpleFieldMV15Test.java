@@ -297,5 +297,21 @@ class UnknownSimpleFieldMV15Test {
 	public void testToString() {
 		assertEquals(new UnknownSimpleFieldMV15().toString(), "?");
 	}
+	
+	/**
+	 * Tests {@link UnknownSimpleFieldMV15#equalWhenComparedToAnyEvaluation()} method.
+	 */
+	@Test
+	public void testEqualWhenComparedToAnyEvaluation() {
+		assertEquals(new UnknownSimpleFieldMV15().equalWhenComparedToAnyEvaluation(), true);
+	}
+	
+	/**
+	 * Tests {@link UnknownSimpleFieldMV15#equalWhenReverseComparedToAnyEvaluation()} method.
+	 */
+	@Test
+	public void testEqualWhenReverseComparedToAnyEvaluation() {
+		assertEquals(new UnknownSimpleFieldMV15().equalWhenReverseComparedToAnyEvaluation(), false);
+	}
 
 }
