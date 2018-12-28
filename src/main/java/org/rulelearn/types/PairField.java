@@ -18,6 +18,7 @@ package org.rulelearn.types;
 
 import java.util.Objects;
 
+import org.rulelearn.core.EvaluationFieldCalculator;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
@@ -219,6 +220,16 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	@Override
 	public boolean isUnknown() {
 		return (firstValue instanceof UnknownSimpleField && secondValue instanceof UnknownSimpleField);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField) {
+		return calculator.calculate(this, otherField);
 	}
 
 }

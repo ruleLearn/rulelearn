@@ -18,7 +18,7 @@ package org.rulelearn.types;
 
 import java.util.Objects;
 
-import org.rulelearn.core.MeanCalculator;
+import org.rulelearn.core.EvaluationFieldCalculator;
 
 /**
  * Field representing a real number value.
@@ -133,7 +133,7 @@ public abstract class RealField extends KnownSimpleField {
 	 * @return {@inheritDoc}
 	 */
 	@Override
-	public SimpleField getMean(MeanCalculator calculator, SimpleField otherValue) {
-		return calculator.calculate(this, otherValue);
+	public EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField) {
+		return calculator.calculate(this, otherField);
 	}
 }

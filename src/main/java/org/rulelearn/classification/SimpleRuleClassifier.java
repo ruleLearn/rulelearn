@@ -16,7 +16,7 @@
 
 package org.rulelearn.classification;
 
-import org.rulelearn.core.CentralTendencyCalculator;
+import org.rulelearn.core.MeanCalculator;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.InformationTable;
@@ -36,6 +36,11 @@ import org.rulelearn.types.EvaluationField;
 public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassifier {
 
 	/**
+	 * Mean calculator {@link MeanCalculator}.
+	 */
+	MeanCalculator meanCalculator = null;
+	
+	/**
 	 * Constructs this classifier.
 	 * 
 	 * @param ruleSet set of decision rules to be used to classify objects from an information table
@@ -45,6 +50,7 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 	 */
 	public SimpleRuleClassifier(RuleSet ruleSet, SimpleClassificationResult defaultClassificationResult) {
 		super(ruleSet, defaultClassificationResult);
+		this.meanCalculator = new MeanCalculator();	
 	}
 	
 	/**
@@ -120,10 +126,7 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 					result = new SimpleClassificationResult(new SimpleDecision(upLimit, decisionAttributeIndex));
 				}	
 				else {
-					EvaluationField mean = CentralTendencyCalculator.calculateMean(upLimit, downLimit);
-					if (mean != null) {
-						result = new SimpleClassificationResult(new SimpleDecision(mean, decisionAttributeIndex));
-					}
+					result = new SimpleClassificationResult(new SimpleDecision(downLimit.calculate(this.meanCalculator, upLimit), decisionAttributeIndex));
 				}
 			}
 			else {
