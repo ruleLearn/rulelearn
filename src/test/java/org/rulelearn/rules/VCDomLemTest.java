@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rulelearn.approximations.ApproximatedSet;
 import org.rulelearn.approximations.ClassicalDominanceBasedRoughSetCalculator;
-import org.rulelearn.approximations.DominanceBasedRoughSetCalculator;
+import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
@@ -79,9 +79,7 @@ class VCDomLemTest {
 		
 		InformationTableWithDecisionDistributions informationTable = Mockito.mock(InformationTableWithDecisionDistributions.class);
 		
-		DominanceBasedRoughSetCalculator roughSetCalculator = new ClassicalDominanceBasedRoughSetCalculator();
-		Unions unionContainer = new Unions(informationTable, roughSetCalculator);
-		ApproximatedSet[] approximatedSets = unionContainer.getUpwardUnions();
+		ApproximatedSetSupplier approximatedSetSupplier = new UnionSupplier(Union.UnionType.AT_LEAST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		
 		RuleType ruleType = RuleType.CERTAIN; //certain/possible
 		RuleSemantics ruleSemantics = RuleSemantics.AT_LEAST;
@@ -92,7 +90,11 @@ class VCDomLemTest {
 		List<RuleConditionsWithApproximatedSet> verifiedRuleConditionsWithApproximatedSet; //minimal rule conditions for current approximated set
 		RuleConditionsWithApproximatedSet ruleConditionsWithApproximatedSet;
 		
-		for (ApproximatedSet approximatedSet : approximatedSets) {
+		int approximatedSetsCount = approximatedSetSupplier.getCount(); //supplementary variable
+		ApproximatedSet approximatedSet; //supplementary variable
+		
+		for (int i = 0; i < approximatedSetsCount; i++) {
+			approximatedSet = approximatedSetSupplier.getApproximatedSet(i);
 			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, ruleType, ruleSemantics, allowedObjectsType,
 					conditionGenerator, ruleInductionStoppingConditionChecker, conditionSeparator, ruleConditionsPruner, ruleConditionsSetPruner);
 			
