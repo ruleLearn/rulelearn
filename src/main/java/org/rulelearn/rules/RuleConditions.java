@@ -72,7 +72,7 @@ public class RuleConditions {
 	/**
 	 * Indices of all neutral objects from learning information (decision) table that can be covered by these rule conditions. Can be an empty set.
 	 * This set is a subset of {@link #indicesOfObjectsThatCanBeCovered}.
-	 * Neutral objects are such that their decision is uncomparable with the limiting decision of considered approximated set {@link ApproximatedSet#getLimitingDecision()}.
+	 * Neutral objects are such objects that their decision is neither positive nor negative with respect to the considered approximated set.
 	 */
 	IntSet indicesOfNeutralObjects;
 	
@@ -192,7 +192,7 @@ public class RuleConditions {
 	 * In case of inducing an approximate decision rule, positive objects are those belonging to the boundary of the approximated set.<br>
 	 * <br> 
 	 * The set of neutral objects (as returned by {@link #getIndicesOfNeutralObjects()}, is initialized as an empty set {@link IntSets#EMPTY_SET}.
-	 * Neutral objects are such objects that their decision is uncomparable with the limiting decision of considered approximated set {@link ApproximatedSet#getLimitingDecision()}.
+	 * Neutral objects are such objects that their decision is neither positive nor negative with respect to the considered approximated set.
 	 * 
 	 * @param learningInformationTable learning information table for which these rule conditions are constructed
 	 * @param indicesOfPositiveObjects set of indices of positive objects from the given information table, i.e., all objects that satisfy right-hand side (RHS, decision part) of induced decision rule;
@@ -223,7 +223,7 @@ public class RuleConditions {
 	 * In case of inducing a possible decision rule, positive objects are those belonging to the upper approximation of the approximated set.
 	 * In case of inducing an approximate decision rule, positive objects are those belonging to the boundary of the approximated set.<br>
 	 * <br>
-	 * Neutral objects are such objects that their decision is uncomparable with the limiting decision of considered approximated set {@link ApproximatedSet#getLimitingDecision()}.
+	 * Neutral objects are such objects that their decision is neither positive nor negative with respect to the considered approximated set.
 	 * 
 	 * @param learningInformationTable learning information table for which these rule conditions are constructed
 	 * @param indicesOfPositiveObjects set of indices of positive objects from the given information table, i.e., all objects that satisfy right-hand side (RHS, decision part) of induced decision rule;
@@ -293,7 +293,7 @@ public class RuleConditions {
 	
 	/**
 	 * Gets indices of all neutral objects from learning information (decision) table that can be covered by these rule conditions.
-	 * Neutral objects are such that their decision is uncomparable with the limiting decision of considered approximated set {@link ApproximatedSet#getLimitingDecision()}.<br>
+	 * Neutral objects are such objects that their decision is neither positive nor negative with respect to the considered approximated set.<br>
 	 * <br>
 	 * The returned set is a subset of set returned by {@link #getIndicesOfObjectsThatCanBeCovered()}.
 	 * 

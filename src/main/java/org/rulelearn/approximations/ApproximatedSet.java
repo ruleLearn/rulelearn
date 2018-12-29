@@ -87,30 +87,15 @@ public abstract class ApproximatedSet {
 	protected IntSortedSet objects = null;
 	
 	/**
-	 * Limiting decision, determining which objects from the information table belong to this approximated set.
-	 */
-	protected Decision limitingDecision;
-	
-	/**
-	 * Indicates if objects having decision equal to the limiting decision of this approximated set should be included in this approximated set.
-	 * Value of this field affects calculation of objects belonging to this set.
-	 * Defaults to {@code true}.
-	 */
-	protected boolean includeLimitingDecision = true;
-	
-	/**
-	 * Constructs this approximated set using given information table, limiting decision, and rough set calculator.
-	 * Calculates objects belonging to this approximated entity.
+	 * Constructs this approximated set using given information table and rough set calculator.
 	 * 
 	 * @param informationTable information table containing, among other objects, the objects belonging to this approximated set
-	 * @param limitingDecision limiting decision, determining which objects from the information table belong to this set
 	 * @param roughSetCalculator rough set calculator used to calculate approximations and boundary of this set
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public ApproximatedSet(InformationTable informationTable, Decision limitingDecision, RoughSetCalculator<? extends ApproximatedSet> roughSetCalculator) {
+	public ApproximatedSet(InformationTable informationTable, RoughSetCalculator<? extends ApproximatedSet> roughSetCalculator) {
 		this.informationTable = notNull(informationTable, "Information table for constructed approximated set is null.");
-		this.limitingDecision = notNull(limitingDecision, "Limiting decision for constructed approximated set is null.");
 		this.roughSetCalculator = notNull(roughSetCalculator, "Rough set calculator for constructed approximated set is null.");
 	}
 	
@@ -126,15 +111,6 @@ public abstract class ApproximatedSet {
 	 */
 	public InformationTable getInformationTable() {
 		return informationTable;
-	}
-
-	/**
-	 * Gets limiting decision of this set, determining which objects from the information table belong to this set.
-	 * 
-	 * @return limiting decision of this set, determining which objects from the information table belong to this set
-	 */
-	public Decision getLimitingDecision() {
-		return limitingDecision;
 	}
 	
 	/**
@@ -379,10 +355,10 @@ public abstract class ApproximatedSet {
 	/**
 	 * Tests if this approximated set is concordant with given decision.
 	 * 
-	 * @param decision decision that limiting decision of this set should be compared with
-	 * @return {@link TernaryLogicValue#TRUE} if this sets' limiting decision is concordant with given decision,
-	 *         {@link TernaryLogicValue#FALSE} if this sets' limiting decision is not concordant with given decision,
-	 *         {@link TernaryLogicValue#UNCOMPARABLE} if this sets' limiting decision is uncomparable with given decision
+	 * @param decision tested decision
+	 * @return {@link TernaryLogicValue#TRUE} if this set is concordant with given decision,
+	 *         {@link TernaryLogicValue#FALSE} if this set is not concordant with given decision,
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if this set is neither concordant nor discordant with given decision
 	 * 
 	 * @throws NullPointerException if given decision is {@code null}
 	 */
@@ -437,15 +413,6 @@ public abstract class ApproximatedSet {
 	public abstract int getComplementarySetSize();
 
 	/**
-	 * Tells if this approximated set includes objects whose decision is equal to the limiting decision.
-	 * 
-	 * @return {@code true} if this approximated set includes objects whose decision is equal to the limiting decision, {@code false} otherwise
-	 */
-	public boolean isIncludeLimitingDecision() {
-		return includeLimitingDecision;
-	}
-	
-	/**
 	 * Tells if this approximated set is meaningful, i.e., it does not contain all the objects from the information table
 	 * 
 	 * @return {@code true} if this approximated set is meaningful, i.e., it does not contain all the objects from the information table,
@@ -456,9 +423,9 @@ public abstract class ApproximatedSet {
 	}
 	
 	/**
-	 * Gets list of elementary decisions associated with this approximated set, each dependent on the type of this set and one of the evaluations contributing to the limiting decision.
+	 * Gets list of elementary decisions associated with this approximated set, that can be put on the right-hand side of a decision rule describing objects from this set.
 	 * 
-	 * @return list of elementary decisions associated with this approximated set, each dependent on the type of this set and one of the evaluations contributing to the limiting decision
+	 * @return list of elementary decisions associated with this approximated set, that can be put on the right-hand side of a decision rule describing objects from this set
 	 */
 	public abstract List<Condition<? extends EvaluationField>> getElementaryDecisions();
 	

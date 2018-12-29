@@ -49,10 +49,6 @@ class ApproximatedSetTest {
 	 */
 	private InformationTable informationTableMock;
 	/**
-	 * Mock of {@link Decision}, injected in the constructor of {@link ApproximatedSet}.
-	 */
-	private Decision limitingDecisionMock;
-	/**
 	 * Mock of {@link RoughSetCalculator}, injected in the constructor of {@link ApproximatedSet}.
 	 */
 	private RoughSetCalculator<? extends ApproximatedSet> roughSetCalculatorMock;
@@ -76,19 +72,18 @@ class ApproximatedSetTest {
 	@SuppressWarnings("unchecked")
 	private void setup() {
 		this.informationTableMock = mock(InformationTable.class);
-		this.limitingDecisionMock = mock(Decision.class);
 		this.roughSetCalculatorMock = (RoughSetCalculator<ApproximatedSet>)mock(RoughSetCalculator.class);
 		
 		this.approximatedSetMock = mock(ApproximatedSet.class);
 	}
 	
 	/**
-	 * Initializes {@link #approximatedSet} by calling {@link ApproximatedSet} constructor using mocks: {@link #informationTableMock},
-	 * {@link #limitingDecisionMock}, and {@link #roughSetCalculatorMock}. Abstract methods of {@link ApproximatedSet} are implemented using calls
+	 * Initializes {@link #approximatedSet} by calling {@link ApproximatedSet} constructor using mocks: {@link #informationTableMock}
+	 * and {@link #roughSetCalculatorMock}. Abstract methods of {@link ApproximatedSet} are implemented using calls
 	 * to respective methods of {@link #approximatedSetMock} (which, obviously, will work if first recorded on that mock).
 	 */
 	private void createApproximatedSet() {
-		this.approximatedSet = new ApproximatedSet(informationTableMock, limitingDecisionMock, roughSetCalculatorMock) {
+		this.approximatedSet = new ApproximatedSet(informationTableMock, roughSetCalculatorMock) {
 			@Override
 			protected TernaryLogicValue isConcordantWithDecision(Decision decision) {
 				return approximatedSetMock.isConcordantWithDecision(decision);
@@ -163,15 +158,6 @@ class ApproximatedSetTest {
 	void testGetInformationTable() {
 		createApproximatedSet();
 		assertSame(this.approximatedSet.getInformationTable(), this.informationTableMock);
-	}
-
-	/**
-	 * Test method for {@link org.rulelearn.approximations.ApproximatedSet#getLimitingDecision()}.
-	 */
-	@Test
-	void testGetLimitingDecision() {
-		createApproximatedSet();
-		assertSame(this.approximatedSet.getLimitingDecision(), this.limitingDecisionMock);
 	}
 
 	/**

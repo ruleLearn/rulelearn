@@ -103,6 +103,18 @@ public class Union extends ApproximatedSet {
 	protected IntSortedSet neutralObjects;
 	
 	/**
+	 * Limiting decision, determining which objects from the information table belong to this union.
+	 */
+	protected Decision limitingDecision;
+	
+	/**
+	 * Indicates if objects having decision equal to the limiting decision of this union should be included in this union.
+	 * Value of this field affects calculation of objects belonging to this union.
+	 * Defaults to {@code true}.
+	 */
+	protected boolean includeLimitingDecision = true;
+	
+	/**
 	 * Tells if given decision is positive with respect to the union of ordered decision classes that would be constructed for given parameters.
 	 * See {@link #isDecisionPositive(Decision)}.
 	 * 
@@ -138,7 +150,8 @@ public class Union extends ApproximatedSet {
 	 * @throws InvalidValueException if none of the attributes contributing to given limiting decision is ordinal (i.e., has gain- or cost-type preference)
 	 */
 	public Union(UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator) {
-		super(informationTable, limitingDecision, roughSetCalculator);
+		super(informationTable, roughSetCalculator);
+		this.limitingDecision = notNull(limitingDecision, "Limiting decision for constructed union is null.");
 		this.unionType = notNull(unionType, "Union type is null.");
 		validateLimitingDecision(limitingDecision, informationTable);
 		
@@ -161,7 +174,8 @@ public class Union extends ApproximatedSet {
 	 * @throws InvalidValueException see {@link #validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}
 	 */
 	Union(UnionType unionType, Decision limitingDecision, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator, boolean includeLimitingDecision) {
-		super(informationTable, limitingDecision, roughSetCalculator);
+		super(informationTable, roughSetCalculator);
+		this.limitingDecision = notNull(limitingDecision, "Limiting decision for constructed union is null.");
 		this.unionType = notNull(unionType, "Union type is null.");
 		validateLimitingDecision(limitingDecision, informationTable);
 		
@@ -269,6 +283,15 @@ public class Union extends ApproximatedSet {
 		
 		this.objects = IntSortedSets.unmodifiable(objects);
 		this.neutralObjects = IntSortedSets.unmodifiable(uncomparableObjects);
+	}
+	
+	/**
+	 * Gets limiting decision of this union, determining which objects from the information table belong to this union.
+	 * 
+	 * @return limiting decision of this union, determining which objects from the information table belong to this union
+	 */
+	public Decision getLimitingDecision() {
+		return limitingDecision;
 	}
 	
 	/**
@@ -645,6 +668,16 @@ public class Union extends ApproximatedSet {
 	 */
 	public int getComplementarySetSize() {
 		return this.informationTable.getNumberOfObjects() - this.size() - this.neutralObjects.size();
+	}
+	
+	/**
+	 * Tells if this union includes objects whose decision is equal to the limiting decision.
+	 * 
+	 * @return {@code true} if this union includes objects whose decision is equal to the limiting decision,
+	 *         {@code false} otherwise
+	 */
+	public boolean isIncludeLimitingDecision() {
+		return includeLimitingDecision;
 	}
 
 	/**

@@ -16,7 +16,6 @@
 
 package org.rulelearn.rules;
 
-import org.rulelearn.approximations.ApproximatedSet;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
 
@@ -46,8 +45,7 @@ public class RuleCoverageInformation {
 	
 	/**
 	 * Indices of all neutral objects from rule's learning information (decision) table. Can be an empty set.
-	 * Neutral objects are such that their decision is uncomparable with the limiting decision obtained by {@link ApproximatedSet#getLimitingDecision()}
-	 * for the approximated set used to induce the rule.
+	 * Neutral objects are such objects that their decision is neither positive nor negative with respect to the approximated set used to induce the rule.
 	 */
 	IntSet indicesOfNeutralObjects;
 	
@@ -67,7 +65,7 @@ public class RuleCoverageInformation {
 	 * @param indicesOfPositiveObjects indices of all objects from rule's learning information (decision) table that satisfy right-hand side (RHS, decision part)
 	 *        of considered decision rule; in case of a certain/possible rule, these are the objects from considered approximated set
 	 * @param indicesOfNeutralObjects indices of all neutral objects from rule's learning information (decision) table, i.e., objects such that their decision
-	 *        is uncomparable with the limiting decision obtained by {@link ApproximatedSet#getLimitingDecision()}
+	 *        is neither positive nor negative with respect to the considered approximated set
 	 *        for the approximated set used to induce the rule
 	 * @param indicesOfCoveredObjects indices of all objects from rule's learning information table that are covered by the rule
 	 * @param allObjectsCount number of all objects in rule's learning information table
@@ -96,7 +94,7 @@ public class RuleCoverageInformation {
 
 	/**
 	 * Gets indices of all objects from rule's learning information (decision) table that are neutral with respect to the rule, i.e., objects such that their decision
-	 * is uncomparable with the limiting decision obtained by {@link ApproximatedSet#getLimitingDecision()} for the approximated set used to induce the rule.
+	 * is neither positive nor negative with respect to the approximated set used to induce the rule.
 	 * 
 	 * @return indices of all objects from rule's learning information (decision) table that are neutral with respect to the rule
 	 */
