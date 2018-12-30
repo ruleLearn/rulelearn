@@ -29,6 +29,8 @@ import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.EvaluationField;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
 /**
  * Decision rule composed of elementary conditions on the left-hand-side (LHS), connected by "and" connective, and elementary decisions on the right-hand-side (RHS)
  * represented by {@link RuleDecisions} object.<br>
@@ -48,12 +50,13 @@ public class Rule {
 	 */
 	abstract static class RuleDecisions {
 	    /**
-	     * Checks if an object from the information table, defined by its index, fulfills this rule's RHS.
+	     * Checks if an object from the information table, defined by its index, fulfills rule's RHS.
 	     * 
 	     * @param objectIndex index of an object in the given information table
 	     * @param informationTable information table containing the object to check
 	     * 
-	     * @return {@code true} if considered object satisfies this rule's RHS, {@code false} otherwise
+	     * @return {@code true} if considered object satisfies rule's RHS,
+	     *         {@code false} otherwise
 	     * 
 	     * @throws IndexOutOfBoundsException if given object index does not correspond to any object in the given information table
 	     * @throws NullPointerException if given information table is {@code null}
@@ -99,17 +102,36 @@ public class Rule {
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	public static class ANDConnectedRuleDecisions extends RuleDecisions {
-		List<RuleDecisions> ruleRHSs;
+		List<RuleDecisions> andConnectedRuleDecisions;
 		
 		/**
-		 * Constructs compound rule's RHS composed of AND-connected objects of type {@link RuleDecisions}.
+		 * Constructs compound rule's RHS composed of AND-connected rule decisions {@link RuleDecisions}.
 		 * 
-		 * @param ruleRHSs list of objects that should be connected with AND connective to form rule's RHS
+		 * @param andConnectedRuleDecisions list of rule decisions that should be connected with AND connective to form rule's RHS
 		 * @throws NullPointerException if given list is {@code null}
 		 * @throws InvalidSizeException if given list is empty
 		 */
-		public ANDConnectedRuleDecisions(List<RuleDecisions> ruleRHSs) {
-			this.ruleRHSs = Precondition.nonEmpty(Precondition.notNull(ruleRHSs, "List with AND-connected rule's RHS objects is null."), "List with AND-connected rule's RHS objects is empty.");
+		public ANDConnectedRuleDecisions(List<RuleDecisions> andConnectedRuleDecisions) {
+			Precondition.nonEmpty(Precondition.notNull(andConnectedRuleDecisions, "List with AND-connected rule decisions is null."), "List with AND-connected rule decisions is empty.");
+			this.andConnectedRuleDecisions = new ObjectArrayList<RuleDecisions>();
+			for (RuleDecisions ruleDecisions : andConnectedRuleDecisions) {
+				this.andConnectedRuleDecisions.add(ruleDecisions);
+			}
+		}
+		
+		/**
+		 * Constructs compound rule's RHS composed of AND-connected rule decisions {@link RuleDecisions}.
+		 * 
+		 * @param andConnectedRuleDecisions vararg (array) of rule decisions that should be connected with AND connective to form rule's RHS
+		 * @throws NullPointerException if given array is {@code null}
+		 * @throws InvalidSizeException if given array is empty
+		 */
+		public ANDConnectedRuleDecisions(RuleDecisions... andConnectedRuleDecisions) {
+			Precondition.nonEmpty(Precondition.notNull(andConnectedRuleDecisions, "Array with AND-connected rule decisions is null."), "Array with AND-connected rule decisions is empty.");
+			this.andConnectedRuleDecisions = new ObjectArrayList<RuleDecisions>();
+			for (RuleDecisions ruleDecisions : andConnectedRuleDecisions) {
+				this.andConnectedRuleDecisions.add(ruleDecisions);
+			}
 		}
 
 		/**
@@ -119,8 +141,8 @@ public class Rule {
 	     * @throws NullPointerException {@inheritDoc}
 		 */
 		public boolean satisfiedBy(int objectIndex, InformationTable informationTable) {
-			for (RuleDecisions ruleRHS : ruleRHSs) {
-				if (!ruleRHS.satisfiedBy(objectIndex, informationTable)) {
+			for (RuleDecisions ruleDecisions : andConnectedRuleDecisions) {
+				if (!ruleDecisions.satisfiedBy(objectIndex, informationTable)) {
 					return false;
 				}
 			}
@@ -135,17 +157,36 @@ public class Rule {
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	public static class ORConnectedRuleDecisions extends RuleDecisions {
-		List<RuleDecisions> ruleRHSs;
+		List<RuleDecisions> orConnectedRuleDecisions;
 		
 		/**
-		 * Constructs compound rule's RHS composed of OR-connected objects of type {@link RuleDecisions}.
+		 * Constructs compound rule's RHS composed of OR-connected rule decisions {@link RuleDecisions}.
 		 * 
-		 * @param ruleRHSs list of objects that should be connected with OR connective to form rule's RHS
+		 * @param orConnectedRuleDecisions list of rule decisions that should be connected with OR connective to form rule's RHS
 		 * @throws NullPointerException if given list is {@code null}
 		 * @throws InvalidSizeException if given list is empty
 		 */
-		public ORConnectedRuleDecisions(List<RuleDecisions> ruleRHSs) {
-			this.ruleRHSs = Precondition.nonEmpty(Precondition.notNull(ruleRHSs, "List with OR-connected rule's RHS objects is null."), "List with OR-connected rule's RHS objects is empty.");
+		public ORConnectedRuleDecisions(List<RuleDecisions> orConnectedRuleDecisions) {
+			Precondition.nonEmpty(Precondition.notNull(orConnectedRuleDecisions, "List with OR-connected rule decisions is null."), "List with OR-connected rule decisions is empty.");
+			this.orConnectedRuleDecisions = new ObjectArrayList<RuleDecisions>();
+			for (RuleDecisions ruleDecisions : orConnectedRuleDecisions) {
+				this.orConnectedRuleDecisions.add(ruleDecisions);
+			}
+		}
+		
+		/**
+		 * Constructs compound rule's RHS composed of OR-connected rule decisions {@link RuleDecisions}.
+		 * 
+		 * @param orConnectedRuleDecisions vararg (array) of rule decisions that should be connected with OR connective to form rule's RHS
+		 * @throws NullPointerException if given array is {@code null}
+		 * @throws InvalidSizeException if given array is empty
+		 */
+		public ORConnectedRuleDecisions(RuleDecisions... orConnectedRuleDecisions) {
+			Precondition.nonEmpty(Precondition.notNull(orConnectedRuleDecisions, "Array with OR-connected rule decisions is null."), "Array with OR-connected rule decisions is empty.");
+			this.orConnectedRuleDecisions = new ObjectArrayList<RuleDecisions>();
+			for (RuleDecisions ruleDecisions : orConnectedRuleDecisions) {
+				this.orConnectedRuleDecisions.add(ruleDecisions);
+			}
 		}
 		
 		/**
@@ -155,8 +196,8 @@ public class Rule {
 	     * @throws NullPointerException {@inheritDoc}
 		 */
 		public boolean satisfiedBy(int objectIndex, InformationTable informationTable) {
-			for (RuleDecisions ruleRHS : ruleRHSs) {
-				if (ruleRHS.satisfiedBy(objectIndex, informationTable)) {
+			for (RuleDecisions ruleDecisions : orConnectedRuleDecisions) {
+				if (ruleDecisions.satisfiedBy(objectIndex, informationTable)) {
 					return true;
 				}
 			}
@@ -205,6 +246,17 @@ public class Rule {
      * Rows are considered to be connected using OR connective.
      */
     protected Condition<? extends EvaluationField>[][] decisions = null; //TODO: rewrite to use RuleRHS object
+    
+    /**
+     * Elementary decisions building decision part of this rule, possibly connected by logical connectives (AND, OR).
+     * For example, rule decisions may look like this: (dec1a OR dec1b) AND (dec2a OR dec2b).
+     * Such combination can be obtained this way:<br>
+     * new {@link ANDConnectedRuleDecisions} (<br>
+     * &nbsp;&nbsp;new {@link ORConnectedRuleDecisions} (new {@link ElementaryDecision}(dec1a), new {@link ElementaryDecision}(dec1b)),<br>
+     * &nbsp;&nbsp;new {@link ORConnectedRuleDecisions} (new {@link ElementaryDecision}(dec2a), new {@link ElementaryDecision}(dec2b))<br>
+     * ).
+     */
+    protected RuleDecisions ruleDecisions = null; //TODO: use this field!
     
     /**
      * Value appended to the beginning of a rule while transforming the rule to text form.
@@ -351,7 +403,7 @@ public class Rule {
     }
 
     /**
-     * Constructor that enables to built decision rule using (induced) rule conditions.
+     * Constructor that enables to build decision rule using (induced) rule conditions.
      * 
      * @param type type of constructed rule; see {@link RuleType}
      * @param semantics semantics of constructed rule; see {@link RuleSemantics}
@@ -373,7 +425,7 @@ public class Rule {
     }
     
     /**
-     * Constructor that enables to built decision rule using (induced) rule conditions.
+     * Constructor that enables to build decision rule using (induced) rule conditions.
      * 
      * @param type type of constructed rule; see {@link RuleType}
      * @param semantics semantics of constructed rule; see {@link RuleSemantics}
@@ -392,6 +444,22 @@ public class Rule {
     	this.conditions = notNull(ruleConditions, "Rule conditions are null.").getConditions().toArray(new Condition<?>[0]);
     	
     	saveDecisions(decisions, decisionConnectiveType);
+    }
+    
+    /**
+     * Constructor that enables to build decision rule using (induced) rule conditions {@link RuleConditions} and (given) rule decisions {@link RuleDecisions}.
+     * 
+     * @param type type of constructed rule; see {@link RuleType}
+     * @param semantics semantics of constructed rule; see {@link RuleSemantics}
+     * @param ruleConditions rule conditions to be set on the LHS of this rule
+     * @param ruleDecisions rule decisions to be set on the RHS of this rule
+     */
+    public Rule(RuleType type, RuleSemantics semantics, RuleConditions ruleConditions, RuleDecisions ruleDecisions) {
+    	this.type = notNull(type, "Rule's type is null.");
+    	this.semantics = notNull(semantics, "Rule's semantics is null.");
+    	
+    	this.conditions = notNull(ruleConditions, "Rule conditions are null.").getConditions().toArray(new Condition<?>[0]);
+    	this.ruleDecisions = notNull(ruleDecisions, "Rule decisions are null.");
     }
 
 	/**
