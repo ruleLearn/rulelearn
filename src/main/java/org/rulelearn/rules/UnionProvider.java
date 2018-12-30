@@ -22,8 +22,8 @@ import org.rulelearn.approximations.Unions;
 import org.rulelearn.core.Precondition;
 
 /**
- * Supplies upward/downward unions of ordered decision classes {@link Union} from a set of unions (union container) {@link Unions}.
- * Type of supplied unions can be set in class constructor and also modified later using {@link #setSuppliedUnionType(Union.UnionType)}.
+ * Provides upward/downward unions of ordered decision classes {@link Union} from a set of unions (union container) {@link Unions}.
+ * Type of provided unions can be set in class constructor and also modified later using {@link #setProvidedUnionType(Union.UnionType)}.
  * Should it be equal to {@code Union.UnionType#AT_LEAST},
  * a call to {@link #getApproximatedSet(int)} returns i-th upward union from the union container.<br>
  * Should it be equal to {@code Union.UnionType#AT_MOST},
@@ -34,7 +34,7 @@ import org.rulelearn.core.Precondition;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class UnionSupplier implements ApproximatedSetSupplier {
+public class UnionProvider implements ApproximatedSetProvider {
 	
 	/**
 	 * Container for all upward and downward unions that can be defined with respect to an information table.
@@ -43,45 +43,45 @@ public class UnionSupplier implements ApproximatedSetSupplier {
 	Unions unions;
 	
 	/**
-	 * Type of unions returned by {@link UnionSupplier#getApproximatedSet(int)}.
+	 * Type of unions returned by {@link UnionProvider#getApproximatedSet(int)}.
 	 */
-	Union.UnionType suppliedUnionType;
+	Union.UnionType providedUnionType;
 	
 	/**
-	 * Constructs this supplier.
+	 * Constructs this provider.
 	 * 
-	 * @param suppliedUnionType type of unions supplied from given union container by this supplier by means of {@link #getApproximatedSet(int)};
+	 * @param providedUnionType type of unions provided from given union container by this provider by means of {@link #getApproximatedSet(int)};
 	 *        should it be equal to {@code Union.UnionType#AT_LEAST},
 	 *        next call to {@link #getApproximatedSet(int)} returns i-th upward union;
 	 *        should it be equal to {@code Union.UnionType#AT_MOST},
 	 *        next call to {@link #getApproximatedSet(int)} returns i-th downward union
 	 * @param unions union container {@link Unions}
 	 */
-	public UnionSupplier(Union.UnionType suppliedUnionType, Unions unions) {
-		Precondition.notNull(suppliedUnionType, "Union type for union supplier is null.");
-		Precondition.notNull(unions, "Union container for union supplier is null.");
+	public UnionProvider(Union.UnionType providedUnionType, Unions unions) {
+		Precondition.notNull(providedUnionType, "Union type for union provider is null.");
+		Precondition.notNull(unions, "Union container for union provider is null.");
 		
 		this.unions = unions;
-		this.suppliedUnionType = suppliedUnionType;
+		this.providedUnionType = providedUnionType;
 	}
 	
 	/**
-	 * Sets type of subsequently supplied unions.
+	 * Sets type of subsequently provided unions.
 	 * 
-	 * @param suppliedUnionType type of union supplied by this supplier upon future calls to {@link #getApproximatedSet(int)}
+	 * @param providedUnionType type of union provided by this provider upon future calls to {@link #getApproximatedSet(int)}
 	 */
-	public void setSuppliedUnionType(Union.UnionType suppliedUnionType) {
-		Precondition.notNull(suppliedUnionType, "Union type for union supplier is null.");
-		this.suppliedUnionType = suppliedUnionType;
+	public void setProvidedUnionType(Union.UnionType providedUnionType) {
+		Precondition.notNull(providedUnionType, "Union type for union provider is null.");
+		this.providedUnionType = providedUnionType;
 	}
 	
 	/**
-	 * Gets type of supplied unions.
+	 * Gets type of provided unions.
 	 * 
-	 * @return type of supplied unions
+	 * @return type of provided unions
 	 */
-	public Union.UnionType getSuppliedUnionType() {
-		return suppliedUnionType;
+	public Union.UnionType getProvidedUnionType() {
+		return providedUnionType;
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class UnionSupplier implements ApproximatedSetSupplier {
 	 */
 	@Override
 	public int getCount() {
-		switch (suppliedUnionType) {
+		switch (providedUnionType) {
 		case AT_LEAST:
 			return unions.getUpwardUnions(true).length;
 		case AT_MOST:
@@ -100,17 +100,17 @@ public class UnionSupplier implements ApproximatedSetSupplier {
 	}
 
 	/**
-	 * Gets i-th upward/downward union, depending on the union type, as returned by {@link #getSuppliedUnionType()}.
+	 * Gets i-th upward/downward union, depending on the union type, as returned by {@link #getProvidedUnionType()}.
 	 * 
 	 * @param i index of requested union
-	 * @return i-th union of considered union type, as returned by {@link #getSuppliedUnionType()}
+	 * @return i-th union of considered union type, as returned by {@link #getProvidedUnionType()}
 	 * 
 	 * @throws IndexOutOfBoundsException if given index is less than zero or
 	 *         greater or equal to the number of available unions of considered type
 	 */
 	@Override
 	public ApproximatedSet getApproximatedSet(int i) {
-		switch (suppliedUnionType) {
+		switch (providedUnionType) {
 		case AT_LEAST:
 			return unions.getUpwardUnions(true)[i];
 		case AT_MOST:

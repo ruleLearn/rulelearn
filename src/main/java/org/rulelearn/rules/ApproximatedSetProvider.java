@@ -19,19 +19,19 @@ package org.rulelearn.rules;
 import org.rulelearn.approximations.ApproximatedSet;
 
 /**
- * Contract for a supplier of approximated sets {@link ApproximatedSet}. Each set is identified by its number on a list.
+ * Contract for a provider of approximated sets {@link ApproximatedSet}. Each set is identified by its number on a list.
  * Each implementing class should ensure that the set of objects belonging to the approximated set obtained by {@code getApproximatedSet(i)}
  * does not include the set of objects belonging to the approximated set obtained by {@code getApproximatedSet(i+j)}, with j &gt; 0. 
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface ApproximatedSetSupplier {
+public interface ApproximatedSetProvider {
 
 	/**
-	 * Gets number of approximated sets that this supplier has to offer.
+	 * Gets number of approximated sets that this provider has to offer.
 	 * 
-	 * @return number of approximated sets offered by this supplier
+	 * @return number of approximated sets offered by this provider
 	 */
 	public int getCount();
 	/**
