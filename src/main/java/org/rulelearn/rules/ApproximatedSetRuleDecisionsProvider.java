@@ -25,7 +25,7 @@ import org.rulelearn.approximations.ApproximatedSet;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface ApproximatedSetRuleDecisionsProvider<T extends ApproximatedSet> {
+public interface ApproximatedSetRuleDecisionsProvider {
 
 	/**
 	 * Gets rule decisions that can be put on the right-hand side of a certain/possible decision rule describing objects from the given approximated set.
@@ -33,6 +33,6 @@ public interface ApproximatedSetRuleDecisionsProvider<T extends ApproximatedSet>
 	 * @param approximatedSet approximated set for which certain/possible decision rule is built and thus, rule decisions need to be obtained
 	 * @return rule decisions that can be put on the right-hand side of a certain/possible decision rule describing objects from the given approximated set
 	 */
-	public Rule.RuleDecisions getRuleDecisions(T approximatedSet);
+	public Rule.RuleDecisions getRuleDecisions(ApproximatedSet approximatedSet);
 	
 }

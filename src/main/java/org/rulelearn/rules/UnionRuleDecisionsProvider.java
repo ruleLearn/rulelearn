@@ -18,6 +18,7 @@ package org.rulelearn.rules;
 
 import java.util.List;
 
+import org.rulelearn.approximations.ApproximatedSet;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.EvaluationAttribute;
@@ -37,19 +38,27 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class UnionRuleDecisionsProvider implements ApproximatedSetRuleDecisionsProvider<Union> {
+public class UnionRuleDecisionsProvider implements ApproximatedSetRuleDecisionsProvider {
 
 	/**
-	 * Gets rule decisions that can be put on the right-hand side of a certain/possible decision rule describing objects from the given union.
+	 * Gets rule decisions that can be put on the right-hand side of a certain/possible decision rule describing objects from the given union {@link Union}.
 	 * 
 	 * @param union union for which certain/possible decision rule is built and thus, rule decisions need to be obtained
 	 * @return rule decisions that can be put on the right-hand side of a certain/possible decision rule describing objects from the given union
+	 * 
+	 * @throws ClassCastException if given approximated set is not of type {@link Union}
 	 */
 	@Override
-	public RuleDecisions getRuleDecisions(Union union) {
-		Decision limitingDecision = union.getLimitingDecision();
-		InformationTable informationTable = union.getInformationTable();
-		Union.UnionType unionType = union.getUnionType();
+	public RuleDecisions getRuleDecisions(ApproximatedSet union) {
+		if (!(union instanceof Union)) {
+			throw new ClassCastException("Cannot cast ApproximatedSet to Union.");
+		}
+		
+		Union aUnion = (Union)union;
+		
+		Decision limitingDecision = aUnion.getLimitingDecision();
+		InformationTable informationTable = aUnion.getInformationTable();
+		Union.UnionType unionType = aUnion.getUnionType();
 		
 		IntSet attributeIndices = limitingDecision.getAttributeIndices();
 		EvaluationField evaluation;

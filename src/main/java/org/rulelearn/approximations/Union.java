@@ -18,9 +18,6 @@ package org.rulelearn.approximations;
 
 import static org.rulelearn.core.Precondition.notNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.TernaryLogicValue;
@@ -29,14 +26,8 @@ import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.EvaluationAttribute;
-import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConeCalculator;
-import org.rulelearn.rules.Condition;
-import org.rulelearn.rules.ConditionAtLeastThresholdVSObject;
-import org.rulelearn.rules.ConditionAtMostThresholdVSObject;
-import org.rulelearn.rules.ConditionEqualThresholdVSObject;
-import org.rulelearn.types.EvaluationField;
 
 import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -678,77 +669,6 @@ public class Union extends ApproximatedSet {
 	 */
 	public boolean isIncludeLimitingDecision() {
 		return includeLimitingDecision;
-	}
-
-	/**
-	 * Gets list of elementary decisions associated with this union.
-	 * Each elementary decision depends on type of this union, preference type of respective decision attribute, and evaluation on that attribute contributing to the limiting decision.
-	 * 
-	 * @return list of elementary decisions associated for this union; once all these elementary decisions are satisfied by a learning object, it belongs to this union 
-	 */
-	@Override
-	public List<Condition<? extends EvaluationField>> getElementaryDecisions() { //TODO: handle more general elementary decisions
-		IntSet attributeIndices = this.limitingDecision.getAttributeIndices();
-		EvaluationField evaluation;
-		EvaluationAttribute attribute;
-		int attributeIndex;
-		List<Condition<? extends EvaluationField>> elementaryDecisions = new ArrayList<>();
-		
-		IntIterator attributeIndicesIterator = attributeIndices.iterator();
-		
-		while (attributeIndicesIterator.hasNext()) {
-			attributeIndex = attributeIndicesIterator.nextInt();
-			attribute = (EvaluationAttribute)this.informationTable.getAttribute(attributeIndex); //this cast should not throw an exception since type of attributes contributing to limiting decision is checked in class constructor
-			evaluation = this.limitingDecision.getEvaluation(attributeIndex);
-			
-			switch (this.unionType) {
-			case AT_LEAST:
-				switch (attribute.getPreferenceType()) {
-				case GAIN:
-					elementaryDecisions.add(new ConditionAtLeastThresholdVSObject<EvaluationField>(
-							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
-					break;
-				case COST:
-					elementaryDecisions.add(new ConditionAtMostThresholdVSObject<EvaluationField>(
-							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
-					break;
-				case NONE:
-					elementaryDecisions.add(new ConditionEqualThresholdVSObject<EvaluationField>(
-							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
-					break;
-				}
-				break;
-			case AT_MOST:
-				switch (attribute.getPreferenceType()) {
-				case GAIN:
-					elementaryDecisions.add(new ConditionAtMostThresholdVSObject<EvaluationField>(
-							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
-					break;
-				case COST:
-					elementaryDecisions.add(new ConditionAtLeastThresholdVSObject<EvaluationField>(
-							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
-					break;
-				case NONE:
-					elementaryDecisions.add(new ConditionEqualThresholdVSObject<EvaluationField>(
-							new EvaluationAttributeWithContext(attribute, attributeIndex), evaluation));
-					break;
-				}
-				break;
-			}
-		}
-		
-		//arrange elementary decisions in order of respective attributes
-		elementaryDecisions.sort((x, y) -> {
-			int i = x.getAttributeWithContext().getAttributeIndex();
-			int j = y.getAttributeWithContext().getAttributeIndex();
-			if (i < j) {
-				return -1;
-			} else {
-				return (i == j) ? 0 : 1;
-			}
-		});
-		
-		return elementaryDecisions;
 	}
 
 }
