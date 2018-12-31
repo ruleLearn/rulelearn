@@ -22,6 +22,7 @@ import static org.rulelearn.core.Precondition.notNull;
 import java.util.List;
 
 import org.rulelearn.core.InvalidSizeException;
+import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
@@ -30,6 +31,8 @@ import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.EvaluationField;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectLists;
 
 /**
  * Decision rule composed of elementary conditions on the left-hand-side (LHS), connected by "and" connective, and elementary decisions on the right-hand-side (RHS)
@@ -93,6 +96,15 @@ public class Rule {
 		public boolean satisfiedBy(int objectIndex, InformationTable informationTable) {
 			return this.elementaryDecision.satisfiedBy(objectIndex, informationTable);
 		}
+		
+		/**
+		 * Gets underlying elementary decision.
+		 * 
+		 * @return underlying elementary decision
+		 */
+		public Condition<? extends EvaluationField> getElementaryDecision() {
+			return elementaryDecision;
+		}
 	}
 	
 	/**
@@ -102,7 +114,7 @@ public class Rule {
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	public static class ANDConnectedRuleDecisions extends RuleDecisions {
-		List<RuleDecisions> andConnectedRuleDecisions;
+		ObjectList<RuleDecisions> andConnectedRuleDecisions;
 		
 		/**
 		 * Constructs compound rule's RHS composed of AND-connected rule decisions {@link RuleDecisions}.
@@ -115,7 +127,7 @@ public class Rule {
 			Precondition.nonEmpty(Precondition.notNull(andConnectedRuleDecisions, "List with AND-connected rule decisions is null."), "List with AND-connected rule decisions is empty.");
 			this.andConnectedRuleDecisions = new ObjectArrayList<RuleDecisions>();
 			for (RuleDecisions ruleDecisions : andConnectedRuleDecisions) {
-				this.andConnectedRuleDecisions.add(ruleDecisions);
+				this.andConnectedRuleDecisions.add(Precondition.notNull(ruleDecisions, "Some rule decisions on a list of AND-connected rule decisions are null."));
 			}
 		}
 		
@@ -130,7 +142,7 @@ public class Rule {
 			Precondition.nonEmpty(Precondition.notNull(andConnectedRuleDecisions, "Array with AND-connected rule decisions is null."), "Array with AND-connected rule decisions is empty.");
 			this.andConnectedRuleDecisions = new ObjectArrayList<RuleDecisions>();
 			for (RuleDecisions ruleDecisions : andConnectedRuleDecisions) {
-				this.andConnectedRuleDecisions.add(ruleDecisions);
+				this.andConnectedRuleDecisions.add(Precondition.notNull(ruleDecisions, "Some rule decisions on a list of AND-connected rule decisions are null."));
 			}
 		}
 
@@ -148,6 +160,15 @@ public class Rule {
 			}
 			return true;
 		}
+		
+		/**
+		 * Gets underlying list of rule decisions.
+		 * 
+		 * @return underlying list of rule decisions
+		 */
+		public List<RuleDecisions> getRuleDecisions() {
+			return ObjectLists.unmodifiable(andConnectedRuleDecisions);
+		}
 	}
 	
 	/**
@@ -157,7 +178,7 @@ public class Rule {
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	public static class ORConnectedRuleDecisions extends RuleDecisions {
-		List<RuleDecisions> orConnectedRuleDecisions;
+		ObjectList<RuleDecisions> orConnectedRuleDecisions;
 		
 		/**
 		 * Constructs compound rule's RHS composed of OR-connected rule decisions {@link RuleDecisions}.
@@ -170,7 +191,7 @@ public class Rule {
 			Precondition.nonEmpty(Precondition.notNull(orConnectedRuleDecisions, "List with OR-connected rule decisions is null."), "List with OR-connected rule decisions is empty.");
 			this.orConnectedRuleDecisions = new ObjectArrayList<RuleDecisions>();
 			for (RuleDecisions ruleDecisions : orConnectedRuleDecisions) {
-				this.orConnectedRuleDecisions.add(ruleDecisions);
+				this.orConnectedRuleDecisions.add(Precondition.notNull(ruleDecisions, "Some rule decisions on a list of OR-connected rule decisions are null."));
 			}
 		}
 		
@@ -185,7 +206,7 @@ public class Rule {
 			Precondition.nonEmpty(Precondition.notNull(orConnectedRuleDecisions, "Array with OR-connected rule decisions is null."), "Array with OR-connected rule decisions is empty.");
 			this.orConnectedRuleDecisions = new ObjectArrayList<RuleDecisions>();
 			for (RuleDecisions ruleDecisions : orConnectedRuleDecisions) {
-				this.orConnectedRuleDecisions.add(ruleDecisions);
+				this.orConnectedRuleDecisions.add(Precondition.notNull(ruleDecisions, "Some rule decisions on a list of OR-connected rule decisions are null."));
 			}
 		}
 		
@@ -202,6 +223,15 @@ public class Rule {
 				}
 			}
 			return false;
+		}
+		
+		/**
+		 * Gets underlying list of rule decisions.
+		 * 
+		 * @return underlying list of rule decisions
+		 */
+		public List<RuleDecisions> getRuleDecisions() {
+			return ObjectLists.unmodifiable(orConnectedRuleDecisions);
 		}
 	}
 	
@@ -245,7 +275,7 @@ public class Rule {
      * Conditions in each row (for fixed first array index) are considered to be connected with AND connective.
      * Rows are considered to be connected using OR connective.
      */
-    protected Condition<? extends EvaluationField>[][] decisions = null; //TODO: rewrite to use RuleRHS object
+    protected Condition<? extends EvaluationField>[][] decisions = null; //TODO: rewrite to use ruleDecisions object
     
     /**
      * Elementary decisions building decision part of this rule, possibly connected by logical connectives (AND, OR).
@@ -453,13 +483,64 @@ public class Rule {
      * @param semantics semantics of constructed rule; see {@link RuleSemantics}
      * @param ruleConditions rule conditions to be set on the LHS of this rule
      * @param ruleDecisions rule decisions to be set on the RHS of this rule
+     * 
+     * @throws NullPointerException if any of the parameters is {@code null}
+     * @throws InvalidTypeException when {@code ruleDecisions} have too complex inner structure, that cannot be translated to the structure returned by {@link #getDecisions()}.
      */
     public Rule(RuleType type, RuleSemantics semantics, RuleConditions ruleConditions, RuleDecisions ruleDecisions) {
     	this.type = notNull(type, "Rule's type is null.");
     	this.semantics = notNull(semantics, "Rule's semantics is null.");
     	
     	this.conditions = notNull(ruleConditions, "Rule conditions are null.").getConditions().toArray(new Condition<?>[0]);
-    	this.ruleDecisions = notNull(ruleDecisions, "Rule decisions are null.");
+    	//this.ruleDecisions = notNull(ruleDecisions, "Rule decisions are null."); //TODO: uncomment once ruleDecisions field is used!
+    	
+    	//TODO: remove the following code once ruleDecisions field is used!
+    	notNull(ruleDecisions, "Rule decisions are null.");
+    	if (ruleDecisions instanceof ElementaryDecision) {
+    		this.decisions = new Condition<?>[1][1];
+    		this.decisions[0][0] = ((ElementaryDecision)ruleDecisions).getElementaryDecision();
+    	} else if (ruleDecisions instanceof ANDConnectedRuleDecisions) {
+    		List<RuleDecisions> andConnectedRuleDecisions = ((ANDConnectedRuleDecisions)ruleDecisions).getRuleDecisions();
+    		
+    		if (andConnectedRuleDecisions.get(0) instanceof ElementaryDecision) {
+    			int andDecisionsCount = andConnectedRuleDecisions.size();
+        		this.decisions = new Condition<?>[1][];
+        		this.decisions[0] = new Condition<?>[andDecisionsCount];
+        		
+            	for (int j = 0; j < andDecisionsCount; j++) {
+            		this.decisions[0][j] = notNull(((ElementaryDecision)andConnectedRuleDecisions.get(j)).getElementaryDecision(), "Decision is null.");
+            	}
+    		} else {
+    			throw new InvalidTypeException("Unspupported type of elements on a list of AND-connected rule decisions. Only elementary decisions are handled.");
+    		}
+    	} else if (ruleDecisions instanceof ORConnectedRuleDecisions) {
+    		List<RuleDecisions> orConnectedRuleDecisions = ((ORConnectedRuleDecisions)ruleDecisions).getRuleDecisions();
+    		int orDecisionsCount = orConnectedRuleDecisions.size();
+    		
+    		if (orConnectedRuleDecisions.get(0) instanceof ElementaryDecision) {
+        		this.decisions = new Condition<?>[orDecisionsCount][];
+        		for (int i = 0; i < orDecisionsCount; i++) {
+        			this.decisions[i] = new Condition<?>[1];
+        			this.decisions[i][0] = notNull(((ElementaryDecision)orConnectedRuleDecisions.get(i)).getElementaryDecision(), "Decision is null.");
+        		}
+    		} else if (orConnectedRuleDecisions.get(0) instanceof ANDConnectedRuleDecisions) {
+    			if (((ANDConnectedRuleDecisions)orConnectedRuleDecisions.get(0)).getRuleDecisions().get(0) instanceof ElementaryDecision) {
+	    			this.decisions = new Condition<?>[orDecisionsCount][];
+	    			for (int i = 0; i < orDecisionsCount; i++) {
+	    				List<RuleDecisions> andConnectedRuleDecisions = ((ANDConnectedRuleDecisions)orConnectedRuleDecisions.get(i)).getRuleDecisions();
+	    				int andDecisionsCount = andConnectedRuleDecisions.size();
+	    				this.decisions[i] = new Condition<?>[andDecisionsCount];
+	    				for (int j = 0; j < andDecisionsCount; j++) {
+	                		this.decisions[i][j] = notNull(((ElementaryDecision)andConnectedRuleDecisions.get(j)).getElementaryDecision(), "Decision is null.");
+	                	}
+	    			}
+    			} else {
+    				throw new InvalidTypeException("Unspupported type of elements on a list of AND-connected rule decisions. Only elementary decisions are handled.");
+    			}
+    		} else {
+    			throw new InvalidTypeException("Unspupported type of elements on a list of OR-connected rule decisions. Only elementary decisions and AND-connected rule decisions are handled.");
+    		}
+    	}
     }
 
 	/**
