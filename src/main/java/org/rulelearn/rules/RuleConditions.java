@@ -23,7 +23,9 @@ import java.util.List;
 import org.rulelearn.approximations.ApproximatedSet;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.types.CompositeField;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.SimpleField;
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -321,13 +323,40 @@ public class RuleConditions {
 	 * @throws NullPointerException if given condition is {@code null}
 	 */
 	public int addCondition(Condition<?> condition) {
+		this.conditions.add(notNull(condition, "Condition is null."));
+		
+		int attributeIndex = condition.getAttributeWithContext().getAttributeIndex();
+		int count = this.attributeIndex2ConditionsCount.containsKey(attributeIndex) ? this.attributeIndex2ConditionsCount.get(attributeIndex) : 0;
+		this.attributeIndex2ConditionsCount.put(attributeIndex, count + 1);
+		
+		updateCoveredObjectsWithCondition(this.indicesOfCoveredObjects, condition);
+		updateNotCoveringConditionsCountsWithCondition(condition);
+		
+		return this.conditions.size() - 1;
+	}
+	
+	/**
+	 * Adds given condition to this complex of rule's conditions. First, checks if given condition is decomposable, and if so, tries to split it into simpler conditions
+	 * using given condition separator.
+	 * 
+	 * @param condition new condition to add
+	 * @param conditionSeparator condition separator capable of splitting compound conditions (i.e., conditions with limiting evaluation of type {@link CompositeField})
+	 *        into a list (array) of simple conditions (i.e., conditions with limiting evaluations of type {@link SimpleField}); see {@link ConditionSeparator}
+	 * @return index of (last) added condition
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 */
+	public int addCondition(Condition<?> condition, ConditionSeparator conditionSeparator) {
 		if (condition.isDecomposable()) {
-			//TODO: implement decomposition of a compound condition
-			this.conditions.add(notNull(condition, "Condition is null."));
+			//TODO: implement decomposition of a compound condition using conditionSeparator
+			//TODO: check if given conditionSeparator is not null
+			//TODO: handle case when given condition separator cannot split given condition
+			this.conditions.add(notNull(condition, "Condition is null.")); //TODO: change this code
 		} else {
 			this.conditions.add(notNull(condition, "Condition is null."));
 		}
 		
+		//TODO: adjust following code after condition decomposition
 		int attributeIndex = condition.getAttributeWithContext().getAttributeIndex();
 		int count = this.attributeIndex2ConditionsCount.containsKey(attributeIndex) ? this.attributeIndex2ConditionsCount.get(attributeIndex) : 0;
 		this.attributeIndex2ConditionsCount.put(attributeIndex, count + 1);

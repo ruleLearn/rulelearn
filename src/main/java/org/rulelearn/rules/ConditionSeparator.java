@@ -16,6 +16,7 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.types.CompositeField;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.SimpleField;
@@ -31,7 +32,10 @@ public interface ConditionSeparator {
 	
 	/**
 	 * Splits given compound condition (i.e., condition with limiting evaluation of type {@link CompositeField})
-	 * into a list (array) of simple conditions (i.e., conditions with limiting evaluations of type {@link SimpleField}) that should be satisfied jointly.
+	 * into a list (array) of simple conditions (i.e., conditions with limiting evaluations of type {@link SimpleField}) that should be satisfied jointly.<br>
+	 * <br>
+	 * If actual type of condition's limiting evaluation is not handled by this separator,
+	 * implementing class may choose to throw an {@link InvalidTypeException} exception or return an array with the original condition. 
 	 * 
 	 * @param compoundCondition compound condition that should be split into simple conditions
 	 * @return list (array) of simple conditions, with limiting evaluations of type {@link SimpleField}

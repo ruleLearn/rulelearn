@@ -70,9 +70,9 @@ public class RuleConditionsBuilder {
 	 * @param ruleInductionStoppingConditionChecker stopping condition checker iteratively used to verify if rule conditions
 	 *        (after extending with a new best elementary condition coming from condition generator)
 	 *        satisfy stopping condition(s)
-	 * @param conditionSeparator condition separator splitting compound conditions (i.e., conditions with limiting evaluation of type {@link CompositeField})
+	 * @param conditionSeparator condition separator capable of splitting compound conditions (i.e., conditions with limiting evaluation of type {@link CompositeField})
 	 *        into a list (array) of simple conditions (i.e., conditions with limiting evaluations of type {@link SimpleField}); see {@link ConditionSeparator};
-	 *        can be {@code null}, in which case compound conditions are leaved as they are (i.e., no split is performed) 
+	 *        can be {@code null}, in which case potential compound conditions are leaved as they are (i.e., no split is attempted)
 	 * 
 	 * @throws NullPointerException if any of the parameters, except {@code conditionSeparator}, is {@code null}
 	 */
@@ -110,8 +110,12 @@ public class RuleConditionsBuilder {
 		while (!ruleInductionStoppingConditionChecker.isStoppingConditionSatisified(ruleConditions)) {
 			try {
 				bestCondition = conditionGenerator.getBestCondition(indicesOfConsideredObjects, ruleConditions);
-				//TODO: handle decomposition of compound conditions (e.g., with PairField limiting evaluation) to simpler conditions, using conditionSeparator
-				ruleConditions.addCondition(bestCondition);
+				//TODO: consider more efficient implementation of using condition separator
+				if (this.conditionSeparator == null) {
+					ruleConditions.addCondition(bestCondition);
+				} else {
+					ruleConditions.addCondition(bestCondition, conditionSeparator);
+				}
 				
 				//update indices of considered objects
 				indicesOfCoveredObjects = ruleConditions.getIndicesOfCoveredObjects();
