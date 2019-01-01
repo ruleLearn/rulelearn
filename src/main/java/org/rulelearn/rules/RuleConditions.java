@@ -21,6 +21,7 @@ import static org.rulelearn.core.Precondition.notNull;
 import java.util.List;
 
 import org.rulelearn.approximations.ApproximatedSet;
+import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.CompositeField;
@@ -36,6 +37,8 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectLists;
 
 /**
  * List (complex) of elementary conditions on the left-hand side (LHS) of a decision rule induced to cover objects from a single approximated set {@link ApproximatedSet}.
@@ -49,7 +52,7 @@ public class RuleConditions {
 	/**
 	 * Elementary conditions, in order of their addition to rule's LHS.
 	 */
-	List<Condition<? extends EvaluationField>> conditions;
+	ObjectList<Condition<? extends EvaluationField>> conditions;
 	
 	/**
 	 * Indices of all objects that satisfy right-hand side (RHS, decision part) of induced decision rule.
@@ -322,7 +325,7 @@ public class RuleConditions {
 	 * 
 	 * @throws NullPointerException if given condition is {@code null}
 	 */
-	public int addCondition(Condition<?> condition) {
+	public int addCondition(Condition<? extends EvaluationField> condition) {
 		this.conditions.add(notNull(condition, "Condition is null."));
 		
 		int attributeIndex = condition.getAttributeWithContext().getAttributeIndex();
@@ -346,25 +349,23 @@ public class RuleConditions {
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public int addCondition(Condition<?> condition, ConditionSeparator conditionSeparator) {
-		if (condition.isDecomposable()) {
-			//TODO: implement decomposition of a compound condition using conditionSeparator
-			//TODO: check if given conditionSeparator is not null
-			//TODO: handle case when given condition separator cannot split given condition
-			this.conditions.add(notNull(condition, "Condition is null.")); //TODO: change this code
+	public int addCondition(Condition<? extends EvaluationField> condition, ConditionSeparator conditionSeparator) {
+		if (notNull(condition, "Condition is null.").isDecomposable()) {
+			Condition<? extends EvaluationField>[] conditions;
+			try {
+				conditions = notNull(conditionSeparator, "Condition separator is null.").separate(condition);
+			} catch (InvalidTypeException exception) {
+				conditions = new Condition<?>[] {condition};
+			}
+			
+			int lastAddedConditionIndex = this.conditions.size() - 1;
+			for (Condition<? extends EvaluationField> simpleCondition : conditions) {
+				lastAddedConditionIndex = addCondition(simpleCondition);
+			}
+			return lastAddedConditionIndex;
 		} else {
-			this.conditions.add(notNull(condition, "Condition is null."));
+			return addCondition(condition);
 		}
-		
-		//TODO: adjust following code after condition decomposition
-		int attributeIndex = condition.getAttributeWithContext().getAttributeIndex();
-		int count = this.attributeIndex2ConditionsCount.containsKey(attributeIndex) ? this.attributeIndex2ConditionsCount.get(attributeIndex) : 0;
-		this.attributeIndex2ConditionsCount.put(attributeIndex, count + 1);
-		
-		updateCoveredObjectsWithCondition(this.indicesOfCoveredObjects, condition);
-		updateNotCoveringConditionsCountsWithCondition(condition);
-		
-		return this.conditions.size() - 1;
 	}
 	
 	/**
@@ -511,8 +512,8 @@ public class RuleConditions {
 	 * @return list of elementary conditions building this complex of elementary conditions,
 	 *         in order of their addition
 	 */
-	public List<Condition<? extends EvaluationField>> getConditions() { //TODO: return unmodifiable list
-		return this.conditions;
+	public List<Condition<? extends EvaluationField>> getConditions() {
+		return ObjectLists.unmodifiable(this.conditions);
 	}
 	
 	/**
