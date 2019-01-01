@@ -53,7 +53,8 @@ public abstract class RuleMinimalityChecker implements RuleChecker {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * {@inheritDoc}<br>
+	 * <br>
 	 * Checks minimality of the given rule using rule conditions evaluator(s) for which this checker has been constructed. 
 	 * 
 	 * @param ruleSet {@inheritDoc}

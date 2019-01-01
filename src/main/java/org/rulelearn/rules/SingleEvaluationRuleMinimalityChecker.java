@@ -39,7 +39,9 @@ public class SingleEvaluationRuleMinimalityChecker extends RuleMinimalityChecker
 	}
 
 	/**
-	 * {@inheritDoc} 
+	 * {@inheritDoc}<br>
+	 * <br>
+	 * Assumes that each rule from the given list of rules is either more specific as the given rule with respect to the decision part (and therefore, does not compare decision parts of rules).
 	 * 
 	 * @param ruleSet {@inheritDoc}
 	 * @param rule {@inheritDoc}
@@ -49,11 +51,23 @@ public class SingleEvaluationRuleMinimalityChecker extends RuleMinimalityChecker
 	 */
 	@Override
 	public boolean check(List<RuleConditionsWithApproximatedSet> ruleSet, RuleConditionsWithApproximatedSet rule) {
-		RuleConditions evaluatedRuleConditions = rule.getRuleConditions();
+		RuleConditions ruleConditions = rule.getRuleConditions();
 		ApproximatedSet approximatedSet = rule.getApproximatedSet();
 		
-		// TODO: implement
-		return false;
+		RuleConditions priorRuleConditions;
+		ApproximatedSet priorApproximatedSet;
+		
+		boolean ruleIsMinimal = true;
+		
+		for (RuleConditionsWithApproximatedSet priorRule : ruleSet) {
+			priorRuleConditions = priorRule.getRuleConditions();
+			priorApproximatedSet = priorRule.getApproximatedSet();
+			
+			// TODO: implement (update ruleIsMinimal)
+		}
+		
+		
+		return ruleIsMinimal;
 	}
 
 }

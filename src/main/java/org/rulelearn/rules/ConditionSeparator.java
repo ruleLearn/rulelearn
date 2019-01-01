@@ -22,8 +22,8 @@ import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.SimpleField;
 
 /**
- * Separates conditions building a compound condition (i.e., condition with limiting evaluation of type {@link CompositeField})
- * into a list (array) of simple conditions (i.e., conditions with limiting evaluations of type {@link SimpleField}) that should be satisfied jointly.
+ * Separates conditions building a "compound" condition (i.e., condition with limiting evaluation of type {@link CompositeField})
+ * into a list (array) of "simple" conditions (i.e., conditions with limiting evaluations of type {@link SimpleField}) that should be satisfied jointly.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
