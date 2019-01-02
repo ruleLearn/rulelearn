@@ -671,4 +671,37 @@ public class Union extends ApproximatedSet {
 		return includeLimitingDecision;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @throws ClassCastException if given approximated set is not of type {@link Union}
+	 */
+	@Override
+	public boolean includes(ApproximatedSet approximatedSet) {
+		Union otherUnion = (Union)approximatedSet;
+		
+		if (unionType == otherUnion.getUnionType()) { //both unions are upward (or downward)
+			TernaryLogicValue isConcordant = isConcordantWithDecision(otherUnion.getLimitingDecision());
+			
+			if (otherUnion.isIncludeLimitingDecision()) { //checked limiting decision of the other union is concordant also with the other union
+				return isConcordant == TernaryLogicValue.TRUE;
+			} else {
+				if (isConcordant == TernaryLogicValue.TRUE) {
+					return true;
+				} else {
+					if (isConcordant == TernaryLogicValue.FALSE &&
+							this.includeLimitingDecision == false &&
+							this.limitingDecision.equals(otherUnion.getLimitingDecision())) { //correct negative answer in a particular case 
+						return true;
+					} else {
+						return false;
+					}
+				}
+			} //else
+		} else {
+			return false;
+		}
+
+	}
+
 }

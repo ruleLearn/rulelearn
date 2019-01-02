@@ -16,6 +16,9 @@
 
 package org.rulelearn.approximations;
 
+import static org.rulelearn.core.Precondition.notNull;
+
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
 
@@ -26,10 +29,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSets;
-
-import static org.rulelearn.core.Precondition.notNull;
-
-import org.rulelearn.core.TernaryLogicValue;
 
 /**
  * Top level class for all sets of objects that can be approximated using the rough set concept.
@@ -417,5 +416,17 @@ public abstract class ApproximatedSet {
 	public boolean isMeaningful() {
 		return this.size() != this.informationTable.getNumberOfObjects();
 	}
+	
+	/**
+	 * Tells if this approximated set contains given set, i.e., conditions that determine what objects belong to this set are equally or less restrictive than those
+	 * conditions, that determine the objects belonging to the other set.
+	 * 
+	 * @param approximatedSet other approximated set of the same type
+	 * @return {@code true} if this set includes (contains) the other set,
+	 *         {@code false} otherwise
+	 * 
+	 * @throws ClassCastException if type of the other set prevents it from comparison with this set 
+	 */
+	public abstract boolean includes(ApproximatedSet approximatedSet);
 	
 }

@@ -16,7 +16,14 @@
 
 package org.rulelearn.approximations;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,8 +36,6 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSets;
-
-import static org.mockito.Mockito.*;
 
 /**
  * Test for {@link ApproximatedSet} class.
@@ -138,6 +143,11 @@ class ApproximatedSetTest {
 			@Override
 			public boolean isObjectNegative(int objectNumber) {
 				return approximatedSetMock.isObjectNegative(objectNumber);
+			}
+
+			@Override
+			public boolean includes(ApproximatedSet approximatedSet) {
+				return approximatedSetMock.includes(approximatedSet);
 			}
 
 		};
