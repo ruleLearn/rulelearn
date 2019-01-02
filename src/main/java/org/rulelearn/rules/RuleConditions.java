@@ -28,8 +28,6 @@ import org.rulelearn.types.CompositeField;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.SimpleField;
 
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -87,11 +85,6 @@ public class RuleConditions {
 	 * Learning information (decision) table in context of which this complex of elementary conditions is evaluated.
 	 */
 	InformationTable learningInformationTable;
-	
-	/**
-	 * Maps index of an attribute from learning information table to count of conditions concerning this attribute that are stored in {@link #conditions}.
-	 */
-	Int2IntMap attributeIndex2ConditionsCount;
 	
 	/**
 	 * Maps index of an attribute from learning information table to list of conditions concerning this attribute that are stored in {@link #conditions}.
@@ -259,7 +252,6 @@ public class RuleConditions {
 		this.indicesOfNeutralObjects = notNull(indicesOfNeutralObjects, "Set of indices of neutral objects is null.");
 		
 		this.conditions = new ObjectArrayList<Condition<? extends EvaluationField>>();
-		this.attributeIndex2ConditionsCount = new Int2IntOpenHashMap();
 		this.attributeIndex2Conditions = new Int2ObjectOpenHashMap<ObjectList<Condition<? extends EvaluationField>>>();
 		this.indicesOfCoveredObjects = new IntArrayList();
 		
@@ -337,9 +329,6 @@ public class RuleConditions {
 		this.conditions.add(notNull(condition, "Condition is null."));
 		
 		int attributeIndex = condition.getAttributeWithContext().getAttributeIndex();
-		
-		int count = (this.attributeIndex2ConditionsCount.containsKey(attributeIndex) ? this.attributeIndex2ConditionsCount.get(attributeIndex) : 0);
-		this.attributeIndex2ConditionsCount.put(attributeIndex, count + 1);
 		
 		if (!this.attributeIndex2Conditions.containsKey(attributeIndex)) {
 			this.attributeIndex2Conditions.put(attributeIndex, new ObjectArrayList<>());
@@ -524,8 +513,6 @@ public class RuleConditions {
 		if (listOfConditions.isEmpty()) {
 			this.attributeIndex2Conditions.remove(attributeIndex); //remove the mapping from attribute's index to a list
 		}
-		//decrease count of conditions for respective attribute
-		this.attributeIndex2ConditionsCount.put(attributeIndex, this.attributeIndex2ConditionsCount.get(attributeIndex) - 1);
 	}
 	
 	/**
@@ -605,7 +592,7 @@ public class RuleConditions {
 	 *         {@code false} otherwise
 	 */
 	public boolean containsConditionForAttribute(int attributeIndex) {
-		return (this.attributeIndex2ConditionsCount.containsKey(attributeIndex) && (this.attributeIndex2ConditionsCount.get(attributeIndex) > 0));
+		return this.attributeIndex2Conditions.containsKey(attributeIndex);
 	}
 	
 	/**
