@@ -87,9 +87,9 @@ public class RuleConditions {
 	InformationTable learningInformationTable;
 	
 	/**
-	 * Maps index of an attribute from learning information table to list of conditions concerning this attribute that are stored in {@link #conditions}.
+	 * Maps index of an attribute from learning information table to list of indices of conditions concerning this attribute that are stored in {@link #conditions}.
 	 */
-	Int2ObjectMap<ObjectList<Condition<? extends EvaluationField>>> attributeIndex2Conditions;
+	Int2ObjectMap<IntList> attributeIndex2ConditionIndices;
 	
 	/**
 	 * Indices of objects from learning information table covered by these rule conditions.
@@ -252,7 +252,7 @@ public class RuleConditions {
 		this.indicesOfNeutralObjects = notNull(indicesOfNeutralObjects, "Set of indices of neutral objects is null.");
 		
 		this.conditions = new ObjectArrayList<Condition<? extends EvaluationField>>();
-		this.attributeIndex2Conditions = new Int2ObjectOpenHashMap<ObjectList<Condition<? extends EvaluationField>>>();
+		this.attributeIndex2ConditionIndices = new Int2ObjectOpenHashMap<IntList>();
 		this.indicesOfCoveredObjects = new IntArrayList();
 		
 		int objectsCount = learningInformationTable.getNumberOfObjects();
@@ -327,18 +327,19 @@ public class RuleConditions {
 	 */
 	public int addCondition(Condition<? extends EvaluationField> condition) {
 		this.conditions.add(notNull(condition, "Condition is null."));
+		int addedConditionIndex = this.conditions.size() - 1;
 		
 		int attributeIndex = condition.getAttributeWithContext().getAttributeIndex();
 		
-		if (!this.attributeIndex2Conditions.containsKey(attributeIndex)) {
-			this.attributeIndex2Conditions.put(attributeIndex, new ObjectArrayList<>());
+		if (!this.attributeIndex2ConditionIndices.containsKey(attributeIndex)) {
+			this.attributeIndex2ConditionIndices.put(attributeIndex, new IntArrayList());
 		}
-		this.attributeIndex2Conditions.get(attributeIndex).add(condition);
+		this.attributeIndex2ConditionIndices.get(attributeIndex).add(addedConditionIndex);
 		
 		updateCoveredObjectsWithCondition(this.indicesOfCoveredObjects, condition);
 		updateNotCoveringConditionsCountsWithCondition(condition);
 		
-		return this.conditions.size() - 1;
+		return addedConditionIndex;
 	}
 	
 	/**
@@ -507,11 +508,11 @@ public class RuleConditions {
 		//...and only then remove that condition
 		this.conditions.remove(conditionIndex);
 		
-		//remove condition from the map
-		List<Condition<? extends EvaluationField>> listOfConditions = this.attributeIndex2Conditions.get(attributeIndex); //should not be empty!
-		listOfConditions.remove(conditionToRemove); //iterates through the list (it usually contains 1 element, at maximum 2 elements, so the cost is negligible)
-		if (listOfConditions.isEmpty()) {
-			this.attributeIndex2Conditions.remove(attributeIndex); //remove the mapping from attribute's index to a list
+		//remove condition index from the map
+		IntList listOfConditionIndices = this.attributeIndex2ConditionIndices.get(attributeIndex); //should not be empty!
+		listOfConditionIndices.rem(conditionIndex); //iterates through the list (it usually contains 1 element, at maximum 2 elements, so the cost is negligible)
+		if (listOfConditionIndices.isEmpty()) {
+			this.attributeIndex2ConditionIndices.remove(attributeIndex); //remove the mapping from attribute's index to a list of condition indices
 		}
 	}
 	
@@ -543,14 +544,14 @@ public class RuleConditions {
 	}
 	
 	/**
-	 * Gets list of conditions defined for the attribute with given index. If there is not such condition, then returns and empty list.
+	 * Gets list of indices of conditions defined for the attribute with given index. If there is not such condition, then returns and empty list.
 	 * 
 	 * @param attributeIndex index of a condition on this list of conditions
-	 * @return list of conditions defined for the attribute with given index
+	 * @return list of indices of conditions defined for the attribute with given index
 	 */
-	public List<Condition<? extends EvaluationField>> getConditionsForAttribute(int attributeIndex) {
-		return this.attributeIndex2Conditions.containsKey(attributeIndex) ?
-				ObjectLists.unmodifiable(this.attributeIndex2Conditions.get(attributeIndex)) : ObjectLists.emptyList();
+	public IntList getConditionIndicesForAttribute(int attributeIndex) {
+		return this.attributeIndex2ConditionIndices.containsKey(attributeIndex) ?
+				IntLists.unmodifiable(this.attributeIndex2ConditionIndices.get(attributeIndex)) : IntLists.EMPTY_LIST;
 	}
 	
 	/**
@@ -592,7 +593,7 @@ public class RuleConditions {
 	 *         {@code false} otherwise
 	 */
 	public boolean containsConditionForAttribute(int attributeIndex) {
-		return this.attributeIndex2Conditions.containsKey(attributeIndex);
+		return this.attributeIndex2ConditionIndices.containsKey(attributeIndex);
 	}
 	
 	/**
