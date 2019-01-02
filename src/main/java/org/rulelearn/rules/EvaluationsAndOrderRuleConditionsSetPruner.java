@@ -27,9 +27,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Aims at reducing the number of rule conditions to only those, which are necessary to keep covered given objects. 
  * Rule conditions are removed in an iterative procedure which consists of three steps.
  * 
- * First, each rule condition that can be removed is put on a list. If the list is non-empty, then one of the rule conditions
+ * First, each rule conditions that can be removed is put on a list. If the list is non-empty, then one of the rule conditions
  * can be removed. Otherwise, the checking is stopped.
- * Second, the worst rule condition is selected from the list according to the specified rule conditions evaluators, which are
+ * Second, the worst rule conditions is selected from the list according to the specified rule conditions evaluators, which are
  * considered lexicographically.
  * In case of a tie between two or more rule conditions, with respect to all rule conditions evaluators, rule conditions with
  * the smallest index on the list of rule conditions are selected. 
@@ -61,10 +61,16 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 	 */
 	@Override
 	public List<RuleConditions> prune(List<RuleConditions> ruleConditionsList, IntSet indicesOfObjectsToKeepCovered) {
-		List<RuleConditions> prunedRules = null;
+		List<RuleConditions> ruleConditionsConsideredForRemoval = null;
 		Precondition.notNull(ruleConditionsList, "List of rule conditions for evaluations and order rule conditions pruner is null.");
+		Precondition.notNull(indicesOfObjectsToKeepCovered, "Set of objects to keep covered is null.");
+		
 		// TODO implement
-		return prunedRules;
+		for (RuleConditions ruleConditions : ruleConditionsList) {
+			
+		}
+		
+		return ruleConditionsList;
 	}
 
 }
