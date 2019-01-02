@@ -83,5 +83,31 @@ public interface RuleConditionsEvaluator extends Measure {
 					this.evaluateWithoutCondition(ruleConditions, conditionIndex) >= threshold:
 					this.evaluateWithoutCondition(ruleConditions, conditionIndex) <= threshold);
 	}
+	
+	/**
+	 * Confronts two rule conditions with respect to this evaluator.
+	 * 
+	 * @param ruleConditions1 first rule conditions
+	 * @param ruleConditions2 second rule conditions
+	 * @return 0 if both rule conditions evaluate the same,<br>
+	 *         1 if the first rule conditions have better evaluation than the second rule conditions,<br>
+	 *         -1 if the second rule conditions have better evaluation than the first rule conditions
+	 */
+	public default int confront(RuleConditions ruleConditions1, RuleConditions ruleConditions2) {
+		double evaluation1 = this.evaluate(ruleConditions1);
+		double evaluation2 = this.evaluate(ruleConditions2);
+		MeasureType measureType = this.getType(); //must not be null
+		
+		if (evaluation1 == evaluation2) {
+			return 0;
+		} else {
+			if (evaluation1 > evaluation2) {
+				return measureType == MeasureType.GAIN ? 1 : -1;
+			} else { //evaluation1 < evaluation2
+				return measureType == MeasureType.GAIN ? -1 : 1;
+			}
+		}
+		
+	}
 
 }
