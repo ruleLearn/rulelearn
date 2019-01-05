@@ -19,6 +19,7 @@ package org.rulelearn.rules;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttribute;
@@ -77,6 +78,11 @@ class SimpleConditionTest {
 			@Override
 			public String getRelationSymbol() {
 				return relationSymbol;
+			}
+
+			@Override
+			public TernaryLogicValue isAtMostAsGeneralAs(Condition<SimpleField> otherCondition) {
+				return null; //not used in tests
 			}
 		};
 	}

@@ -62,7 +62,7 @@ public class SingleEvaluationRuleMinimalityChecker extends RuleMinimalityChecker
 			priorApproximatedSet = priorRule.getApproximatedSet();
 			
 			if (approximatedSet.includes(priorApproximatedSet)) { //tested rule is less or equally specific w.r.t. decision part (and thus, its conclusion is not more precise)
-				if (ruleConditionsLessOrEquallyGeneral(ruleConditions, priorRuleConditions)) { //tested rule is less or equally general w.r.t. condition part
+				if (ruleConditions.lessOrEquallyGeneralAs(priorRuleConditions)) { //tested rule is less or equally general w.r.t. condition part
 					if (ruleConditionsEvaluators[0].confront(ruleConditions, priorRuleConditions) <= 0) { //tested rule is not better w.r.t. considered rule conditions evaluator
 						ruleIsMinimal = false; //tested rule is not minimal
 						break; //stop verification - tested rule already found to be not minimal 
@@ -72,11 +72,6 @@ public class SingleEvaluationRuleMinimalityChecker extends RuleMinimalityChecker
 		}
 		
 		return ruleIsMinimal;
-	}
-	
-	//tests if given rule conditions are less (or equally) general than given prior rule conditions (and thus, respective rule is not more attractive w.r.t. condition part)
-	boolean ruleConditionsLessOrEquallyGeneral(RuleConditions ruleConditions, RuleConditions priorRuleConditions) {
-		return false; //TODO
 	}
 
 }

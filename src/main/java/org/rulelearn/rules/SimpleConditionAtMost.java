@@ -18,6 +18,7 @@ package org.rulelearn.rules;
 
 import org.rulelearn.core.ComparisonResult;
 import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttributeWithContext;
@@ -114,6 +115,18 @@ public class SimpleConditionAtMost extends SimpleCondition {
 		} else {
 			throw new InvalidValueException("Cannot establish rule semantics given a simple 'at most' condition w.r.t. a decision attribute without preference type.");
 			//TODO: do something else?
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public TernaryLogicValue isAtMostAsGeneralAs(Condition<SimpleField> otherCondition) {
+		if (otherCondition instanceof SimpleConditionAtMost) {
+			return null; //TODO: implement
+		} else {
+			return TernaryLogicValue.UNCOMPARABLE;
 		}
 	}
 

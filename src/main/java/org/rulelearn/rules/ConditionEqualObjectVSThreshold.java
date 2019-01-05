@@ -19,6 +19,7 @@ package org.rulelearn.rules;
 import static org.rulelearn.core.Precondition.notNull;
 
 import org.rulelearn.core.ComparisonResult;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.types.EvaluationField;
 
@@ -65,7 +66,7 @@ public class ConditionEqualObjectVSThreshold<T extends EvaluationField> extends 
      * @throws NullPointerException {@inheritDoc}
      */
 	@Override
-	public boolean satisfiedBy(EvaluationField evaluation) {
+	public boolean satisfiedBy(T evaluation) {
 		ComparisonResult comparisonResult = notNull(evaluation, "Evaluation to be verified against equality condition is null.").compareToEnum(this.limitingEvaluation);
 		return (comparisonResult == ComparisonResult.EQUAL);
 	}
@@ -84,6 +85,18 @@ public class ConditionEqualObjectVSThreshold<T extends EvaluationField> extends 
 	@Override
 	public ConditionEqualObjectVSThreshold<T> duplicate() {
 		return new ConditionEqualObjectVSThreshold<T>(this.attributeWithContext, this.limitingEvaluation);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public TernaryLogicValue isAtMostAsGeneralAs(Condition<T> otherCondition) {
+		if (otherCondition instanceof ConditionEqualObjectVSThreshold) {
+			return otherCondition.satisfiedBy(this.limitingEvaluation) ? TernaryLogicValue.TRUE : TernaryLogicValue.FALSE;
+		} else {
+			return TernaryLogicValue.UNCOMPARABLE;
+		}
 	}
 	
 }

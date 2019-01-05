@@ -625,4 +625,31 @@ public class RuleConditions {
 		return this.ruleSemantics;
 	}
 	
+	//tests if given rule conditions are less (or equally) general than given prior rule conditions (and thus, respective rule is not more attractive w.r.t. condition part)
+	
+	/**
+	 * Tells if these rule conditions are less or equally general as the other rule conditions.
+	 * Compares lists of conditions obtained by means of {@link #getConditions()}.
+	 * 
+	 * @param otherRuleConditions other rule conditions that these rule conditions should be compared with
+	 * @return {@code true} if these rule conditions are less or equally general as the other rule conditions,
+	 *         {@code false} otherwise
+	 * @throws NullPointerException if the other conditions are {@code null}
+	 */
+	public boolean lessOrEquallyGeneralAs(RuleConditions otherRuleConditions) {
+		List<Condition<? extends EvaluationField>> priorConditions = notNull(otherRuleConditions, "Other rule conditions are null.").getConditions();
+		
+		int attributeIndex;
+		IntList conditionIndices;
+		
+		for (Condition<? extends EvaluationField> condition : this.conditions) {
+			attributeIndex = condition.getAttributeWithContext().getAttributeIndex();
+			if ((conditionIndices = otherRuleConditions.getConditionIndicesForAttribute(attributeIndex)).size() > 0) {
+				//TODO
+			}
+		}
+			
+		return false; //TODO
+	}
+	
 }

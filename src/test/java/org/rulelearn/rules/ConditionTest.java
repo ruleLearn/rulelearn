@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTable;
@@ -100,6 +101,11 @@ class ConditionTest {
 			@Override
 			public String getRelationSymbol() {
 				return conditionMock.getRelationSymbol();
+			}
+
+			@Override
+			public TernaryLogicValue isAtMostAsGeneralAs(Condition<EvaluationField> otherCondition) {
+				return conditionMock.isAtMostAsGeneralAs(otherCondition);
 			}
 		};
 	}

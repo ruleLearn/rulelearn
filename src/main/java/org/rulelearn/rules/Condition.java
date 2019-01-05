@@ -21,6 +21,7 @@ import static org.rulelearn.core.Precondition.notNull;
 import java.util.Objects;
 
 import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributeWithContext;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTable;
@@ -166,5 +167,16 @@ public abstract class Condition<T extends EvaluationField> {
 	public boolean isDecomposable() {
 		return this.limitingEvaluation instanceof CompositeField;
 	}
+	
+	/**
+	 * Tells if this condition is at most as general as the given condition.
+	 * 
+	 * @param otherCondition the other condition that this condition is being compared to
+	 * @return {@link TernaryLogicValue#TRUE} if this condition is at most as general as the other condition (i.e., equally specific, or more specific),
+	 *         {@link TernaryLogicValue#FALSE} if this condition is not at most as general as the other condition
+	 *         (is more general, or both conditions are of the same type but cover distinct objects as their limiting evaluations are incomparable),
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other condition prevents comparison
+	 */
+	public abstract TernaryLogicValue isAtMostAsGeneralAs(Condition<T> otherCondition); //TODO: check if implementation works also for conditions having limiting evaluation of type CompositeField
 	
 }
