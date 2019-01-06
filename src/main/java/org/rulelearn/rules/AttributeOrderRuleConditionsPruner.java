@@ -16,10 +16,10 @@
 
 package org.rulelearn.rules;
 
-import java.util.List;
-
 import org.rulelearn.core.Precondition;
 import org.rulelearn.data.InformationTable;
+
+import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Pruner for rule conditions that analyzes conditions according to the order of attributes in the learning information table {@link InformationTable}.
@@ -52,41 +52,27 @@ public class AttributeOrderRuleConditionsPruner extends AbstractRuleConditionsPr
 		Precondition.notNull(ruleConditions, "Rule conditions for attribute order preserving rule conditions pruner are null.");
 		
 		if (ruleConditions.size() > 1) {
-			int [] attribute2ConditionMap = getAttribute2RuleConditionMap(ruleConditions);
-			int attributeIndex = 0; 
-			while (attributeIndex < attribute2ConditionMap.length) {
+			int numberOfAttributes = ruleConditions.getLearningInformationTable().getNumberOfAttributes();
+			int attributeIndex = 0;
+			IntList conditionIndices = null;
+			int i = 0;
+			while (attributeIndex < numberOfAttributes) {
 				if (ruleConditions.containsConditionForAttribute(attributeIndex)) {
-					if (stoppingConditionChecker.isStoppingConditionSatisifiedWithoutCondition(ruleConditions, attribute2ConditionMap[attributeIndex])) {
-						ruleConditions.removeCondition(attribute2ConditionMap[attributeIndex]);
-						// map must be recreated after a rule condition is removed 
-						// TODO this part can be improved by constructing map starting from attributeIndex
-						attribute2ConditionMap = getAttribute2RuleConditionMap(ruleConditions);
+					conditionIndices = ruleConditions.getConditionIndicesForAttribute(attributeIndex);
+					while (i < conditionIndices.size()) {
+						if (stoppingConditionChecker.isStoppingConditionSatisifiedWithoutCondition(ruleConditions, conditionIndices.getInt(i))) {
+							ruleConditions.removeCondition(conditionIndices.getInt(i));
+						}
+						else {
+							i++;
+						}
 					}
+					i = 0;
 				}
-				// TODO this part may also be improved by checking not all attributes but rule conditions
 				attributeIndex++;
 			}			
 		}		
 		return ruleConditions;
 	}
 	
-	/**
-	 * For a given list of rule conditions represented as {@link RuleConditions} constructs a map between attribute indices in the learning information table
-	 * and indices of rule conditions on the list. An entry in this map links between an attribute and a rule condition containing the attribute. 
-	 * 
-	 * @param ruleConditions a list of rule conditions 
-	 * @return an array representing a map between attribute indices in the learning information table and indices of rule conditions on the list
-	 */
-	int [] getAttribute2RuleConditionMap(RuleConditions ruleConditions) {
-		Precondition.notNull(ruleConditions, "Rule conditions provided to construct attribute to rule condition map are null.");
-		
-		int numberOfAttribues = ruleConditions.getLearningInformationTable().getNumberOfAttributes();
-		List<Condition<?>> conditions = ruleConditions.getConditions();
-		int [] attribute2ConditionMap = new int[numberOfAttribues];
-		for (int conditionIndex = 0; conditionIndex < conditions.size(); conditionIndex++) {
-			attribute2ConditionMap[conditions.get(conditionIndex).getAttributeWithContext().getAttributeIndex()] = conditionIndex;
-		}
-		return attribute2ConditionMap;
-	}
-
 }
