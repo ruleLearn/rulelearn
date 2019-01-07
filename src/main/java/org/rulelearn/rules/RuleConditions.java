@@ -642,24 +642,36 @@ public class RuleConditions {
 		int otherAttributeIndex;
 		IntList conditionIndices;
 		TernaryLogicValue isAtMostAsGeneralAs;
+		int comparableConditionsCount;
 		
 		//no condition for some attribute == the most general condition (covering all objects)
 		
 		for (Condition<? extends EvaluationField> otherCondition : otherConditionsList) {
 			otherAttributeIndex = otherCondition.getAttributeWithContext().getAttributeIndex();
 			if ((conditionIndices = this.getConditionIndicesForAttribute(otherAttributeIndex)).size() > 0) { //these rule conditions also have condition(s) for the same attribute
+				comparableConditionsCount = 0;
 				for (int conditionIndex : conditionIndices) {
 					isAtMostAsGeneralAs = this.getCondition(conditionIndex).isAtMostAsGeneralAs(otherCondition);
 					
-					//TODO
+					switch (isAtMostAsGeneralAs) {
+					case FALSE: //type of condition and its limiting evaluation match
+						return false;
+					case TRUE: //type of condition and its limiting evaluation match
+						comparableConditionsCount++;
+						break;
+					case UNCOMPARABLE: //type of condition or its limiting evaluation do not match
+						break;
+					}
 				}
-				//TODO
+				if (comparableConditionsCount == 0) {
+					return false;
+				}
 			} else {
 				return false;
 			}
 		}
 			
-		return false; //TODO
+		return true;
 	}
 	
 }
