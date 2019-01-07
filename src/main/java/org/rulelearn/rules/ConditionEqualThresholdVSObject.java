@@ -91,9 +91,11 @@ public class ConditionEqualThresholdVSObject<T extends EvaluationField> extends 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public TernaryLogicValue isAtMostAsGeneralAs(Condition<T> otherCondition) {
-		if (otherCondition instanceof ConditionEqualThresholdVSObject) {
-			return otherCondition.satisfiedBy(this.limitingEvaluation) ? TernaryLogicValue.TRUE : TernaryLogicValue.FALSE;
+	@SuppressWarnings("unchecked")
+	public <S extends EvaluationField> TernaryLogicValue isAtMostAsGeneralAs(Condition<S> otherCondition) {
+		if (otherCondition instanceof ConditionEqualThresholdVSObject &&
+				otherCondition.getLimitingEvaluation().getClass().isAssignableFrom(this.limitingEvaluation.getClass())) {
+			return otherCondition.satisfiedBy((S)this.limitingEvaluation) ? TernaryLogicValue.TRUE : TernaryLogicValue.FALSE;
 		} else {
 			return TernaryLogicValue.UNCOMPARABLE;
 		}

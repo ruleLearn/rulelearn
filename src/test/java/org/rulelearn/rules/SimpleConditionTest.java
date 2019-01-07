@@ -24,6 +24,7 @@ import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.EvaluationAttributeWithContext;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.SimpleField;
@@ -81,7 +82,7 @@ class SimpleConditionTest {
 			}
 
 			@Override
-			public TernaryLogicValue isAtMostAsGeneralAs(Condition<SimpleField> otherCondition) {
+			public <S extends EvaluationField> TernaryLogicValue isAtMostAsGeneralAs(Condition<S> otherCondition) {
 				return null; //not used in tests
 			}
 		};

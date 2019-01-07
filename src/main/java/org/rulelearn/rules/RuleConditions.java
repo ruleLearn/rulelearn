@@ -23,6 +23,7 @@ import java.util.List;
 import org.rulelearn.approximations.ApproximatedSet;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.Precondition;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.CompositeField;
 import org.rulelearn.types.EvaluationField;
@@ -625,8 +626,7 @@ public class RuleConditions {
 		return this.ruleSemantics;
 	}
 	
-	//tests if given rule conditions are less (or equally) general than given prior rule conditions (and thus, respective rule is not more attractive w.r.t. condition part)
-	
+	//tests if given rule conditions are less (or equally) general than given prior rule conditions (and thus, respective rule is not more attractive w.r.t. the condition part)
 	/**
 	 * Tells if these rule conditions are less or equally general as the other rule conditions.
 	 * Compares lists of conditions obtained by means of {@link #getConditions()}.
@@ -636,16 +636,26 @@ public class RuleConditions {
 	 *         {@code false} otherwise
 	 * @throws NullPointerException if the other conditions are {@code null}
 	 */
-	public boolean lessOrEquallyGeneralAs(RuleConditions otherRuleConditions) {
-		List<Condition<? extends EvaluationField>> priorConditions = notNull(otherRuleConditions, "Other rule conditions are null.").getConditions();
+	public boolean isLessOrEquallyGeneralAs(RuleConditions otherRuleConditions) {
+		List<Condition<? extends EvaluationField>> otherConditionsList = notNull(otherRuleConditions, "Other rule conditions are null.").getConditions();
 		
-		int attributeIndex;
+		int otherAttributeIndex;
 		IntList conditionIndices;
+		TernaryLogicValue isAtMostAsGeneralAs;
 		
-		for (Condition<? extends EvaluationField> condition : this.conditions) {
-			attributeIndex = condition.getAttributeWithContext().getAttributeIndex();
-			if ((conditionIndices = otherRuleConditions.getConditionIndicesForAttribute(attributeIndex)).size() > 0) {
+		//no condition for some attribute == the most general condition (covering all objects)
+		
+		for (Condition<? extends EvaluationField> otherCondition : otherConditionsList) {
+			otherAttributeIndex = otherCondition.getAttributeWithContext().getAttributeIndex();
+			if ((conditionIndices = this.getConditionIndicesForAttribute(otherAttributeIndex)).size() > 0) { //these rule conditions also have condition(s) for the same attribute
+				for (int conditionIndex : conditionIndices) {
+					isAtMostAsGeneralAs = this.getCondition(conditionIndex).isAtMostAsGeneralAs(otherCondition);
+					
+					//TODO
+				}
 				//TODO
+			} else {
+				return false;
 			}
 		}
 			

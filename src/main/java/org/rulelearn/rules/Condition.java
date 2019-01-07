@@ -38,6 +38,7 @@ import org.rulelearn.types.SimpleField;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public abstract class Condition<T extends EvaluationField> {
+	//TODO: check if implementation of isAtMostAsGeneralAs works also for conditions having limiting evaluation of type CompositeField
 	
 	/**
 	 * Information about an attribute for which this condition has been created.
@@ -177,6 +178,7 @@ public abstract class Condition<T extends EvaluationField> {
 	 *         (is more general, or both conditions are of the same type but cover distinct objects as their limiting evaluations are incomparable),
 	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other condition prevents comparison
 	 */
-	public abstract TernaryLogicValue isAtMostAsGeneralAs(Condition<T> otherCondition); //TODO: check if implementation works also for conditions having limiting evaluation of type CompositeField
-	
+	//public abstract TernaryLogicValue isAtMostAsGeneralAs(Condition<? extends EvaluationField> otherCondition);
+	public abstract <S extends EvaluationField> TernaryLogicValue isAtMostAsGeneralAs(Condition<S> otherCondition); //performs wildcard capture
+
 }

@@ -16,14 +16,16 @@
 
 package org.rulelearn.rules;
 
+import static org.rulelearn.core.Precondition.notNull;
+
 import org.rulelearn.core.ComparisonResult;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttributeWithContext;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.SimpleField;
-import static org.rulelearn.core.Precondition.notNull;
 
 /**
  * Condition reflecting evaluations of type {@link SimpleField} and relation "&lt;=".
@@ -122,7 +124,7 @@ public class SimpleConditionAtMost extends SimpleCondition {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public TernaryLogicValue isAtMostAsGeneralAs(Condition<SimpleField> otherCondition) {
+	public <S extends EvaluationField> TernaryLogicValue isAtMostAsGeneralAs(Condition<S> otherCondition) {
 		if (otherCondition instanceof SimpleConditionAtMost) {
 			return null; //TODO: implement
 		} else {
