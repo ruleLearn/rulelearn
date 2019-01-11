@@ -25,10 +25,10 @@ package org.rulelearn.rules;
 public interface RuleConditionsPruner {
 	
 	/**
-	 * Prunes given rule conditions by removing redundant conditions, and returns new rule conditions.
+	 * Prunes given rule conditions by removing redundant conditions, and also returns modified rule conditions.
 	 * 
-	 * @param ruleConditions rule conditions that should be pruned; this object should not be modified as a result of performed pruning
-	 * @return pruned rule conditions (new object)
+	 * @param ruleConditions rule conditions that should be pruned; this object can be modified as a result of performed pruning
+	 * @return pruned rule conditions (the same object, but possibly with fewer conditions)
 	 * 
 	 * @throws NullPointerException if given rule conditions are {@code null}
 	 */

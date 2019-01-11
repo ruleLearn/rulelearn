@@ -30,13 +30,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 public interface RuleConditionsSetPruner {
 	
 	/**
-	 * Prunes given list of rule conditions by removing redundant rule conditions, so as to produce a new list of rule conditions that together cover each object from the given set.
+	 * Prunes given list of rule conditions by removing redundant rule conditions, so as to get a sub-list of rule conditions that together cover each object from the given set.
 	 * 
-	 * @param ruleConditionsList (input) list of rule conditions that should be pruned; this object should not be modified as a result of performed pruning
+	 * @param ruleConditionsList (input) list of rule conditions that should be pruned; this object can be modified as a result of performed pruning
 	 * @param indicesOfObjectsToKeepCovered set of indices of positive objects that are covered by at least one rule conditions from the given (input) list of rule conditions,
 	 *        and should remain covered by at least one rule conditions from the returned (output) list of rule conditions
 	 * 
-	 * @return (output) pruned list of rule conditions (new object)
+	 * @return (output) pruned list of rule conditions (the same object as the first parameter, but possibly with fewer rule conditions)
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */

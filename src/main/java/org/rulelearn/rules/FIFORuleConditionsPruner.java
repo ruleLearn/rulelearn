@@ -37,7 +37,7 @@ public class FIFORuleConditionsPruner extends AbstractRuleConditionsPruner {
 	}
 	
 	/**
-	 * {@inheritDoc}.
+	 * {@inheritDoc}
 	 * 
 	 * @param ruleConditions {@inheritDoc}
 	 * @return {@inheritDoc}

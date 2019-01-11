@@ -40,7 +40,7 @@ public class AttributeOrderRuleConditionsPruner extends AbstractRuleConditionsPr
 	}
 
 	/**
-	 * {@inheritDoc}.
+	 * {@inheritDoc}
 	 * 
 	 * @param ruleConditions {@inheritDoc}
 	 * @return {@inheritDoc}
