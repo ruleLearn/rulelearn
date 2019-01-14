@@ -18,21 +18,29 @@ package org.rulelearn.rules;
 
 import java.util.List;
 
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
 
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Prunes lists of rule conditions {@link RuleConditions} using rule conditions evaluators {@link RuleConditionsEvaluator}.
  * Aims at reducing the number of rule conditions to only those, which are necessary to keep covered given objects. 
  * Rule conditions are removed in an iterative procedure which consists of three steps.
  * 
- * First, each rule conditions that can be removed is put on a list. If the list is non-empty, then one of the rule conditions
+ * First, each rule conditions that can be removed are put on a list. If the list is non-empty, then one of the rule conditions
  * can be removed. Otherwise, the checking is stopped.
- * Second, the worst rule conditions is selected from the list according to the specified rule conditions evaluators, which are
+ * Second, the worst rule conditions are selected from the list according to the specified rule conditions evaluators, which are
  * considered lexicographically.
  * In case of a tie between two or more rule conditions, with respect to all rule conditions evaluators, rule conditions with
- * the smallest index on the list of rule conditions are selected. 
+ * the smallest index on the list of rule conditions are selected.
+ * Selected rule conditions are pruned (removed). 
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -61,16 +69,102 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 	 */
 	@Override
 	public List<RuleConditions> prune(List<RuleConditions> ruleConditionsList, IntSet indicesOfObjectsToKeepCovered) {
-		List<RuleConditions> ruleConditionsConsideredForRemoval = null;
 		Precondition.notNull(ruleConditionsList, "List of rule conditions for evaluations and order rule conditions pruner is null.");
 		Precondition.notNull(indicesOfObjectsToKeepCovered, "Set of objects to keep covered is null.");
 		
-		// TODO implement
-		for (RuleConditions ruleConditions : ruleConditionsList) {
-			
+		//----------
+		
+		//informs how many rule conditions cover the object whose index equals map's key
+		Int2IntMap indexOfObjectToKeepCovered2CountMap = new Int2IntOpenHashMap(indicesOfObjectsToKeepCovered.size());
+		
+		//informs which relevant objects (i.e., objects that need to be covered) are covered by particular rule conditions;
+		//e.g., if indicesOfObjectsToKeepCovered == {1, 3, 5, 7} and ruleConditionsList.get(i).getIndicesOfCoveredObjects() == [1, 5, 9, 12], then
+		//relevantIndicesOfCoveredObjects.get(i) == {1, 5}
+		List<IntSet> relevantIndicesOfCoveredObjectsList = new ObjectArrayList<>(ruleConditionsList.size()); //effectively, indices of covered objects are put from list to hash set
+		int size = relevantIndicesOfCoveredObjectsList.size();
+		for (int i = 0; i < size; i++) {
+			relevantIndicesOfCoveredObjectsList.add(new IntOpenHashSet()); // initialize with an empty (hash) set
 		}
 		
-		return ruleConditionsList;
+		//----------
+		
+		int ruleConditionsIndex; //auxiliary variable
+		int count; //auxiliary variable
+		IntList indicesOfSingleCoveredObjects = new IntArrayList(); //list of indices of objects that should remain covered and are covered by just one rule conditions
+		
+		for (int indexOfObjectToKeepCovered : indicesOfObjectsToKeepCovered) { //initialize indexOfObjectToKeepCovered2Count & relevantIndicesOfCoveredObjects
+			count = 0;
+			ruleConditionsIndex = 0;
+			for (RuleConditions ruleConditions : ruleConditionsList) {
+				if (ruleConditions.covers(indexOfObjectToKeepCovered)) {
+					indexOfObjectToKeepCovered2CountMap.put(indexOfObjectToKeepCovered, ++count);
+					relevantIndicesOfCoveredObjectsList.get(ruleConditionsIndex).add(indexOfObjectToKeepCovered); //remember that currently considered rule conditions cover an object that should remain covered (once this method returns)
+				}
+				ruleConditionsIndex++;
+			}
+			if (count == 1) {
+				indicesOfSingleCoveredObjects.add(indexOfObjectToKeepCovered);
+			}
+		}
+		
+		//----------
+		
+		if (indexOfObjectToKeepCovered2CountMap.size() != indicesOfObjectsToKeepCovered.size()) {
+			throw new InvalidValueException("Rule conditions do not jointly cover all objects that need to be kept covered.");
+		}
+		
+		//----------
+		
+		//determine rule conditions that may be removed (i.e., do not cover objects that are covered only once)
+		IntList indicesOfRemovableRuleConditions = new IntArrayList();
+		boolean ruleConditionsAreRemovable; //auxiliary variable
+		ruleConditionsIndex = 0;
+		for (IntSet relevantIndicesOfCoveredObjects : relevantIndicesOfCoveredObjectsList) {
+			ruleConditionsAreRemovable = true;
+			for (int indexOfSingleCoveredObject: indicesOfSingleCoveredObjects) {
+				if (relevantIndicesOfCoveredObjects.contains(indexOfSingleCoveredObject)) { //rule conditions cover a single-covered object, and thus, it cannot be removed
+					ruleConditionsAreRemovable = false;
+					break;
+				}
+			}
+			if (ruleConditionsAreRemovable) {
+				indicesOfRemovableRuleConditions.add(ruleConditionsIndex);
+			}
+			ruleConditionsIndex++;
+		}
+		
+		//----------
+		
+		if (indicesOfRemovableRuleConditions.size() > 0) { //there are at least one rule conditions that can be removed
+			IntList indicesOfRuleConditionsToRemove = new IntArrayList(); //indices of rule conditions that should be removed at the end of this method
+			int worstRemovableRuleConditionsIndex; //auxiliary variable
+			int positionOfWorstRemovableRuleConditionsIndex; //auxiliary variable
+			while (indicesOfRemovableRuleConditions.size() > 0) {
+				positionOfWorstRemovableRuleConditionsIndex = getPositionOfWorstRemovableRuleConditionsIndex(indicesOfRemovableRuleConditions, ruleConditionsList);;
+				worstRemovableRuleConditionsIndex = indicesOfRemovableRuleConditions.getInt(positionOfWorstRemovableRuleConditionsIndex);
+				//update indexOfObjectToKeepCovered2CountMap - decrease count for each object covered by removed rule conditions
+				for (int relevantIndexOfCoveredObject : relevantIndicesOfCoveredObjectsList.get(worstRemovableRuleConditionsIndex)) {
+					indexOfObjectToKeepCovered2CountMap.put(relevantIndexOfCoveredObject, indexOfObjectToKeepCovered2CountMap.get(relevantIndexOfCoveredObject) - 1);
+				}
+				indicesOfRemovableRuleConditions.removeInt(positionOfWorstRemovableRuleConditionsIndex);
+				indicesOfRuleConditionsToRemove.add(worstRemovableRuleConditionsIndex); //remember index to remove rule conditions at the end of this method
+				// TODO implement
+			}
+			return null; //TODO: modify
+			// TODO implement
+		} else {
+			return ruleConditionsList;
+		}
+	}
+	
+	private int getPositionOfWorstRemovableRuleConditionsIndex(IntList indicesOfRemovableRuleConditions, List<RuleConditions> ruleConditionsList) {
+		int positionOfWorstRemovableRuleConditionsIndex = 0;
+		int position = 0;
+		for (int indexOfRemovableRuleConditions : indicesOfRemovableRuleConditions) {
+			//TODO: implement search
+			position++;
+		}
+		return positionOfWorstRemovableRuleConditionsIndex;
 	}
 
 }

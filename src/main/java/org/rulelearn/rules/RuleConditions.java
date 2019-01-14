@@ -166,7 +166,7 @@ public class RuleConditions {
 	 * 
 	 * @throws IndexOutOfBoundsException if given object index does not correspond to any object in the learning information table
 	 */
-	public boolean covers(int objectIndex) {
+	public boolean covers(int objectIndex) { //TODO: try to optimize response using indicesOfCoveredObjects (if changed to hash set)
 		int conditionsCount = this.conditions.size();
 		for (int i = 0; i < conditionsCount; i++) {
 			if (!this.conditions.get(i).satisfiedBy(objectIndex, this.learningInformationTable)) {
