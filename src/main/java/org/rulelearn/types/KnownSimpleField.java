@@ -17,6 +17,7 @@
 package org.rulelearn.types;
 
 import org.rulelearn.core.UncomparableException;
+import org.rulelearn.data.AttributePreferenceType;
 
 /**
  * Top level class for all non-missing simple values in an information table.
@@ -42,7 +43,7 @@ public abstract class KnownSimpleField extends SimpleField implements Comparable
 	 *         and value of this known field cannot be compared with that unknown value
 	 */
 	@Override
-	public int compareToEx(Field otherField) throws UncomparableException {
+	public int compareToEx(EvaluationField otherField) throws UncomparableException {
 		if (otherField instanceof UnknownSimpleField) {
 			return ((UnknownSimpleField)otherField).reverseCompareToEx(this);
 		} else {
@@ -50,4 +51,10 @@ public abstract class KnownSimpleField extends SimpleField implements Comparable
 		}
 	}
 
+	/**
+	 * Gets preference type of this field.
+	 * 
+	 * @return fields preference type {@link AttributePreferenceType}
+	 */
+	abstract public AttributePreferenceType getPreferenceType();
 }

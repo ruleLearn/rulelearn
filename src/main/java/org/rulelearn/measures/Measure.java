@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-package org.rulelearn.rules;
-
-import org.rulelearn.data.Attribute;
+package org.rulelearn.measures;
 
 /**
- * Information about an attribute.
+ * Contract for all classes representing measures.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class AttributeInformation {
-	/**
-	 * Number (index) of the attribute in the array of all attributes.
-	 */
-	protected int attributeNumber;
+public interface Measure {
 
 	/**
-	 * Reference to the attribute.
+	 * Gets type of this measure.
+	 * 
+	 * @return see {@link MeasureType}
 	 */
-	protected Attribute attribute;
+	public MeasureType getType();
+	
 }

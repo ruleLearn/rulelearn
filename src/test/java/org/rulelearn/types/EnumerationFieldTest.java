@@ -339,6 +339,7 @@ public class EnumerationFieldTest {
 	/**
 	 * Tests {@link EnumerationField#equals(Object)} method.
 	 */
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
 		try {
@@ -433,4 +434,22 @@ public class EnumerationFieldTest {
 		assertFalse(fieldC2.hashCode() == fieldC4.hashCode());
 		assertFalse(fieldG2.hashCode() == fieldG4.hashCode());	
 	}
+	
+	/**
+	 * Tests {@link EnumerationField#toString()} method.
+	 */
+	@Test
+	public void testToString() {
+		try {
+			domain1 = new ElementList(values1);
+		}
+		catch (NoSuchAlgorithmException ex) {
+			System.out.println(ex);
+		}
+		
+		EnumerationField fieldN1 = EnumerationFieldFactory.getInstance().create(domain1, 0, AttributePreferenceType.NONE);
+		
+		assertEquals(fieldN1.toString(), "1");
+	}
+	
 }

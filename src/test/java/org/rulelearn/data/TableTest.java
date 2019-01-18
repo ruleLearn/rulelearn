@@ -18,6 +18,7 @@ package org.rulelearn.data;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.UnknownSimpleFieldMV15;
@@ -42,9 +43,9 @@ class TableTest {
 	
 	private Attribute[] getAttributes() {
 		return new Attribute[] {
-			new Attribute("a0", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[0]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[0]),
-			new Attribute("a1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[1]), new UnknownSimpleFieldMV15(), attributePreferenceTypes[1]),
-			new Attribute("a2", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[2]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[2])
+			new EvaluationAttribute("a0", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[0]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[0]),
+			new EvaluationAttribute("a1", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[1]), new UnknownSimpleFieldMV15(), attributePreferenceTypes[1]),
+			new EvaluationAttribute("a2", true, AttributeType.CONDITION, IntegerFieldFactory.getInstance().create(0, attributePreferenceTypes[2]), new UnknownSimpleFieldMV2(), attributePreferenceTypes[2])
 		}; 
 	}
 	
@@ -61,11 +62,11 @@ class TableTest {
 		return fields;
 	}
 	
-	private Table getTable(boolean accelerateByReadOnlyParams) {
+	private Table<Field> getTable(boolean accelerateByReadOnlyParams) {
 		Field[][] fields = this.getFields(new int[]{0, 1, 2, 3});
 		Index2IdMapper mapper = new Index2IdMapper(UniqueIdGenerator.getInstance().getUniqueIds(fields.length));
 		
-		return new Table(this.getAttributes(), fields, mapper, accelerateByReadOnlyParams);
+		return new Table<Field>(this.getAttributes(), fields, mapper, accelerateByReadOnlyParams);
 	}
 
 	/**
@@ -73,7 +74,7 @@ class TableTest {
 	 */
 	@Test
 	public void testGetField() {
-		Table table = getTable(false);
+		Table<Field> table = getTable(false);
 		
 		assertEquals(table.getField(0, 0), IntegerFieldFactory.getInstance().create(fieldValues[0][0], attributePreferenceTypes[0]));
 		assertEquals(table.getField(0, 1), IntegerFieldFactory.getInstance().create(fieldValues[0][1], attributePreferenceTypes[1]));
@@ -97,7 +98,7 @@ class TableTest {
 	 */
 	@Test
 	public void testGetFields_01() {
-		Table table = getTable(true);
+		Table<Field> table = getTable(true);
 		
 		for (int i = 0; i < fieldValues.length; i++) {
 			Field[] fields = table.getFields(i);
@@ -112,7 +113,7 @@ class TableTest {
 	 */
 	@Test
 	public void testGetFields_02() {
-		Table table = getTable(true);
+		Table<Field> table = getTable(true);
 		
 		for (int i = 0; i < fieldValues.length; i++) {
 			Field[] fields = table.getFields(i, true);
@@ -127,10 +128,10 @@ class TableTest {
 	 */
 	@Test
 	public void testSelect_01() {
-		Table table = getTable(false);
+		Table<Field> table = getTable(false);
 		
 		int[] objectIndices = new int[]{0, 2};
-		Table newTable = table.select(objectIndices);
+		Table<Field> newTable = table.select(objectIndices);
 		
 		assertEquals(newTable.getNumberOfObjects(), objectIndices.length);
 		assertEquals(newTable.getNumberOfAttributes(), table.getNumberOfAttributes());
@@ -163,10 +164,10 @@ class TableTest {
 	 */
 	@Test
 	public void testSelect_02() {
-		Table table = getTable(false);
+		Table<Field> table = getTable(false);
 		
 		int[] objectIndices = new int[]{1, 2, 3};
-		Table newTable = table.select(objectIndices, true);
+		Table<Field> newTable = table.select(objectIndices, true);
 		
 		assertEquals(newTable.getNumberOfObjects(), objectIndices.length);
 		assertEquals(newTable.getNumberOfAttributes(), table.getNumberOfAttributes());
@@ -199,7 +200,7 @@ class TableTest {
 	 */
 	@Test
 	public void testGetNumberOfObjects() {
-		Table table = getTable(true);
+		Table<Field> table = getTable(true);
 		assertEquals(table.getNumberOfObjects(), fieldValues.length);
 	}
 
@@ -208,7 +209,7 @@ class TableTest {
 	 */
 	@Test
 	public void testGetNumberOfAttributes() {
-		Table table = getTable(true);
+		Table<Field> table = getTable(true);
 		assertEquals(table.getNumberOfAttributes(), attributePreferenceTypes.length);
 	}
 
@@ -217,7 +218,7 @@ class TableTest {
 	 */
 	@Test
 	public void testGetAttributes_01() {
-		Table table = getTable(true);
+		Table<Field> table = getTable(true);
 		Attribute[] expectedAttributes = this.getAttributes();
 		Attribute[] attributes = table.getAttributes();
 		
@@ -233,7 +234,7 @@ class TableTest {
 	 */
 	@Test
 	public void testGetAttributes_02() {
-		Table table = getTable(false);
+		Table<Field> table = getTable(false);
 		Attribute[] expectedAttributes = this.getAttributes();
 		Attribute[] attributes = table.getAttributes(true);
 		
@@ -249,12 +250,58 @@ class TableTest {
 	 */
 	@Test
 	public void testGetIndex2IdMapper() {
-		Table table = getTable(false);
+		Table<Field> table = getTable(false);
 		Index2IdMapper mapper = table.getIndex2IdMapper();
 		
 		assertNotEquals(mapper.getId(0), mapper.getId(1));
 		assertNotEquals(mapper.getId(1), mapper.getId(2));
 		assertNotEquals(mapper.getId(2), mapper.getId(3));
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T extends Field> T[][] getGeneric2DArray() {
+		Field[][] array = new EvaluationField[2][2];
+		
+		array[0][0] = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
+		array[0][1] = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE);
+		array[1][0] = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.NONE);
+		array[1][1] = IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.NONE);
+		
+		return (T[][])array;
+	}
+	
+	private <T extends Field> T[][] copy2dGenericArray(T[][] array) {
+		//T[][] copiedArray = Arrays.copyOf(array, array.length);
+		T[][] copiedArray = array.clone();
+		
+		for (int i = 0; i < array.length; i++) {
+			//copiedArray[i] = Arrays.copyOf(array[i], array[i].length);
+			copiedArray[i] = array[i].clone();
+		}
+		
+		return copiedArray;
+	}
+	
+	/**
+	 * Test for making a copy of a 2d generic array.
+	 */
+	@Test
+	public <T extends Field> void testCopy2DArray() {
+		T[][] array = getGeneric2DArray();
+		T[][] copiedArray = copy2dGenericArray(array);
+
+		assertNotSame(array, copiedArray);
+		
+		assertNotSame(array[0], copiedArray[0]);
+		assertNotSame(array[1], copiedArray[1]);
+		
+		assertSame(array[0][0], copiedArray[0][0]);
+		assertSame(array[0][1], copiedArray[0][1]);
+		assertSame(array[1][0], copiedArray[1][0]);
+		assertSame(array[1][1], copiedArray[1][1]);	
+		
+		array[1][1] = null;
+		assertNotNull(copiedArray[1][1]);
 	}
 
 }

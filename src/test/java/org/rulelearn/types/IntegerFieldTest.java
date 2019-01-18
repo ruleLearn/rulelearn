@@ -271,6 +271,7 @@ public class IntegerFieldTest {
 	/**
 	 * Tests {@link IntegerField#equals(Object)} method.
 	 */
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
 		IntegerField fieldN1 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);
@@ -339,6 +340,14 @@ public class IntegerFieldTest {
 		assertFalse(fieldN2.hashCode() == fieldN3.hashCode());
 		assertFalse(fieldC2.hashCode() == fieldC3.hashCode());
 		assertFalse(fieldG2.hashCode() == fieldG3.hashCode());
+	}
+	
+	/**
+	 * Tests {@link IntegerField#toString()} method.
+	 */
+	@Test
+	public void testToString() {
+		assertEquals(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN).toString(), "3");
 	}
 	
 }

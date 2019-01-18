@@ -16,19 +16,35 @@
 
 package org.rulelearn.data;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.UUID;
+
+import static org.rulelearn.core.Precondition.notNull;
+
 import org.rulelearn.data.json.AttributeDeserializer;
+import org.rulelearn.data.csv.ObjectBuilder;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
+import org.rulelearn.types.IdentificationField;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
+import org.rulelearn.types.TextIdentificationField;
+import org.rulelearn.types.UUIDIdentificationField;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import com.univocity.parsers.conversions.TrimConversion;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -41,10 +57,16 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class InformationTableBuilder {
+	
 	/** 
 	 * Default string representations of missing value.
 	 */
 	protected final static String [] DEFAULT_MISSING_VALUE_STRINGS = {"?", "*", "NA"};
+	
+	/** 
+	 * Default string representation of separator.
+	 */
+	protected final static String DEFAULT_SEPARATOR_STRING = ",";
 	
 	/**
 	 * All attributes of the constructed information table.
@@ -62,7 +84,7 @@ public class InformationTableBuilder {
 	protected String [] missingValueStrings = null;
 	
 	/**
-	 * Separator of values in string representation of information.
+	 * Separator of values in string representation of an object of an information table.
 	 */
 	protected String separator = null;
 	
@@ -75,6 +97,7 @@ public class InformationTableBuilder {
 	 * Default constructor initializing this information table builder.
 	 */
 	protected InformationTableBuilder() {
+		this.separator = InformationTableBuilder.DEFAULT_SEPARATOR_STRING;
 		this.missingValueStrings = InformationTableBuilder.DEFAULT_MISSING_VALUE_STRINGS;
 		this.trimConversion = new TrimConversion();
 	}
@@ -83,21 +106,21 @@ public class InformationTableBuilder {
 	 * Constructor initializing this information table builder and setting attributes.
 	 * 
 	 * @param attributes table with attributes
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
+	 * @throws NullPointerException if all or some of the attributes of the constructed information table have not been set
 	 */
 	public InformationTableBuilder(Attribute[] attributes) {
 		this();
-		
-		this.attributes = attributes;
-		
 		// check attributes and initialize fields
 		if (attributes != null) {
-			for (Attribute attribute : attributes)
-				if (attribute == null) throw new NullPointerException("At least one attribute is not set");
+			for (Attribute attribute : attributes) {
+				if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
+			}
+			this.attributes = attributes;
 			this.fields = new ObjectArrayList<Field []>();
 		}
-		else
-			throw new NullPointerException("Attributes are not set");
+		else {
+			throw new NullPointerException("Attributes are not set.");
+		}
 	}
 	
 	/**
@@ -105,10 +128,11 @@ public class InformationTableBuilder {
 	 * 
 	 * @param attributes table with attributes
 	 * @param separator separator of object's evaluations
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
+	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or separator have not been set
 	 */
 	public InformationTableBuilder(Attribute[] attributes, String separator) {
 		this(attributes);
+		notNull(separator, "Separator is null.");
 		this.separator = separator;
 	}
 	
@@ -116,121 +140,90 @@ public class InformationTableBuilder {
 	 * Constructor initializing this information table builder, setting attributes, and missing values strings (i.e., array of strings representing missing values).
 	 * 
 	 * @param attributes table with attributes
-	 * @param separator separator of object's evaluations
-	 * @param missingValuesStrings array of string representations of missing values
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
+	 * @param missingValueStrings array of string representations of missing values
+	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or strings representing missing values have not been set 
 	 */
-	public InformationTableBuilder(Attribute[] attributes, String separator, String [] missingValuesStrings) {
+	public InformationTableBuilder(Attribute[] attributes, String [] missingValueStrings) {
+		this(attributes);
+		notNull(missingValueStrings, "Missing value strings array is null.");
+		this.missingValueStrings = missingValueStrings;
+	}
+	
+	/**
+	 * Constructor initializing this information table builder, setting attributes, separator, and missing values strings (i.e., array of strings representing missing values).
+	 * 
+	 * @param attributes table with attributes
+	 * @param separator separator of object's evaluations
+	 * @param missingValueStrings array of string representations of missing values
+	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or sparator, and/or strings representing missing values have not been set
+	 */
+	public InformationTableBuilder(Attribute[] attributes, String separator, String [] missingValueStrings) {
 		this(attributes, separator);
-		this.missingValueStrings = missingValuesStrings;
-	}
-	
-	/**
-	 * Constructor initializing this information table builder and setting attributes. It requires definition of attributes in JSON.
-	 * 
-	 * @param jsonAttributes JSON string encoding information about all attributes
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
-	 */
-	public InformationTableBuilder(String jsonAttributes) {
-		this();
-		
-		// parse attributes
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
-		Gson gson = gsonBuilder.create();
-		this.attributes = gson.fromJson(jsonAttributes, Attribute[].class);
-		
-		// check attributes and initialize fields
-		if (attributes != null) {
-			for (Attribute attribute : attributes)
-				if (attribute == null) throw new NullPointerException("At least one attribute is not set");
-			this.fields = new ObjectArrayList<Field []>();
-		}
-		else
-			throw new NullPointerException("Attributes are not set");
-	}
-	
-	/**
-	 * Constructor initializing this information table builder and setting attributes. It requires definition of attributes in JSON.
-	 * 
-	 * @param jsonAttributes JSON string encoding information about all attributes
-	 * @param separator separator of object's evaluations
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
-	 */
-	public InformationTableBuilder(String jsonAttributes, String separator) {
-		this(jsonAttributes);
-		this.separator = separator;
-	}
-	
-	/**
-	 * Constructor initializing this information table builder and setting attributes. It requires definition of attributes in JSON.
-	 * Missing values strings (i.e., array of strings representing missing values) are also set.
-	 * 
-	 * @param jsonAttributes JSON string encoding information about all attributes
-	 * @param separator separator of object's evaluations
-	 * @param missingValuesStrings array of string representations of missing values
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
-	 */
-	public InformationTableBuilder(String jsonAttributes, String separator, String [] missingValuesStrings) {
-		this(jsonAttributes, separator);
-		this.missingValueStrings = missingValuesStrings;
+		notNull(missingValueStrings, "Missing value strings array is null.");
+		this.missingValueStrings = missingValueStrings;
 	}
 	
 	/**
 	 * Adds one object to this builder. 
-	 * Given string is considered to contain subsequent evaluations of a single object, separated by the {@link InformationTableBuilder#separator}.
+	 * Given string is considered to contain subsequent identifiers/evaluations of a single object, separated by the given separator.
 	 * 
-	 * @param objectEvaluations string with object's evaluations, separated by the given separator
+	 * @param objectDescriptions string with object's identifiers/evaluations, separated by the given separator
 	 */
-	public void addObject(String objectEvaluations) {
+	public void addObject(String objectDescriptions) {
 		if (this.separator != null)
-			addObject(objectEvaluations.split(this.separator));
+			addObject(objectDescriptions.split(this.separator));
 	}
 	
 	/**
 	 * Adds one object to this builder. 
-	 * Given string is considered to contain subsequent evaluations of a single object, separated by the given separator.
+	 * Given string is considered to contain subsequent identifiers/evaluations of a single object, separated by the given separator.
 	 * 
-	 * @param objectEvaluations string with object's evaluations, separated by the given separator
+	 * @param objectDescriptions string with object's identifiers/evaluations, separated by the given separator
 	 * @param separator separator of object's evaluations
 	 */
-	public void addObject(String objectEvaluations, String separator) {
-		if (separator != null)
-			addObject(objectEvaluations.split(separator));
+	public void addObject(String objectDescriptions, String separator) {
+		if (separator != null) {
+			addObject(objectDescriptions.split(separator));
+		}
 	}
 	
 	/**
 	 * Adds one object to this builder. 
-	 * Given array is considered to contain subsequent evaluations of a single object.
+	 * Given array is considered to contain subsequent identifiers/evaluations of a single object.
 	 * 
-	 * @param objectEvaluations single object's evaluations
+	 * @param objectDescriptions single object's identifiers/evaluations
 	 * 
 	 * @throws IndexOutOfBoundsException if given attribute index does not correspond to any attribute of the constructed information table
 	 */
-	public void addObject(String[] objectEvaluations) {
-		Field[] object = new Field[objectEvaluations.length];
-		if (objectEvaluations.length > attributes.length)
+	public void addObject(String[] objectDescriptions) {
+		Field[] object = new Field[objectDescriptions.length];
+		if (objectDescriptions.length > this.attributes.length)
 			throw new IndexOutOfBoundsException("Object has more evaluations than the number of attributes declared.");
 		
-		for (int i = 0; i < objectEvaluations.length; i++) {
-			object[i] = parseEvaluation(objectEvaluations[i], attributes[i]);
+		for (int i = 0; i < objectDescriptions.length; i++) {
+			if (this.attributes[i] instanceof EvaluationAttribute) {
+				object[i] = parseEvaluation(objectDescriptions[i], (EvaluationAttribute)this.attributes[i]);
+			}
+			else if (this.attributes[i] instanceof IdentificationAttribute) {
+				object[i] = parseIdentification(objectDescriptions[i], (IdentificationAttribute)this.attributes[i]);
+			}
 		}
 		
 		this.fields.add(object);
 	}
 	
 	/**
-	 * Parses one object's evaluation and transforms it into a field {@link Field}.
+	 * Parses one object's evaluation and transforms it into a field {@link EvaluationField}.
 	 * 
 	 * @param evaluation text-encoded object's evaluation
 	 * @param attribute whose value should be parsed
 	 * 
 	 * @return constructed field
-	 * @throws NumberFormatException if evaluation of an numeric attribute can't be parsed
+	 * @throws NumberFormatException if evaluation of a numeric attribute can't be parsed
 	 * @throws IndexOutOfBoundsException if evaluation of an enumeration attribute can't be parsed  
 	 */
-	protected Field parseEvaluation(String evaluation, Attribute attribute) throws NumberFormatException, IndexOutOfBoundsException {
-		Field field = null;
+	protected EvaluationField parseEvaluation(String evaluation, EvaluationAttribute attribute) throws NumberFormatException, IndexOutOfBoundsException {
+		EvaluationField field = null;
 		boolean missingValue = false;
 	
 		
@@ -247,7 +240,7 @@ public class InformationTableBuilder {
 		}
 		
 		if (!missingValue) {
-			Field valueType = attribute.getValueType(); 
+			EvaluationField valueType = attribute.getValueType(); 
 			if (valueType instanceof IntegerField) {
 				try {
 					field = IntegerFieldFactory.getInstance().create(Integer.parseInt(evaluation), attribute.preferenceType);
@@ -271,8 +264,9 @@ public class InformationTableBuilder {
 			else if (valueType instanceof EnumerationField) {
 				// TODO some optimization is needed here (e.g., construction of a table with element lists)
 				int index = ((EnumerationField)valueType).getElementList().getIndex(evaluation);
-				if (index != ElementList.DEFAULT_INDEX)
+				if (index != ElementList.DEFAULT_INDEX) {
 					field = EnumerationFieldFactory.getInstance().create(((EnumerationField)valueType).getElementList(), index, attribute.preferenceType);
+				}
 				else {
 					field = attribute.getMissingValueType();
 					throw new IndexOutOfBoundsException(new StringBuilder("Incorrect value of enumeration: ").append(evaluation).append(" was replaced by a missing value.").toString());
@@ -291,7 +285,45 @@ public class InformationTableBuilder {
 		
 		return field;
 	}
+	
+	/**
+	 * Parses one object's identification and transforms it into a field {@link IdentificationField}.
+	 * 
+	 * @param identification text-encoded object's identification
+	 * @param attribute whose value should be parsed
+	 * 
+	 * @return constructed field
+	 */
+	protected IdentificationField parseIdentification(String identification, IdentificationAttribute attribute) {
+		IdentificationField field = null;
+		boolean missingValue = false;
+	
 		
+		// get rid of white spaces
+		identification = trimConversion.execute(identification);
+		// check whether it is a missing value
+		if (missingValueStrings != null) {
+			for (String missingValueString : this.missingValueStrings) {
+				if ((missingValueString != null) && (missingValueString.equalsIgnoreCase(identification))) {
+					missingValue = true;
+					break;
+				}
+			}
+		}
+		
+		// assign according to value type
+		if (attribute.getValueType() instanceof UUIDIdentificationField) {
+			field = (missingValue ?
+				new UUIDIdentificationField(UUIDIdentificationField.DEFAULT_VALUE) : new UUIDIdentificationField(UUID.fromString(identification))); 			
+		}
+		else {
+			field = (missingValue ?
+					new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE) : new TextIdentificationField(identification));
+		}
+		
+		return field;
+	}
+	
 	/**
 	 * Builds information table.
 	 * 
@@ -300,19 +332,316 @@ public class InformationTableBuilder {
 	public InformationTable build() {
 		return new InformationTable(attributes, fields);
 	}
-
+	
 	/**
-	 * @return the missingValueStrings
+	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored in CSV format.
+	 * Internally it uses attribute deserializer {@link AttributeDeserializer} to load attributes and object builder {@link ObjectBuilder} to load objects.
+	 * 
+	 * @param pathToJSONAttributeFile a path to JSON file with attributes
+	 * @param pathToCSVObjectFile a path to the CSV file with objects
+	 * 
+	 * @return constructed information table
+	 * @throws NullPointerException if path to JSON file and/or path to CSV file have not been set
 	 */
-	public String[] getMissingValueStrings() {
-		return missingValueStrings;
+	public static InformationTable buildFromCSVFile(String pathToJSONAttributeFile, String pathToCSVObjectFile) {
+		return buildFromCSVFile(pathToJSONAttributeFile, pathToCSVObjectFile, false);
+	}
+	
+	/**
+	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored in CSV format.
+	 * Internally it uses attribute deserializer {@link AttributeDeserializer} to load attributes and object builder {@link ObjectBuilder} to load objects.
+	 * 
+	 * @param pathToJSONAttributeFile a path to JSON file with attributes
+	 * @param pathToCSVObjectFile a path to the CSV file with objects
+	 * @param header indicates whether header is present in CSV file
+	 * 
+	 * @return constructed information table
+	 * @throws NullPointerException if path to JSON file and/or path to CSV file have not been set
+	 */
+	public static InformationTable buildFromCSVFile(String pathToJSONAttributeFile, String pathToCSVObjectFile, boolean header) {
+		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");
+		notNull(pathToCSVObjectFile, "Path to CSV file with objects is null.");
+		
+		// load attributes
+		Attribute [] attributes = null;
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		
+		JsonReader jsonReader = null;		
+		
+		try {
+			jsonReader = new JsonReader(new FileReader(pathToJSONAttributeFile));
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		if (jsonReader != null) {
+			attributes = gson.fromJson(jsonReader, Attribute[].class);
+			try {
+				jsonReader.close();
+			}
+			catch (IOException ex) {
+				System.out.println(ex.toString());
+			}
+		}
+		else {
+			// just to create information table
+			attributes = new Attribute[0];
+		}
+		
+		// load objects 
+		List<String []> objects = null;
+		if (attributes != null) {
+			ObjectBuilder ob = new ObjectBuilder(header);
+			try {
+				 objects = ob.getObjects(pathToCSVObjectFile);
+			}
+			catch (FileNotFoundException ex) {
+				System.out.println(ex);
+			}
+			catch (UnsupportedEncodingException ex) {
+				System.out.println(ex);
+			}
+		}
+		
+		// build information table
+		InformationTableBuilder informationTableBuilder = new InformationTableBuilder(attributes);
+		if (objects != null) {
+			for (int i = 0; i < objects.size(); i++) {
+				informationTableBuilder.addObject(objects.get(i));
+			}
+		}
+		return informationTableBuilder.build();
+	}
+	
+	/**
+	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored in CSV format.
+	 * Internally it uses attribute deserializer {@link AttributeDeserializer} to load attributes and object builder {@link ObjectBuilder} to load objects.
+	 * 
+	 * @param pathToJSONAttributeFile a path to JSON file with attributes
+	 * @param pathToCSVObjectFile a path to the CSV file with objects
+	 * @param header indicates whether header is present in CSV file
+	 * 
+	 * @return constructed information table
+	 * @throws NullPointerException if path to JSON file and/or path to CSV file have not been set
+	 */
+	public static InformationTable safelyBuildFromCSVFile(String pathToJSONAttributeFile, String pathToCSVObjectFile, boolean header) {
+		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");
+		notNull(pathToCSVObjectFile, "Path to CSV file with objects is null.");
+		
+		Attribute [] attributes = null;
+		List<String []> objects = null;
+		InformationTableBuilder informationTableBuilder = null;
+		
+		// load attributes
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		
+		try (JsonReader jsonReader = new JsonReader(new FileReader(pathToJSONAttributeFile))) {
+			attributes = gson.fromJson(jsonReader, Attribute[].class);
+			
+			// load objects 
+			ObjectBuilder ob = new ObjectBuilder(header);
+			try {
+				 objects = ob.getObjects(pathToCSVObjectFile);
+			}
+			catch (UnsupportedEncodingException ex) {
+				System.out.println(ex);
+			}
+			catch (FileNotFoundException ex) {
+				System.out.println(ex.toString());
+			}
+			
+			// construct information table builder
+			if (attributes != null) {
+				informationTableBuilder = new InformationTableBuilder(attributes);
+				if (objects != null) {
+					for (int i = 0; i < objects.size(); i++) {
+						informationTableBuilder.addObject(objects.get(i));
+					}
+				}
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		catch (IOException ex) {
+			System.out.println(ex.toString());
+		}
+		
+		// build information table
+		if (informationTableBuilder != null) {
+			return informationTableBuilder.build();
+		}
+		else {
+			// create empty information table
+			return new InformationTable(new Attribute[0], new ObjectArrayList<Field []>());
+		}
 	}
 
 	/**
-	 * @param missingValueStrings the missingValueStrings to set
+	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored also in JSON format.
+	 * Internally it uses attribute deserializer {@link AttributeDeserializer} to load attributes and object builder {@link org.rulelearn.data.json.ObjectBuilder} to load objects.
+	 * 
+	 * @param pathToJSONAttributeFile a path to JSON file with attributes
+	 * @param pathToJSONObjectFile a path to the JSON file with objects
+	 * 
+	 * @return constructed information table
 	 */
-	public void setMissingValueStrings(String[] missingValueStrings) {
-		this.missingValueStrings = missingValueStrings;
+	public static InformationTable buildFromJSONFile(String pathToJSONAttributeFile, String pathToJSONObjectFile) {
+		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");
+		notNull(pathToJSONObjectFile, "Path to JSON file with objects is null.");
+		
+		// load attributes
+		Attribute [] attributes = null;
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		
+		JsonReader jsonReader = null;
+		try {
+			jsonReader = new JsonReader(new FileReader(pathToJSONAttributeFile));
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		if (jsonReader != null) {
+			attributes = gson.fromJson(jsonReader, Attribute[].class);
+			try {
+				jsonReader.close();
+			}
+			catch (IOException ex) {
+				System.out.println(ex.toString());
+			}
+		}
+		else {
+			// just to create information table
+			attributes = new Attribute[0];
+		}
+		
+		// load objects
+		jsonReader = null;
+		List<String []> objects = null;
+		if (attributes != null) {
+			JsonElement json = null;
+			try {
+				FileReader fileReader = new FileReader(pathToJSONObjectFile);
+				if (fileReader != null) {
+					jsonReader = new JsonReader(fileReader);
+				}
+			}
+			catch (FileNotFoundException ex) {
+				System.out.println(ex.toString());
+			}
+			if (jsonReader != null) {
+				JsonParser jsonParser = new JsonParser();
+				json = jsonParser.parse(jsonReader);
+				try {
+					jsonReader.close();
+				}
+				catch (IOException ex) {
+					System.out.println(ex.toString());
+				}
+			}
+			org.rulelearn.data.json.ObjectBuilder ob = new org.rulelearn.data.json.ObjectBuilder(attributes);
+			objects = ob.getObjects(json);
+		}
+		
+		// build information table
+		InformationTableBuilder informationTableBuilder = new InformationTableBuilder(attributes, new String[] {org.rulelearn.data.json.ObjectBuilder.MISSING_VALUE_STRING});
+		if (objects != null) {
+			for (int i = 0; i < objects.size(); i++) {
+				informationTableBuilder.addObject(objects.get(i));
+			}
+		}
+		return informationTableBuilder.build();
+	}
+	
+	/**
+	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored also in JSON format.
+	 * Internally it uses attribute deserializer {@link AttributeDeserializer} to load attributes and object builder {@link org.rulelearn.data.json.ObjectBuilder} to load objects.
+	 * 
+	 * @param pathToJSONAttributeFile a path to JSON file with attributes
+	 * @param pathToJSONObjectFile a path to the JSON file with objects
+	 * 
+	 * @return constructed information table
+	 */
+	public static InformationTable safelyBuildFromJSONFile(String pathToJSONAttributeFile, String pathToJSONObjectFile) {
+		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");
+		notNull(pathToJSONObjectFile, "Path to JSON file with objects is null.");
+		
+		Attribute [] attributes = null;
+		List<String []> objects = null;
+		InformationTableBuilder informationTableBuilder = null;
+		
+		// load attributes
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		
+		try(JsonReader jsonAttributesReader = new JsonReader(new FileReader(pathToJSONAttributeFile))) {
+			attributes = gson.fromJson(jsonAttributesReader, Attribute[].class);
+			
+			// load objects
+			JsonElement json = null;
+			try(JsonReader jsonObjectsReader = new JsonReader(new FileReader(pathToJSONObjectFile))) {
+				JsonParser jsonParser = new JsonParser();
+				json = jsonParser.parse(jsonObjectsReader);
+			}
+			catch (FileNotFoundException ex) {
+				System.out.println(ex.toString());
+			}
+			catch (IOException ex) {
+				System.out.println(ex.toString());
+			}
+			org.rulelearn.data.json.ObjectBuilder ob = new org.rulelearn.data.json.ObjectBuilder(attributes);
+			objects = ob.getObjects(json);
+			
+			// construct information table builder
+			if (attributes != null) {
+				informationTableBuilder = new InformationTableBuilder(attributes, new String[] {org.rulelearn.data.json.ObjectBuilder.MISSING_VALUE_STRING});
+				if (objects != null) {
+					for (int i = 0; i < objects.size(); i++) {
+						informationTableBuilder.addObject(objects.get(i));
+					}
+				}
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		catch (IOException ex) {
+			System.out.println(ex.toString());
+		}
+		
+		// build information table
+		if (informationTableBuilder != null) {
+			return informationTableBuilder.build();
+		}
+		else {
+			// create empty information table
+			return new InformationTable(new Attribute[0], new ObjectArrayList<Field []>());
+		}
+	}
+	
+	/**
+	 * Gets missing value strings.
+	 * 
+	 * @return the missingValueStrings
+	 */
+	public String[] getMissingValueStrings() {
+		return this.missingValueStrings;
+	}
+	
+	/**
+	 * Gets separator string.
+	 * 
+	 * @return the separator
+	 */
+	public String getSeparatorStrings() {
+		return this.separator;
 	}
 	
 }

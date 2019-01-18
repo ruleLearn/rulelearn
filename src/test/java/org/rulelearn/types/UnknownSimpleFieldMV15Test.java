@@ -210,7 +210,7 @@ class UnknownSimpleFieldMV15Test {
 	@Test
 	public void testCompareToEx_01() throws UncomparableException {
 		UnknownSimpleField mvField = new UnknownSimpleFieldMV15();
-		Field otherField = new UnknownSimpleFieldMV15();
+		EvaluationField otherField = new UnknownSimpleFieldMV15();
 		assertEquals(mvField.compareToEx(otherField), 0);
 	}
 
@@ -253,6 +253,7 @@ class UnknownSimpleFieldMV15Test {
 	/**
 	 * Tests {@link UnknownSimpleFieldMV15#equals(Object)} method.
 	 */
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
 		UnknownSimpleField mvField1 = new UnknownSimpleFieldMV15();
@@ -287,6 +288,14 @@ class UnknownSimpleFieldMV15Test {
 		UnknownSimpleField mvField2 = new UnknownSimpleFieldMV15();
 		
 		assertTrue(mvField1.hashCode() == mvField2.hashCode());	
+	}
+	
+	/**
+	 * Tests {@link UnknownSimpleFieldMV15#toString()} method.
+	 */
+	@Test
+	public void testToString() {
+		assertEquals(new UnknownSimpleFieldMV15().toString(), "?");
 	}
 
 }

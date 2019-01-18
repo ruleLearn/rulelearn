@@ -269,6 +269,7 @@ public class RealFieldTest {
 	/**
 	 * Tests {@link RealField#equals(Object)} method.
 	 */
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
 		RealField fieldN1 = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.NONE);
@@ -337,6 +338,14 @@ public class RealFieldTest {
 		assertFalse(fieldN2.hashCode() == fieldN3.hashCode());
 		assertFalse(fieldC2.hashCode() == fieldC3.hashCode());
 		assertFalse(fieldG2.hashCode() == fieldG3.hashCode());
+	}
+	
+	/**
+	 * Tests {@link RealField#toString()} method.
+	 */
+	@Test
+	public void testToString() {
+		assertEquals(RealFieldFactory.getInstance().create(1.2, AttributePreferenceType.GAIN).toString(), "1.2");
 	}
 	
 }

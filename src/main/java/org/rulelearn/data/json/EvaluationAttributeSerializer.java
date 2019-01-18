@@ -18,7 +18,7 @@ package org.rulelearn.data.json;
 
 import java.lang.reflect.Type;
 
-import org.rulelearn.data.Attribute;
+import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.Field;
@@ -36,19 +36,19 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 /**
- * Serializer {@link com.google.gson.JsonSerializer} for Attribute {@link org.rulelearn.data.Attribute} 
+ * Serializer {@link com.google.gson.JsonSerializer} for evaluation attributes {@link org.rulelearn.data.EvaluationAttribute}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
-public class AttributeSerializer implements JsonSerializer<Attribute> {
+public class EvaluationAttributeSerializer implements JsonSerializer<EvaluationAttribute> {
 
 	/* (non-Javadoc)
 	 * @see com.google.gson.JsonSerializer#serialize(java.lang.Object, java.lang.reflect.Type, com.google.gson.JsonSerializationContext)
 	 */
 	@Override
-	public JsonElement serialize(Attribute src, Type typeOfSrc, JsonSerializationContext context) {
+	public JsonElement serialize(EvaluationAttribute src, Type typeOfSrc, JsonSerializationContext context) {
 		JsonObject json = new JsonObject();
 		
 		json.addProperty("name", src.getName());
@@ -66,7 +66,7 @@ public class AttributeSerializer implements JsonSerializer<Attribute> {
 		
 		Field type;
 		boolean pair = false;
-		JsonArray jsonPairArray = new JsonArray(2);;
+		JsonArray jsonPairArray = new JsonArray(2);
 		if (src.getValueType() instanceof PairField<?>) {
 			type = ((PairField<?>)src.getValueType()).getFirstValue();
 			pair = true;

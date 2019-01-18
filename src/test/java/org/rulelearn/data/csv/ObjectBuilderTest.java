@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.rulelearn.data.Attribute;
 
 /**
  * Test for {@link ObjectBuilder}.
@@ -34,10 +35,75 @@ import org.junit.jupiter.api.Test;
 class ObjectBuilderTest {
 
 	/**
+	 * Test method for {@link ObjectBuilder#ObjectBuilder(Attribute[])}.
+	 */
+	@Test
+	void testConstructionOfObjectBuilder01() {
+		Attribute[] attributes = null;
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes);});
+	}
+	
+	/**
+	 * Test method for {@link ObjectBuilder#ObjectBuilder(String)}.
+	 */
+	@Test
+	void testConstructionOfObjectBuilder02() {
+		String encoding = null;
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(encoding);});
+	}
+	
+	/**
+	 * Test method for {@link ObjectBuilder#ObjectBuilder(Attribute[], boolean)}.
+	 */
+	@Test
+	void testConstructionOfObjectBuilder03() {
+		Attribute[] attributes = null;
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, true);});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, false);});
+	}
+	
+	/**
+	 * Test method for {@link ObjectBuilder#ObjectBuilder(Attribute[], String)}.
+	 */
+	@Test
+	void testConstructionOfObjectBuilder04() {
+		Attribute[] attributes = null;
+		String encoding = null;
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, encoding);});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, "");});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(new Attribute[0], encoding);});
+	}
+	
+	/**
+	 * Test method for {@link ObjectBuilder#ObjectBuilder(String, boolean)}.
+	 */
+	@Test
+	void testConstructionOfObjectBuilder05() {
+		String encoding = null;
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(encoding, true);});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(encoding, false);});
+	}
+	
+	/**
+	 * Test method for {@link ObjectBuilder#ObjectBuilder(Attribute[], String, boolean))}.
+	 */
+	@Test
+	void testConstructionOfObjectBuilder06() {
+		Attribute[] attributes = null;
+		String encoding = null;
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, encoding, true);});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, encoding, false);});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, "", true);});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, "", false);});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(new Attribute[0], encoding, true);});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(new Attribute[0], encoding, false);});
+	}
+	
+	/**
 	 * Test method for {@link ObjectBuilder#getObjects(String)}.
 	 */
 	@Test
-	void testConstructionOfInformationTableBuilder() {		 
+	void testGetObjects() {		 
 		ObjectBuilder ob = new ObjectBuilder(true);
 		List<String []> objects = null;
 		try {
