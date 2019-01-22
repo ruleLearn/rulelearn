@@ -16,9 +16,12 @@
 
 package org.rulelearn.data.csv;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -103,7 +106,7 @@ class ObjectBuilderTest {
 	 * Test method for {@link ObjectBuilder#getObjects(String)}.
 	 */
 	@Test
-	void testGetObjects() {		 
+	void testGetObjects01() {		 
 		ObjectBuilder ob = new ObjectBuilder(true);
 		List<String []> objects = null;
 		try {
@@ -115,8 +118,34 @@ class ObjectBuilderTest {
 		catch (UnsupportedEncodingException ex) {
 			System.out.println(ex);
 		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
 		assertTrue(objects != null);
-		assertEquals(objects.size(), 579);
+		assertEquals(579, objects.size());
+	}
+	
+	/**
+	 * Test method for {@link ObjectBuilder#getObjects(String)}.
+	 */
+	@Test
+	void testGetObjects02() {		 
+		ObjectBuilder ob = new ObjectBuilder(false, '\t');
+		List<String []> objects = null;
+		try {
+			 objects = ob.getObjects("src/test/resources/data/csv/windsor.csv");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (UnsupportedEncodingException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(objects != null);
+		assertEquals(546, objects.size());
 	}
 
 }

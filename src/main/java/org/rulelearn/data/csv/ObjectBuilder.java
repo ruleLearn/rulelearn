@@ -16,17 +16,20 @@
 
 package org.rulelearn.data.csv;
 
+import static org.rulelearn.core.Precondition.notNull;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-
-import static org.rulelearn.core.Precondition.notNull;
 
 import org.rulelearn.data.Attribute;
 
 import com.univocity.parsers.common.processor.RowListProcessor;
+import com.univocity.parsers.csv.CsvFormat;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
@@ -44,24 +47,33 @@ public class ObjectBuilder {
 	 */
 	public final static String DEFAULT_ENCODING = "UTF-8";
 	
+	/** 
+	 * Default representation of a separator of fields in CSV file.
+	 */
+	public final static char DEFAULT_SEPARATOR = ',';
+	
 	/**
 	 * All attributes which describe objects.
 	 */
-	protected Attribute [] attributes = null;
+	Attribute [] attributes = null;
 	
 	/**
 	 * Encoding of text data in CSV file.
 	 */
-	protected String encoding = ObjectBuilder.DEFAULT_ENCODING; 
+	String encoding = ObjectBuilder.DEFAULT_ENCODING; 
 			
 	/**
-	 * Indication of header in CSV file.
+	 * Indication of presence of a header in CSV file.
 	 */
 	boolean header = false;
 	
 	/**
-	 * Default constructor.
-	 * 
+	 * Representation of a separator of fields in CSV file.
+	 */
+	char separtator = ObjectBuilder.DEFAULT_SEPARATOR;
+	
+	/**
+	 * Constructs object builder.
 	 */
 	public ObjectBuilder () {}
 	
@@ -95,12 +107,51 @@ public class ObjectBuilder {
 	}
 	
 	/**
+	 * Constructs object builder, sets encoding and header option.
+	 * 
+	 * @param encoding encoding of text data in CSV file
+	 * @param header indication of presence of a header in CSV file
+	 * @throws NullPointerException if encoding have not been set
+	 */
+	public ObjectBuilder (String encoding, boolean header) {
+		notNull(encoding, "Encoding string is null.");
+		this.encoding = encoding;
+		this.header = header;
+	}
+	
+	/**
+	 * Constructs object builder, sets encoding and header option.
+	 * 
+	 * @param encoding encoding of text data in CSV file
+	 * @param header indication of presence of a header in CSV file
+	 * @param separator representation of a separator of fields in CSV file
+	 * @throws NullPointerException if encoding have not been set
+	 */
+	public ObjectBuilder (String encoding, boolean header, char separator) {
+		notNull(encoding, "Encoding string is null.");
+		this.encoding = encoding;
+		this.header = header;
+		this.separtator = separator;
+	}
+	
+	/**
 	 * Constructor initializing this object builder and setting expected presence of header in loaded CSV files.
 	 * 
 	 * @param header tells whether a header is expected in loaded files 
 	 */
 	public ObjectBuilder (boolean header) {
 		this.header = header; 
+	}
+	
+	/**
+	 * Constructor initializing this object builder and setting expected presence of header in loaded CSV files together with separator of fields.
+	 * 
+	 * @param header tells whether a header is expected in loaded files
+	 * @param separator representation of a separator of fields in CSV file 
+	 */
+	public ObjectBuilder (boolean header, char separator) {
+		this.header = header; 
+		this.separtator = separator;
 	}
 	
 	/**
@@ -112,8 +163,8 @@ public class ObjectBuilder {
 	 */
 	public ObjectBuilder (Attribute [] attributes, String encoding) {
 		notNull(attributes, "Attributes array is null.");
-		this.attributes = attributes;
 		notNull(encoding, "Encoding string is null.");
+		this.attributes = attributes;
 		this.encoding = encoding;
 	}
 	
@@ -140,23 +191,84 @@ public class ObjectBuilder {
 	 */
 	public ObjectBuilder (Attribute [] attributes, String encoding, boolean header) {
 		notNull(attributes, "Attributes array is null.");
-		this.attributes = attributes;
 		notNull(encoding, "Encoding string is null.");
+		this.attributes = attributes;
 		this.encoding = encoding;
 		this.header = header;
 	}
 	
 	/**
-	 * Constructor initializing this object builder and setting encoding of loaded CSV files together with expected presence of header in CSV files.
+	 * Constructor initializing this object builder and setting encoding of loaded CSV files together with expected presence of header in CSV files, and separator of fields.
 	 * 
-	 * @param encoding string representation of encoding
-	 * @param header tells whether a header is expected in loaded files
-	 * @throws NullPointerException if encoding has not been set
+	 * @param attributes array of attributes {@link Attribute} which describe objects
+	 * @param encoding encoding of text data in CSV file
+	 * @param header indication of presence of a header in CSV file
+	 * @param separator representation of a separator of fields in CSV file
+	 * @throws NullPointerException if all or some of the attributes describing data to be loaded, and/or encoding have not been set
 	 */
-	public ObjectBuilder (String encoding, boolean header) {
+	public ObjectBuilder (Attribute [] attributes, String encoding, boolean header, char separator) {
+		notNull(attributes, "Attributes array is null.");
 		notNull(encoding, "Encoding string is null.");
+		this.attributes = attributes;
 		this.encoding = encoding;
 		this.header = header;
+		this.separtator = separator;
+	}
+	
+	/**
+	 * Constructor initializing this object builder and setting encoding of loaded CSV files together with separator of fields.
+	 * 
+	 * @param attributes array of attributes {@link Attribute} which describe objects
+	 * @param encoding encoding of text data in CSV file
+	 * @param separator representation of a separator of fields in CSV file
+	 * @throws NullPointerException if all or some of the attributes describing data to be loaded, and/or encoding have not been set
+	 */
+	public ObjectBuilder (Attribute [] attributes, String encoding, char separator) {
+		notNull(attributes, "Attributes array is null.");
+		notNull(encoding, "Encoding string is null.");
+		this.attributes = attributes;
+		this.encoding = encoding;
+		this.separtator = separator;
+	}
+	
+	/**
+	 * Reads description of all objects from the supplied CSV reader and returns them as a list of {@link String} arrays.
+	 * 
+	 * @param reader a reader of the CSV file
+	 * @return a list of {@link String} arrays representing description of all objects in the file on all attributes
+	 */
+	public List<String[]> getObjects(Reader reader) {
+		notNull(reader, "Reader of the CSV file is null.");
+		
+		CsvParserSettings parserSettings = new CsvParserSettings();
+		parserSettings.setLineSeparatorDetectionEnabled(true);
+		parserSettings.setHeaderExtractionEnabled(this.header);
+		parserSettings.setIgnoreLeadingWhitespaces(true);
+		parserSettings.setIgnoreTrailingWhitespaces(true);
+		CsvFormat format = new CsvFormat();
+		format.setDelimiter(this.separtator);
+		parserSettings.setFormat(format);
+		RowListProcessor rowProcessor = new RowListProcessor();
+		parserSettings.setProcessor(rowProcessor);
+		if (this.attributes != null) {
+			parserSettings.setMaxColumns(this.attributes.length);
+		}
+		CsvParser parser = new CsvParser(parserSettings);
+		
+		parser.parse(reader);
+		
+		String[] attributeNames = null;
+		if (this.header) {
+			attributeNames = rowProcessor.getHeaders();
+		}
+		if ((attributeNames != null) && (this.attributes != null)) {
+			// TODO check whether attribute names are valid
+		}
+		
+		// set maximal number of object fields
+		
+		List<String[]> objects = rowProcessor.getRows();
+		return objects;
 	}
 	
 	/**
@@ -167,18 +279,26 @@ public class ObjectBuilder {
 	 * @throws FileNotFoundException in case the supplied file does not exist
 	 * @throws UnsupportedEncodingException in case the encoding specified is not correct 
 	 */
-	public List<String[]> getObjects(String pathToCSVFile) throws FileNotFoundException, UnsupportedEncodingException {
+	public List<String[]> getObjects(String pathToCSVFile) throws IOException, FileNotFoundException, UnsupportedEncodingException {
 		notNull(pathToCSVFile, "String representing path to CSV file is null.");
 		
 		CsvParserSettings parserSettings = new CsvParserSettings();
 		parserSettings.setLineSeparatorDetectionEnabled(true);
 		parserSettings.setHeaderExtractionEnabled(this.header);
-		
+		parserSettings.setIgnoreLeadingWhitespaces(true);
+		parserSettings.setIgnoreTrailingWhitespaces(true);
+		CsvFormat format = new CsvFormat();
+		format.setDelimiter(this.separtator);
+		parserSettings.setFormat(format);
 		RowListProcessor rowProcessor = new RowListProcessor();
 		parserSettings.setProcessor(rowProcessor);
-
+		if (this.attributes != null) {
+			parserSettings.setMaxColumns(this.attributes.length);
+		}
 		CsvParser parser = new CsvParser(parserSettings);
-		parser.parse(new InputStreamReader(new FileInputStream(pathToCSVFile), this.encoding));
+		try (InputStreamReader reader = new InputStreamReader(new FileInputStream(pathToCSVFile), this.encoding)) {
+			parser.parse(reader);
+		}
 		
 		String[] attributeNames = null;
 		if (this.header) {
