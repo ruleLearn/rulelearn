@@ -43,7 +43,7 @@ class ObjectParserTest {
 	@Test
 	void testConstructionOfObjectParser01() {
 		Attribute[] attributes = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectParser(attributes);});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).build();});
 	}
 	
 	/**
@@ -53,9 +53,9 @@ class ObjectParserTest {
 	void testConstructionOfObjectParser02() {
 		Attribute[] attributes = null;
 		String mv = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectParser(attributes, mv);});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).missingValueString(mv).build();});
 		Attribute[] newAttributes = new Attribute[1];
-		assertThrows(NullPointerException.class, () -> {new ObjectParser(newAttributes, mv);});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(newAttributes).missingValueString(mv).build();});
 	}
 	
 	/**
@@ -66,11 +66,11 @@ class ObjectParserTest {
 		Attribute[] attributes = null;
 		String mv = null;
 		String encoding = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectParser(attributes, mv, encoding);});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).missingValueString(mv).encoding(encoding).build();});
 		Attribute[] newAttributes = new Attribute[1];
-		assertThrows(NullPointerException.class, () -> {new ObjectParser(newAttributes, mv, encoding);});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(newAttributes).missingValueString(mv).encoding(encoding).build();});
 		String newMv = "?";
-		assertThrows(NullPointerException.class, () -> {new ObjectParser(newAttributes, newMv, encoding);});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(newAttributes).missingValueString(newMv).encoding(encoding).build();});
 	}
 	
 	/**
@@ -80,8 +80,8 @@ class ObjectParserTest {
 	void testObjectParser() {
 		Attribute[] attributes = new Attribute[1];
 		String mv = new String("?");
-		String encoding = ObjectParser.DEFAULT_ENCODING;
-		ObjectParser objectParser = new ObjectParser(attributes, mv, encoding);
+		String encoding = ObjectBuilder.DEFAULT_ENCODING;
+		ObjectParser objectParser = new ObjectParser.Builder(attributes).missingValueString(mv).encoding(encoding).build();
 		assertThrows(NullPointerException.class, () -> {objectParser.parseObjects(null, false, ',');});
 	}
 
@@ -100,7 +100,7 @@ class ObjectParserTest {
 			System.out.println(ex.toString());
 		}
 		if (attributes != null) {
-			ObjectParser oParser = new ObjectParser(attributes);
+			ObjectParser oParser = new ObjectParser.Builder(attributes).build();
 			InformationTable iTable = null;
 			try {
 				iTable = oParser.parseObjects(new FileReader("src/test/resources/data/csv/windsor.csv"), false, '\t');

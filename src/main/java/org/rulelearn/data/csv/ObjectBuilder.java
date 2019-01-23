@@ -52,6 +52,11 @@ public class ObjectBuilder {
 	 */
 	public final static char DEFAULT_SEPARATOR = ',';
 	
+	/** 
+	 * Default value for this type of a field.
+	 */
+	public final static String DEFAULT_MISSING_VALUE_STRING = "?";
+	
 	/**
 	 * All attributes which describe objects.
 	 */
@@ -70,7 +75,13 @@ public class ObjectBuilder {
 	/**
 	 * Representation of a separator of fields in CSV file.
 	 */
-	char separtator = ObjectBuilder.DEFAULT_SEPARATOR;
+	char separator = ObjectBuilder.DEFAULT_SEPARATOR;
+	
+	/**
+	 * String representation of a missing value in CSV.
+	 */
+	protected String missingValueString = ObjectBuilder.DEFAULT_MISSING_VALUE_STRING;
+	
 	
 	/**
 	 * Constructs object builder.
@@ -131,7 +142,7 @@ public class ObjectBuilder {
 		notNull(encoding, "Encoding string is null.");
 		this.encoding = encoding;
 		this.header = header;
-		this.separtator = separator;
+		this.separator = separator;
 	}
 	
 	/**
@@ -151,7 +162,7 @@ public class ObjectBuilder {
 	 */
 	public ObjectBuilder (boolean header, char separator) {
 		this.header = header; 
-		this.separtator = separator;
+		this.separator = separator;
 	}
 	
 	/**
@@ -212,7 +223,7 @@ public class ObjectBuilder {
 		this.attributes = attributes;
 		this.encoding = encoding;
 		this.header = header;
-		this.separtator = separator;
+		this.separator = separator;
 	}
 	
 	/**
@@ -228,7 +239,7 @@ public class ObjectBuilder {
 		notNull(encoding, "Encoding string is null.");
 		this.attributes = attributes;
 		this.encoding = encoding;
-		this.separtator = separator;
+		this.separator = separator;
 	}
 	
 	/**
@@ -246,7 +257,7 @@ public class ObjectBuilder {
 		parserSettings.setIgnoreLeadingWhitespaces(true);
 		parserSettings.setIgnoreTrailingWhitespaces(true);
 		CsvFormat format = new CsvFormat();
-		format.setDelimiter(this.separtator);
+		format.setDelimiter(this.separator);
 		parserSettings.setFormat(format);
 		RowListProcessor rowProcessor = new RowListProcessor();
 		parserSettings.setProcessor(rowProcessor);
@@ -288,7 +299,7 @@ public class ObjectBuilder {
 		parserSettings.setIgnoreLeadingWhitespaces(true);
 		parserSettings.setIgnoreTrailingWhitespaces(true);
 		CsvFormat format = new CsvFormat();
-		format.setDelimiter(this.separtator);
+		format.setDelimiter(this.separator);
 		parserSettings.setFormat(format);
 		RowListProcessor rowProcessor = new RowListProcessor();
 		parserSettings.setProcessor(rowProcessor);
