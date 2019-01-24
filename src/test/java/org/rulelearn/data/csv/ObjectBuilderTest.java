@@ -16,14 +16,19 @@
 
 package org.rulelearn.data.csv;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.data.Attribute;
+import org.rulelearn.data.json.AttributeParser;
 
 /**
  * Test for {@link ObjectBuilder}.
@@ -35,76 +40,45 @@ import org.rulelearn.data.Attribute;
 class ObjectBuilderTest {
 
 	/**
-	 * Test method for {@link ObjectBuilder#ObjectBuilder(Attribute[])}.
+	 * Test method for {@link ObjectBuilder.Builder#attributes(Attribute[])}.
 	 */
 	@Test
 	void testConstructionOfObjectBuilder01() {
-		Attribute[] attributes = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes);});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder.Builder().attributes(null).build();});
 	}
 	
 	/**
-	 * Test method for {@link ObjectBuilder#ObjectBuilder(String)}.
+	 * Test method for {@link ObjectBuilder.Builder#attributes(Attribute[])}.
 	 */
 	@Test
 	void testConstructionOfObjectBuilder02() {
-		String encoding = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(encoding);});
+		Attribute[] attributes = new Attribute[1];
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder.Builder().attributes(attributes).build();});
 	}
 	
 	/**
-	 * Test method for {@link ObjectBuilder#ObjectBuilder(Attribute[], boolean)}.
+	 * Test method for {@link ObjectBuilder.Builder#encoding(String)}.
 	 */
 	@Test
 	void testConstructionOfObjectBuilder03() {
-		Attribute[] attributes = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, true);});
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, false);});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder.Builder().encoding(null).build();});
 	}
 	
+	
 	/**
-	 * Test method for {@link ObjectBuilder#ObjectBuilder(Attribute[], String)}.
+	 * Test method for {@link ObjectBuilder.Builder#missingValueString(String)}.
 	 */
 	@Test
 	void testConstructionOfObjectBuilder04() {
-		Attribute[] attributes = null;
-		String encoding = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, encoding);});
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, "");});
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(new Attribute[0], encoding);});
-	}
-	
-	/**
-	 * Test method for {@link ObjectBuilder#ObjectBuilder(String, boolean)}.
-	 */
-	@Test
-	void testConstructionOfObjectBuilder05() {
-		String encoding = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(encoding, true);});
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(encoding, false);});
-	}
-	
-	/**
-	 * Test method for {@link ObjectBuilder#ObjectBuilder(Attribute[], String, boolean))}.
-	 */
-	@Test
-	void testConstructionOfObjectBuilder06() {
-		Attribute[] attributes = null;
-		String encoding = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, encoding, true);});
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, encoding, false);});
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, "", true);});
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, "", false);});
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(new Attribute[0], encoding, true);});
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(new Attribute[0], encoding, false);});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder.Builder().missingValueString(null).build();});
 	}
 	
 	/**
 	 * Test method for {@link ObjectBuilder#getObjects(String)}.
 	 */
 	@Test
-	void testGetObjects() {		 
-		ObjectBuilder ob = new ObjectBuilder(true);
+	void testGetObjects01() {
+		ObjectBuilder ob = new ObjectBuilder.Builder().header(true).build();
 		List<String []> objects = null;
 		try {
 			 objects = ob.getObjects("src/test/resources/data/csv/prioritisation1.csv");
@@ -115,8 +89,145 @@ class ObjectBuilderTest {
 		catch (UnsupportedEncodingException ex) {
 			System.out.println(ex);
 		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
 		assertTrue(objects != null);
-		assertEquals(objects.size(), 579);
+		assertEquals(579, objects.size());
+	}
+	
+	/**
+	 * Test method for {@link ObjectBuilder#getObjects(String)}.
+	 */
+	@Test
+	void testGetObjects02() {
+		Attribute [] attributes = null;
+		
+		AttributeParser attributeParser = new AttributeParser();
+		try (FileReader attributesReader = new FileReader("src/test/resources/data/csv/prioritisation.json")) {
+			attributes = attributeParser.parseAttributes(attributesReader);
+			if (attributes != null) {
+				ObjectBuilder ob = new ObjectBuilder.Builder().attributes(attributes).header(true).build();
+				List<String []> objects = null;
+				try {
+					 objects = ob.getObjects("src/test/resources/data/csv/prioritisation1.csv");
+				}
+				catch (FileNotFoundException ex) {
+					System.out.println(ex);
+				}
+				catch (UnsupportedEncodingException ex) {
+					System.out.println(ex);
+				}
+				catch (IOException ex) {
+					System.out.println(ex);
+				}
+				assertTrue(objects != null);
+				assertEquals(579, objects.size());
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+	}
+	
+	/**
+	 * Test method for {@link ObjectBuilder#getObjects(java.io.Reader))}.
+	 */
+	@Test
+	void testGetObjects03() {
+		Attribute [] attributes = null;
+		
+		AttributeParser attributeParser = new AttributeParser();
+		try (FileReader attributesReader = new FileReader("src/test/resources/data/csv/prioritisation.json")) {
+			attributes = attributeParser.parseAttributes(attributesReader);
+			if (attributes != null) {
+				ObjectBuilder ob = new ObjectBuilder.Builder().attributes(attributes).header(true).build();
+				List<String []> objects = null;
+				try (FileReader objectsReader = new FileReader("src/test/resources/data/csv/prioritisation1.csv")) {
+					 objects = ob.getObjects(objectsReader);
+				}
+				catch (FileNotFoundException ex) {
+					System.out.println(ex);
+				}
+				catch (UnsupportedEncodingException ex) {
+					System.out.println(ex);
+				}
+				catch (IOException ex) {
+					System.out.println(ex);
+				}
+				assertTrue(objects != null);
+				assertEquals(579, objects.size());
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+	}
+	
+	/**
+	 * Test method for {@link ObjectBuilder#getObjects(String)}.
+	 */
+	@Test
+	void testGetObjects04() {		 
+		ObjectBuilder ob = new ObjectBuilder.Builder().header(false).separator('\t').build();
+		List<String []> objects = null;
+		try {
+			 objects = ob.getObjects("src/test/resources/data/csv/windsor.csv");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (UnsupportedEncodingException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(objects != null);
+		assertEquals(546, objects.size());
+	}
+	
+	/**
+	 * Test method for {@link ObjectBuilder#getObjects(java.io.Reader))}.
+	 */
+	@Test
+	void testGetObjects05() {
+		Attribute [] attributes = null;
+		
+		AttributeParser attributeParser = new AttributeParser();
+		try (FileReader attributesReader = new FileReader("src/test/resources/data/csv/windsor.json")) {
+			attributes = attributeParser.parseAttributes(attributesReader);
+			if (attributes != null) {
+				ObjectBuilder ob = new ObjectBuilder.Builder().attributes(attributes).header(false).separator('\t').build();
+				List<String []> objects = null;
+				try (FileReader objectsReader = new FileReader("src/test/resources/data/csv/windsor.csv")) {
+					 objects = ob.getObjects(objectsReader);
+				}
+				catch (FileNotFoundException ex) {
+					System.out.println(ex);
+				}
+				catch (UnsupportedEncodingException ex) {
+					System.out.println(ex);
+				}
+				catch (IOException ex) {
+					System.out.println(ex);
+				}
+				assertTrue(objects != null);
+				assertEquals(546, objects.size());
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
 	}
 
 }

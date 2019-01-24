@@ -16,11 +16,15 @@
 
 package org.rulelearn.data;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -287,7 +291,19 @@ class InformationTableBuilderTest {
 	 */
 	@Test
 	void testConstructionOfInformationTable02() {
-		InformationTable informationTable = InformationTableBuilder.buildFromCSVFile("src/test/resources/data/csv/prioritisation.json", "src/test/resources/data/csv/prioritisation.csv", true);
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.buildFromCSVFile("src/test/resources/data/csv/prioritisation.json", "src/test/resources/data/csv/prioritisation.csv", true);
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (UnsupportedEncodingException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
 		assertTrue(informationTable != null);
 		assertEquals(11, informationTable.getNumberOfAttributes());
 		assertEquals(2, informationTable.getNumberOfObjects());		
@@ -298,10 +314,20 @@ class InformationTableBuilderTest {
 	 */
 	@Test
 	void testConstructionOfInformationTable03() {
-		InformationTable informationTable = InformationTableBuilder.buildFromCSVFile("src/test/resources/data/csv/prioritisation.json", "");
-		assertTrue(informationTable != null);
-		assertEquals(11, informationTable.getNumberOfAttributes());
-		assertEquals(0, informationTable.getNumberOfObjects());		
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.buildFromCSVFile("src/test/resources/data/csv/prioritisation.json", "");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (UnsupportedEncodingException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
 	}
 	
 	/**
@@ -309,10 +335,20 @@ class InformationTableBuilderTest {
 	 */
 	@Test
 	void testConstructionOfInformationTable04() {
-		InformationTable informationTable = InformationTableBuilder.buildFromCSVFile("", "");
-		assertTrue(informationTable != null);
-		assertEquals(0, informationTable.getNumberOfAttributes());
-		assertEquals(0, informationTable.getNumberOfObjects());		
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.buildFromCSVFile("", "");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (UnsupportedEncodingException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
 	}
 	
 	/**
@@ -353,7 +389,19 @@ class InformationTableBuilderTest {
 	 */
 	@Test
 	void testConstructionOfInformationTable08() {
-		InformationTable informationTable = InformationTableBuilder.safelyBuildFromCSVFile("src/test/resources/data/csv/prioritisation.json", "src/test/resources/data/csv/prioritisation.csv", true);
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.safelyBuildFromCSVFile("src/test/resources/data/csv/prioritisation.json", "src/test/resources/data/csv/prioritisation.csv", true);
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (UnsupportedEncodingException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
 		assertTrue(informationTable != null);
 		assertEquals(11, informationTable.getNumberOfAttributes());
 		assertEquals(2, informationTable.getNumberOfObjects());		
@@ -364,10 +412,20 @@ class InformationTableBuilderTest {
 	 */
 	@Test
 	void testConstructionOfInformationTable09() {
-		InformationTable informationTable = InformationTableBuilder.safelyBuildFromCSVFile("src/test/resources/data/csv/prioritisation.json", "", true);
-		assertTrue(informationTable != null);
-		assertEquals(11, informationTable.getNumberOfAttributes());
-		assertEquals(0, informationTable.getNumberOfObjects());		
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.safelyBuildFromCSVFile("src/test/resources/data/csv/prioritisation.json", "", true);
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (UnsupportedEncodingException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
 	}
 	
 	/**
@@ -375,10 +433,20 @@ class InformationTableBuilderTest {
 	 */
 	@Test
 	void testConstructionOfInformationTable11() {
-		InformationTable informationTable = InformationTableBuilder.safelyBuildFromCSVFile("", "", true);
-		assertTrue(informationTable != null);
-		assertEquals(0, informationTable.getNumberOfAttributes());
-		assertEquals(0, informationTable.getNumberOfObjects());		
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.safelyBuildFromCSVFile("", "", true);
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (UnsupportedEncodingException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
 	}
 	
 	/**
@@ -413,4 +481,5 @@ class InformationTableBuilderTest {
 		assertEquals(0, informationTable.getNumberOfAttributes());
 		assertEquals(0, informationTable.getNumberOfObjects());		
 	}
+	
 }
