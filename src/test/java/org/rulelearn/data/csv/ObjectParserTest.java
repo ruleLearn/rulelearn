@@ -22,11 +22,17 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.data.Attribute;
+import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.AttributeType;
+import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.json.AttributeParser;
+import org.rulelearn.types.IntegerFieldFactory;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 /**
  * Tests for {@link ObjectParser}.
@@ -38,7 +44,7 @@ import org.rulelearn.data.json.AttributeParser;
 class ObjectParserTest {
 	
 	/**
-	 * Test method for {@link ObjectParser#ObjectParser(Attribute[])}.
+	 * Test method for {@link ObjectParser.Builder#Builder(Attribute[])} and {@link ObjectParser.Builder#build()}.
 	 */
 	@Test
 	void testConstructionOfObjectParser01() {
@@ -47,7 +53,7 @@ class ObjectParserTest {
 	}
 	
 	/**
-	 * Test method for {@link ObjectParser#ObjectParser(Attribute[], String)}.
+	 * Test method for {@link ObjectParser.Builder#Builder(Attribute[])} and {@link ObjectParser.Builder#build()}.
 	 */
 	@Test
 	void testConstructionOfObjectParser02() {
@@ -59,7 +65,7 @@ class ObjectParserTest {
 	}
 	
 	/**
-	 * Test method for {@link ObjectParser#ObjectParser(Attribute[], String, String)}.
+	 * Test method for {@link ObjectParser.Builder#Builder(Attribute[])} and {@link ObjectParser.Builder#build()}.
 	 */
 	@Test
 	void testConstructionOfObjectParser03() {
@@ -74,15 +80,17 @@ class ObjectParserTest {
 	}
 	
 	/**
-	 * Test method for {@link ObjectParser#parseObjects(java.io.Reader, boolean, char)}.
+	 * Test method for {@link ObjectParser.Builder#Builder(Attribute[])} and {@link ObjectParser.Builder#build()}.
 	 */
 	@Test
 	void testObjectParser() {
 		Attribute[] attributes = new Attribute[1];
+		attributes[0] = new EvaluationAttribute("a", true, AttributeType.CONDITION, 
+				IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN); 
 		String mv = new String("?");
 		String encoding = ObjectBuilder.DEFAULT_ENCODING;
-		ObjectParser objectParser = new ObjectParser.Builder(attributes).missingValueString(mv).encoding(encoding).build();
-		assertThrows(NullPointerException.class, () -> {objectParser.parseObjects(null, false, ',');});
+		ObjectParser objectParser = new ObjectParser.Builder(attributes).missingValueString(mv).encoding(encoding).header(false).separator(',').build();
+		assertThrows(NullPointerException.class, () -> {objectParser.parseObjects(null);});
 	}
 
 	/**
@@ -92,33 +100,38 @@ class ObjectParserTest {
 	void testConstructionOfInformationTableBuilder() {
 		Attribute [] attributes = null;
 		
-		AttributeParser aParser = new AttributeParser();
-		try {
-			attributes = aParser.parseAttributes(new FileReader("src/test/resources/data/csv/windsor.json"));
+		AttributeParser attributeParser = new AttributeParser();
+		try (FileReader attributesReader = new FileReader("src/test/resources/data/csv/windsor.json")) {
+			attributes = attributeParser.parseAttributes(attributesReader);
+			if (attributes != null) {
+				ObjectParser objectParser = new ObjectParser.Builder(attributes).header(false).separator('\t').build();
+				InformationTable informationTable = null;
+				try (FileReader objectsReader = new FileReader("src/test/resources/data/csv/windsor.csv")) {
+					informationTable = objectParser.parseObjects(objectsReader);
+					if (informationTable != null) {
+						assertEquals(546, informationTable.getNumberOfObjects());
+					}
+					else {
+						fail("Unable to load CSV test file with definition of objects");
+					}
+				}
+				catch (FileNotFoundException ex) {
+					System.out.println(ex.toString());
+				}
+				catch (IOException ex) {
+					System.out.println(ex.toString());
+				}
+			}
+			else {
+				fail("Unable to load CSV test file with definition of attributes");
+			}
 		}
 		catch (FileNotFoundException ex) {
 			System.out.println(ex.toString());
 		}
-		if (attributes != null) {
-			ObjectParser oParser = new ObjectParser.Builder(attributes).build();
-			InformationTable iTable = null;
-			try {
-				iTable = oParser.parseObjects(new FileReader("src/test/resources/data/csv/windsor.csv"), false, '\t');
-			}
-			catch (FileNotFoundException ex) {
-				System.out.println(ex.toString());
-			}
-			if (iTable != null) {
-				assertEquals(546, iTable.getNumberOfObjects());
-			}
-			else {
-				fail("Unable to load CSV test file with definition of objects");
-			}
+		catch (IOException ex) {
+			System.out.println(ex.toString());
 		}
-		else {
-			fail("Unable to load CSV test file with definition of attributes");
-		}
-
 	}
 
 }

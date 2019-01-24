@@ -48,7 +48,7 @@ public class ObjectBuilder {
 	public final static String DEFAULT_ENCODING = "UTF-8";
 	
 	/** 
-	 * Default representation of a separator of fields in CSV file.
+	 * Default representation of a separator of fields in CSV files.
 	 */
 	public final static char DEFAULT_SEPARATOR = ',';
 	
@@ -63,183 +63,147 @@ public class ObjectBuilder {
 	Attribute [] attributes = null;
 	
 	/**
-	 * Encoding of text data in CSV file.
+	 * Encoding of text data in CSV files.
 	 */
 	String encoding = ObjectBuilder.DEFAULT_ENCODING; 
 			
 	/**
-	 * Indication of presence of a header in CSV file.
+	 * Indication of presence of a header in CSV files.
 	 */
 	boolean header = false;
 	
 	/**
-	 * Representation of a separator of fields in CSV file.
+	 * Representation of a separator of fields in CSV files.
 	 */
 	char separator = ObjectBuilder.DEFAULT_SEPARATOR;
 	
 	/**
-	 * String representation of a missing value in CSV.
+	 * String representation of a missing value in CSV files.
 	 */
 	protected String missingValueString = ObjectBuilder.DEFAULT_MISSING_VALUE_STRING;
 	
-	
 	/**
-	 * Constructs object builder.
-	 */
-	public ObjectBuilder () {}
-	
-	/**
-	 * Constructor initializing this object builder and setting attributes.
 	 * 
-	 * @param attributes table with attributes
-	 * @throws NullPointerException if all or some of the attributes describing data to be loaded have not been set
+	 * Builder class for {@link ObjectBuilder}. 
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
-	public ObjectBuilder (Attribute [] attributes) {
-		if (attributes != null) {
-			for (Attribute attribute : attributes) {
-				if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
+	public static class Builder {
+		
+		/**
+		 * All attributes which describe objects.
+		 */
+		protected Attribute [] attributes = null;
+		
+		/**
+		 * Encoding of text data in CSV files.
+		 */
+		protected String encoding = ObjectBuilder.DEFAULT_ENCODING;
+
+		/**
+		 * Indication of presence of a header in CSV files.
+		 */
+		boolean header = false;
+		
+		/**
+		 * Representation of a separator of fields in CSV files.
+		 */
+		char separator = ObjectBuilder.DEFAULT_SEPARATOR;
+		
+		/**
+		 * String representation of a missing value in CSV files.
+		 */
+		protected String missingValueString = ObjectBuilder.DEFAULT_MISSING_VALUE_STRING;
+		
+		/**
+		 * Sets attributes describing objects from parsed CSV files.
+		 * 
+		 * @param attributes array of attributes {@link Attribute} which describe parsed objects
+		 * @throws NullPointerException if all or some of the attributes describing data to be loaded have not been set
+		 * @return this builder
+		 */
+		public Builder attributes (Attribute [] attributes) {
+			if (attributes != null) {
+				for (Attribute attribute : attributes) {
+					if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
+				}
+				this.attributes = attributes;
 			}
-			this.attributes = attributes;
+			else {
+				throw new NullPointerException("Attributes are not set.");
+			}
+			return this;
 		}
-		else {
-			throw new NullPointerException("Attributes are not set.");
+		
+		/**
+		 * Sets encoding of parsed CSV files.
+		 * 
+		 * @param value string representation of encoding 
+		 * @throws NullPointerException if encoding has not been set
+		 * @return this builder
+		 */
+		public Builder encoding (String value) {
+			notNull(value, "String representing encoding is null.");
+			this.encoding = value;
+			return this;
+		}
+		
+		/**
+		 * Sets reading of header in parsed CSV files.
+		 * 
+		 * @param value indication of header in parsed CSV file
+		 * @return this builder 
+		 */
+		public Builder header (boolean value) {
+			this.header = value;
+			return this;
+		}
+		
+		/**
+		 * Sets separator of fields in parsed CSV files.
+		 * 
+		 * @param value string representation of encoding
+		 * @return this builder 
+		 */
+		public Builder separator (char value) {
+			this.separator = value;
+			return this;
+		}
+
+		/**
+		 * Sets representation of missing value in parsed CSV files.
+		 * 
+		 * @param value string representation of missing value 
+		 * @throws NullPointerException if representation of missing value has not been set
+		 * @return this builder
+		 */
+		public Builder missingValueString (String value) {
+			notNull(value, "String representing missing values is null.");
+			this.missingValueString = value;
+			return this;
+		}
+		
+		/**
+		 * Builds a new object parser {@link ObjectParser}.
+		 * 
+		 * @return a new object parser
+		 */
+		public ObjectBuilder build () {
+			return new ObjectBuilder(this);
 		}
 	}
 	
 	/**
-	 * Constructor initializing this object builder and setting encoding of loaded CSV files.
-	 * 
-	 * @param encoding string representation of encoding
-	 * @throws NullPointerException if all or some of the attributes of the constructed information table have not been set
+	 * Constructor initializing all values according to what has been set in builder passed as parameter.
+	 * @param builder builder of object parser
 	 */
-	public ObjectBuilder (String encoding) {
-		notNull(encoding, "Encoding string is null.");
-		this.encoding = encoding; 
-	}
-	
-	/**
-	 * Constructs object builder, sets encoding and header option.
-	 * 
-	 * @param encoding encoding of text data in CSV file
-	 * @param header indication of presence of a header in CSV file
-	 * @throws NullPointerException if encoding have not been set
-	 */
-	public ObjectBuilder (String encoding, boolean header) {
-		notNull(encoding, "Encoding string is null.");
-		this.encoding = encoding;
-		this.header = header;
-	}
-	
-	/**
-	 * Constructs object builder, sets encoding and header option.
-	 * 
-	 * @param encoding encoding of text data in CSV file
-	 * @param header indication of presence of a header in CSV file
-	 * @param separator representation of a separator of fields in CSV file
-	 * @throws NullPointerException if encoding have not been set
-	 */
-	public ObjectBuilder (String encoding, boolean header, char separator) {
-		notNull(encoding, "Encoding string is null.");
-		this.encoding = encoding;
-		this.header = header;
-		this.separator = separator;
-	}
-	
-	/**
-	 * Constructor initializing this object builder and setting expected presence of header in loaded CSV files.
-	 * 
-	 * @param header tells whether a header is expected in loaded files 
-	 */
-	public ObjectBuilder (boolean header) {
-		this.header = header; 
-	}
-	
-	/**
-	 * Constructor initializing this object builder and setting expected presence of header in loaded CSV files together with separator of fields.
-	 * 
-	 * @param header tells whether a header is expected in loaded files
-	 * @param separator representation of a separator of fields in CSV file 
-	 */
-	public ObjectBuilder (boolean header, char separator) {
-		this.header = header; 
-		this.separator = separator;
-	}
-	
-	/**
-	 * Constructor initializing this object builder and setting attributes together with encoding of loaded CSV files.
-	 * 
-	 * @param attributes table with attributes
-	 * @param encoding string representation of encoding
-	 * @throws NullPointerException if all or some of the attributes describing data to be loaded, and/or encoding have not been set
-	 */
-	public ObjectBuilder (Attribute [] attributes, String encoding) {
-		notNull(attributes, "Attributes array is null.");
-		notNull(encoding, "Encoding string is null.");
-		this.attributes = attributes;
-		this.encoding = encoding;
-	}
-	
-	/**
-	 * Constructor initializing this object builder and setting attributes together with expected presence of header in CSV files.
-	 * 
-	 * @param attributes table with attributes
-	 * @param header tells whether a header is expected in loaded files
-	 * @throws NullPointerException if all or some of the attributes describing data to be loaded have not been set
-	 */
-	public ObjectBuilder (Attribute [] attributes, boolean header) {
-		notNull(attributes, "Attributes array is null.");
-		this.attributes = attributes;
-		this.header = header;
-	}
-	
-	/**
-	 * Constructor initializing this object builder and setting attributes, encoding of loaded CSV files together with expected presence of header in CSV files.
-	 * 
-	 * @param attributes table with attributes
-	 * @param encoding string representation of encoding
-	 * @param header tells whether a header is expected in loaded files
-	 * @throws NullPointerException if all or some of the attributes describing data to be loaded, and/or encoding have not been set
-	 */
-	public ObjectBuilder (Attribute [] attributes, String encoding, boolean header) {
-		notNull(attributes, "Attributes array is null.");
-		notNull(encoding, "Encoding string is null.");
-		this.attributes = attributes;
-		this.encoding = encoding;
-		this.header = header;
-	}
-	
-	/**
-	 * Constructor initializing this object builder and setting encoding of loaded CSV files together with expected presence of header in CSV files, and separator of fields.
-	 * 
-	 * @param attributes array of attributes {@link Attribute} which describe objects
-	 * @param encoding encoding of text data in CSV file
-	 * @param header indication of presence of a header in CSV file
-	 * @param separator representation of a separator of fields in CSV file
-	 * @throws NullPointerException if all or some of the attributes describing data to be loaded, and/or encoding have not been set
-	 */
-	public ObjectBuilder (Attribute [] attributes, String encoding, boolean header, char separator) {
-		notNull(attributes, "Attributes array is null.");
-		notNull(encoding, "Encoding string is null.");
-		this.attributes = attributes;
-		this.encoding = encoding;
-		this.header = header;
-		this.separator = separator;
-	}
-	
-	/**
-	 * Constructor initializing this object builder and setting encoding of loaded CSV files together with separator of fields.
-	 * 
-	 * @param attributes array of attributes {@link Attribute} which describe objects
-	 * @param encoding encoding of text data in CSV file
-	 * @param separator representation of a separator of fields in CSV file
-	 * @throws NullPointerException if all or some of the attributes describing data to be loaded, and/or encoding have not been set
-	 */
-	public ObjectBuilder (Attribute [] attributes, String encoding, char separator) {
-		notNull(attributes, "Attributes array is null.");
-		notNull(encoding, "Encoding string is null.");
-		this.attributes = attributes;
-		this.encoding = encoding;
-		this.separator = separator;
+	private ObjectBuilder(Builder builder) {
+		this.attributes = builder.attributes;
+		this.encoding = builder.encoding;
+		this.header = builder.header;
+		this.separator = builder.separator;
+		this.missingValueString = builder.missingValueString;
 	}
 	
 	/**

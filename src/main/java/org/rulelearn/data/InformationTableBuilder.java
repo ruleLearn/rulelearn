@@ -461,13 +461,12 @@ public class InformationTableBuilder {
 		try (JsonReader jsonReader = new JsonReader(new FileReader(pathToJSONAttributeFile))) {
 			attributes = gson.fromJson(jsonReader, Attribute[].class);
 			
-			// load objects 
-			org.rulelearn.data.csv.ObjectBuilder ob = new org.rulelearn.data.csv.ObjectBuilder(header);
-			objects = ob.getObjects(pathToCSVObjectFile);
-			
 			// construct information table builder
 			if (attributes != null) {
-				informationTableBuilder = new InformationTableBuilder(attributes);
+				// load objects 
+				org.rulelearn.data.csv.ObjectBuilder ob = new org.rulelearn.data.csv.ObjectBuilder.Builder().attributes(attributes).header(header).separator(separator).build();
+				objects = ob.getObjects(pathToCSVObjectFile);
+				informationTableBuilder = new InformationTableBuilder(attributes, new String[] {org.rulelearn.data.csv.ObjectBuilder.DEFAULT_MISSING_VALUE_STRING});
 				if (objects != null) {
 					for (int i = 0; i < objects.size(); i++) {
 						informationTableBuilder.addObject(objects.get(i));

@@ -40,22 +40,22 @@ public class ObjectParser {
 	protected Attribute [] attributes = null;
 	
 	/**
-	 * Encoding of text data in CSV.
+	 * Encoding of text data in CSV files.
 	 */
 	protected String encoding = ObjectBuilder.DEFAULT_ENCODING;
 
 	/**
-	 * Indication of presence of a header in CSV file.
+	 * Indication of presence of a header in CSV files.
 	 */
 	boolean header = false;
 	
 	/**
-	 * Representation of a separator of fields in CSV file.
+	 * Representation of a separator of fields in CSV files.
 	 */
 	char separator = ObjectBuilder.DEFAULT_SEPARATOR;
 	
 	/**
-	 * String representation of a missing value in CSV.
+	 * String representation of a missing value in CSV files.
 	 */
 	protected String missingValueString = ObjectBuilder.DEFAULT_MISSING_VALUE_STRING;
 	
@@ -74,22 +74,22 @@ public class ObjectParser {
 		protected Attribute [] attributes = null;
 		
 		/**
-		 * Encoding of text data in CSV.
+		 * Encoding of text data in CSV files.
 		 */
 		protected String encoding = ObjectBuilder.DEFAULT_ENCODING;
 
 		/**
-		 * Indication of presence of a header in CSV file.
+		 * Indication of presence of a header in CSV files.
 		 */
 		boolean header = false;
 		
 		/**
-		 * Representation of a separator of fields in CSV file.
+		 * Representation of a separator of fields in CSV files.
 		 */
 		char separator = ObjectBuilder.DEFAULT_SEPARATOR;
 		
 		/**
-		 * String representation of a missing value in CSV.
+		 * String representation of a missing value in CSV files.
 		 */
 		protected String missingValueString = ObjectBuilder.DEFAULT_MISSING_VALUE_STRING;
 		
@@ -97,11 +97,18 @@ public class ObjectParser {
 		 * Constructs object parser builder, and sets attributes.
 		 * 
 		 * @param attributes array of attributes {@link Attribute} which describe parsed objects
-		 * @throws NullPointerException if the attributes describing data to be loaded have not been set
+		 * @throws NullPointerException if all or some of the attributes describing data to be loaded have not been set
 		 */
 		public Builder (Attribute [] attributes) {
-			notNull(attributes, "Attributes array is null.");
-			this.attributes = attributes;
+			if (attributes != null) {
+				for (Attribute attribute : attributes) {
+					if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
+				}
+				this.attributes = attributes;
+			}
+			else {
+				throw new NullPointerException("Attributes are not set.");
+			}
 		}
 		
 		/**
@@ -174,34 +181,31 @@ public class ObjectParser {
 		this.missingValueString = builder.missingValueString;
 	}
 	
-	
 	/**
 	 * Parses content from reader {@link Reader} and constructs an information table {@link InformationTable} with parsed objects. 
 	 * 
 	 * @param reader a reader with content to be parsed
-	 * @param header indicative of whether header is present in the parsed CSV
-	 * @param separator separator representation of a separator of fields in CSV
 	 * @return information table {@link InformationTable} with parsed objects or {@code null} when the table cannot be constructed
 	 * @throws NullPointerException when the provided reader is null
 	 */
-	public InformationTable parseObjects (Reader reader, boolean header, char separator) {
-		InformationTable informationTable = null;
-		
+	public InformationTable parseObjects (Reader reader) {
 		notNull(reader, "Reader is null.");
-		ObjectBuilder objectBuilder = new ObjectBuilder(this.attributes, this.encoding, header, separator);
+		
+		InformationTable informationTable = null;
 		List<String []> objects = null;
-		
-		objects = objectBuilder.getObjects(reader);
-		if (objects != null) {
-			// separator passed to InforamtionTableBuilder is irrelevant here
-			InformationTableBuilder informationTableBuilder  = new InformationTableBuilder(this.attributes, ",", 
-													new String [] {this.missingValueString}); 
-			for (int i = 0; i < objects.size(); i++) {
-				informationTableBuilder.addObject(objects.get(i));
+		ObjectBuilder objectBuilder = new ObjectBuilder.Builder().attributes(this.attributes).encoding(this.encoding).header(this.header).separator(this.separator).build();
+		if (objectBuilder != null) {
+			objects = objectBuilder.getObjects(reader);
+			if (objects != null) {
+				// separator passed to InforamtionTableBuilder is irrelevant here
+				InformationTableBuilder informationTableBuilder  = new InformationTableBuilder(this.attributes, ",", 
+														new String [] {this.missingValueString}); 
+				for (int i = 0; i < objects.size(); i++) {
+					informationTableBuilder.addObject(objects.get(i));
+				}
+				informationTable = informationTableBuilder.build();
 			}
-			informationTable = informationTableBuilder.build();
 		}
-		
 		return informationTable;
 	}
 }
