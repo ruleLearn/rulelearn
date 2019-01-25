@@ -86,7 +86,6 @@ class SimpleConditionTest {
 	 */
 	@Test
 	void testHashCode() {
-		assertNotNull(simpleCondition.hashCode());
 		assertEquals(simpleCondition.hashCode(), simpleCondition.hashCode());
 		assertEquals(simpleCondition.hashCode(), constructSimpleCondition().hashCode());
 	}

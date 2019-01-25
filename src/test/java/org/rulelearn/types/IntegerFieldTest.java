@@ -271,6 +271,7 @@ public class IntegerFieldTest {
 	/**
 	 * Tests {@link IntegerField#equals(Object)} method.
 	 */
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
 		IntegerField fieldN1 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE);

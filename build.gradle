@@ -115,6 +115,7 @@ junitPlatform {
 javadoc {
 	options.author = true
 	options.addStringOption("charset", "UTF-8")
+	options.addBooleanOption('html5', true)
 	
 	if (project.properties["org.gradle.java.home"] == null ) {
 		if (System.getenv('JAVA_HOME') != null) {

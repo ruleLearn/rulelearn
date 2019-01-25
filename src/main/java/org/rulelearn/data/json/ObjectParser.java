@@ -37,6 +37,7 @@ import com.google.gson.stream.JsonReader;
  *
  */
 public class ObjectParser {
+	
 	/** 
 	 * Default encoding.
 	 */
@@ -62,17 +63,48 @@ public class ObjectParser {
 	 */
 	protected String missingValueString = ObjectParser.MISSING_VALUE_STRING;
 	
+	/**
+	 * Constructor initializing this object parser and setting attributes.
+	 * 
+	 * @param attributes table with attributes
+	 * @throws NullPointerException if all or some of the attributes of the constructed information table have not been set
+	 */
 	public ObjectParser (Attribute [] attributes) {
-		this.attributes = attributes;
+		if (attributes != null) {
+			for (Attribute attribute : attributes) {
+				if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
+			}
+			this.attributes = attributes;
+		}
+		else {
+			throw new NullPointerException("Attributes are not set.");
+		}
 	}
 	
+	/**
+	 * Constructor initializing this object parser, setting attributes, and missing values string (i.e., string representing missing value).
+	 * 
+	 * @param attributes table with attributes
+	 * @param missingValueString string representations of missing value
+	 * @throws NullPointerException if all or some of attributes of the constructed object parser, and/or missing value string have not been set
+	 */
 	public ObjectParser (Attribute [] attributes, String missingValueString) {
 		this(attributes);
+		notNull(missingValueString, "Missing value string is null.");
 		this.missingValueString = missingValueString;
 	}
 	
+	/**
+	 * Constructor initializing this object parser, setting attributes, and missing values string (i.e., string representing missing value).
+	 * 
+	 * @param attributes table with attributes
+	 * @param missingValueString string representations of missing value
+	 * @param encoding string representation of encoding
+	 * @throws NullPointerException if all or some of attributes of the constructed object parser, and/or missing value string, and/or encoding have not been set
+	 */
 	public ObjectParser (Attribute [] attributes, String missingValueString, String encoding) {
 		this(attributes, missingValueString);
+		notNull(encoding, "Encoding string is null.");
 		this.encoding = encoding;
 	}
 	
@@ -82,6 +114,7 @@ public class ObjectParser {
 	 * @return information table {@link InformationTable} with parsed objects
 	 */
 	public InformationTable parseObjects (Reader reader) {
+		notNull(reader, "Reader with content to be parsed is null.");
 		InformationTable iTable = null;
 		
 		JsonElement json = getJSON(reader);
@@ -109,6 +142,7 @@ public class ObjectParser {
 	 * @return parsed JSON structure {@link JsonElement}
 	 */
 	protected JsonElement getJSON (Reader reader) {
+		notNull(reader, "Reader with content to be parsed is null.");
 		JsonReader jsonReader = new JsonReader(reader);
 		notNull(jsonReader, "Could not initialize JsonReader.");
 		JsonParser jsonParser = new JsonParser();
@@ -123,6 +157,7 @@ public class ObjectParser {
 	 * @return a list of {@link String} arrays representing description of all objects in the file on all attributes
 	 */
 	protected String [] parseObject (JsonElement json) {
+		notNull(json, "JSON strucure with objects to be parsed is null.");
 		String [] object = null;
 		
 		if (attributes != null) {

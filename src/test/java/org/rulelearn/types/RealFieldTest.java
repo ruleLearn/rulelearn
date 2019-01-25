@@ -269,6 +269,7 @@ public class RealFieldTest {
 	/**
 	 * Tests {@link RealField#equals(Object)} method.
 	 */
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
 		RealField fieldN1 = RealFieldFactory.getInstance().create(0.0, AttributePreferenceType.NONE);

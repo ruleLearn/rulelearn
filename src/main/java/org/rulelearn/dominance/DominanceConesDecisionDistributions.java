@@ -21,7 +21,17 @@ import org.rulelearn.data.InformationTable;
 import static org.rulelearn.core.Precondition.notNull;
 
 /**
- * Class for calculation and storage of decision distributions in dominance cones originating in objects of an information table.
+ * Class for calculation and storage of decision distributions of type {@link DecisionDistribution} in dominance cones
+ * originating in objects of an information table. Four types of dominance cones are supported - with respect to (straight) dominance relation D
+ * and with respect to (inverse) dominance relation InvD, as well as positive (+) and negative (-) ones. Formally:<br>
+ * <ul>
+ * <li>D^+(x) = {y \in U : y D x}, i.e., positive dominance cone of object x with respect to dominance relation D is composed of objects y such that y dominates x;</li>
+ * <li>D^-(x) = {y \in U : x D y}, i.e., negative dominance cone of object x with respect to dominance relation D is composed of objects y such that x dominates y;</li>
+ * <li>InvD^+(x) = {y \in U : x InvD y}, i.e., positive dominance cone of object x with respect to dominance relation InvD is composed of objects y such that x is dominated by y;</li>
+ * <li>InvD^-(x) = {y \in U : y InvD x}, i.e., negative dominance cone of object x with respect to dominance relation InvD is composed of objects y such that y is dominated by x.</li>
+ * </ul>
+ * This class allows to get for each object x present in an information table a distribution (histogram) of decisions
+ * of objects found in dominance cone (of any of the above four types) originating in x.
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -160,7 +170,7 @@ public class DominanceConesDecisionDistributions {
 	}
 	
 	/**
-	 * Gets decision distribution in positive dominance cone w.r.t. (straight) dominance relation D (y D x &lt;=&gt; y dominates x),
+	 * Gets distribution (histogram) of decisions ({@link DecisionDistribution}) in positive dominance cone w.r.t. (straight) dominance relation D (y D x &lt;=&gt; y dominates x),
 	 * originating in object x addresses by the given index. Formally, D^+(x) = {y \in U : y D x}.
 	 * 
 	 * @param objectIndex index of an object x from an information table, considered to be the origin of dominance cone
@@ -173,7 +183,7 @@ public class DominanceConesDecisionDistributions {
 	}
 	
 	/**
-	 * Gets decision distribution in negative dominance cone w.r.t. (straight) dominance relation D (x D y &lt;=&gt; x dominates y),
+	 * Gets distribution (histogram) of decisions ({@link DecisionDistribution}) in negative dominance cone w.r.t. (straight) dominance relation D (x D y &lt;=&gt; x dominates y),
 	 * originating in object x addresses by the given index. Formally, D^-(x) = {y \in U : x D y}.
 	 * 
 	 * @param objectIndex index of an object x from an information table, considered to be the origin of dominance cone
@@ -186,7 +196,7 @@ public class DominanceConesDecisionDistributions {
 	}
 	
 	/**
-	 * Gets decision distribution in positive dominance cone w.r.t. (inverse) dominance relation InvD (x InvD y &lt;=&gt; x is dominated by y),
+	 * Gets distribution (histogram) of decisions ({@link DecisionDistribution}) in positive dominance cone w.r.t. (inverse) dominance relation InvD (x InvD y &lt;=&gt; x is dominated by y),
 	 * originating in object x addresses by the given index. Formally, InvD^+(x) = {y \in U : x InvD y}.
 	 * 
 	 * @param objectIndex index of an object x from an information table, considered to be the origin of dominance cone
@@ -199,7 +209,7 @@ public class DominanceConesDecisionDistributions {
 	}
 	
 	/**
-	 * Gets decision distribution in negative dominance cone w.r.t. (inverse) dominance relation InvD (y InvD x &lt;=&gt; y is dominated by x),
+	 * Gets distribution (histogram) of decisions ({@link DecisionDistribution}) in negative dominance cone w.r.t. (inverse) dominance relation InvD (y InvD x &lt;=&gt; y is dominated by x),
 	 * originating in object x addresses by the given index. Formally, InvD^-(x) = {y \in U : y InvD x}.
 	 * 
 	 * @param objectIndex index of an object x from an information table, considered to be the origin of dominance cone

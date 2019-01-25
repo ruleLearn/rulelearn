@@ -24,6 +24,9 @@ import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerFieldFactory;
+import org.rulelearn.types.RealFieldFactory;
+
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Tests for {@link SimpleDecision}.
@@ -45,7 +48,6 @@ class SimpleDecisionTest {
 		SimpleDecision decision = new SimpleDecision(evaluation, attributeIndex);
 		SimpleDecision otherDecision = new SimpleDecision(otherEvaluation, attributeIndex);
 		
-		assertNotNull(decision.hashCode());
 		assertEquals(decision.hashCode(), decision.hashCode());
 		assertEquals(decision.hashCode(), otherDecision.hashCode());
 	}
@@ -78,15 +80,11 @@ class SimpleDecisionTest {
 		
 		Decision decision6 = getIncompatibleDecision();
 		
-		try {
-			assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision2) == TernaryLogicValue.TRUE); //equal
-			assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision3) == TernaryLogicValue.FALSE); //worse
-			assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision4) == TernaryLogicValue.TRUE); //better
-			assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision5) == TernaryLogicValue.UNCOMPARABLE); //different attribute
-			assertTrue(simpleDecision1.isAtLeastAsGoodAs(decision6) == TernaryLogicValue.UNCOMPARABLE); //different attribute
-		} catch (UnsupportedOperationException exception) {
-			//TODO: remove this try-catch when implementation of tested method is finished
-		}
+		assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision2) == TernaryLogicValue.TRUE); //equal
+		assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision3) == TernaryLogicValue.FALSE); //worse
+		assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision4) == TernaryLogicValue.TRUE); //better
+		assertTrue(simpleDecision1.isAtLeastAsGoodAs(simpleDecision5) == TernaryLogicValue.UNCOMPARABLE); //different attribute
+		assertTrue(simpleDecision1.isAtLeastAsGoodAs(decision6) == TernaryLogicValue.UNCOMPARABLE); //different attribute
 	}
 
 	/**
@@ -117,15 +115,11 @@ class SimpleDecisionTest {
 		
 		Decision decision6 = getIncompatibleDecision();
 		
-		try {
-			assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision2) == TernaryLogicValue.TRUE); //equal
-			assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision3) == TernaryLogicValue.TRUE); //worse
-			assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision4) == TernaryLogicValue.FALSE); //better
-			assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision5) == TernaryLogicValue.UNCOMPARABLE); //different attribute
-			assertTrue(simpleDecision1.isAtMostAsGoodAs(decision6) == TernaryLogicValue.UNCOMPARABLE); //different attribute
-		} catch (UnsupportedOperationException exception) {
-			//TODO: remove this try-catch when implementation of tested method is finished
-		}
+		assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision2) == TernaryLogicValue.TRUE); //equal
+		assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision3) == TernaryLogicValue.TRUE); //worse
+		assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision4) == TernaryLogicValue.FALSE); //better
+		assertTrue(simpleDecision1.isAtMostAsGoodAs(simpleDecision5) == TernaryLogicValue.UNCOMPARABLE); //different attribute
+		assertTrue(simpleDecision1.isAtMostAsGoodAs(decision6) == TernaryLogicValue.UNCOMPARABLE); //different attribute
 	}
 
 	/**
@@ -152,21 +146,17 @@ class SimpleDecisionTest {
 		
 		Decision decision5 = getIncompatibleDecision();
 		
-		try {
-			assertTrue(simpleDecision1.isEqualTo(simpleDecision2) == TernaryLogicValue.TRUE);
-			assertTrue(simpleDecision1.isEqualTo(simpleDecision3) == TernaryLogicValue.FALSE);
-			assertTrue(simpleDecision1.isEqualTo(simpleDecision4) == TernaryLogicValue.UNCOMPARABLE);
-			assertTrue(simpleDecision1.isEqualTo(decision5) == TernaryLogicValue.UNCOMPARABLE);
-		} catch (UnsupportedOperationException exception) {
-			//TODO: remove this try-catch when implementation of tested method is finished
-		}
+		assertTrue(simpleDecision1.isEqualTo(simpleDecision2) == TernaryLogicValue.TRUE);
+		assertTrue(simpleDecision1.isEqualTo(simpleDecision3) == TernaryLogicValue.FALSE);
+		assertTrue(simpleDecision1.isEqualTo(simpleDecision4) == TernaryLogicValue.UNCOMPARABLE);
+		assertTrue(simpleDecision1.isEqualTo(decision5) == TernaryLogicValue.UNCOMPARABLE);
 	}
 
 	/**
 	 * Test method for {@link org.rulelearn.data.SimpleDecision#getEvaluation(int)}.
 	 */
 	@Test
-	void testGetEvaluation() {
+	void testGetEvaluationInt() {
 		EvaluationField evaluation = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
 		EvaluationField expectedEvaluation = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST);
 		int attributeIndex = 0;
@@ -174,6 +164,19 @@ class SimpleDecisionTest {
 		SimpleDecision decision = new SimpleDecision(evaluation, attributeIndex);
 		
 		assertEquals(decision.getEvaluation(attributeIndex), expectedEvaluation);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.SimpleDecision#getEvaluation()}.
+	 */
+	@Test
+	void testGetEvaluation() {
+		EvaluationField evaluation = RealFieldFactory.getInstance().create(-1, AttributePreferenceType.GAIN);
+		EvaluationField expectedEvaluation = RealFieldFactory.getInstance().create(-1, AttributePreferenceType.GAIN);
+		
+		SimpleDecision decision = new SimpleDecision(evaluation, 3);
+		
+		assertEquals(decision.getEvaluation(), expectedEvaluation);
 	}
 
 	/**
@@ -187,6 +190,22 @@ class SimpleDecisionTest {
 		SimpleDecision decision = new SimpleDecision(evaluation, attributeIndex);
 		
 		assertEquals(decision.getNumberOfEvaluations(), 1);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.SimpleDecision#getAttributeIndices()}.
+	 */
+	@Test
+	void testGetAttributeIndices() {
+		EvaluationField evaluation = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		int attributeIndex = 2;
+		
+		SimpleDecision decision = new SimpleDecision(evaluation, attributeIndex);
+		
+		IntSet attributeIndices = decision.getAttributeIndices();
+		
+		assertEquals(attributeIndices.size(), 1);
+		assertEquals(attributeIndices.toIntArray()[0], attributeIndex);
 	}
 
 	/**
@@ -242,6 +261,17 @@ class SimpleDecisionTest {
 	
 	private Decision getIncompatibleDecision() {
 		return mock(Decision.class);
+	}
+	
+	/**
+	 * Test for toString() method.
+	 */
+	@Test
+	void testToString() {
+		EvaluationField evaluation = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN);
+		int attributeIndex = 1;
+		Decision decision = new SimpleDecision(evaluation, attributeIndex);
+		assertEquals(decision.toString(), "1=>2");
 	}
 	
 }

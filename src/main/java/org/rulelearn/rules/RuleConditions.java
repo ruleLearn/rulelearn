@@ -23,7 +23,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import static org.rulelearn.core.Precondition.notNull;
 
 /**
- * Complex (list) of elementary conditions on the LHS of a decision rule.
+ * List (complex) of elementary conditions on the LHS of a decision rule. Each condition is identified by its position on the list.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -31,7 +31,7 @@ import static org.rulelearn.core.Precondition.notNull;
 public class RuleConditions {
 
 	/**
-	 * Elementary conditions, in order of their addition to rule's LHS. 
+	 * Elementary conditions, in order of their addition to rule's LHS.
 	 */
 	protected List<Condition<?>> conditions;
 	
@@ -65,6 +65,24 @@ public class RuleConditions {
 	}
 	
 	/**
+	 * Gets the set of indices of positive objects
+	 * 
+	 * @return the set of indices of positive objects
+	 */
+	public IntSet getIndicesOfPositiveObjects() {
+		return this.indicesOfPositiveObjects;
+	}
+
+	/**
+	 * Gets the learning information table.
+	 * 
+	 * @return the learning information table
+	 */
+	public InformationTable getLearningInformationTable() {
+		return this.learningInformationTable;
+	}
+
+	/**
 	 * Tells if object with given index is positive for this set of rule conditions.
 	 * 
 	 * @param objectIndex index of an object in learning information table
@@ -76,19 +94,22 @@ public class RuleConditions {
 	}
 	
 	/**
-	 * Adds given condition to this complex of rule's conditions
+	 * Adds given condition to this complex of rule's conditions.
 	 * 
 	 * @param condition new condition to add
+	 * @return index of added condition
+	 * 
 	 * @throws NullPointerException if condition does not conform to {@link org.rulelearn.core.Precondition#notNull(Object, String)}
 	 */
-	public void addCondition(Condition<?> condition) {
+	public int addCondition(Condition<?> condition) {
 		this.conditions.add(notNull(condition, "Condition is null."));
+		return this.conditions.size() - 1;
 	}
 	
 	/**
-	 * Removes condition with given index.
+	 * Removes from the list of conditions the condition with given index.
 	 * 
-	 * @param index index of a condition to remove from this set of conditions
+	 * @param index index of a condition to remove from this list of conditions
 	 * @throws IndexOutOfBoundsException if given index does not refer to any stored condition
 	 */
 	public void removeCondition(int index) {
@@ -97,11 +118,42 @@ public class RuleConditions {
 	
 	/**
 	 * Gets list of elementary conditions building this complex of elementary conditions.
+	 * The order of conditions on the list reflects the order in which they have been added.
 	 * 
-	 * @return list of elementary conditions building this complex of elementary conditions
+	 * @return list of elementary conditions building this complex of elementary conditions,
+	 *         in order of their addition
 	 */
 	public List<Condition<?>> getConditions() {
 		return this.conditions;
+	}
+	
+	/**
+	 * Gets an elementary condition building this list of elementary conditions and indexed by the given value.
+	 * 
+	 * @param index index of a condition on this list of conditions
+	 * @return an elementary condition building this list of elementary conditions and indexed by the given value
+	 */
+	public Condition<?> getCondition(int index) {
+		return this.conditions.get(index);
+	}
+	
+	/**
+	 * Gets number of conditions on this list of conditions.
+	 * 
+	 * @return number of conditions on this list of conditions
+	 */
+	public int size() {
+		return this.conditions.size();
+	}
+	
+	/**
+	 * Checks if this list contains given condition.
+	 * 
+	 * @param condition condition whose presence on the list of conditions should be verified
+	 * @return {@code true} if this list contains given condition, {@code false} otherwise
+	 */
+	public boolean containsCondition(Condition<?> condition) {
+		return this.conditions.contains(condition);
 	}
 	
 }

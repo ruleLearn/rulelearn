@@ -20,16 +20,17 @@ import static org.rulelearn.core.Precondition.notNull;
 import static org.rulelearn.core.Precondition.nonNegative;
 
 import java.util.Objects;
-
+import java.util.function.BiPredicate;
 import org.rulelearn.types.EvaluationField;
-
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
- * Composite decision reflecting an ordered set of evaluations of a single object on active decision attributes of an information table.
+ * Composite decision reflecting a set of at least two evaluations of a single object on active decision attributes of an information table.
  * Each such evaluation contributes to this composite decision.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
@@ -43,10 +44,10 @@ public class CompositeDecision extends Decision {
 	protected Int2ObjectOpenHashMap<EvaluationField> attributeIndex2EvaluationMap;
 
 	/**
-	 * Constructs this composite decision using an ordered set of evaluations contributing to this decision.
+	 * Constructs this composite decision using an array of evaluations contributing to this decision.
 	 * 
 	 * @param evaluations array of evaluations of a single object on active decision attributes of an information table
-	 * @param attributeIndices indices of attributes of an information table, which should be active and decision attributes
+	 * @param attributeIndices corresponding indices of active and decision attributes of an information table
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null} or if any single evaluation is {@code null}
 	 * @throws InvalidValueException if the number of evaluations is different than the number of attribute indices
@@ -74,41 +75,104 @@ public class CompositeDecision extends Decision {
 		}
 
 	}
-
+	
 	/**
-	 * {@inheritDoc}
+	 * Checks if this composite decision is in relation with the other decision (expected to also be a composite decision).
+	 * Such relation holds if for each pair of corresponding evaluations (i.e., evaluations on the same attribute),
+	 * {@code integralRelationTester} verifies that the first evaluation (contributing to this decision) is in a particular relation
+	 * with the second evaluation (contributing to the other decision).
+	 * Two evaluations are in relation verified by {@code integralRelationTester} if:<br>
+	 * <br>
+	 * {@code integralRelationTester.test(firstEvaluation, secondEvaluation) == true}.
 	 * 
-	 * @param decision {@inheritDoc}
-	 * @return {@inheritDoc}
+	 * @param otherDecision other decision that this decision is being compared to
+	 * @param nullPointerMessage message of the {@link NullPointerException} thrown if given other decision is {@code null}
+	 * @param integralRelationTester object implementing {@link BiPredicate#test(Object, Object)} method that compares two evaluations;
+	 *        this method is used to compare every two corresponding evaluations (i.e., evaluations on the same attribute), the first from this decision, and the second from the other decision
+	 * @return {@link TernaryLogicValue#TRUE} if this decision is in relation with the other decision
+	 *         {@link TernaryLogicValue#FALSE} if this decision is not in relation with the other decision
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison,
+	 *         or the other decision concerns a different set of attributes
+	 * @throws NullPointerException if the other decision is {@code null}
+	 */
+	protected TernaryLogicValue isInRelationWith(Decision otherDecision, String nullPointerMessage, BiPredicate<EvaluationField, EvaluationField> integralRelationTester) {
+		notNull(otherDecision, nullPointerMessage);
+		
+		if (otherDecision instanceof CompositeDecision) {
+			CompositeDecision otherCompositeDecision = (CompositeDecision)otherDecision;
+			
+			if (this.attributeIndex2EvaluationMap.size() == otherCompositeDecision.attributeIndex2EvaluationMap.size()) {
+				
+				for (Int2ObjectMap.Entry<EvaluationField> entry : this.attributeIndex2EvaluationMap.int2ObjectEntrySet()) {
+					EvaluationField ownEvaluation = entry.getValue();
+					EvaluationField otherEvaluation = otherCompositeDecision.getEvaluation(entry.getIntKey());
+					
+					if (otherEvaluation != null) {
+						if (!integralRelationTester.test(ownEvaluation, otherEvaluation)) {
+							return TernaryLogicValue.FALSE;
+						}
+					} else {
+						return TernaryLogicValue.UNCOMPARABLE;
+					}
+				}
+				
+				return TernaryLogicValue.TRUE;
+				
+			} else {
+				return TernaryLogicValue.UNCOMPARABLE;
+			}
+			
+		} else {
+			return TernaryLogicValue.UNCOMPARABLE;
+		}
+	}
+	
+	/**
+	 * {@inheritDoc} The other decision is expected to also be a composite decision.
+	 * 
+	 * @param otherDecision {@inheritDoc}
+	 * @return {@link TernaryLogicValue#TRUE} if this decision is at most as good as the other decision
+	 *         {@link TernaryLogicValue#FALSE} if this decision is not at most as good as the other decision
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison,
+	 *         or the other decision concerns a different set of attributes
+	 * @throws NullPointerException if the other decision is {@code null}
 	 */
 	@Override
-	public TernaryLogicValue isAtMostAsGoodAs(Decision decision) {
-		// TODO: implement
-		throw new UnsupportedOperationException("Not implemented yet!");
+	public TernaryLogicValue isAtMostAsGoodAs(Decision otherDecision) {
+		return this.isInRelationWith(otherDecision, "Cannot verify if a composite decision is at most as good as null.",
+				(ownEvaluation, otherEvaluation) -> ownEvaluation.isAtMostAsGoodAs(otherEvaluation) == TernaryLogicValue.TRUE);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * {@inheritDoc} The other decision is expected to also be a composite decision.
 	 * 
-	 * @param decision {@inheritDoc}
-	 * @return {@inheritDoc}
+	 * @param otherDecision {@inheritDoc}
+	 * @return {@link TernaryLogicValue#TRUE} if this decision is at least as good as the other decision
+	 *         {@link TernaryLogicValue#FALSE} if this decision is not at least as good as the other decision
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison,
+	 *         or the other decision concerns a different set of attributes
+	 * @throws NullPointerException if the other decision is {@code null}
 	 */
 	@Override
-	public TernaryLogicValue isAtLeastAsGoodAs(Decision decision) {
-		// TODO: implement
-		throw new UnsupportedOperationException("Not implemented yet!");
+	public TernaryLogicValue isAtLeastAsGoodAs(Decision otherDecision) {
+		return this.isInRelationWith(otherDecision, "Cannot verify if a composite decision is at least as good as null.",
+				(ownEvaluation, otherEvaluation) -> ownEvaluation.isAtLeastAsGoodAs(otherEvaluation) == TernaryLogicValue.TRUE);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * {@inheritDoc} The other decision is expected to also be a composite decision.
 	 * 
-	 * @param decision {@inheritDoc}
-	 * @return {@inheritDoc}
+	 * @param otherDecision {@inheritDoc}
+	 * @return {@link TernaryLogicValue#TRUE} if this decision is equal to the other decision
+	 *         {@link TernaryLogicValue#FALSE} if this decision is not equal to the other decision
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other decision prevents comparison,
+	 *         or the other decision concerns a different set of attributes
+	 * @throws NullPointerException if the other decision is {@code null}
 	 */
 	@Override
-	public TernaryLogicValue isEqualTo(Decision decision) {
-		// TODO: implement
-		throw new UnsupportedOperationException("Not implemented yet!");
+	public TernaryLogicValue isEqualTo(Decision otherDecision) {
+		return this.isInRelationWith(otherDecision, "Cannot verify if a composite decision is equal to null.",
+				(ownEvaluation, otherEvaluation) -> ownEvaluation.isEqualTo(otherEvaluation) == TernaryLogicValue.TRUE);
 	}
 	
 	/**
@@ -129,6 +193,14 @@ public class CompositeDecision extends Decision {
 	public int getNumberOfEvaluations() {
 		return attributeIndex2EvaluationMap.size();
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IntSet getAttributeIndices() {
+		return this.attributeIndex2EvaluationMap.keySet();
+	}	
 
 	/**
 	 * {@inheritDoc}
@@ -150,7 +222,17 @@ public class CompositeDecision extends Decision {
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.getClass(), attributeIndex2EvaluationMap);
+		return Objects.hash(this.getClass(), this.attributeIndex2EvaluationMap);
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return attributeIndex2EvaluationMap.toString();
+	}
+	
 }
