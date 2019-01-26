@@ -16,10 +16,14 @@
 
 package org.rulelearn.data.json;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.data.Attribute;
@@ -68,41 +72,89 @@ class ObjectParserTest {
 		assertThrows(NullPointerException.class, () -> {new ObjectParser(new Attribute[0], encoding, missingValueString);});
 		assertThrows(NullPointerException.class, () -> {new ObjectParser(new Attribute[0], encoding, "");});
 	}
-
+	
 	/**
 	 * Test method for {@link ObjectParser#parseObjects(java.io.Reader)}.
 	 */
 	@Test
-	void testGetObjects() {
+	void testParseObjects01() {
 		Attribute [] attributes = null;
 		
 		AttributeParser attributeParser = new AttributeParser();
-		try {
-			attributes = attributeParser.parseAttributes(new FileReader("src/test/resources/data/csv/prioritisation.json"));
+		try (FileReader attributeReader = new FileReader("src/test/resources/data/csv/prioritisation.json")) {
+			attributes = attributeParser.parseAttributes(attributeReader);
+			if (attributes != null) {
+				ObjectParser objectParser = new ObjectParser(attributes);
+				InformationTable informationTable = null;
+				try (FileReader objectReader = new FileReader("src/test/resources/data/json/examples.json")) {
+					informationTable = objectParser.parseObjects(objectReader);
+					if (informationTable != null) {
+						assertEquals(informationTable.getNumberOfObjects(), 2);
+						assertTrue(informationTable.getDecisions() != null);
+					}
+					else {
+						fail("Unable to load JSON test file with definition of objects");
+					}
+				}
+				catch (FileNotFoundException ex) {
+					System.out.println(ex.toString());
+				}
+				catch (IOException ex) {
+					System.out.println(ex.toString());
+				}
+			}
+			else {
+				fail("Unable to load JSON test file with definition of attributes");
+			}
 		}
 		catch (FileNotFoundException ex) {
 			System.out.println(ex.toString());
 		}
-		if (attributes != null) {
-			ObjectParser objectParser = new ObjectParser(attributes);
-			InformationTable informationTable = null;
-			try {
-				informationTable = objectParser.parseObjects(new FileReader("src/test/resources/data/json/examples.json"));
-			}
-			catch (FileNotFoundException ex) {
-				System.out.println(ex.toString());
-			}
-			if (informationTable != null) {
-				assertEquals(informationTable.getNumberOfObjects(), 2);
+		catch (IOException ex) {
+			System.out.println(ex.toString());
+		}
+	}
+	
+	/**
+	 * Test method for {@link ObjectParser#parseObjects(java.io.Reader)}.
+	 */
+	@Test
+	void testParseObjects02() {
+		Attribute [] attributes = null;
+		
+		AttributeParser attributeParser = new AttributeParser();
+		try (FileReader attributeReader = new FileReader("src/test/resources/data/json/metadata-example.json")) {
+			attributes = attributeParser.parseAttributes(attributeReader);
+			if (attributes != null) {
+				ObjectParser objectParser = new ObjectParser(attributes);
+				InformationTable informationTable = null;
+				try (FileReader objectReader = new FileReader("src/test/resources/data/json/data-example.json")) {
+					informationTable = objectParser.parseObjects(objectReader);
+					if (informationTable != null) {
+						assertEquals(informationTable.getNumberOfObjects(), 2);
+						assertTrue(informationTable.getDecisions() != null);
+					}
+					else {
+						fail("Unable to load JSON test file with definition of objects");
+					}
+				}
+				catch (FileNotFoundException ex) {
+					System.out.println(ex.toString());
+				}
+				catch (IOException ex) {
+					System.out.println(ex.toString());
+				}
 			}
 			else {
-				fail("Unable to load JSON test file with definition of objects");
+				fail("Unable to load JSON test file with definition of attributes");
 			}
 		}
-		else {
-			fail("Unable to load JSON test file with definition of attributes");
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
 		}
-
+		catch (IOException ex) {
+			System.out.println(ex.toString());
+		}
 	}
 
 }
