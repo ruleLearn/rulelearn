@@ -16,9 +16,9 @@
 
 package org.rulelearn.data.json;
 
-import java.util.List;
-
 import static org.rulelearn.core.Precondition.notNull;
+
+import java.util.List;
 
 import org.rulelearn.data.Attribute;
 
@@ -44,7 +44,7 @@ public class ObjectBuilder {
 	/** 
 	 * Default string representation of a missing value.
 	 */
-	public final static String MISSING_VALUE_STRING = "?";
+	public final static String DEFAULT_MISSING_VALUE_STRING = "?";
 	
 	/**
 	 * All attributes which describe objects.
@@ -57,34 +57,73 @@ public class ObjectBuilder {
 	protected String encoding = ObjectBuilder.DEFAULT_ENCODING; 
 	
 	/**
-	 * Constructor initializing this object builder and setting attributes.
 	 * 
-	 * @param attributes table with attributes
-	 * @throws NullPointerException if all or some of the attributes of the constructed information table have not been set
+	 * Builder class for {@link ObjectBuilder}. 
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
-	public ObjectBuilder (Attribute [] attributes) {
-		if (attributes != null) {
-			for (Attribute attribute : attributes) {
-				if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
+	public static class Builder {
+		
+		/**
+		 * All attributes which describe objects.
+		 */
+		protected Attribute [] attributes = null;
+		
+		/**
+		 * Encoding of text data in CSV files.
+		 */
+		protected String encoding = ObjectBuilder.DEFAULT_ENCODING;
+						
+		/**
+		 * Constructor initializing attributes describing objects from parsed JSON.
+		 * 
+		 * @param attributes array of attributes {@link Attribute} which describe parsed objects
+		 * @throws NullPointerException if all or some of the attributes describing data to be loaded have not been set
+		 */
+		public Builder (Attribute [] attributes) {
+			if (attributes != null) {
+				for (Attribute attribute : attributes) {
+					if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
+				}
+				this.attributes = attributes;
 			}
-			this.attributes = attributes;
+			else {
+				throw new NullPointerException("Attributes are not set.");
+			}
 		}
-		else {
-			throw new NullPointerException("Attributes are not set.");
+		
+		/**
+		 * Sets encoding of parsed JSON.
+		 * 
+		 * @param value string representation of encoding 
+		 * @throws NullPointerException if encoding has not been set
+		 * @return this builder
+		 */
+		public Builder encoding (String value) {
+			notNull(value, "String representing encoding is null.");
+			this.encoding = value;
+			return this;
+		}
+		
+		/**
+		 * Builds a new object builder {@link ObjectBuilder}.
+		 * 
+		 * @return a new object builder
+		 */
+		public ObjectBuilder build () {
+			return new ObjectBuilder(this);
 		}
 	}
 	
 	/**
-	 * Constructor initializing this object builder and setting attributes together with encoding of loaded JSON files.
+	 * Constructor initializing all values according to what has been set in builder passed as parameter.
 	 * 
-	 * @param attributes table with attributes
-	 * @param encoding string representation of encoding
-	 * @throws NullPointerException if all or some of the attributes describing data to be loaded, and/or encoding have not been set
+	 * @param builder builder of object parser
 	 */
-	public ObjectBuilder (Attribute [] attributes, String encoding) {
-		this(attributes);
-		notNull(encoding, "Encoding string is null.");
-		this.encoding = encoding;
+	private ObjectBuilder(Builder builder) {
+		this.attributes = builder.attributes;
+		this.encoding = builder.encoding;
 	}
 	
 	/**
@@ -128,7 +167,7 @@ public class ObjectBuilder {
 					object[i] = element.getAsString();
 				}
 				else {
-					object[i] = ObjectBuilder.MISSING_VALUE_STRING;
+					object[i] = ObjectBuilder.DEFAULT_MISSING_VALUE_STRING;
 				}
 			}
 		}

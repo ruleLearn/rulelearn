@@ -50,7 +50,7 @@ class InformationTableSerializerTest {
 		try (FileReader attributeReader = new FileReader("src/test/resources/data/csv/prioritisation.json")) {
 			attributes = attributeParser.parseAttributes(attributeReader);
 			if (attributes != null) {
-				ObjectParser objectParser = new ObjectParser(attributes);
+				ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
 				try (FileReader objectReader = new FileReader("src/test/resources/data/json/examples.json")) {
 					informationTable = objectParser.parseObjects(objectReader);
 				}

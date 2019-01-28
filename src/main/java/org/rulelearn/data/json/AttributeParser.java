@@ -57,6 +57,7 @@ public class AttributeParser {
 	 * @param encoding encoding of JSON files
 	 */
 	public AttributeParser (String encoding) {
+		notNull(encoding, "String representing encoding is null.");
 		this.encoding  = encoding;
 	}
 	

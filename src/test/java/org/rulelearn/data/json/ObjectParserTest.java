@@ -27,7 +27,12 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.data.Attribute;
+import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.AttributeType;
+import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.types.IntegerFieldFactory;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 /**
  * Test for {@link ObjectParser}.
@@ -39,38 +44,49 @@ import org.rulelearn.data.InformationTable;
 class ObjectParserTest {
 	
 	/**
-	 * Test method for {@link ObjectParser#ObjectParser(Attribute[])}.
+	 * Test method for {@link ObjectParser.Builder#Builder(Attribute[])}.
 	 */
 	@Test
 	void testConstructionOfObjectParser01() {
-		Attribute[] attributes = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectParser(attributes);});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(null).build();});
+		Attribute[] attributes = new Attribute[1];
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).build();});
 	}
 	
 	/**
-	 * Test method for {@link ObjectParser#ObjectParser(Attribute[], String))}.
+	 * Test method for {@link ObjectParser.Builder#Builder(Attribute[])}.
 	 */
 	@Test
 	void testConstructionOfObjectParser02() {
-		Attribute[] attributes = null;
-		String encoding = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectParser(attributes, encoding);});
-		assertThrows(NullPointerException.class, () -> {new ObjectParser(attributes, "");});
-		assertThrows(NullPointerException.class, () -> {new ObjectParser(new Attribute[0], encoding);});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(null).encoding(null).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(null).encoding(ObjectBuilder.DEFAULT_ENCODING).build();});
+		Attribute[] attributes = new Attribute[1];
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).encoding(null).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).encoding(ObjectBuilder.DEFAULT_ENCODING).build();});
+		attributes[0] = new EvaluationAttribute("a", true, AttributeType.CONDITION, 
+				IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).encoding(null).build();});
 	}
 	
 	/**
-	 * Test method for {@link ObjectParser#ObjectParser(Attribute[], String, String)))}.
+	 * Test method for {@link ObjectParser.Builder#Builder(Attribute[])}.
 	 */
 	@Test
 	void testConstructionOfObjectParser03() {
-		Attribute[] attributes = null;
-		String encoding = null, missingValueString = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectParser(attributes, encoding, missingValueString);});
-		assertThrows(NullPointerException.class, () -> {new ObjectParser(attributes, "", missingValueString);});
-		assertThrows(NullPointerException.class, () -> {new ObjectParser(attributes, "", "");});
-		assertThrows(NullPointerException.class, () -> {new ObjectParser(new Attribute[0], encoding, missingValueString);});
-		assertThrows(NullPointerException.class, () -> {new ObjectParser(new Attribute[0], encoding, "");});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(null).encoding(null).missingValueString(null).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(null).encoding(null).missingValueString(ObjectBuilder.DEFAULT_MISSING_VALUE_STRING).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(null).encoding(ObjectBuilder.DEFAULT_ENCODING).missingValueString(null).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(null).encoding(ObjectBuilder.DEFAULT_ENCODING).missingValueString(ObjectBuilder.DEFAULT_MISSING_VALUE_STRING).build();});
+		Attribute[] attributes = new Attribute[1];
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).encoding(null).missingValueString(null).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).encoding(null).missingValueString(ObjectBuilder.DEFAULT_MISSING_VALUE_STRING).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).encoding(ObjectBuilder.DEFAULT_ENCODING).missingValueString(null).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).encoding(ObjectBuilder.DEFAULT_ENCODING).missingValueString(ObjectBuilder.DEFAULT_MISSING_VALUE_STRING).build();});
+		attributes[0] = new EvaluationAttribute("a", true, AttributeType.CONDITION, 
+				IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).encoding(null).missingValueString(null).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).encoding(null).missingValueString(ObjectBuilder.DEFAULT_MISSING_VALUE_STRING).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).encoding(ObjectBuilder.DEFAULT_ENCODING).missingValueString(null).build();});
 	}
 	
 	/**
@@ -84,12 +100,12 @@ class ObjectParserTest {
 		try (FileReader attributeReader = new FileReader("src/test/resources/data/csv/prioritisation.json")) {
 			attributes = attributeParser.parseAttributes(attributeReader);
 			if (attributes != null) {
-				ObjectParser objectParser = new ObjectParser(attributes);
+				ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
 				InformationTable informationTable = null;
 				try (FileReader objectReader = new FileReader("src/test/resources/data/json/examples.json")) {
 					informationTable = objectParser.parseObjects(objectReader);
 					if (informationTable != null) {
-						assertEquals(informationTable.getNumberOfObjects(), 2);
+						assertEquals(2, informationTable.getNumberOfObjects());
 						assertTrue(informationTable.getDecisions() != null);
 					}
 					else {
@@ -126,12 +142,12 @@ class ObjectParserTest {
 		try (FileReader attributeReader = new FileReader("src/test/resources/data/json/metadata-example.json")) {
 			attributes = attributeParser.parseAttributes(attributeReader);
 			if (attributes != null) {
-				ObjectParser objectParser = new ObjectParser(attributes);
+				ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
 				InformationTable informationTable = null;
 				try (FileReader objectReader = new FileReader("src/test/resources/data/json/data-example.json")) {
 					informationTable = objectParser.parseObjects(objectReader);
 					if (informationTable != null) {
-						assertEquals(informationTable.getNumberOfObjects(), 2);
+						assertEquals(2, informationTable.getNumberOfObjects());
 						assertTrue(informationTable.getDecisions() != null);
 					}
 					else {
