@@ -16,6 +16,9 @@
 
 package org.rulelearn.data.json;
 
+import static org.rulelearn.core.Precondition.notNull;
+
+import java.io.IOException;
 import java.io.Reader;
 
 import org.rulelearn.data.Attribute;
@@ -42,27 +45,40 @@ public class AttributeParser {
 	 */
 	protected String encoding = AttributeParser.DEFAULT_ENCODING;
 	
+	/**
+	 * Default constructor.
+	 */
 	public AttributeParser () {	
 	}
 	
 	/**
-	 * Parses content from reader {@link Reader} and constructs an array with attributes {@link Attribute}. 
+	 * Constructor setting encoding.
+	 * 
+	 * @param encoding encoding of JSON files
+	 */
+	public AttributeParser (String encoding) {
+		notNull(encoding, "String representing encoding is null.");
+		this.encoding  = encoding;
+	}
+	
+	/**
+	 * Parses content from reader {@link Reader} and constructs an array with attributes {@link Attribute}.
+	 * 
 	 * @param reader a reader with content to be parsed
 	 * @return array with attributes {@link Attribute}
+	 * @throws IOException when something goes wrong with {@link JsonReader}
+	 * @throws NullPointerException when the provided reader is null
 	 */
-	public Attribute[] parseAttributes (Reader reader) {
-		Attribute[] attributes = null;
+	public Attribute[] parseAttributes (Reader reader) throws IOException {
+		notNull(reader, "Reader of the JSON file is null.");
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		Gson gson = gsonBuilder.create();
 		
-		JsonReader jsonReader = new JsonReader(reader);
-		if (jsonReader != null) {
-			attributes = gson.fromJson(jsonReader, Attribute[].class);
+		try (JsonReader jsonReader = new JsonReader(reader)) {
+			return gson.fromJson(jsonReader, Attribute[].class);
 		}
-		
-		return attributes;
 	}
 	
 }

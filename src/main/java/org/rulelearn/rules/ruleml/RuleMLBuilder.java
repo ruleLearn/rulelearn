@@ -297,7 +297,7 @@ public class RuleMLBuilder {
 		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("InconsistencyMeasure", ruleCharacteristics.getEpsilon()));
 		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
-				RuleMLElements.getEvaluationTag("EpsilonPrimMeasure", ruleCharacteristics.getEpsilonPrim()));		
+				RuleMLElements.getEvaluationTag("EpsilonPrimMeasure", ruleCharacteristics.getEpsilonPrime()));		
 		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(
 				RuleMLElements.getEvaluationTag("f-ConfirmationMeasure", ruleCharacteristics.getFConfirmation()));
 		stringBuilder.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), indenture)).append(

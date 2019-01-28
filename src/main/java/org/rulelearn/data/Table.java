@@ -184,6 +184,7 @@ public class Table<T extends Field> {
 		int[] newObjectIndex2Id = new int[objectIndices.length]; //data for new mapper
 		//T[][] newFields = (T[][]) new Field[objectIndices.length][];
 		T[][] newFields = Arrays.copyOf(this.fields, objectIndices.length); //take a target-length-part of the original array (to assure correct array type)
+		//TODO: optimize
 		
 		for (int i = 0; i < objectIndices.length; i++) {
 			newFields[i] = this.fields[objectIndices[i]]; //just copy reference to an array with fields (overriding wrong reference)

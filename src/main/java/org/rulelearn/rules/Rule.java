@@ -64,7 +64,7 @@ public class Rule {
      * Array with conditions building decision part of this rule.
      * If there is more than one decision, they are treated as connected by the OR operator.
      */
-    protected Condition<? extends EvaluationField>[] decisions = null;
+    protected Condition<? extends EvaluationField>[] decisions = null; //TODO: change to set/2-d array of conditions (i.e., Condition<? extends EvaluationField>[][])
     
     /**
      * Value appended to the beginning of a rule while transforming the rule to text form.

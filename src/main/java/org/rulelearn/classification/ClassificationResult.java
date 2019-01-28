@@ -17,7 +17,7 @@
 package org.rulelearn.classification;
 
 import org.rulelearn.core.TernaryLogicValue;
-import org.rulelearn.types.EvaluationField;
+import org.rulelearn.data.Decision;
 
 /**
  * Result of classification of an object from an information table.
@@ -36,5 +36,12 @@ public abstract class ClassificationResult {
 	 *         (which may be the case if, e.g., this classification result is unknown)
 	 * @throws NullPointerException if given decision is {@code null} 
 	 */
-	public abstract TernaryLogicValue isConsistentWith(EvaluationField decision);
+	public abstract TernaryLogicValue isConsistentWith(Decision decision);
+	
+	/**
+	 * Gets evaluation of an object on the decision attribute or decision attributes (i.e., decision) suggested by a classifier.
+	 * 
+	 * @return evaluation of an object on the decision attribute or decision attributes (i.e., decision) suggested by a classifier
+	 */
+	public abstract Decision getSuggestedDecision();
 }
