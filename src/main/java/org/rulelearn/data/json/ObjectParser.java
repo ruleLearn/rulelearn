@@ -18,11 +18,13 @@ package org.rulelearn.data.json;
 
 import static org.rulelearn.core.Precondition.notNull;
 
+import java.io.IOException;
 import java.io.Reader;
 
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableBuilder;
+import org.rulelearn.data.csv.ObjectBuilder;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -38,16 +40,6 @@ import com.google.gson.stream.JsonReader;
  */
 public class ObjectParser {
 	
-	/** 
-	 * Default encoding.
-	 */
-	public final static String DEFAULT_ENCODING = "UTF-8";
-	
-	/** 
-	 * Default string representation of a missing value.
-	 */
-	protected final static String MISSING_VALUE_STRING = "?";
-	
 	/**
 	 * All attributes which describe objects.
 	 */
@@ -56,98 +48,144 @@ public class ObjectParser {
 	/**
 	 * Encoding of text data in JSON.
 	 */
-	protected String encoding = ObjectParser.DEFAULT_ENCODING;
+	protected String encoding = ObjectBuilder.DEFAULT_ENCODING;
 	
 	/**
 	 * String representation of a missing value in JSON.
 	 */
-	protected String missingValueString = ObjectParser.MISSING_VALUE_STRING;
+	protected String missingValueString = ObjectBuilder.DEFAULT_MISSING_VALUE_STRING;
 	
 	/**
-	 * Constructor initializing this object parser and setting attributes.
 	 * 
-	 * @param attributes table with attributes
-	 * @throws NullPointerException if all or some of the attributes of the constructed information table have not been set
+	 * Builder class for {@link ObjectParser}. 
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
-	public ObjectParser (Attribute [] attributes) {
-		if (attributes != null) {
-			for (Attribute attribute : attributes) {
-				if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
+	public static class Builder {
+		
+		/**
+		 * All attributes which describe objects.
+		 */
+		protected Attribute [] attributes = null;
+		
+		/**
+		 * Encoding of text data in JSON.
+		 */
+		protected String encoding = ObjectBuilder.DEFAULT_ENCODING;
+		
+		/**
+		 * String representation of a missing value in JSON.
+		 */
+		protected String missingValueString = ObjectBuilder.DEFAULT_MISSING_VALUE_STRING;
+		
+		/**
+		 * Constructs object parser builder, and sets attributes.
+		 * 
+		 * @param attributes array of attributes {@link Attribute} which describe parsed objects
+		 * @throws NullPointerException if all or some of the attributes describing data to be loaded have not been set
+		 */
+		public Builder (Attribute [] attributes) {
+			if (attributes != null) {
+				for (Attribute attribute : attributes) {
+					if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
+				}
+				this.attributes = attributes;
 			}
-			this.attributes = attributes;
+			else {
+				throw new NullPointerException("Attributes are not set.");
+			}
 		}
-		else {
-			throw new NullPointerException("Attributes are not set.");
+		
+		/**
+		 * Sets encoding of parsed JSON.
+		 * 
+		 * @param value string representation of encoding 
+		 * @throws NullPointerException if encoding has not been set
+		 * @return this builder
+		 */
+		public Builder encoding (String value) {
+			notNull(value, "String representing encoding is null.");
+			this.encoding = value;
+			return this;
+		}
+		
+		/**
+		 * Sets representation of missing value in parsed JSON.
+		 * 
+		 * @param value string representation of missing value 
+		 * @throws NullPointerException if representation of missing value has not been set
+		 * @return this builder
+		 */
+		public Builder missingValueString (String value) {
+			notNull(value, "String representing missing values is null.");
+			this.missingValueString = value;
+			return this;
+		}
+		
+		/**
+		 * Builds a new object parser {@link ObjectParser}.
+		 * 
+		 * @return a new object parser
+		 */
+		public ObjectParser build () {
+			return new ObjectParser(this);
 		}
 	}
 	
 	/**
-	 * Constructor initializing this object parser, setting attributes, and missing values string (i.e., string representing missing value).
+	 * Constructor initializing all values according to what has been set in builder passed as parameter.
 	 * 
-	 * @param attributes table with attributes
-	 * @param missingValueString string representations of missing value
-	 * @throws NullPointerException if all or some of attributes of the constructed object parser, and/or missing value string have not been set
+	 * @param builder builder of object parser
 	 */
-	public ObjectParser (Attribute [] attributes, String missingValueString) {
-		this(attributes);
-		notNull(missingValueString, "Missing value string is null.");
-		this.missingValueString = missingValueString;
+	private ObjectParser(Builder builder) {
+		this.attributes = builder.attributes;
+		this.encoding = builder.encoding;
+		this.missingValueString = builder.missingValueString;
 	}
 	
 	/**
-	 * Constructor initializing this object parser, setting attributes, and missing values string (i.e., string representing missing value).
-	 * 
-	 * @param attributes table with attributes
-	 * @param missingValueString string representations of missing value
-	 * @param encoding string representation of encoding
-	 * @throws NullPointerException if all or some of attributes of the constructed object parser, and/or missing value string, and/or encoding have not been set
-	 */
-	public ObjectParser (Attribute [] attributes, String missingValueString, String encoding) {
-		this(attributes, missingValueString);
-		notNull(encoding, "Encoding string is null.");
-		this.encoding = encoding;
-	}
-	
-	/**
-	 * Parses content from reader {@link Reader} and constructs an information table {@link InformationTable} with parsed objects. 
+	 * Parses content from reader {@link Reader} and constructs an information table {@link InformationTable} with parsed objects.
+	 *  
 	 * @param reader a reader with content to be parsed
 	 * @return information table {@link InformationTable} with parsed objects
+	 * @throws IOException when something goes wrong with {@link Reader}
 	 */
-	public InformationTable parseObjects (Reader reader) {
+	public InformationTable parseObjects (Reader reader) throws IOException {
 		notNull(reader, "Reader with content to be parsed is null.");
-		InformationTable iTable = null;
+		InformationTable informationTable = null;
 		
 		JsonElement json = getJSON(reader);
 		if ((json != null) && (!json.isJsonNull())) {
 			// separator passed to InforamtionTableBuilder is irrelevant here
-			InformationTableBuilder iTBuilder  = new InformationTableBuilder(this.attributes, ",", 
-													new String [] {ObjectParser.MISSING_VALUE_STRING}); 
+			InformationTableBuilder informationTableBuilder  = new InformationTableBuilder(this.attributes, new String [] {this.missingValueString});
 			if (json.isJsonArray()) {
 				for (int i = 0; i < ((JsonArray)json).size(); i++) {
-					iTBuilder.addObject(parseObject(((JsonArray)json).get(i).getAsJsonObject()));
+					informationTableBuilder.addObject(parseObject(((JsonArray)json).get(i).getAsJsonObject()));
 				}
 			}
 			else {
-				iTBuilder.addObject(parseObject(json));
+				informationTableBuilder.addObject(parseObject(json));
 			}
-			iTable = iTBuilder.build();
+			informationTable = informationTableBuilder.build();
 		}
 		
-		return iTable;
+		return informationTable;
 	}
 	
 	/**
-	 * Parses content from reader {@link Reader} into JSON structure {@link JsonElement}. 
+	 * Parses content from reader {@link Reader} into JSON structure {@link JsonElement}.
+	 *  
 	 * @param reader a reader with content to be parsed
 	 * @return parsed JSON structure {@link JsonElement}
+	 * @throws IOException when something goes wrong with {@link JsonReader}
 	 */
-	protected JsonElement getJSON (Reader reader) {
+	protected JsonElement getJSON (Reader reader) throws IOException {
 		notNull(reader, "Reader with content to be parsed is null.");
-		JsonReader jsonReader = new JsonReader(reader);
-		notNull(jsonReader, "Could not initialize JsonReader.");
-		JsonParser jsonParser = new JsonParser();
-		
-		return jsonParser.parse(jsonReader);
+		try (JsonReader jsonReader = new JsonReader(reader)) {
+			JsonParser jsonParser = new JsonParser();			
+			return jsonParser.parse(jsonReader);
+		}
 	}
 	
 	/**
@@ -170,7 +208,7 @@ public class ObjectParser {
 					object[i] = element.getAsString();
 				}
 				else {
-					object[i] = ObjectParser.MISSING_VALUE_STRING;
+					object[i] = this.missingValueString;
 				}
 			}
 		}
