@@ -16,11 +16,13 @@
 
 package org.rulelearn.rules.ruleml;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -50,44 +52,36 @@ class RuleParserTest {
 	 */
 	@Test
 	public void testLoading() {
-		Attribute [] attributes = null;
-		
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		gsonBuilder.registerTypeAdapter(IdentificationAttribute.class, new IdentificationAttributeSerializer());
 		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
 		Gson gson = gsonBuilder.create();
 		
-		JsonReader jsonReader = null;
-		try {
-			jsonReader = new JsonReader(new FileReader("src/test/resources/data/csv/prioritisation.json"));
-		}
-		catch (FileNotFoundException ex) {
-			System.out.println(ex.toString());
-		}
-		
-		Map<Integer, RuleSet> rules = null;
-		if (jsonReader != null) {
-			attributes = gson.fromJson(jsonReader, Attribute[].class);
+		try (FileReader fileAttributeReader = new FileReader("src/test/resources/data/csv/prioritisation.json"); JsonReader jsonAttributeReader = new JsonReader(fileAttributeReader);) {
+			Map<Integer, RuleSet> rules = null;
+			Attribute [] attributes = gson.fromJson(jsonAttributeReader, Attribute[].class);
 			RuleParser ruleParser = new RuleParser(attributes);
-			try {
-				rules = ruleParser.parseRules(new FileInputStream("src/test/resources/data/ruleml/prioritisation1.rules.xml"));
-				assertEquals(rules.size(), 1);
-				RuleSet firstRuleSet = rules.get(1);
-				assertEquals(firstRuleSet.size(), 2);
+			try (FileInputStream fileRulesStream = new FileInputStream("src/test/resources/data/ruleml/prioritisation1.rules.xml")) {
+				rules = ruleParser.parseRules(fileRulesStream);
+				if (rules != null) {
+					assertEquals(rules.size(), 1);
+					RuleSet firstRuleSet = rules.get(1);
+					assertEquals(firstRuleSet.size(), 2);
+				}
+				else {
+					fail("Unable to load RuleML file.");
+				}
 			}
 			catch (FileNotFoundException ex) {
 				System.out.println(ex.toString());
 			}
-			if (rules != null) {
-				
-			}
-			else {
-				fail("Unable to load RuleML file.");
-			}
 		}
-		else {
-			fail("Unable to load JSON file with attributes.");
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		catch (IOException ex) {
+			System.out.println(ex.toString());
 		}		
 	}
 	
