@@ -94,7 +94,7 @@ public class ObjectParser {
 		protected String missingValueString = ObjectBuilder.DEFAULT_MISSING_VALUE_STRING;
 		
 		/**
-		 * Constructs object parser builder, and sets attributes.
+		 * Constructor initializing attributes.
 		 * 
 		 * @param attributes array of attributes {@link Attribute} which describe parsed objects
 		 * @throws NullPointerException if all or some of the attributes describing data to be loaded have not been set
@@ -171,6 +171,7 @@ public class ObjectParser {
 	
 	/**
 	 * Constructor initializing all values according to what has been set in builder passed as parameter.
+	 * 
 	 * @param builder builder of object parser
 	 */
 	private ObjectParser(Builder builder) {

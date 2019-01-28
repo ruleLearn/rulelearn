@@ -48,8 +48,7 @@ class ObjectParserTest {
 	 */
 	@Test
 	void testConstructionOfObjectParser01() {
-		Attribute[] attributes = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(null).build();});
 	}
 	
 	/**
@@ -57,11 +56,12 @@ class ObjectParserTest {
 	 */
 	@Test
 	void testConstructionOfObjectParser02() {
-		Attribute[] attributes = null;
-		String mv = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).missingValueString(mv).build();});
-		Attribute[] newAttributes = new Attribute[1];
-		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(newAttributes).missingValueString(mv).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(null).missingValueString(null).build();});
+		Attribute[] attributes = new Attribute[1];
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).missingValueString(null).build();});
+		attributes[0] = new EvaluationAttribute("a", true, AttributeType.CONDITION, 
+				IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).missingValueString(null).build();});
 	}
 	
 	/**
@@ -69,14 +69,14 @@ class ObjectParserTest {
 	 */
 	@Test
 	void testConstructionOfObjectParser03() {
-		Attribute[] attributes = null;
-		String mv = null;
-		String encoding = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).missingValueString(mv).encoding(encoding).build();});
-		Attribute[] newAttributes = new Attribute[1];
-		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(newAttributes).missingValueString(mv).encoding(encoding).build();});
-		String newMv = "?";
-		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(newAttributes).missingValueString(newMv).encoding(encoding).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(null).missingValueString(null).encoding(null).build();});
+		Attribute[] attributes = new Attribute[1];
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).missingValueString(null).encoding(null).build();});
+		String mv = "?";
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).missingValueString(mv).encoding(null).build();});
+		attributes[0] = new EvaluationAttribute("a", true, AttributeType.CONDITION, 
+				IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
+		assertThrows(NullPointerException.class, () -> {new ObjectParser.Builder(attributes).missingValueString(mv).encoding(null).build();});
 	}
 	
 	/**
@@ -87,7 +87,7 @@ class ObjectParserTest {
 		Attribute[] attributes = new Attribute[1];
 		attributes[0] = new EvaluationAttribute("a", true, AttributeType.CONDITION, 
 				IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN); 
-		String mv = new String("?");
+		String mv = "?";
 		String encoding = ObjectBuilder.DEFAULT_ENCODING;
 		ObjectParser objectParser = new ObjectParser.Builder(attributes).missingValueString(mv).encoding(encoding).header(false).separator(',').build();
 		assertThrows(NullPointerException.class, () -> {objectParser.parseObjects(null);});
