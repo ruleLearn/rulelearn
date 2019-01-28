@@ -16,7 +16,9 @@
 
 package org.rulelearn.data.json;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -25,6 +27,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.data.Attribute;
+import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.AttributeType;
+import org.rulelearn.data.EvaluationAttribute;
+import org.rulelearn.types.IntegerFieldFactory;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -42,85 +49,69 @@ import com.google.gson.stream.JsonReader;
 class ObjectBuilderTest {
 	
 	/**
-	 * Test method for {@link ObjectBuilder#ObjectBuilder(Attribute[])}.
+	 * Test method for {@link ObjectBuilder.Builder#Builder(Attribute[])}.
 	 */
 	@Test
 	void testConstructionOfObjectBuilder01() {
-		Attribute[] attributes = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes);});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder.Builder(null).build();});
+		Attribute[] attributes = new Attribute[1];
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder.Builder(attributes).build();});
 	}
 	
 	/**
-	 * Test method for {@link ObjectBuilder#ObjectBuilder(Attribute[], String)}.
+	 * Test method for Test method for {@link ObjectBuilder.Builder#Builder(Attribute[])} and Test method for {@link ObjectBuilder.Builder#encoding(String)}..
 	 */
 	@Test
 	void testConstructionOfObjectBuilder04() {
-		Attribute[] attributes = null;
-		String encoding = null;
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, encoding);});
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(attributes, "");});
-		assertThrows(NullPointerException.class, () -> {new ObjectBuilder(new Attribute[0], encoding);});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder.Builder(null).encoding(null).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder.Builder(null).encoding(ObjectBuilder.DEFAULT_ENCODING).build();});
+		Attribute[] attributes = new Attribute[1];
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder.Builder(attributes).encoding(null).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder.Builder(attributes).encoding(ObjectBuilder.DEFAULT_ENCODING).build();});
+		attributes[0] = new EvaluationAttribute("a", true, AttributeType.CONDITION, 
+				IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN);
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder.Builder(attributes).encoding(null).build();});
+		assertThrows(NullPointerException.class, () -> {new ObjectBuilder.Builder(null).encoding(ObjectBuilder.DEFAULT_ENCODING).build();});
 	}
 
 	/**
-	 * Test method for {@link ObjectBuilder#getObjects(String)}.
+	 * Test method for {@link ObjectBuilder#getObjects(JsonElement)}.
 	 */
 	@Test
 	void testGetObjects() {
-		Attribute [] attributes = null;
-		
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		
-		JsonReader jsonReader = null;
-		try {
-			jsonReader = new JsonReader(new FileReader("src/test/resources/data/csv/prioritisation.json"));
+		try (FileReader attributeReader = new FileReader("src/test/resources/data/csv/prioritisation.json"); JsonReader jsonAttributeReader = new JsonReader(attributeReader)) {
+			Attribute [] attributes = gson.fromJson(jsonAttributeReader, Attribute[].class);
+			if (attributes != null) {
+				JsonElement json = null;
+				try (FileReader objectReader = new FileReader("src/test/resources/data/json/prioritisation1.json"); JsonReader jsonObjectReader = new JsonReader(objectReader)){
+					JsonParser jsonParser = new JsonParser();
+					json = jsonParser.parse(jsonObjectReader);
+						
+					ObjectBuilder objectBuilder = new ObjectBuilder.Builder(attributes).build();
+					List<String []> objects = null;
+					objects = objectBuilder.getObjects(json);
+					
+					assertTrue(objects != null);
+					assertEquals(objects.size(), 2);
+				}
+				catch (FileNotFoundException ex) {
+					System.out.println(ex.toString());
+				}
+				catch (IOException ex) {
+					System.out.println(ex.toString());
+				}
+			}
 		}
 		catch (FileNotFoundException ex) {
 			System.out.println(ex.toString());
 		}
-		if (jsonReader != null) {
-			attributes = gson.fromJson(jsonReader, Attribute[].class);
-			try {
-				jsonReader.close();
-			}
-			catch (IOException ex) {
-				System.out.println(ex.toString());
-			}
-		}
-		else {
-			fail("Unable to load JSON test file with definition of attributes");
-		}
-		
-		JsonElement json = null;
-		jsonReader = null;
-		try {
-			jsonReader = new JsonReader(new FileReader("src/test/resources/data/json/prioritisation1.json"));
-		}
-		catch (FileNotFoundException ex) {
+		catch (IOException ex) {
 			System.out.println(ex.toString());
 		}
-		if (jsonReader != null) {
-			JsonParser jsonParser = new JsonParser();
-			json = jsonParser.parse(jsonReader);
-			try {
-				jsonReader.close();
-			}
-			catch (IOException ex) {
-				System.out.println(ex.toString());
-			}
-		}
-		else {
-			fail("Unable to load JSON test file with definition of objects");
-		}
-		
-		ObjectBuilder ob = new ObjectBuilder(attributes);
-		List<String []> objects = null;
-		objects = ob.getObjects(json);
-	
-		assertTrue(objects != null);
-		assertEquals(objects.size(), 2);
 	}
 
 }

@@ -268,7 +268,7 @@ class InformationTableBuilderTest {
 		else {
 			fail("Unable to load JSON test file with definition of objects");
 		}
-		ObjectBuilder ob = new ObjectBuilder(attributes);
+		ObjectBuilder ob = new ObjectBuilder.Builder(attributes).build();
 		List<String []> objects = null;
 		objects = ob.getObjects(json);
 		assertTrue(objects != null);
@@ -356,7 +356,16 @@ class InformationTableBuilderTest {
 	 */
 	@Test
 	void testConstructionOfInformationTable05() {
-		InformationTable informationTable = InformationTableBuilder.buildFromJSONFile("src/test/resources/data/csv/prioritisation.json", "src/test/resources/data/json/examples.json");
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.buildFromJSONFile("src/test/resources/data/csv/prioritisation.json", "src/test/resources/data/json/examples.json");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
 		assertTrue(informationTable != null);
 		assertEquals(11, informationTable.getNumberOfAttributes());
 		assertEquals(2, informationTable.getNumberOfObjects());		
@@ -367,10 +376,17 @@ class InformationTableBuilderTest {
 	 */
 	@Test
 	void testConstructionOfInformationTable06() {
-		InformationTable informationTable = InformationTableBuilder.buildFromJSONFile("src/test/resources/data/csv/prioritisation.json", "");
-		assertTrue(informationTable != null);
-		assertEquals(11, informationTable.getNumberOfAttributes());
-		assertEquals(0, informationTable.getNumberOfObjects());		
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.buildFromJSONFile("src/test/resources/data/csv/prioritisation.json", "");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
 	}
 	
 	/**
@@ -378,10 +394,17 @@ class InformationTableBuilderTest {
 	 */
 	@Test
 	void testConstructionOfInformationTable07() {
-		InformationTable informationTable = InformationTableBuilder.buildFromJSONFile("", "");
-		assertTrue(informationTable != null);
-		assertEquals(0, informationTable.getNumberOfAttributes());
-		assertEquals(0, informationTable.getNumberOfObjects());		
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.buildFromJSONFile("", "");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
 	}
 	
 	/**
@@ -454,7 +477,16 @@ class InformationTableBuilderTest {
 	 */
 	@Test
 	void testConstructionOfInformationTable12() {
-		InformationTable informationTable = InformationTableBuilder.safelyBuildFromJSONFile("src/test/resources/data/csv/prioritisation.json", "src/test/resources/data/json/examples.json");
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.safelyBuildFromJSONFile("src/test/resources/data/csv/prioritisation.json", "src/test/resources/data/json/examples.json");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
 		assertTrue(informationTable != null);
 		assertEquals(11, informationTable.getNumberOfAttributes());
 		assertEquals(2, informationTable.getNumberOfObjects());		
@@ -465,10 +497,17 @@ class InformationTableBuilderTest {
 	 */
 	@Test
 	void testConstructionOfInformationTable13() {
-		InformationTable informationTable = InformationTableBuilder.safelyBuildFromJSONFile("src/test/resources/data/csv/prioritisation.json", "");
-		assertTrue(informationTable != null);
-		assertEquals(11, informationTable.getNumberOfAttributes());
-		assertEquals(0, informationTable.getNumberOfObjects());		
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.safelyBuildFromJSONFile("src/test/resources/data/csv/prioritisation.json", "");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
 	}
 	
 	/**
@@ -476,10 +515,17 @@ class InformationTableBuilderTest {
 	 */
 	@Test
 	void testConstructionOfInformationTable14() {
-		InformationTable informationTable = InformationTableBuilder.safelyBuildFromJSONFile("", "");
-		assertTrue(informationTable != null);
-		assertEquals(0, informationTable.getNumberOfAttributes());
-		assertEquals(0, informationTable.getNumberOfObjects());		
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.safelyBuildFromJSONFile("", "");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
 	}
 	
 }

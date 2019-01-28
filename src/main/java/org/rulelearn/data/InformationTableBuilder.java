@@ -485,80 +485,18 @@ public class InformationTableBuilder {
 
 	/**
 	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored also in JSON format.
-	 * Internally it uses attribute deserializer {@link AttributeDeserializer} to load attributes and object builder {@link org.rulelearn.data.json.ObjectBuilder} to load objects.
+	 * Internally it uses {@link InformationTableBuilder#safelyBuildFromJSONFile(String, String)}.
 	 * 
 	 * @param pathToJSONAttributeFile a path to JSON file with attributes
 	 * @param pathToJSONObjectFile a path to the JSON file with objects
+	 * @throws NullPointerException if path to any JSON file has not been set
+	 * @throws IOException when there is problem with handling JSON file
+	 * @throws FileNotFoundException when JSON file cannot be found
 	 * 
 	 * @return constructed information table
 	 */
-	public static InformationTable buildFromJSONFile(String pathToJSONAttributeFile, String pathToJSONObjectFile) {
-		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");
-		notNull(pathToJSONObjectFile, "Path to JSON file with objects is null.");
-		
-		// load attributes
-		Attribute [] attributes = null;
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
-		Gson gson = gsonBuilder.setPrettyPrinting().create();
-		
-		JsonReader jsonReader = null;
-		try {
-			jsonReader = new JsonReader(new FileReader(pathToJSONAttributeFile));
-		}
-		catch (FileNotFoundException ex) {
-			System.out.println(ex.toString());
-		}
-		if (jsonReader != null) {
-			attributes = gson.fromJson(jsonReader, Attribute[].class);
-			try {
-				jsonReader.close();
-			}
-			catch (IOException ex) {
-				System.out.println(ex.toString());
-			}
-		}
-		else {
-			// just to create information table
-			attributes = new Attribute[0];
-		}
-		
-		// load objects
-		jsonReader = null;
-		List<String []> objects = null;
-		if (attributes != null) {
-			JsonElement json = null;
-			try {
-				FileReader fileReader = new FileReader(pathToJSONObjectFile);
-				if (fileReader != null) {
-					jsonReader = new JsonReader(fileReader);
-				}
-			}
-			catch (FileNotFoundException ex) {
-				System.out.println(ex.toString());
-			}
-			if (jsonReader != null) {
-				JsonParser jsonParser = new JsonParser();
-				json = jsonParser.parse(jsonReader);
-				try {
-					jsonReader.close();
-				}
-				catch (IOException ex) {
-					System.out.println(ex.toString());
-				}
-			}
-			org.rulelearn.data.json.ObjectBuilder ob = new org.rulelearn.data.json.ObjectBuilder(attributes);
-			objects = ob.getObjects(json);
-		}
-		
-		// build information table
-		InformationTableBuilder informationTableBuilder = new InformationTableBuilder(attributes, new String[] {org.rulelearn.data.json.ObjectBuilder.MISSING_VALUE_STRING});
-		if (objects != null) {
-			for (int i = 0; i < objects.size(); i++) {
-				informationTableBuilder.addObject(objects.get(i));
-			}
-		}
-		return informationTableBuilder.build();
+	public static InformationTable buildFromJSONFile(String pathToJSONAttributeFile, String pathToJSONObjectFile) throws IOException, FileNotFoundException {
+		return safelyBuildFromJSONFile(pathToJSONAttributeFile, pathToJSONObjectFile);
 	}
 	
 	/**
@@ -567,16 +505,19 @@ public class InformationTableBuilder {
 	 * 
 	 * @param pathToJSONAttributeFile a path to JSON file with attributes
 	 * @param pathToJSONObjectFile a path to the JSON file with objects
-	 * 
 	 * @return constructed information table
+	 * @throws NullPointerException if path to any JSON file has not been set
+	 * @throws IOException when there is problem with handling JSON file
+	 * @throws FileNotFoundException when JSON file cannot be found
 	 */
-	public static InformationTable safelyBuildFromJSONFile(String pathToJSONAttributeFile, String pathToJSONObjectFile) {
+	public static InformationTable safelyBuildFromJSONFile(String pathToJSONAttributeFile, String pathToJSONObjectFile) throws IOException, FileNotFoundException {
 		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");
 		notNull(pathToJSONObjectFile, "Path to JSON file with objects is null.");
 		
 		Attribute [] attributes = null;
 		List<String []> objects = null;
 		InformationTableBuilder informationTableBuilder = null;
+		InformationTable informationTable = null;
 		
 		// load attributes
 		GsonBuilder gsonBuilder = new GsonBuilder();
@@ -585,25 +526,18 @@ public class InformationTableBuilder {
 		
 		try(JsonReader jsonAttributesReader = new JsonReader(new FileReader(pathToJSONAttributeFile))) {
 			attributes = gson.fromJson(jsonAttributesReader, Attribute[].class);
-			
 			// load objects
 			JsonElement json = null;
 			try(JsonReader jsonObjectsReader = new JsonReader(new FileReader(pathToJSONObjectFile))) {
 				JsonParser jsonParser = new JsonParser();
 				json = jsonParser.parse(jsonObjectsReader);
 			}
-			catch (FileNotFoundException ex) {
-				System.out.println(ex.toString());
-			}
-			catch (IOException ex) {
-				System.out.println(ex.toString());
-			}
-			org.rulelearn.data.json.ObjectBuilder ob = new org.rulelearn.data.json.ObjectBuilder(attributes);
+			org.rulelearn.data.json.ObjectBuilder ob = new org.rulelearn.data.json.ObjectBuilder.Builder(attributes).build();
 			objects = ob.getObjects(json);
 			
 			// construct information table builder
 			if (attributes != null) {
-				informationTableBuilder = new InformationTableBuilder(attributes, new String[] {org.rulelearn.data.json.ObjectBuilder.MISSING_VALUE_STRING});
+				informationTableBuilder = new InformationTableBuilder(attributes, new String[] {org.rulelearn.data.json.ObjectBuilder.DEFAULT_MISSING_VALUE_STRING});
 				if (objects != null) {
 					for (int i = 0; i < objects.size(); i++) {
 						informationTableBuilder.addObject(objects.get(i));
@@ -611,21 +545,13 @@ public class InformationTableBuilder {
 				}
 			}
 		}
-		catch (FileNotFoundException ex) {
-			System.out.println(ex.toString());
-		}
-		catch (IOException ex) {
-			System.out.println(ex.toString());
-		}
 		
 		// build information table
 		if (informationTableBuilder != null) {
-			return informationTableBuilder.build();
+			informationTable = informationTableBuilder.build();
 		}
-		else {
-			// create empty information table
-			return new InformationTable(new Attribute[0], new ObjectArrayList<Field []>());
-		}
+
+		return informationTable;
 	}
 	
 	/**
