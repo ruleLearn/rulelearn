@@ -195,6 +195,7 @@ public class ObjectBuilder {
 	
 	/**
 	 * Constructor initializing all values according to what has been set in builder passed as parameter.
+	 * 
 	 * @param builder builder of object parser
 	 */
 	private ObjectBuilder(Builder builder) {
