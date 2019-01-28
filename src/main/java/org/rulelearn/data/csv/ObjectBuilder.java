@@ -83,7 +83,6 @@ public class ObjectBuilder {
 	protected String missingValueString = ObjectBuilder.DEFAULT_MISSING_VALUE_STRING;
 	
 	/**
-	 * 
 	 * Builder class for {@link ObjectBuilder}. 
 	 *
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
@@ -196,6 +195,7 @@ public class ObjectBuilder {
 	
 	/**
 	 * Constructor initializing all values according to what has been set in builder passed as parameter.
+	 * 
 	 * @param builder builder of object parser
 	 */
 	private ObjectBuilder(Builder builder) {
@@ -251,6 +251,7 @@ public class ObjectBuilder {
 	 * 
 	 * @param pathToCSVFile a path to the CSV file
 	 * @return a list of {@link String} arrays representing description of all objects in the file on all attributes or {@code null} when something goes wrong
+	 * @throws IOException when something goes wrong with {@link InputStreamReader}
 	 * @throws FileNotFoundException in case the supplied file does not exist
 	 * @throws UnsupportedEncodingException in case the encoding specified is not correct 
 	 */
