@@ -80,10 +80,10 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 		//informs which relevant objects (i.e., objects that need to be covered) are covered by particular rule conditions;
 		//e.g., if indicesOfObjectsToKeepCovered == {1, 3, 5, 7} and ruleConditionsList.get(i).getIndicesOfCoveredObjects() == [1, 5, 9, 12], then
 		//relevantIndicesOfCoveredObjects.get(i) == {1, 5}
-		List<IntSet> relevantIndicesOfCoveredObjectsList = new ObjectArrayList<>(ruleConditionsList.size()); //effectively, indices of covered objects are put from list to hash set
-		int size = relevantIndicesOfCoveredObjectsList.size();
-		for (int i = 0; i < size; i++) {
-			relevantIndicesOfCoveredObjectsList.add(new IntOpenHashSet()); // initialize with an empty (hash) set
+		int ruleConditionsCount = ruleConditionsList.size();
+		List<IntSet> listOfRelevantIndicesOfCoveredObjects = new ObjectArrayList<>(ruleConditionsCount); //effectively, indices of covered objects are put from list to hash set
+		for (int i = 0; i < ruleConditionsCount; i++) {
+			listOfRelevantIndicesOfCoveredObjects.add(new IntOpenHashSet()); // initialize with an empty (hash) set
 		}
 		
 		//----------
@@ -92,13 +92,13 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 		int count; //auxiliary variable
 		IntList indicesOfSingleCoveredObjects = new IntArrayList(); //list of indices of objects that should remain covered and are covered by just one rule conditions
 		
-		for (int indexOfObjectToKeepCovered : indicesOfObjectsToKeepCovered) { //initialize indexOfObjectToKeepCovered2Count & relevantIndicesOfCoveredObjects
+		for (int indexOfObjectToKeepCovered : indicesOfObjectsToKeepCovered) { //initialize indexOfObjectToKeepCovered2CountMap & listOfRelevantIndicesOfCoveredObjects
 			count = 0;
 			ruleConditionsIndex = 0;
 			for (RuleConditions ruleConditions : ruleConditionsList) {
 				if (ruleConditions.covers(indexOfObjectToKeepCovered)) {
 					indexOfObjectToKeepCovered2CountMap.put(indexOfObjectToKeepCovered, ++count);
-					relevantIndicesOfCoveredObjectsList.get(ruleConditionsIndex).add(indexOfObjectToKeepCovered); //remember that currently considered rule conditions cover an object that should remain covered (once this method returns)
+					listOfRelevantIndicesOfCoveredObjects.get(ruleConditionsIndex).add(indexOfObjectToKeepCovered); //remember that currently considered rule conditions cover an object that should remain covered (once this method returns)
 				}
 				ruleConditionsIndex++;
 			}
@@ -119,7 +119,7 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 		IntList indicesOfRemovableRuleConditions = new IntArrayList();
 		boolean ruleConditionsAreRemovable; //auxiliary variable
 		ruleConditionsIndex = 0;
-		for (IntSet relevantIndicesOfCoveredObjects : relevantIndicesOfCoveredObjectsList) {
+		for (IntSet relevantIndicesOfCoveredObjects : listOfRelevantIndicesOfCoveredObjects) {
 			ruleConditionsAreRemovable = true;
 			for (int indexOfSingleCoveredObject: indicesOfSingleCoveredObjects) {
 				if (relevantIndicesOfCoveredObjects.contains(indexOfSingleCoveredObject)) { //rule conditions cover a single-covered object, and thus, it cannot be removed
@@ -140,14 +140,19 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 			int worstRemovableRuleConditionsIndex; //auxiliary variable
 			int positionOfWorstRemovableRuleConditionsIndex; //auxiliary variable
 			while (indicesOfRemovableRuleConditions.size() > 0) {
-				positionOfWorstRemovableRuleConditionsIndex = getPositionOfWorstRemovableRuleConditionsIndex(indicesOfRemovableRuleConditions, ruleConditionsList);;
+				positionOfWorstRemovableRuleConditionsIndex = getPositionOfTheWorstRemovableRuleConditionsIndex(indicesOfRemovableRuleConditions, ruleConditionsList);
 				worstRemovableRuleConditionsIndex = indicesOfRemovableRuleConditions.getInt(positionOfWorstRemovableRuleConditionsIndex);
 				//update indexOfObjectToKeepCovered2CountMap - decrease count for each object covered by removed rule conditions
-				for (int relevantIndexOfCoveredObject : relevantIndicesOfCoveredObjectsList.get(worstRemovableRuleConditionsIndex)) {
-					indexOfObjectToKeepCovered2CountMap.put(relevantIndexOfCoveredObject, indexOfObjectToKeepCovered2CountMap.get(relevantIndexOfCoveredObject) - 1);
+				for (int relevantIndexOfCoveredObject : listOfRelevantIndicesOfCoveredObjects.get(worstRemovableRuleConditionsIndex)) {
+					count = indexOfObjectToKeepCovered2CountMap.get(relevantIndexOfCoveredObject);
+					indexOfObjectToKeepCovered2CountMap.put(relevantIndexOfCoveredObject, --count);
+					if (count == 1) {
+						indicesOfSingleCoveredObjects.add(relevantIndexOfCoveredObject);
+					}
 				}
-				indicesOfRemovableRuleConditions.removeInt(positionOfWorstRemovableRuleConditionsIndex);
-				indicesOfRuleConditionsToRemove.add(worstRemovableRuleConditionsIndex); //remember index to remove rule conditions at the end of this method
+				listOfRelevantIndicesOfCoveredObjects.set((worstRemovableRuleConditionsIndex), null); //drop set of object indices (frees memory)
+				indicesOfRemovableRuleConditions.removeInt(positionOfWorstRemovableRuleConditionsIndex); //remove index of removed rule conditions
+				indicesOfRuleConditionsToRemove.add(worstRemovableRuleConditionsIndex); //remember index of removed rule conditions to remove them at the end of this method
 				// TODO implement
 			}
 			return null; //TODO: modify
@@ -157,7 +162,7 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 		}
 	}
 	
-	private int getPositionOfWorstRemovableRuleConditionsIndex(IntList indicesOfRemovableRuleConditions, List<RuleConditions> ruleConditionsList) {
+	private int getPositionOfTheWorstRemovableRuleConditionsIndex(IntList indicesOfRemovableRuleConditions, List<RuleConditions> ruleConditionsList) {
 		int positionOfWorstRemovableRuleConditionsIndex = 0;
 		int position = 0;
 		for (int indexOfRemovableRuleConditions : indicesOfRemovableRuleConditions) {
