@@ -206,5 +206,19 @@ public class SimpleDecision extends Decision {
 	public int hashCode() {
 		return Objects.hash(this.getClass(), this.evaluation, this.attributeIndex);
 	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(attributeIndex);
+		sb.append("=>");
+		sb.append(evaluation);
+		return sb.toString();
+	}
 	
 }

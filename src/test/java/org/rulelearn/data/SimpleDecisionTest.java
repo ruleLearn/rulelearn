@@ -263,4 +263,15 @@ class SimpleDecisionTest {
 		return mock(Decision.class);
 	}
 	
+	/**
+	 * Test for toString() method.
+	 */
+	@Test
+	void testToString() {
+		EvaluationField evaluation = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN);
+		int attributeIndex = 1;
+		Decision decision = new SimpleDecision(evaluation, attributeIndex);
+		assertEquals(decision.toString(), "1=>2");
+	}
+	
 }

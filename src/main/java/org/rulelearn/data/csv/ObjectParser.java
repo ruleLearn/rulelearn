@@ -18,55 +18,32 @@ package org.rulelearn.data.csv;
 
 import static org.rulelearn.core.Precondition.notNull;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.rulelearn.data.Attribute;
-
-import com.univocity.parsers.common.processor.RowListProcessor;
-import com.univocity.parsers.csv.CsvFormat;
-import com.univocity.parsers.csv.CsvParser;
-import com.univocity.parsers.csv.CsvParserSettings;
+import org.rulelearn.data.InformationTable;
+import org.rulelearn.data.InformationTableBuilder;
 
 /**
- * Build objects from CSV file.
+ * Parser of objects stored in CSV format.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
-public class ObjectBuilder {
-	
-	/** 
-	 * Default value for this type of a field.
-	 */
-	public final static String DEFAULT_ENCODING = "UTF-8";
-	
-	/** 
-	 * Default representation of a separator of fields in CSV files.
-	 */
-	public final static char DEFAULT_SEPARATOR = ',';
-	
-	/** 
-	 * Default value for this type of a field.
-	 */
-	public final static String DEFAULT_MISSING_VALUE_STRING = "?";
+public class ObjectParser {
 	
 	/**
 	 * All attributes which describe objects.
 	 */
-	Attribute [] attributes = null;
+	protected Attribute [] attributes = null;
 	
 	/**
 	 * Encoding of text data in CSV files.
 	 */
-	String encoding = ObjectBuilder.DEFAULT_ENCODING; 
-			
+	protected String encoding = ObjectBuilder.DEFAULT_ENCODING;
+
 	/**
 	 * Indication of presence of a header in CSV files.
 	 */
@@ -83,7 +60,8 @@ public class ObjectBuilder {
 	protected String missingValueString = ObjectBuilder.DEFAULT_MISSING_VALUE_STRING;
 	
 	/**
-	 * Builder class for {@link ObjectBuilder}. 
+	 * 
+	 * Builder class for {@link ObjectParser}. 
 	 *
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -116,13 +94,12 @@ public class ObjectBuilder {
 		protected String missingValueString = ObjectBuilder.DEFAULT_MISSING_VALUE_STRING;
 		
 		/**
-		 * Sets attributes describing objects from parsed CSV files.
+		 * Constructor initializing attributes.
 		 * 
 		 * @param attributes array of attributes {@link Attribute} which describe parsed objects
 		 * @throws NullPointerException if all or some of the attributes describing data to be loaded have not been set
-		 * @return this builder
 		 */
-		public Builder attributes (Attribute [] attributes) {
+		public Builder (Attribute [] attributes) {
 			if (attributes != null) {
 				for (Attribute attribute : attributes) {
 					if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
@@ -132,7 +109,6 @@ public class ObjectBuilder {
 			else {
 				throw new NullPointerException("Attributes are not set.");
 			}
-			return this;
 		}
 		
 		/**
@@ -188,8 +164,8 @@ public class ObjectBuilder {
 		 * 
 		 * @return a new object parser
 		 */
-		public ObjectBuilder build () {
-			return new ObjectBuilder(this);
+		public ObjectParser build () {
+			return new ObjectParser(this);
 		}
 	}
 	
@@ -198,7 +174,7 @@ public class ObjectBuilder {
 	 * 
 	 * @param builder builder of object parser
 	 */
-	private ObjectBuilder(Builder builder) {
+	private ObjectParser(Builder builder) {
 		this.attributes = builder.attributes;
 		this.encoding = builder.encoding;
 		this.header = builder.header;
@@ -207,85 +183,30 @@ public class ObjectBuilder {
 	}
 	
 	/**
-	 * Reads description of all objects from the supplied CSV reader and returns them as a list of {@link String} arrays.
+	 * Parses content from reader {@link Reader} and constructs an information table {@link InformationTable} with parsed objects. 
 	 * 
-	 * @param reader a reader of the CSV file
-	 * @return a list of {@link String} arrays representing description of all objects in the file on all attributes
+	 * @param reader a reader with content to be parsed
+	 * @return information table {@link InformationTable} with parsed objects or {@code null} when the table cannot be constructed
+	 * @throws NullPointerException when the provided reader is null
 	 */
-	public List<String[]> getObjects(Reader reader) {
-		notNull(reader, "Reader of the CSV file is null.");
+	public InformationTable parseObjects (Reader reader) {
+		notNull(reader, "Reader is null.");
 		
-		CsvParserSettings parserSettings = new CsvParserSettings();
-		parserSettings.setLineSeparatorDetectionEnabled(true);
-		parserSettings.setHeaderExtractionEnabled(this.header);
-		parserSettings.setIgnoreLeadingWhitespaces(true);
-		parserSettings.setIgnoreTrailingWhitespaces(true);
-		CsvFormat format = new CsvFormat();
-		format.setDelimiter(this.separator);
-		parserSettings.setFormat(format);
-		RowListProcessor rowProcessor = new RowListProcessor();
-		parserSettings.setProcessor(rowProcessor);
-		if (this.attributes != null) {
-			parserSettings.setMaxColumns(this.attributes.length);
+		InformationTable informationTable = null;
+		List<String []> objects = null;
+		ObjectBuilder objectBuilder = new ObjectBuilder.Builder().attributes(this.attributes).encoding(this.encoding).header(this.header).separator(this.separator).build();
+		if (objectBuilder != null) {
+			objects = objectBuilder.getObjects(reader);
+			if (objects != null) {
+				// separator passed to InforamtionTableBuilder is irrelevant here
+				InformationTableBuilder informationTableBuilder  = new InformationTableBuilder(this.attributes, ",", 
+														new String [] {this.missingValueString}); 
+				for (int i = 0; i < objects.size(); i++) {
+					informationTableBuilder.addObject(objects.get(i));
+				}
+				informationTable = informationTableBuilder.build();
+			}
 		}
-		CsvParser parser = new CsvParser(parserSettings);
-		
-		parser.parse(reader);
-		
-		String[] attributeNames = null;
-		if (this.header) {
-			attributeNames = rowProcessor.getHeaders();
-		}
-		if ((attributeNames != null) && (this.attributes != null)) {
-			// TODO check whether attribute names are valid
-		}
-		
-		// set maximal number of object fields
-		
-		List<String[]> objects = rowProcessor.getRows();
-		return objects;
+		return informationTable;
 	}
-	
-	/**
-	 * Reads description of all objects from the supplied CSV file and returns them as a list of {@link String} arrays.
-	 * 
-	 * @param pathToCSVFile a path to the CSV file
-	 * @return a list of {@link String} arrays representing description of all objects in the file on all attributes or {@code null} when something goes wrong
-	 * @throws IOException when something goes wrong with {@link InputStreamReader}
-	 * @throws FileNotFoundException in case the supplied file does not exist
-	 * @throws UnsupportedEncodingException in case the encoding specified is not correct 
-	 */
-	public List<String[]> getObjects(String pathToCSVFile) throws IOException, FileNotFoundException, UnsupportedEncodingException {
-		notNull(pathToCSVFile, "String representing path to CSV file is null.");
-		
-		CsvParserSettings parserSettings = new CsvParserSettings();
-		parserSettings.setLineSeparatorDetectionEnabled(true);
-		parserSettings.setHeaderExtractionEnabled(this.header);
-		parserSettings.setIgnoreLeadingWhitespaces(true);
-		parserSettings.setIgnoreTrailingWhitespaces(true);
-		CsvFormat format = new CsvFormat();
-		format.setDelimiter(this.separator);
-		parserSettings.setFormat(format);
-		RowListProcessor rowProcessor = new RowListProcessor();
-		parserSettings.setProcessor(rowProcessor);
-		if (this.attributes != null) {
-			parserSettings.setMaxColumns(this.attributes.length);
-		}
-		CsvParser parser = new CsvParser(parserSettings);
-		try (InputStreamReader reader = new InputStreamReader(new FileInputStream(pathToCSVFile), this.encoding)) {
-			parser.parse(reader);
-		}
-		
-		String[] attributeNames = null;
-		if (this.header) {
-			attributeNames = rowProcessor.getHeaders();
-		}
-		if ((attributeNames != null) && (attributes != null)) {
-			// TODO check whether attribute names are valid 
-		}
-		
-		List<String[]> objects = rowProcessor.getRows();
-		return objects;
-	}
-
 }

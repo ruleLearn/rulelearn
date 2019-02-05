@@ -16,7 +16,8 @@
 
 package org.rulelearn.classification;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -118,7 +119,7 @@ class SimpleRuleClassifierTest {
 					System.out.println(ex.toString());
 				}
 				
-				ObjectBuilder ob = new ObjectBuilder(attributes);
+				ObjectBuilder ob = new ObjectBuilder.Builder(attributes).build();
 				List<String []> objects = null;
 				objects = ob.getObjects(json);
 				

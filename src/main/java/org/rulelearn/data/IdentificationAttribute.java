@@ -17,6 +17,7 @@
 package org.rulelearn.data;
 
 import java.util.Objects;
+
 import org.rulelearn.types.IdentificationField;
 
 /**
@@ -32,6 +33,13 @@ public class IdentificationAttribute extends Attribute {
 	 */
 	protected IdentificationField valueType;
 	
+	/**
+	 * Constructs this identification attribute using name, activity status, and identification value type.
+	 * 
+	 * @param name name of the constructed attribute
+	 * @param active activity status of the constructed attribute
+	 * @param valueType identification value type
+	 */
 	public IdentificationAttribute (String name, boolean active, IdentificationField valueType) {
 		super(name, active);
 		this.valueType = valueType;
@@ -98,7 +106,7 @@ public class IdentificationAttribute extends Attribute {
 	/**
      * Gets hash code of this attribute.
      *
-     * @return hash code of this field
+     * @return hash code of this attribute
      */
 	@Override
 	public int hashCode () {

@@ -16,10 +16,15 @@
 
 package org.rulelearn.data;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -40,7 +45,7 @@ import com.google.gson.stream.JsonReader;
 
 
 /**
- * InformationTableBuilderTest
+ * Tests for {@link InformationTableBuilder}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -75,7 +80,7 @@ class InformationTableBuilderTest {
 			    "\"missingValueType\": \"mv2\"" +
 			  "}" +
 		"]";
-	
+		
 	private Attribute [] attributes1 = null;
 	
 	private void setUp01() {
@@ -87,7 +92,7 @@ class InformationTableBuilderTest {
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#setAttributesFromJSON(java.lang.String)}.
+	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#InformationTableBuilder(Attribute[])}.
 	 */
 	@Test
 	void testConstructionOfInformationTableBuilder01() {
@@ -95,45 +100,128 @@ class InformationTableBuilderTest {
 		InformationTableBuilder iTB = new InformationTableBuilder(attributes1);
 		assertTrue(iTB != null);
 	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#InformationTableBuilder(Attribute[])}.
+	 */
+	@Test
+	void testConstructionOfInformationTableBuilder02() {
+		assertThrows(NullPointerException.class, () -> {new InformationTableBuilder(null);});
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#InformationTableBuilder(Attribute[], String)}.
+	 */
+	@Test
+	void testConstructionOfInformationTableBuilder03() {
+		String separator = null;
+		assertThrows(NullPointerException.class, () -> {new InformationTableBuilder(null, separator);});
+		assertThrows(NullPointerException.class, () -> {new InformationTableBuilder(new Attribute[0], separator);});
+	}
 
 	/**
-	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#addObject(java.lang.String, java.lang.String)}.
+	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#InformationTableBuilder(Attribute[], String[])}.
+	 */
+	@Test
+	void testConstructionOfInformationTableBuilder04() {
+		String[] missingValues = null;
+		assertThrows(NullPointerException.class, () -> {new InformationTableBuilder(null, missingValues);});
+		assertThrows(NullPointerException.class, () -> {new InformationTableBuilder(new Attribute[0], missingValues);});
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#InformationTableBuilder(Attribute[], String, String[])}.
+	 */
+	@Test
+	void testConstructionOfInformationTableBuilder05() {
+		String separator = null;
+		String[] missingValues = null;
+		assertThrows(NullPointerException.class, () -> {new InformationTableBuilder(null, separator, missingValues);});
+		assertThrows(NullPointerException.class, () -> {new InformationTableBuilder(new Attribute[0], separator, missingValues);});
+		assertThrows(NullPointerException.class, () -> {new InformationTableBuilder(null, "", missingValues);});
+		assertThrows(NullPointerException.class, () -> {new InformationTableBuilder(new Attribute[0], "", missingValues);});
+		assertThrows(NullPointerException.class, () -> {new InformationTableBuilder(null, separator, new String[] {""});});
+		assertThrows(NullPointerException.class, () -> {new InformationTableBuilder(new Attribute[0], separator, new String[] {""});});
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#addObject(java.lang.String)}.
 	 */
 	@Test
 	void testAddObject01() {
 		setUp01();
-		InformationTableBuilder iTB = new InformationTableBuilder(attributes1, ",");
-		iTB.addObject("1, 1.0, a");
-		iTB.addObject("2, 2.0, b");
-		InformationTable iT = iTB.build();
-		assertTrue(iT.getField(0, 0).isEqualTo(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE)) == TernaryLogicValue.TRUE);
-		assertTrue(iT.getField(0, 1).isEqualTo(RealFieldFactory.getInstance().create(1.0, AttributePreferenceType.COST)) == TernaryLogicValue.TRUE);
-		assertTrue(iT.getField(1, 2).isEqualTo(EnumerationFieldFactory.getInstance().create(((EnumerationField) ((EvaluationAttribute)iT.getAttributes()[2]).getValueType()).getElementList(), 
+		InformationTableBuilder informationTableBuilder = new InformationTableBuilder(attributes1, ",");
+		informationTableBuilder.addObject("1, 1.0, a");
+		informationTableBuilder.addObject("2, 2.0, b");
+		InformationTable informationTable = informationTableBuilder.build();
+		assertTrue(informationTable.getField(0, 0).isEqualTo(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE)) == TernaryLogicValue.TRUE);
+		assertTrue(informationTable.getField(0, 1).isEqualTo(RealFieldFactory.getInstance().create(1.0, AttributePreferenceType.COST)) == TernaryLogicValue.TRUE);
+		assertTrue(informationTable.getField(1, 2).isEqualTo(EnumerationFieldFactory.getInstance().create(((EnumerationField) ((EvaluationAttribute)informationTable.getAttributes()[2]).getValueType()).getElementList(), 
 												1, AttributePreferenceType.GAIN)) == TernaryLogicValue.TRUE);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#addObject(java.lang.String)}.
+	 */
+	@Test
+	void testAddObject02() {
+		setUp01();
+		InformationTableBuilder informationTableBuilder = new InformationTableBuilder(attributes1, ",", new String[] {"?", "*"})  ;
+		informationTableBuilder.addObject("1, ?, a");
+		informationTableBuilder.addObject("2, 2.0, *");
+		InformationTable informationTable = informationTableBuilder.build();
+		assertTrue(informationTable.getField(0, 0).isEqualTo(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE)) == TernaryLogicValue.TRUE);
+		assertTrue(informationTable.getField(0, 1).isEqualTo(new UnknownSimpleFieldMV2()) == TernaryLogicValue.TRUE);
+		assertTrue(informationTable.getField(1, 2).isEqualTo(new UnknownSimpleFieldMV2()) == TernaryLogicValue.TRUE);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#addObject(java.lang.String)}.
+	 */
+	@Test
+	void testAddObject03() {
+		setUp01();
+		InformationTableBuilder informationTableBuilder = new InformationTableBuilder(attributes1, "", new String[] {""});
+		assertThrows(IndexOutOfBoundsException.class, () -> {informationTableBuilder.addObject("1, 1.0, a");});
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#addObject(java.lang.String)}.
+	 */
+	@Test
+	void testAddObject04() {
+		setUp01();
+		InformationTableBuilder informationTableBuilder = new InformationTableBuilder(attributes1, ";", new String[] {""});
+		informationTableBuilder.addObject("1; 1.0; a");
+		informationTableBuilder.addObject("2; 2.0; b");
+		InformationTable informationTable = informationTableBuilder.build();
+		assertTrue(informationTable.getField(0, 0).isEqualTo(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE)) == TernaryLogicValue.TRUE);
+		assertTrue(informationTable.getField(0, 1).isEqualTo(new UnknownSimpleFieldMV2()) == TernaryLogicValue.TRUE);
+		assertTrue(informationTable.getField(1, 2).isEqualTo(new UnknownSimpleFieldMV2()) == TernaryLogicValue.TRUE);
 	}
 	
 	/**
 	 * Test method for {@link org.rulelearn.data.InformationTableBuilder#addObject(java.lang.String, java.lang.String)}.
 	 */
 	@Test
-	void testAddObject02() {
+	void testAddObject05() {
 		setUp01();
-		InformationTableBuilder iTB = new InformationTableBuilder(attributes1, ",", new String[] {"?", "*"})  ;
-		iTB.addObject("1, ?, a");
-		iTB.addObject("2, 2.0, *");
-		InformationTable iT = iTB.build();
-		assertTrue(iT.getField(0, 0).isEqualTo(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE)) == TernaryLogicValue.TRUE);
-		assertTrue(iT.getField(0, 1).isEqualTo(new UnknownSimpleFieldMV2()) == TernaryLogicValue.TRUE);
-		assertTrue(iT.getField(1, 2).isEqualTo(new UnknownSimpleFieldMV2()) == TernaryLogicValue.TRUE);
+		InformationTableBuilder informationTableBuilder = new InformationTableBuilder(attributes1, ",", new String[] {""});
+		informationTableBuilder.addObject("1, 1.0, a");
+		informationTableBuilder.addObject("2; 2.0; b", ";");
+		InformationTable informationTable = informationTableBuilder.build();
+		assertTrue(informationTable.getField(0, 0).isEqualTo(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE)) == TernaryLogicValue.TRUE);
+		assertTrue(informationTable.getField(0, 1).isEqualTo(new UnknownSimpleFieldMV2()) == TernaryLogicValue.TRUE);
+		assertTrue(informationTable.getField(1, 2).isEqualTo(new UnknownSimpleFieldMV2()) == TernaryLogicValue.TRUE);
 	}
 	
 	/**
 	 * Test method for {@link ObjectBuilder} and {@link InformationTableBuilder}.
 	 */
 	@Test
-	void testConstructionOfInformationTableBuilder02() {
+	void testConstructionOfInformationTable01() {
+		// load attributes
 		Attribute [] attributes = null;
-		
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
@@ -147,11 +235,19 @@ class InformationTableBuilderTest {
 		}
 		if (jsonReader != null) {
 			attributes = gson.fromJson(jsonReader, Attribute[].class);
+			try {
+				jsonReader.close();
+			}
+			catch (IOException ex) {
+				System.out.println(ex.toString());
+			}
 		}
 		else {
 			fail("Unable to load JSON test file with definition of attributes");
 		}
 		
+		// load objects
+		jsonReader = null;
 		JsonElement json = null;
 		try {
 			jsonReader = new JsonReader(new FileReader("src/test/resources/data/json/examples.json"));
@@ -162,26 +258,274 @@ class InformationTableBuilderTest {
 		if (jsonReader != null) {
 			JsonParser jsonParser = new JsonParser();
 			json = jsonParser.parse(jsonReader);
+			try {
+				jsonReader.close();
+			}
+			catch (IOException ex) {
+				System.out.println(ex.toString());
+			}
 		}
 		else {
 			fail("Unable to load JSON test file with definition of objects");
 		}
-		
-		ObjectBuilder ob = new ObjectBuilder(attributes);
+		ObjectBuilder ob = new ObjectBuilder.Builder(attributes).build();
 		List<String []> objects = null;
 		objects = ob.getObjects(json);
 		assertTrue(objects != null);
 		assertEquals(objects.size(), 2);
 		
-		InformationTableBuilder iTB = new InformationTableBuilder(attributes, ",", new String[] {"?"});
+		// build information table
+		InformationTableBuilder informationTableBuilder = new InformationTableBuilder(attributes, ",", new String[] {"?"});
 		for (int i = 0; i < objects.size(); i++) {
-			iTB.addObject(objects.get(i));
+			informationTableBuilder.addObject(objects.get(i));
 		}		
 		
-		InformationTable iT = iTB.build();
-		assertTrue(iT != null);
-		assertEquals(iT.getNumberOfObjects(), 2);
+		InformationTable informationTable = informationTableBuilder.build();
+		assertTrue(informationTable != null);
+		assertEquals(informationTable.getNumberOfObjects(), 2);
 		
 	}
-
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#buildFromCSVFile(String, String, boolean)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable02() {
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.buildFromCSVFile("src/test/resources/data/csv/prioritisation.json", "src/test/resources/data/csv/prioritisation.csv", true);
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (UnsupportedEncodingException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable != null);
+		assertEquals(11, informationTable.getNumberOfAttributes());
+		assertEquals(2, informationTable.getNumberOfObjects());		
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#buildFromCSVFile(String, String)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable03() {
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.buildFromCSVFile("src/test/resources/data/csv/prioritisation.json", "");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (UnsupportedEncodingException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#buildFromCSVFile(String, String)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable04() {
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.buildFromCSVFile("", "");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (UnsupportedEncodingException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#buildFromJSONFile(String, String)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable05() {
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.buildFromJSONFile("src/test/resources/data/csv/prioritisation.json", "src/test/resources/data/json/examples.json");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable != null);
+		assertEquals(11, informationTable.getNumberOfAttributes());
+		assertEquals(2, informationTable.getNumberOfObjects());		
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#buildFromJSONFile(String, String)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable06() {
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.buildFromJSONFile("src/test/resources/data/csv/prioritisation.json", "");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#buildFromJSONFile(String, String)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable07() {
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.buildFromJSONFile("", "");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#safelyBuildFromCSVFile(String, String, boolean)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable08() {
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.safelyBuildFromCSVFile("src/test/resources/data/csv/prioritisation.json", "src/test/resources/data/csv/prioritisation.csv", true);
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (UnsupportedEncodingException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable != null);
+		assertEquals(11, informationTable.getNumberOfAttributes());
+		assertEquals(2, informationTable.getNumberOfObjects());		
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#safelyBuildFromCSVFile(String, String, boolean)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable09() {
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.safelyBuildFromCSVFile("src/test/resources/data/csv/prioritisation.json", "", true);
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (UnsupportedEncodingException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#safelyBuildFromCSVFile(String, String, boolean)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable11() {
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.safelyBuildFromCSVFile("", "", true);
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (UnsupportedEncodingException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#safelyBuildFromJSONFile(String, String)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable12() {
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.safelyBuildFromJSONFile("src/test/resources/data/csv/prioritisation.json", "src/test/resources/data/json/examples.json");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable != null);
+		assertEquals(11, informationTable.getNumberOfAttributes());
+		assertEquals(2, informationTable.getNumberOfObjects());		
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#safelyBuildFromJSONFile(String, String)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable13() {
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.safelyBuildFromJSONFile("src/test/resources/data/csv/prioritisation.json", "");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
+	}
+	
+	/**
+	 * Test method for {@link InformationTableBuilder#safelyBuildFromJSONFile(String, String)}.
+	 */
+	@Test
+	void testConstructionOfInformationTable14() {
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.safelyBuildFromJSONFile("", "");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+		assertTrue(informationTable == null);
+	}
+	
 }

@@ -341,5 +341,25 @@ class CompositeDecisionTest {
 	private Decision getIncompatibleDecision() {
 		return mock(Decision.class);
 	}
+	
+	/**
+	 * Test for toString() method.
+	 */
+	@Test
+	void testToString() {
+		EvaluationField[] evaluations1 = {
+				IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN),
+				IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.COST),
+				RealFieldFactory.getInstance().create(3.5, AttributePreferenceType.GAIN)};
+		int[] attributeIndices1 = {3, 6, 7};
+		
+		CompositeDecision decision = new CompositeDecision(evaluations1, attributeIndices1);
+		
+		String decisionText = decision.toString();
+		System.out.println(decisionText);
+		assertTrue(decisionText.indexOf("7=>3.5") > -1);
+		assertTrue(decisionText.indexOf("6=>4") > -1);
+		assertTrue(decisionText.indexOf("3=>2") > -1);
+	}
 
 }
