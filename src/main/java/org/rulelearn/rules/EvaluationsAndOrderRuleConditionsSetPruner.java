@@ -52,7 +52,7 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 	final class IndexedRuleConditionsWithEvaluations {
 		double[] evaluations;
 		int validEvaluationsCount;
-		int index;
+		int index; //concerns entire list of pruned rules
 		RuleConditions ruleConditions;
 		
 		//constructor; initializes fields taking into account the number of evaluations
@@ -137,7 +137,7 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 			ruleCount = 0;
 			for (int ruleIndex = 0; ruleIndex < rules.size(); ruleIndex++) {
 				if (rules.get(ruleIndex).covers(observedObject)) {
-					observedObjectToRuleCount.put(observedObject, ++ruleCount);
+					observedObjectToRuleCount.put(observedObject, ++ruleCount); //increases rule count!
 					ruleToObservedObjects.get(ruleIndex).add(observedObject); //remember that currently considered rule covers currently considered observed object
 				}
 			}
@@ -229,6 +229,7 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 			evaluation = removableRule.getEvaluation(i);
 			worstEvaluation = worstRemovableRule.getEvaluation(i);
 			
+			//TODO: refactor using RuleConditionsEvaluator.confront
 			if (evaluation < worstEvaluation) {
 				if (ruleConditionsEvaluators[i].getType() == MeasureType.GAIN) { //candidate rule is worse at i-th evaluation
 					return true;
@@ -280,7 +281,7 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 	}
 	
 	//updates rules to remove in place, keeping ascending order of indices
-	void updateRulesToRemove(IntList rulesToRemove, int rule) {
+	void updateRulesToRemove(IntList rulesToRemove, int rule) { //TODO: extract to type (+ quick-sort-type insert) 
 		boolean inserted = false;
 		for (int i = 0; i < rulesToRemove.size(); i++) {
 			if (rule < rulesToRemove.getInt(i)) {

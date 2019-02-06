@@ -173,6 +173,7 @@ public abstract class Condition<T extends EvaluationField> {
 	 * Tells if this condition is at most as general as the given condition.
 	 * 
 	 * @param otherCondition the other condition that this condition is being compared to
+	 * @param<S> type used for wildcard capture
 	 * @return {@link TernaryLogicValue#TRUE} if this condition is at most as general as the other condition (i.e., equally specific, or more specific),
 	 *         {@link TernaryLogicValue#FALSE} if this condition is not at most as general as the other condition
 	 *         (is more general, or both conditions are of the same type but cover distinct objects as their limiting evaluations are incomparable),

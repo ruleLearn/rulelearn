@@ -16,6 +16,8 @@
 
 package org.rulelearn.rules;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import org.junit.jupiter.api.Tag;
@@ -25,8 +27,20 @@ import org.rulelearn.approximations.ApproximatedSet;
 import org.rulelearn.approximations.ClassicalDominanceBasedRoughSetCalculator;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
+import org.rulelearn.data.Attribute;
+import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.AttributeType;
+import org.rulelearn.data.EvaluationAttribute;
+import org.rulelearn.data.IdentificationAttribute;
+import org.rulelearn.data.InformationTableTestConfiguration;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
+import org.rulelearn.types.IntegerField;
+import org.rulelearn.types.IntegerFieldFactory;
+import org.rulelearn.types.RealField;
+import org.rulelearn.types.RealFieldFactory;
+import org.rulelearn.types.TextIdentificationField;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -48,22 +62,23 @@ class VCDomLemTest {
 	 * Tests upward unions and certain rules.
 	 */
 	@Test
-	public RuleSetWithCharacteristics testUpwardUnionCertain() {
+	public void testUpwardUnionCertain() {
 		EpsilonConsistencyMeasure consistencyMeasure = new EpsilonConsistencyMeasure();
 		double consistencyThreshold = 0.0;
 		
 		RuleConditionsEvaluator ruleConditionsEvaluator = consistencyMeasure;
-		ConditionAdditionEvaluator[] conditionAdditionEvaluators = {consistencyMeasure};
+		MonotonicConditionAdditionEvaluator[] conditionAdditionEvaluators = {consistencyMeasure};
 		ConditionRemovalEvaluator[] conditionRemovalEvaluators = {consistencyMeasure};
 		RuleConditionsEvaluator[] ruleConditionsEvaluators = {consistencyMeasure};
 		//RuleEvaluator ruleEvaluator = consistencyMeasure; //just single evaluator, for rule minimality checker taking into account just single evaluation
 		
-		ConditionGenerator conditionGenerator = new StandardConditionGenerator(conditionAdditionEvaluators);
+		ConditionGenerator conditionGenerator = new M4OptimizedConditionGenerator(conditionAdditionEvaluators);
 		RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker = new EvaluationAndCoverageStoppingConditionChecker(ruleConditionsEvaluator, consistencyThreshold);
 		
 		ConditionSeparator conditionSeparator = null; //no separation required - all conditions concern limiting evaluations of type SimpleField
 		
-		AbstractRuleConditionsPruner ruleConditionsPruner = new FIFORuleConditionsPruner(ruleInductionStoppingConditionChecker); //enforce RuleInductionStoppingConditionChecker
+		//AbstractRuleConditionsPruner ruleConditionsPruner = new FIFORuleConditionsPruner(ruleInductionStoppingConditionChecker); //enforce RuleInductionStoppingConditionChecker
+		AbstractRuleConditionsPruner ruleConditionsPruner = new AttributeOrderRuleConditionsPruner(ruleInductionStoppingConditionChecker);
 		//---
 		@SuppressWarnings("unused")
 		AbstractRuleConditionsPruner ruleConditionsPrunerWithEvaluators = new AbstractRuleConditionsPrunerWithEvaluators(ruleInductionStoppingConditionChecker, conditionRemovalEvaluators) {
@@ -76,7 +91,41 @@ class VCDomLemTest {
 		RuleConditionsSetPruner ruleConditionsSetPruner = new EvaluationsAndOrderRuleConditionsSetPruner(ruleConditionsEvaluators);
 		RuleMinimalityChecker ruleMinimalityChecker = new SingleEvaluationRuleMinimalityChecker(ruleConditionsEvaluator);
 		
-		InformationTableWithDecisionDistributions informationTable = Mockito.mock(InformationTableWithDecisionDistributions.class);
+		InformationTableTestConfiguration informationTableTestConfiguration = new InformationTableTestConfiguration (
+				new Attribute[] {
+						new IdentificationAttribute("bus", true, new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE)),
+						new EvaluationAttribute("a1", true, AttributeType.CONDITION,
+								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN),
+						new EvaluationAttribute("a2", true, AttributeType.CONDITION,
+								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN),
+						new EvaluationAttribute("state", true, AttributeType.DECISION,
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN)
+					},
+				new String[][] {
+						{ "a", "40",   "17.8", "2"},
+						{ "b", "35",   "30",   "2"},
+						{ "c", "32.5", "39",   "2"},
+						{ "d", "31",   "35",   "2"},
+						{ "e", "27.5", "17.5", "2"},
+						{ "f", "24",   "17.5", "2"},
+						{ "g", "22.5", "20",   "2"},
+						{ "h", "30.8", "19",   "1"},
+						{ "i", "27",   "25",   "1"},
+						{ "j", "21",   "9.5",  "1"},
+						{ "k", "18",   "12.5", "1"},
+						{ "l", "10.5", "25.5", "1"},
+						{ "m", "9.75", "17",   "1"},
+						{ "n", "17.5", "5",    "0"},
+						{ "o", "11",   "2",    "0"},
+						{ "p", "10",   "9",    "0"},
+						{ "q", "5",    "13",   "0"}
+				});
+		
+		//InformationTableWithDecisionDistributions informationTable = Mockito.mock(InformationTableWithDecisionDistributions.class);
+		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(
+				informationTableTestConfiguration.getAttributes(),
+				informationTableTestConfiguration.getListOfFields(),
+				true); //TODO
 		
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
@@ -113,15 +162,22 @@ class VCDomLemTest {
 		RuleCoverageInformation[] ruleCoverageInformationArray = new RuleCoverageInformation[minimalRuleConditionsWithApproximatedSets.size()];
 		int ruleIndex = 0;
 		
+		System.out.println("Rule induced with VC-DomLEM:"); //DEL
+		
 		for (RuleConditionsWithApproximatedSet minimalRuleConditionsWithApproximatedSet : minimalRuleConditionsWithApproximatedSets ) {
 			rules[ruleIndex] = new Rule(ruleType, ruleSemantics, minimalRuleConditionsWithApproximatedSet.getRuleConditions(),
 					approximatedSetRuleDecisionsProvider.getRuleDecisions(minimalRuleConditionsWithApproximatedSet.getApproximatedSet()));
 			
 			ruleCoverageInformationArray[ruleIndex] = minimalRuleConditionsWithApproximatedSet.getRuleConditions().getRuleCoverageInformation();
 			ruleIndex++;
+			
+			System.out.println(rules[ruleIndex]); //DEL
 		}
 		
-		return new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true); //TODO: second version of VCDomLEM returning just decision rules
+		RuleSet ruleSet = new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true); //TODO: second version of VCDomLEM returning just decision rules
+		//return ruleSet;
+		
+		assertEquals(ruleSet.size(), 3);
 	}
 	
 	private List<RuleConditions> calculateApproximatedSetRuleConditionsList(ApproximatedSet approximatedSet, RuleType ruleType, RuleSemantics ruleSemantics, AllowedObjectsType allowedObjectsType,
