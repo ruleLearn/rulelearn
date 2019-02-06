@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
+import org.rulelearn.measures.Measure.MeasureType;
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -47,6 +48,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleConditionsSetPrunerWithEvaluators {
 	
+	//stores index of rule conditions, rule conditions, and their evaluations
 	final class IndexedRuleConditionsWithEvaluations {
 		double[] evaluations;
 		int validEvaluationsCount;
@@ -161,7 +163,6 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 			
 			while (removableRules.size() > 0) {
 				worstRemovableRule = removeWorstRemovableRule(removableRules);
-				
 				updateState(ruleToObservedObjects, observedObjectToRuleCount, observedObjectsCoveredOnce, worstRemovableRule);
 				retainRemovableRules(removableRules, ruleToObservedObjects, observedObjectsCoveredOnce); //check if remaining rules are still removable, and reduce list if necessary 
 				updateRulesToRemove(rulesToRemove, worstRemovableRule); //remember index of removed rule to remove that rule at the end of this method
@@ -203,13 +204,49 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 	}
 	
 	//updates given list in place and returns the index of the worst removable rule (this index concerns list of all rules, not just given list)
+	//if there is more than one worst removable rule, removes the first of them on the list
 	int removeWorstRemovableRule(List<IndexedRuleConditionsWithEvaluations> removableRules) {
-		return 0; //TODO: implement
+		int worstRemovableRulePosition = 0;
+		IndexedRuleConditionsWithEvaluations worstRemovableRule = removableRules.get(worstRemovableRulePosition);
+		
+		for (int i = 1; i < removableRules.size(); i++) {
+			if (isWorseRemovableRule(removableRules.get(i), worstRemovableRule)) {
+				worstRemovableRule = removableRules.get(i);
+				worstRemovableRulePosition = i;
+			}
+		}
+		removableRules.remove(worstRemovableRulePosition);
+		
+		return worstRemovableRule.getIndex();
 	}
 	
-	//tests if given removable rule is worse than worst removable rule found so far 
+	//tests if given removable rule is worse than given worst removable rule found so far 
 	boolean isWorseRemovableRule(IndexedRuleConditionsWithEvaluations removableRule, IndexedRuleConditionsWithEvaluations worstRemovableRule) {
-		return false; //TODO: implement
+		double evaluation;
+		double worstEvaluation;
+		
+		for (int i = 0; i < ruleConditionsEvaluators.length; i++) {
+			evaluation = removableRule.getEvaluation(i);
+			worstEvaluation = worstRemovableRule.getEvaluation(i);
+			
+			if (evaluation < worstEvaluation) {
+				if (ruleConditionsEvaluators[i].getType() == MeasureType.GAIN) { //candidate rule is worse at i-th evaluation
+					return true;
+				} else { //COST
+					return false;
+				}
+			}
+			
+			if (evaluation > worstEvaluation) {
+				if (ruleConditionsEvaluators[i].getType() == MeasureType.GAIN) { //candidate rule is better at i-th evaluation
+					return false;
+				} else { //COST
+					return true;
+				}
+			}
+		}
+		
+		return false; //removable rule is equal w.r.t. each evaluator
 	}
 		
 	//updates passed objects in place

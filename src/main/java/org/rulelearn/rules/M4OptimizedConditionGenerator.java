@@ -474,7 +474,7 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 				}
 			}
 			
-			if (candidateConditionEvaluation < bestConditionWithEvaluations.evaluations[i]) {
+			if (candidateConditionEvaluation < bestConditionEvaluation) {
 				if (conditionAdditionEvaluators[i].getType() == MeasureType.GAIN) { //candidate condition is worse at i-th evaluation
 					return ConditionComparisonResult.CANDIDATE_CONDITION_IS_WORSE;
 				} else { //COST
