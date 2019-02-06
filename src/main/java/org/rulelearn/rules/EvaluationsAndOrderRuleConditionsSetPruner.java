@@ -47,19 +47,22 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleConditionsSetPrunerWithEvaluators {
 	
-	final class RuleConditionsWithEvaluations {
+	final class IndexedRuleConditionsWithEvaluations {
 		double[] evaluations;
 		int validEvaluationsCount;
+		int index;
 		RuleConditions ruleConditions;
 		
 		//constructor; initializes fields taking into account the number of evaluations
-		RuleConditionsWithEvaluations(RuleConditions ruleConditions) {
+		IndexedRuleConditionsWithEvaluations(int index, RuleConditions ruleConditions) {
 			evaluations = new double[ruleConditionsEvaluators.length];
 			validEvaluationsCount = 0;
+			this.index = index;
 			this.ruleConditions = ruleConditions;
 		}
 		
 		//retrieves stored evaluation, possibly first calculating it
+		//assumes that evaluations are always calculated in order
 		double getEvaluation(int evaluationIndex) {
 			if (evaluationIndex < validEvaluationsCount) {
 				return evaluations[evaluationIndex];
@@ -71,6 +74,14 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 			} else { //not subsequent evaluation is retrieved
 				throw new InvalidValueException("Not subsequent evaluation of rule conditions is being retrieved.");
 			}
+		}
+		
+		int getIndex() {
+			return this.index;
+		}
+		
+		RuleConditions getRuleConditions() {
+			return this.ruleConditions;
 		}
 	}
 
@@ -141,61 +152,38 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 		//===== </validation>
 		
 		//determine rules that may be removed (i.e., do not cover observed objects that are covered only once)
-		IntList removableRules = calculateRemovableRules(ruleToObservedObjects, observedObjectsCoveredOnce);
+		List<IndexedRuleConditionsWithEvaluations> removableRules = findRemovableRules(ruleToObservedObjects, observedObjectsCoveredOnce, rules);
 		
 		//prune redundant rules?
 		if (removableRules.size() > 0) { //there is at least one rule that can be removed
-			IntList rulesToRemove = new IntArrayList(); //list of indices of rules that should be removed at the end of this method (sorted in ascending order)
 			int worstRemovableRule; //auxiliary variable
-			int positionOfWorstRemovableRule; //auxiliary variable
+			IntList rulesToRemove = new IntArrayList(); //list of indices of rules that should be removed at the end of this method (sorted in ascending order)
 			
 			while (removableRules.size() > 0) {
-				positionOfWorstRemovableRule = getPositionOfWorstRemovableRule(removableRules, rules);
-				worstRemovableRule = removableRules.getInt(positionOfWorstRemovableRule);
+				worstRemovableRule = removeWorstRemovableRule(removableRules);
 				
-				//update observedObjectToRuleCount - decrease count for each object covered by removed rule
-				for (int observedObject : ruleToObservedObjects.get(worstRemovableRule)) {
-					ruleCount = observedObjectToRuleCount.get(observedObject);
-					observedObjectToRuleCount.put(observedObject, --ruleCount); //#2#
-					if (ruleCount == 1) {
-						observedObjectsCoveredOnce.add(observedObject); //#3#
-					}
-				}
-				ruleToObservedObjects.set(worstRemovableRule, null); //drop set of object indices (to free memory) //#1#
-				
-				removableRules.removeInt(positionOfWorstRemovableRule); //remove index of removed rule (once removed, it is no longer removable)
-				updateRemovableRules(removableRules, ruleToObservedObjects, observedObjectsCoveredOnce); //check if remaining rules are still removable, and reduce list if necessary 
+				updateState(ruleToObservedObjects, observedObjectToRuleCount, observedObjectsCoveredOnce, worstRemovableRule);
+				retainRemovableRules(removableRules, ruleToObservedObjects, observedObjectsCoveredOnce); //check if remaining rules are still removable, and reduce list if necessary 
 				updateRulesToRemove(rulesToRemove, worstRemovableRule); //remember index of removed rule to remove that rule at the end of this method
-			}
+			} //while
 			
 			for (int i = rulesToRemove.size() - 1; i >= 0; i--) { //removed (prune) redundant rules, starting from the greatest index on the list
-				rules.remove(rulesToRemove.getInt(i));
+				ruleConditionsList.remove(rulesToRemove.getInt(i));
 			}
 			
-			return rules; //return pruned rules
+			return ruleConditionsList; //return pruned rules
 		} else {
-			return rules; //return original rules (no rule could be removed)
+			return ruleConditionsList; //return original rules (no rule could be removed)
 		}
 	}
 	
-	int getPositionOfWorstRemovableRule(IntList removableRules, List<RuleConditions> rules) {
-		int positionOfWorstRemovableRule = 0;
-		int position = 0;
+	//constructs list or IndexedRuleConditionsWithEvaluations objects using rules that can be removed
+	List<IndexedRuleConditionsWithEvaluations> findRemovableRules(List<IntSet> ruleToObservedObjects, IntList observedObjectsCoveredOnce, List<RuleConditions> rules) {
+		List<IndexedRuleConditionsWithEvaluations> indexedRemovableRulesWithEvaluations = new ObjectArrayList<>();
 		
-		for (int removableRule : removableRules) {
-			//TODO: implement search
-			position++;
-		}
-		
-		return positionOfWorstRemovableRule;
-	}
-	
-	IntList calculateRemovableRules(List<IntSet> ruleToObservedObjects, IntList observedObjectsCoveredOnce) {
-		//determine rules that may be removed (i.e., do not cover observed objects that are covered only once)
-		IntList removableRules = new IntArrayList(); //contains indices of rules
 		boolean ruleIsRemovable; //auxiliary variable
 		IntSet observedObjects;
-		int ruleCount = ruleToObservedObjects.size();
+		int ruleCount = rules.size();
 
 		for (int ruleIndex = 0; ruleIndex < ruleCount; ruleIndex++) {
 			ruleIsRemovable = true;
@@ -207,23 +195,47 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 				}
 			}
 			if (ruleIsRemovable) {
-				removableRules.add(ruleIndex);
+				indexedRemovableRulesWithEvaluations.add(new IndexedRuleConditionsWithEvaluations(ruleIndex, rules.get(ruleIndex)));
 			}
 		}
-		
-		return removableRules;
+
+		return indexedRemovableRulesWithEvaluations;
 	}
 	
-	//updates removableRules in place
-	void updateRemovableRules(IntList removableRules, List<IntSet> ruleToObservedObjects, IntList observedObjectsCoveredOnce) {
+	//updates given list in place and returns the index of the worst removable rule (this index concerns list of all rules, not just given list)
+	int removeWorstRemovableRule(List<IndexedRuleConditionsWithEvaluations> removableRules) {
+		return 0; //TODO: implement
+	}
+	
+	//tests if given removable rule is worse than worst removable rule found so far 
+	boolean isWorseRemovableRule(IndexedRuleConditionsWithEvaluations removableRule, IndexedRuleConditionsWithEvaluations worstRemovableRule) {
+		return false; //TODO: implement
+	}
+		
+	//updates passed objects in place
+	void updateState(List<IntSet> ruleToObservedObjects, Int2IntMap observedObjectToRuleCount, IntList observedObjectsCoveredOnce, int worstRemovableRule) {
+		int ruleCount;
+		//update observedObjectToRuleCount - decrease count for each object covered by removed rule
+		for (int observedObject : ruleToObservedObjects.get(worstRemovableRule)) {
+			ruleCount = observedObjectToRuleCount.get(observedObject);
+			observedObjectToRuleCount.put(observedObject, --ruleCount); //#2#
+			if (ruleCount == 1) {
+				observedObjectsCoveredOnce.add(observedObject); //#3#
+			}
+		}
+		ruleToObservedObjects.set(worstRemovableRule, null); //drop set of object indices (to free memory) //#1#
+	}
+	
+	//updates removableRules in place, retaining only those still removable
+	void retainRemovableRules(List<IndexedRuleConditionsWithEvaluations> removableRules, List<IntSet> ruleToObservedObjects, IntList observedObjectsCoveredOnce) {
 		IntSet observedObjects;
 		
 		for (int i = removableRules.size() - 1; i >= 0; i--) { //iterate from the end of the list
-			observedObjects = ruleToObservedObjects.get(removableRules.getInt(i));
+			observedObjects = ruleToObservedObjects.get(removableRules.get(i).getIndex());
 			
 			for (int observedObjectCoveredOnce : observedObjectsCoveredOnce) {
 				if (observedObjects.contains(observedObjectCoveredOnce)) { //only current rule covers some observed object
-					removableRules.removeInt(i);
+					removableRules.remove(i); //TODO: try more efficient implementation?
 					break;
 				}
 			}
