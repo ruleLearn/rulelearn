@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.rulelearn.approximations.ApproximatedSet;
 import org.rulelearn.approximations.ClassicalDominanceBasedRoughSetCalculator;
 import org.rulelearn.approximations.Union;
@@ -94,9 +93,9 @@ class VCDomLemTest {
 		InformationTableTestConfiguration informationTableTestConfiguration = new InformationTableTestConfiguration (
 				new Attribute[] {
 						new IdentificationAttribute("bus", true, new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE)),
-						new EvaluationAttribute("a1", true, AttributeType.CONDITION,
+						new EvaluationAttribute("symptom1", true, AttributeType.CONDITION,
 								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN),
-						new EvaluationAttribute("a2", true, AttributeType.CONDITION,
+						new EvaluationAttribute("symptom2", true, AttributeType.CONDITION,
 								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN),
 						new EvaluationAttribute("state", true, AttributeType.DECISION,
 								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN)
@@ -169,15 +168,22 @@ class VCDomLemTest {
 					approximatedSetRuleDecisionsProvider.getRuleDecisions(minimalRuleConditionsWithApproximatedSet.getApproximatedSet()));
 			
 			ruleCoverageInformationArray[ruleIndex] = minimalRuleConditionsWithApproximatedSet.getRuleConditions().getRuleCoverageInformation();
-			ruleIndex++;
 			
 			System.out.println(rules[ruleIndex]); //DEL
+			ruleIndex++;
 		}
 		
 		RuleSet ruleSet = new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true); //TODO: second version of VCDomLEM returning just decision rules
 		//return ruleSet;
 		
 		assertEquals(ruleSet.size(), 3);
+		
+		//TODO: correct toString methods for conditions
+		
+		//expected output:
+		//(symptom1 >= 31.0) =>[c] (state >= 2)
+		//(symptom1 >= 18.0) =>[c] (state >= 1)
+		//(symptom2 >= 17.0) =>[c] (state >= 1)
 	}
 	
 	private List<RuleConditions> calculateApproximatedSetRuleConditionsList(ApproximatedSet approximatedSet, RuleType ruleType, RuleSemantics ruleSemantics, AllowedObjectsType allowedObjectsType,
@@ -203,11 +209,13 @@ class VCDomLemTest {
 		if (ruleType == RuleType.CERTAIN) {
 			switch (allowedObjectsType) {
 			case POSITIVE_REGION:
-				indicesOfObjectsThatCanBeCovered = approximatedSet.getPositiveRegion();
+				indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(); //TODO: give expected
+				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getPositiveRegion());
 				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
 				break;
 			case POSITIVE_AND_BOUNDARY_REGIONS:
-				indicesOfObjectsThatCanBeCovered = approximatedSet.getPositiveRegion();
+				indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(); //TODO: give expected
+				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getPositiveRegion());
 				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getBoundaryRegion());
 				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
 				break;
@@ -220,7 +228,8 @@ class VCDomLemTest {
 				break;
 			}
 		} else { //possible/approximate rule
-			indicesOfObjectsThatCanBeCovered = indicesOfApproximationObjects;
+			indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(); //TODO: give expected
+			indicesOfObjectsThatCanBeCovered.addAll(indicesOfApproximationObjects);
 			indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
 		}
 		
