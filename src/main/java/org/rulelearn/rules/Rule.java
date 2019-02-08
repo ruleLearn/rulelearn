@@ -653,11 +653,13 @@ public class Rule {
 		
 		String ruleTypeIndicator;
 		if (this.type == RuleType.CERTAIN) {
-			ruleTypeIndicator = "[c]";
+			ruleTypeIndicator = "";
+			//ruleTypeIndicator = "[c]";
 		} else if (this.type == RuleType.POSSIBLE) {
 			ruleTypeIndicator = "[p]";
 		} else {
-			ruleTypeIndicator = "[a]";
+			//ruleTypeIndicator = "[a]";
+			ruleTypeIndicator = "";
 		}
 		
 		//insert delimiter between conditions and decisions
