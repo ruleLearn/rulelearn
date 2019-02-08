@@ -319,7 +319,7 @@ class RuleTest {
 	void testToString01() {
 		Rule rule = getTestRule1();
 		System.out.println(rule);
-		assertEquals(rule.toString(), "(attr1 >= 3) & (attr3 <= -2.1) =>[c] (dec >= 5)");
+		assertEquals(rule.toString(), "(attr1 >= 3) & (attr3 <= -2.1) => (dec >= 5)");
 	}
 	
 	/**
@@ -329,7 +329,7 @@ class RuleTest {
 	void testToString02() {
 		Rule rule = getTestRule3();
 		System.out.println(rule);
-		assertEquals(rule.toString(), "(attr1 >= 3) & (attr3 <= -2.1) =>[c] (dec >= 5) & (dec2 <= 3)");
+		assertEquals(rule.toString(), "(attr1 >= 3) & (attr3 <= -2.1) => (dec >= 5) & (dec2 <= 3)");
 	}
 	
 	/**
@@ -339,7 +339,7 @@ class RuleTest {
 	void testToString03() {
 		Rule rule = getTestRule4();
 		System.out.println(rule);
-		assertEquals(rule.toString(), "(attr1 >= 3) & (attr3 <= -2.1) =>[c] ((dec >= 5) & (dec2 <= 3)) OR ((dec <= 3) & (dec2 >= 5))");
+		assertEquals(rule.toString(), "(attr1 >= 3) & (attr3 <= -2.1) => ((dec >= 5) & (dec2 <= 3)) OR ((dec <= 3) & (dec2 >= 5))");
 	}
 
 	/**
