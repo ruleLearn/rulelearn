@@ -33,7 +33,6 @@ import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.IdentificationAttribute;
 import org.rulelearn.data.InformationTableTestConfiguration;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
-import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.RealField;
@@ -49,46 +48,20 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
- * Integration tests for VCDomLEM algorithm.
+ * Integration tests for VCDomLEM algorithm parameterized with {@link VCDomLEMparameters}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 @Tag("integration")
-class VCDomLemTest {
+class VCDomLEMwithParametersTest {
 
 	/**
 	 * Tests upward unions and certain rules.
 	 */
 	@Test
 	public void testUpwardUnionCertain() {
-		EpsilonConsistencyMeasure consistencyMeasure = EpsilonConsistencyMeasure.getInstance();
-		double consistencyThreshold = 0.0;
-		
-		RuleConditionsEvaluator ruleConditionsEvaluator = consistencyMeasure;
-		MonotonicConditionAdditionEvaluator[] conditionAdditionEvaluators = {consistencyMeasure};
-		ConditionRemovalEvaluator[] conditionRemovalEvaluators = {consistencyMeasure};
-		RuleConditionsEvaluator[] ruleConditionsEvaluators = {consistencyMeasure};
-		//RuleEvaluator ruleEvaluator = consistencyMeasure; //just single evaluator, for rule minimality checker taking into account just single evaluation
-		
-		ConditionGenerator conditionGenerator = new M4OptimizedConditionGenerator(conditionAdditionEvaluators);
-		RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker = new EvaluationAndCoverageStoppingConditionChecker(ruleConditionsEvaluator, consistencyThreshold);
-		
-		ConditionSeparator conditionSeparator = null; //no separation required - all conditions concern limiting evaluations of type SimpleField
-		
-		//AbstractRuleConditionsPruner ruleConditionsPruner = new FIFORuleConditionsPruner(ruleInductionStoppingConditionChecker); //enforce RuleInductionStoppingConditionChecker
-		AbstractRuleConditionsPruner ruleConditionsPruner = new AttributeOrderRuleConditionsPruner(ruleInductionStoppingConditionChecker);
-		//---
-		@SuppressWarnings("unused")
-		AbstractRuleConditionsPruner ruleConditionsPrunerWithEvaluators = new AbstractRuleConditionsPrunerWithEvaluators(ruleInductionStoppingConditionChecker, conditionRemovalEvaluators) {
-			@Override
-			public RuleConditions prune(RuleConditions ruleConditions) {
-				return null;
-			}
-		};
-		//---
-		RuleConditionsSetPruner ruleConditionsSetPruner = new EvaluationsAndOrderRuleConditionsSetPruner(ruleConditionsEvaluators);
-		RuleMinimalityChecker ruleMinimalityChecker = new SingleEvaluationRuleMinimalityChecker(ruleConditionsEvaluator);
+		VCDomLEMparameters vcDomLEMparameters = new VCDomLEMparameters.VCDomLEMparametersBuilder().build();
 		
 		InformationTableTestConfiguration informationTableTestConfiguration = new InformationTableTestConfiguration (
 				new Attribute[] {
@@ -143,13 +116,11 @@ class VCDomLemTest {
 		
 		for (int i = 0; i < approximatedSetsCount; i++) {
 			approximatedSet = approximatedSetProvider.getApproximatedSet(i);
-			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, ruleType, ruleSemantics, allowedObjectsType,
-					conditionGenerator, ruleInductionStoppingConditionChecker, conditionSeparator, ruleConditionsPruner, ruleConditionsSetPruner);
-			
+			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, ruleType, ruleSemantics, allowedObjectsType, vcDomLEMparameters);
 			verifiedRuleConditionsWithApproximatedSet = new ObjectArrayList<RuleConditionsWithApproximatedSet>();
 			for (RuleConditions ruleConditions : approximatedSetRuleConditions) { //verify minimality of each rule conditions
 				ruleConditionsWithApproximatedSet = new RuleConditionsWithApproximatedSet(ruleConditions, approximatedSet); 
-				if (ruleMinimalityChecker.check(minimalRuleConditionsWithApproximatedSets, ruleConditionsWithApproximatedSet)) {
+				if (vcDomLEMparameters.getRuleMinimalityChecker().check(minimalRuleConditionsWithApproximatedSets, ruleConditionsWithApproximatedSet)) {
 					verifiedRuleConditionsWithApproximatedSet.add(ruleConditionsWithApproximatedSet);
 				}
 			}
@@ -187,8 +158,7 @@ class VCDomLemTest {
 	}
 	
 	private List<RuleConditions> calculateApproximatedSetRuleConditionsList(ApproximatedSet approximatedSet, RuleType ruleType, RuleSemantics ruleSemantics, AllowedObjectsType allowedObjectsType,
-			ConditionGenerator conditionGenerator, RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker, ConditionSeparator conditionSeparator,
-			AbstractRuleConditionsPruner ruleConditionsPruner, RuleConditionsSetPruner ruleConditionsSetPruner) {
+			VCDomLEMparameters vcDomLEMparameters) {
 		
 		List<RuleConditions> approximatedSetRuleConditions = new ObjectArrayList<RuleConditions>(); //the result
 		
@@ -246,10 +216,10 @@ class VCDomLemTest {
 					indicesOfConsideredObjects, approximatedSet.getInformationTable(),
 					approximatedSet.getObjects(), indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, approximatedSet.getNeutralObjects(),
 					ruleType, ruleSemantics,
-					conditionGenerator, ruleInductionStoppingConditionChecker, conditionSeparator);
+					vcDomLEMparameters.getConditionGenerator(), vcDomLEMparameters.getRuleInductionStoppingConditionChecker(), vcDomLEMparameters.getConditionSeparator());
 			ruleConditions = ruleConditionsBuilder.build(); //build rule conditions
 			
-			ruleConditions = ruleConditionsPruner.prune(ruleConditions); //prune built rule conditions by removing redundant elementary conditions
+			ruleConditions = vcDomLEMparameters.getRuleConditionsPruner().prune(ruleConditions); //prune built rule conditions by removing redundant elementary conditions
 			approximatedSetRuleConditions.add(ruleConditions);
 			
 			//remove objects covered by the new rule conditions
@@ -258,7 +228,7 @@ class VCDomLemTest {
 			setB.removeAll(setOfIndicesOfCoveredObjects);
 		}
 	
-		return ruleConditionsSetPruner.prune(approximatedSetRuleConditions, indicesOfApproximationObjects); //remove redundant rules, but keep covered all objects from lower/upper approximation
+		return vcDomLEMparameters.getRuleConditionsSetPruner().prune(approximatedSetRuleConditions, indicesOfApproximationObjects); //remove redundant rules, but keep covered all objects from lower/upper approximation
 	}
 
 }

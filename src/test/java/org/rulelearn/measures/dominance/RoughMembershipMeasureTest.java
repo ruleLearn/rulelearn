@@ -67,7 +67,7 @@ class RoughMembershipMeasureTest {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		this.measure = new RoughMembershipMeasure();
+		this.measure = RoughMembershipMeasure.getInstance();
 		// mock unions
 		when(this.unionAtLeast2Mock.getUnionType()).thenReturn(UnionType.AT_LEAST);
 		when(this.unionAtLeast3Mock.getUnionType()).thenReturn(UnionType.AT_LEAST);

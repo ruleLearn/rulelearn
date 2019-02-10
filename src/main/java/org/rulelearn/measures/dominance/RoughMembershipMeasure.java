@@ -40,6 +40,20 @@ public class RoughMembershipMeasure implements GainTypeMeasure, ConsistencyMeasu
 	protected final static double BEST_VALUE = 1.0;
 	protected final static double WORST_VALUE = 0.0;
 	
+	private static final RoughMembershipMeasure INSTANCE = new RoughMembershipMeasure();
+	
+	private RoughMembershipMeasure() {
+	}
+	
+	/**
+	 * Returns reference to singleton instance of rough membership consistency measure.
+	 * 
+	 * @return reference to singleton instance of rough membership consistency measure
+	 */
+	public static RoughMembershipMeasure getInstance() { 
+		return INSTANCE; 
+	}
+	
 	/**
 	 * Calculates value of rough membership of the given object with respect to the given union of decision classes.
 	 * 

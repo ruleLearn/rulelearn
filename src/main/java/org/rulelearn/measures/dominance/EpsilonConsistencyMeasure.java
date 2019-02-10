@@ -54,6 +54,20 @@ public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMe
 	protected final static double BEST_VALUE = 0.0;
 	protected final static double WORST_VALUE = 1.0;
 	
+	private static final EpsilonConsistencyMeasure INSTANCE = new EpsilonConsistencyMeasure();
+	
+	private EpsilonConsistencyMeasure () {
+	}
+	
+	/**
+	 * Returns reference to singleton instance of epsilon consistency measure.
+	 * 
+	 * @return reference to singleton instance of epsilon consistency measure
+	 */
+	public static EpsilonConsistencyMeasure getInstance() { 
+		return INSTANCE; 
+	}
+	
 	/**
 	 * Calculates value of epsilon consistency of the given object with respect to the given union of decision classes.
 	 * 
