@@ -178,12 +178,10 @@ class VCDomLemTest {
 		
 		assertEquals(ruleSet.size(), 3);
 		
-		//TODO: correct toString methods for conditions
-		
 		//expected output:
-		//(symptom1 >= 31.0) =>[c] (state >= 2)
-		//(symptom1 >= 18.0) =>[c] (state >= 1)
-		//(symptom2 >= 17.0) =>[c] (state >= 1)
+		//(symptom1 >= 31.0) => (state >= 2)
+		//(symptom1 >= 18.0) => (state >= 1)
+		//(symptom2 >= 17.0) => (state >= 1)
 	}
 	
 	private List<RuleConditions> calculateApproximatedSetRuleConditionsList(ApproximatedSet approximatedSet, RuleType ruleType, RuleSemantics ruleSemantics, AllowedObjectsType allowedObjectsType,

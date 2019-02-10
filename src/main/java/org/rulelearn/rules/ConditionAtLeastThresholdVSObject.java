@@ -77,7 +77,8 @@ public class ConditionAtLeastThresholdVSObject<T extends EvaluationField> extend
 	 */
 	@Override
 	public String toString() {
-		return (new StringBuilder()).append(this.limitingEvaluation).append(" ").append("<=").append(" ").append(this.attributeWithContext.getAttributeName()).toString();
+		return (new StringBuilder()).append(this.attributeWithContext.getAttributeName()).append(" ").append(">=").append(" ").append(this.limitingEvaluation).toString();
+		//return (new StringBuilder()).append(this.limitingEvaluation).append(" ").append("<=").append(" ").append(this.attributeWithContext.getAttributeName()).toString();
 	}
 	
 	/**
