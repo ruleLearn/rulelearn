@@ -43,14 +43,14 @@ import org.rulelearn.types.UnknownSimpleFieldMV2;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-@Tag("integration")
 class VCDomLEMWithParametersTest {
 
 	/**
-	 * Tests upward unions and certain rules.
+	 * Tests upward unions and certain rules for "symptoms" data set.
 	 */
 	@Test
-	public void testUpwardUnionCertain() {
+	@Tag("integration")
+	public void testSymptomsUpwardUnionCertain() {
 		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).build();
 		
 		InformationTableTestConfiguration informationTableTestConfiguration = new InformationTableTestConfiguration (

@@ -54,14 +54,14 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-@Tag("integration")
 class VCDomLEMTest {
 
 	/**
 	 * Tests upward unions and certain rules.
 	 */
 	@Test
-	public void testUpwardUnionCertain() {
+	@Tag("integration")
+	public void testUpwardUnionCertainManually() {
 		EpsilonConsistencyMeasure consistencyMeasure = EpsilonConsistencyMeasure.getInstance();
 		double consistencyThreshold = 0.0;
 		
@@ -143,7 +143,7 @@ class VCDomLEMTest {
 		
 		for (int i = 0; i < approximatedSetsCount; i++) {
 			approximatedSet = approximatedSetProvider.getApproximatedSet(i);
-			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, ruleType, ruleSemantics, allowedObjectsType,
+			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsListManually(approximatedSet, ruleType, ruleSemantics, allowedObjectsType,
 					conditionGenerator, ruleInductionStoppingConditionChecker, conditionSeparator, ruleConditionsPruner, ruleConditionsSetPruner);
 			
 			verifiedRuleConditionsWithApproximatedSet = new ObjectArrayList<RuleConditionsWithApproximatedSet>();
@@ -183,7 +183,7 @@ class VCDomLEMTest {
 		//(symptom2 >= 17.0) => (state >= 1)
 	}
 	
-	private List<RuleConditions> calculateApproximatedSetRuleConditionsList(ApproximatedSet approximatedSet, RuleType ruleType, RuleSemantics ruleSemantics, AllowedObjectsType allowedObjectsType,
+	private List<RuleConditions> calculateApproximatedSetRuleConditionsListManually(ApproximatedSet approximatedSet, RuleType ruleType, RuleSemantics ruleSemantics, AllowedObjectsType allowedObjectsType,
 			ConditionGenerator conditionGenerator, RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker, ConditionSeparator conditionSeparator,
 			AbstractRuleConditionsPruner ruleConditionsPruner, RuleConditionsSetPruner ruleConditionsSetPruner) {
 		
