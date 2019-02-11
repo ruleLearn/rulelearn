@@ -66,9 +66,9 @@ class VCDomLEMTest {
 		double consistencyThreshold = 0.0;
 		
 		RuleConditionsEvaluator ruleConditionsEvaluator = consistencyMeasure;
-		MonotonicConditionAdditionEvaluator[] conditionAdditionEvaluators = {consistencyMeasure};
+		MonotonicConditionAdditionEvaluator[] conditionAdditionEvaluators = {consistencyMeasure}; //TODO: use more evaluators, as in jRS! (see page 11 of the VC-DomLEM article)
 		ConditionRemovalEvaluator[] conditionRemovalEvaluators = {consistencyMeasure};
-		RuleConditionsEvaluator[] ruleConditionsEvaluators = {consistencyMeasure};
+		RuleConditionsEvaluator[] ruleConditionsEvaluators = {consistencyMeasure}; //TODO: use more evaluators, as in jRS! (see page 12 of the VC-DomLEM article)
 		//RuleEvaluator ruleEvaluator = consistencyMeasure; //just single evaluator, for rule minimality checker taking into account just single evaluation
 		
 		ConditionGenerator conditionGenerator = new M4OptimizedConditionGenerator(conditionAdditionEvaluators);
@@ -124,7 +124,7 @@ class VCDomLEMTest {
 		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(
 				informationTableTestConfiguration.getAttributes(),
 				informationTableTestConfiguration.getListOfFields(),
-				true); //TODO
+				true); //TODO: use copy constructor from develop branch
 		
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
@@ -174,7 +174,6 @@ class VCDomLEMTest {
 		}
 		
 		RuleSet ruleSet = new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true); //TODO: second version of VCDomLEM returning just decision rules
-		//return ruleSet;
 		
 		assertEquals(ruleSet.size(), 3);
 		

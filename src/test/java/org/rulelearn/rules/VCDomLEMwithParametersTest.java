@@ -18,11 +18,8 @@ package org.rulelearn.rules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.rulelearn.approximations.ApproximatedSet;
 import org.rulelearn.approximations.ClassicalDominanceBasedRoughSetCalculator;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
@@ -39,13 +36,6 @@ import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.TextIdentificationField;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
-
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.ints.IntSortedSet;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Integration tests for VCDomLEM algorithm parameterized with {@link VCDomLEMParameters}.
@@ -93,142 +83,26 @@ class VCDomLEMWithParametersTest {
 						{ "q", "5",    "13",   "0"}
 				});
 		
-		//InformationTableWithDecisionDistributions informationTable = Mockito.mock(InformationTableWithDecisionDistributions.class);
 		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(
 				informationTableTestConfiguration.getAttributes(),
 				informationTableTestConfiguration.getListOfFields(),
-				true); //TODO
+				true); //TODO: use copy constructor from develop branch
 		
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
 		
-		RuleType ruleType = RuleType.CERTAIN; //certain/possible
-		RuleSemantics ruleSemantics = RuleSemantics.AT_LEAST;
-		AllowedObjectsType allowedObjectsType = AllowedObjectsType.POSITIVE_REGION;
-		
-		List<RuleConditionsWithApproximatedSet> minimalRuleConditionsWithApproximatedSets = new ObjectArrayList<RuleConditionsWithApproximatedSet>(); //rule conditions for approximated sets considered so far
-		List<RuleConditions> approximatedSetRuleConditions; //rule conditions for current approximated set
-		List<RuleConditionsWithApproximatedSet> verifiedRuleConditionsWithApproximatedSet; //minimal rule conditions for current approximated set
-		RuleConditionsWithApproximatedSet ruleConditionsWithApproximatedSet;
-		
-		int approximatedSetsCount = approximatedSetProvider.getCount(); //supplementary variable
-		ApproximatedSet approximatedSet; //supplementary variable
-		
-		for (int i = 0; i < approximatedSetsCount; i++) {
-			approximatedSet = approximatedSetProvider.getApproximatedSet(i);
-			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, ruleType, ruleSemantics, allowedObjectsType, vcDomLEMParameters);
-			verifiedRuleConditionsWithApproximatedSet = new ObjectArrayList<RuleConditionsWithApproximatedSet>();
-			for (RuleConditions ruleConditions : approximatedSetRuleConditions) { //verify minimality of each rule conditions
-				ruleConditionsWithApproximatedSet = new RuleConditionsWithApproximatedSet(ruleConditions, approximatedSet); 
-				if (vcDomLEMParameters.getRuleMinimalityChecker().check(minimalRuleConditionsWithApproximatedSets, ruleConditionsWithApproximatedSet)) {
-					verifiedRuleConditionsWithApproximatedSet.add(ruleConditionsWithApproximatedSet);
-				}
-			}
-			
-			minimalRuleConditionsWithApproximatedSets.addAll(verifiedRuleConditionsWithApproximatedSet);
-		}
-		
-		Rule[] rules = new Rule[minimalRuleConditionsWithApproximatedSets.size()];
-		RuleCoverageInformation[] ruleCoverageInformationArray = new RuleCoverageInformation[minimalRuleConditionsWithApproximatedSets.size()];
-		int ruleIndex = 0;
-		
-		System.out.println("Rule induced with VC-DomLEM:"); //DEL
-		
-		for (RuleConditionsWithApproximatedSet minimalRuleConditionsWithApproximatedSet : minimalRuleConditionsWithApproximatedSets ) {
-			rules[ruleIndex] = new Rule(ruleType, ruleSemantics, minimalRuleConditionsWithApproximatedSet.getRuleConditions(),
-					approximatedSetRuleDecisionsProvider.getRuleDecisions(minimalRuleConditionsWithApproximatedSet.getApproximatedSet()));
-			
-			ruleCoverageInformationArray[ruleIndex] = minimalRuleConditionsWithApproximatedSet.getRuleConditions().getRuleCoverageInformation();
-			
-			System.out.println(rules[ruleIndex]); //DEL
-			ruleIndex++;
-		}
-		
-		RuleSet ruleSet = new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true); //TODO: second version of VCDomLEM returning just decision rules
-		//return ruleSet;
+		RuleSet ruleSet = (new VCDomLEM(vcDomLEMParameters)).generateRules(approximatedSetProvider, approximatedSetRuleDecisionsProvider);
 		
 		assertEquals(ruleSet.size(), 3);
 		
-		//TODO: correct toString methods for conditions
+		for (int i = 0; i < ruleSet.size(); i++) {
+			System.out.println(ruleSet.getRule(i));
+		}
 		
 		//expected output:
-		//(symptom1 >= 31.0) =>[c] (state >= 2)
-		//(symptom1 >= 18.0) =>[c] (state >= 1)
-		//(symptom2 >= 17.0) =>[c] (state >= 1)
+		//(symptom1 >= 31.0) => (state >= 2)
+		//(symptom1 >= 18.0) => (state >= 1)
+		//(symptom2 >= 17.0) => (state >= 1)
 	}
 	
-	private List<RuleConditions> calculateApproximatedSetRuleConditionsList(ApproximatedSet approximatedSet, RuleType ruleType, RuleSemantics ruleSemantics, AllowedObjectsType allowedObjectsType,
-			VCDomLEMParameters vcDomLEMParameters) {
-		
-		List<RuleConditions> approximatedSetRuleConditions = new ObjectArrayList<RuleConditions>(); //the result
-		
-		IntSortedSet indicesOfApproximationObjects = null; //set of objects that need to be covered (each object by at least one rule conditions)
-		switch (ruleType) {
-		case CERTAIN:
-			indicesOfApproximationObjects = approximatedSet.getLowerApproximation();
-			break;
-		case POSSIBLE:
-			indicesOfApproximationObjects = approximatedSet.getUpperApproximation();
-			break;
-		case APPROXIMATE:
-			indicesOfApproximationObjects = approximatedSet.getBoundary();
-			break;
-		}
-		
-		IntSet indicesOfObjectsThatCanBeCovered = null; //indices of objects that are allowed to be covered
-		if (ruleType == RuleType.CERTAIN) {
-			switch (allowedObjectsType) {
-			case POSITIVE_REGION:
-				indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(); //TODO: give expected
-				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getPositiveRegion());
-				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
-				break;
-			case POSITIVE_AND_BOUNDARY_REGIONS:
-				indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(); //TODO: give expected
-				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getPositiveRegion());
-				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getBoundaryRegion());
-				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
-				break;
-			case ANY_REGION:
-				int numberOfObjects = approximatedSet.getInformationTable().getNumberOfObjects();
-				indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(numberOfObjects);
-				for (int i = 0; i < numberOfObjects; i++) {
-					indicesOfObjectsThatCanBeCovered.add(i);
-				}
-				break;
-			}
-		} else { //possible/approximate rule
-			indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(); //TODO: give expected
-			indicesOfObjectsThatCanBeCovered.addAll(indicesOfApproximationObjects);
-			indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
-		}
-		
-		//TODO: test order of elements!
-		IntList setB = new IntArrayList(indicesOfApproximationObjects); //lower/upper approximation objects not already covered by rule conditions induced so far (set B from algorithm description)
-		RuleConditions ruleConditions;
-		RuleConditionsBuilder ruleConditionsBuilder;
-		IntList indicesOfConsideredObjects; //intersection of current set B and set of objects covered by rule conditions
-		
-		while (!setB.isEmpty()) {
-			indicesOfConsideredObjects = new IntArrayList(setB);
-			
-			ruleConditionsBuilder = new RuleConditionsBuilder(
-					indicesOfConsideredObjects, approximatedSet.getInformationTable(),
-					approximatedSet.getObjects(), indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, approximatedSet.getNeutralObjects(),
-					ruleType, ruleSemantics,
-					vcDomLEMParameters.getConditionGenerator(), vcDomLEMParameters.getRuleInductionStoppingConditionChecker(), vcDomLEMParameters.getConditionSeparator());
-			ruleConditions = ruleConditionsBuilder.build(); //build rule conditions
-			
-			ruleConditions = vcDomLEMParameters.getRuleConditionsPruner().prune(ruleConditions); //prune built rule conditions by removing redundant elementary conditions
-			approximatedSetRuleConditions.add(ruleConditions);
-			
-			//remove objects covered by the new rule conditions
-			//setB = setB \ ruleConditions.getIndicesOfCoveredObjects()
-			IntSet setOfIndicesOfCoveredObjects = new IntOpenHashSet(ruleConditions.getIndicesOfCoveredObjects()); //translate list to hash set to accelerate subsequent removeAll method execution
-			setB.removeAll(setOfIndicesOfCoveredObjects);
-		}
-	
-		return vcDomLEMParameters.getRuleConditionsSetPruner().prune(approximatedSetRuleConditions, indicesOfApproximationObjects); //remove redundant rules, but keep covered all objects from lower/upper approximation
-	}
-
 }
