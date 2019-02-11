@@ -1,5 +1,8 @@
 ruleLearn - open source library for learning rule models from decision examples and applying these models to classify or rank new examples
 
+IDE dependencies:
+Lombok (https://projectlombok.org) needs to be available in your Java IDE; otherwise it may suggest compile errors
+
 Configuration of text files:
 -----
 UTF-8 encoding

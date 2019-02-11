@@ -48,20 +48,20 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
- * Integration tests for VCDomLEM algorithm parameterized with {@link VCDomLEMparameters}.
+ * Integration tests for VCDomLEM algorithm parameterized with {@link VCDomLEMParameters}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 @Tag("integration")
-class VCDomLEMwithParametersTest {
+class VCDomLEMWithParametersTest {
 
 	/**
 	 * Tests upward unions and certain rules.
 	 */
 	@Test
 	public void testUpwardUnionCertain() {
-		VCDomLEMParameters vcDomLEMParameters = new VCDomLEMParameters.VCDomLEMParametersBuilder().build();
+		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).build();
 		
 		InformationTableTestConfiguration informationTableTestConfiguration = new InformationTableTestConfiguration (
 				new Attribute[] {
