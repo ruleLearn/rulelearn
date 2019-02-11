@@ -26,24 +26,24 @@ import org.junit.jupiter.api.Test;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-class VCDomLEMparametersTest {
+class VCDomLEMParametersTest {
 
 	/**
-	 * Test for method {@link VCDomLEMparameters.VCDomLEMparametersBuilder#build()}.
+	 * Test for method {@link VCDomLEMParameters.VCDomLEMParametersBuilder#build()}.
 	 */
 	@Test
 	void testDefaultBuilder() {
-		VCDomLEMparameters parameters = new VCDomLEMparameters.VCDomLEMparametersBuilder().build();
+		VCDomLEMParameters parameters = new VCDomLEMParameters.VCDomLEMParametersBuilder().build();
 		assertEquals(0.0, parameters.getConsistencyThreshold());
 		assertNull(parameters.getConditionSeparator());
 	}
 	
 	/**
-	 * Test for methods {@link VCDomLEMparameters.VCDomLEMparametersBuilder#build()} and {@link VCDomLEMparameters#setConsistencyThreshold(double)}.
+	 * Test for methods {@link VCDomLEMParameters.VCDomLEMParametersBuilder#build()} and {@link VCDomLEMParameters#setConsistencyThreshold(double)}.
 	 */
 	@Test
 	void testBuilderAndSetter() {
-		VCDomLEMparameters parameters = new VCDomLEMparameters.VCDomLEMparametersBuilder().consistencyThreshold(0.9).build();
+		VCDomLEMParameters parameters = new VCDomLEMParameters.VCDomLEMParametersBuilder().consistencyThreshold(0.9).build();
 		assertEquals(0.9, parameters.getConsistencyThreshold());
 		parameters.setConsistencyThreshold(0.0);
 		assertEquals(0.0, parameters.getConsistencyThreshold());

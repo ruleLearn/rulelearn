@@ -61,7 +61,7 @@ class VCDomLEMwithParametersTest {
 	 */
 	@Test
 	public void testUpwardUnionCertain() {
-		VCDomLEMparameters vcDomLEMparameters = new VCDomLEMparameters.VCDomLEMparametersBuilder().build();
+		VCDomLEMParameters vcDomLEMParameters = new VCDomLEMParameters.VCDomLEMParametersBuilder().build();
 		
 		InformationTableTestConfiguration informationTableTestConfiguration = new InformationTableTestConfiguration (
 				new Attribute[] {
@@ -116,11 +116,11 @@ class VCDomLEMwithParametersTest {
 		
 		for (int i = 0; i < approximatedSetsCount; i++) {
 			approximatedSet = approximatedSetProvider.getApproximatedSet(i);
-			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, ruleType, ruleSemantics, allowedObjectsType, vcDomLEMparameters);
+			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, ruleType, ruleSemantics, allowedObjectsType, vcDomLEMParameters);
 			verifiedRuleConditionsWithApproximatedSet = new ObjectArrayList<RuleConditionsWithApproximatedSet>();
 			for (RuleConditions ruleConditions : approximatedSetRuleConditions) { //verify minimality of each rule conditions
 				ruleConditionsWithApproximatedSet = new RuleConditionsWithApproximatedSet(ruleConditions, approximatedSet); 
-				if (vcDomLEMparameters.getRuleMinimalityChecker().check(minimalRuleConditionsWithApproximatedSets, ruleConditionsWithApproximatedSet)) {
+				if (vcDomLEMParameters.getRuleMinimalityChecker().check(minimalRuleConditionsWithApproximatedSets, ruleConditionsWithApproximatedSet)) {
 					verifiedRuleConditionsWithApproximatedSet.add(ruleConditionsWithApproximatedSet);
 				}
 			}
@@ -158,7 +158,7 @@ class VCDomLEMwithParametersTest {
 	}
 	
 	private List<RuleConditions> calculateApproximatedSetRuleConditionsList(ApproximatedSet approximatedSet, RuleType ruleType, RuleSemantics ruleSemantics, AllowedObjectsType allowedObjectsType,
-			VCDomLEMparameters vcDomLEMparameters) {
+			VCDomLEMParameters vcDomLEMParameters) {
 		
 		List<RuleConditions> approximatedSetRuleConditions = new ObjectArrayList<RuleConditions>(); //the result
 		
@@ -216,10 +216,10 @@ class VCDomLEMwithParametersTest {
 					indicesOfConsideredObjects, approximatedSet.getInformationTable(),
 					approximatedSet.getObjects(), indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, approximatedSet.getNeutralObjects(),
 					ruleType, ruleSemantics,
-					vcDomLEMparameters.getConditionGenerator(), vcDomLEMparameters.getRuleInductionStoppingConditionChecker(), vcDomLEMparameters.getConditionSeparator());
+					vcDomLEMParameters.getConditionGenerator(), vcDomLEMParameters.getRuleInductionStoppingConditionChecker(), vcDomLEMParameters.getConditionSeparator());
 			ruleConditions = ruleConditionsBuilder.build(); //build rule conditions
 			
-			ruleConditions = vcDomLEMparameters.getRuleConditionsPruner().prune(ruleConditions); //prune built rule conditions by removing redundant elementary conditions
+			ruleConditions = vcDomLEMParameters.getRuleConditionsPruner().prune(ruleConditions); //prune built rule conditions by removing redundant elementary conditions
 			approximatedSetRuleConditions.add(ruleConditions);
 			
 			//remove objects covered by the new rule conditions
@@ -228,7 +228,7 @@ class VCDomLEMwithParametersTest {
 			setB.removeAll(setOfIndicesOfCoveredObjects);
 		}
 	
-		return vcDomLEMparameters.getRuleConditionsSetPruner().prune(approximatedSetRuleConditions, indicesOfApproximationObjects); //remove redundant rules, but keep covered all objects from lower/upper approximation
+		return vcDomLEMParameters.getRuleConditionsSetPruner().prune(approximatedSetRuleConditions, indicesOfApproximationObjects); //remove redundant rules, but keep covered all objects from lower/upper approximation
 	}
 
 }

@@ -55,7 +55,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 @Tag("integration")
-class VCDomLemTest {
+class VCDomLEMTest {
 
 	/**
 	 * Tests upward unions and certain rules.

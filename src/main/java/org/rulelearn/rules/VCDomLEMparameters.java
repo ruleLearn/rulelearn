@@ -32,7 +32,7 @@ import lombok.NonNull;
  */
 @Data
 @Builder(toBuilder = true)
-public class VCDomLEMparameters {	
+public class VCDomLEMParameters {
 	@NonNull
 	@Builder.Default
 	private ConsistencyMeasure<Union> consistencyMeasure = EpsilonConsistencyMeasure.getInstance();
