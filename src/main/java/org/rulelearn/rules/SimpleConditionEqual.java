@@ -36,6 +36,7 @@ import org.rulelearn.types.SimpleField;
  * 
  * @deprecated Replaced by {@link ConditionEqual}.
  */
+@Deprecated
 public class SimpleConditionEqual extends SimpleCondition {
 
 	/**

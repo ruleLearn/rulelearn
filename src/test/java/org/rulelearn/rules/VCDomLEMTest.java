@@ -308,6 +308,7 @@ class VCDomLEMTest {
 		
 		assertEquals(ruleSet.size(), 3);
 		
+		System.out.println("Rule induced with VC-DomLEM:"); //DEL
 		for (int i = 0; i < ruleSet.size(); i++) {
 			System.out.println(ruleSet.getRule(i));
 		}

@@ -37,6 +37,7 @@ import org.rulelearn.types.SimpleField;
  * 
  * @deprecated Replaced by {@link ConditionAtLeast}.
  */
+@Deprecated
 public class SimpleConditionAtLeast extends SimpleCondition {
 	
 	/**
