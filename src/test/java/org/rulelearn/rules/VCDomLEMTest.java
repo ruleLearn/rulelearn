@@ -257,5 +257,65 @@ class VCDomLEMTest {
 	
 		return ruleConditionsSetPruner.prune(approximatedSetRuleConditions, indicesOfApproximationObjects); //remove redundant rules, but keep covered all objects from lower/upper approximation
 	}
+	
+	/**
+	 * Tests upward unions and certain rules for "symptoms" data set.
+	 */
+	@Test
+	@Tag("integration")
+	public void testSymptomsUpwardUnionCertain() {
+		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).build();
+		
+		InformationTableTestConfiguration informationTableTestConfiguration = new InformationTableTestConfiguration (
+				new Attribute[] {
+						new IdentificationAttribute("bus", true, new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE)),
+						new EvaluationAttribute("symptom1", true, AttributeType.CONDITION,
+								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN),
+						new EvaluationAttribute("symptom2", true, AttributeType.CONDITION,
+								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN),
+						new EvaluationAttribute("state", true, AttributeType.DECISION,
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN)
+					},
+				new String[][] {
+						{ "a", "40",   "17.8", "2"},
+						{ "b", "35",   "30",   "2"},
+						{ "c", "32.5", "39",   "2"},
+						{ "d", "31",   "35",   "2"},
+						{ "e", "27.5", "17.5", "2"},
+						{ "f", "24",   "17.5", "2"},
+						{ "g", "22.5", "20",   "2"},
+						{ "h", "30.8", "19",   "1"},
+						{ "i", "27",   "25",   "1"},
+						{ "j", "21",   "9.5",  "1"},
+						{ "k", "18",   "12.5", "1"},
+						{ "l", "10.5", "25.5", "1"},
+						{ "m", "9.75", "17",   "1"},
+						{ "n", "17.5", "5",    "0"},
+						{ "o", "11",   "2",    "0"},
+						{ "p", "10",   "9",    "0"},
+						{ "q", "5",    "13",   "0"}
+				});
+		
+		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(
+				informationTableTestConfiguration.getAttributes(),
+				informationTableTestConfiguration.getListOfFields(),
+				true); //TODO: use copy constructor from develop branch
+		
+		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
+		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
+		
+		RuleSet ruleSet = (new VCDomLEM(vcDomLEMParameters)).generateRules(approximatedSetProvider, approximatedSetRuleDecisionsProvider);
+		
+		assertEquals(ruleSet.size(), 3);
+		
+		for (int i = 0; i < ruleSet.size(); i++) {
+			System.out.println(ruleSet.getRule(i));
+		}
+		
+		//expected output:
+		//(symptom1 >= 31.0) => (state >= 2)
+		//(symptom1 >= 18.0) => (state >= 1)
+		//(symptom2 >= 17.0) => (state >= 1)
+	}
 
 }
