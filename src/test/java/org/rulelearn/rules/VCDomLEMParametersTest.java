@@ -19,6 +19,9 @@ package org.rulelearn.rules;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -28,26 +31,33 @@ import org.junit.jupiter.api.Test;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 class VCDomLEMParametersTest {
-
 	/**
 	 * Test for method {@link VCDomLEMParameters.VCDomLEMParametersBuilder#build()}.
 	 */
 	@Test
 	void testDefaultBuilder() {
-		VCDomLEMParameters parameters = new VCDomLEMParameters.VCDomLEMParametersBuilder().build();
-		assertEquals(0.0, parameters.getConsistencyThreshold());
+		VCDomLEMParameters parameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).build();
+		assertEquals(Arrays.asList(), parameters.getConsistencyThresholds());
 		assertNull(parameters.getConditionSeparator());
 	}
 	
 	/**
-	 * Test for methods {@link VCDomLEMParameters.VCDomLEMParametersBuilder#build()} and {@link VCDomLEMParameters#setConsistencyThreshold(double)}.
+	 * Test for method {@link VCDomLEMParameters.VCDomLEMParametersBuilder#build()}.
 	 */
 	@Test
-	void testBuilderAndSetter() {
-		VCDomLEMParameters parameters = new VCDomLEMParameters.VCDomLEMParametersBuilder().consistencyThreshold(0.9).build();
-		assertEquals(0.9, parameters.getConsistencyThreshold());
-		parameters.setConsistencyThreshold(0.0);
-		assertEquals(0.0, parameters.getConsistencyThreshold());
+	void testBuilderAndBuilderSetter() {
+		// construct builder
+		VCDomLEMParameters.VCDomLEMParametersBuilder parametersBuilder = new VCDomLEMParameters.VCDomLEMParametersBuilder().consistencyThreshold(VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
+		// build parameters and check them
+		VCDomLEMParameters parameters = parametersBuilder.build();
+		assertEquals(Arrays.asList(VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD), parameters.getConsistencyThresholds());
+		
+		List<Double> thresholds = Arrays.asList(VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD, 0.1);
+		// add single threshold to builder and build parameters
+		parameters = parametersBuilder.consistencyThreshold(0.1).build();
+		assertEquals(thresholds, parameters.getConsistencyThresholds());
+		// clear and set thresholds in builder and build parameters
+		parameters = parametersBuilder.clearConsistencyThresholds().consistencyThresholds(thresholds).build();
+		assertEquals(thresholds, parameters.getConsistencyThresholds());
 	}
-
 }
