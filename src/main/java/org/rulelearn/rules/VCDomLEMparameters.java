@@ -37,8 +37,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(makeFinal = true)
 public class VCDomLEMParameters {
 	public static final double DEFAULT_CONSISTENCY_TRESHOLD = 0.0;
-	public static final RuleConditionsEvaluator[] DEFAULT_RULE_CONDITIONS_EVALUATORS = new RuleConditionsEvaluator[] {EpsilonConsistencyMeasure.getInstance()};
 	public static final ConditionAdditionEvaluator[] DEFAULT_CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {EpsilonConsistencyMeasure.getInstance()};
+	public static final RuleConditionsEvaluator[] DEFAULT_RULE_CONDITIONS_EVALUATORS = new RuleConditionsEvaluator[] {EpsilonConsistencyMeasure.getInstance()};
 	public static final RuleInductionStoppingConditionChecker DEFAULT_STOPPING_CONDITION_CHECKER = 
 			new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), DEFAULT_CONSISTENCY_TRESHOLD);
 	
@@ -46,10 +46,6 @@ public class VCDomLEMParameters {
 	@Singular("consistencyThreshold")
 	private List<Double> consistencyThresholds;
  	
-	@NonNull
-	@Builder.Default
-	private RuleConditionsEvaluator ruleConditionsEvaluator = EpsilonConsistencyMeasure.getInstance();
-	
 	@NonNull
 	@Builder.Default
 	private ConditionAdditionEvaluator[] conditionAdditionEvaluators = DEFAULT_CONDITION_ADDITION_EVALUATORS;
