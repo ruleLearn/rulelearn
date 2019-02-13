@@ -16,7 +16,9 @@
 
 package org.rulelearn.data;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,10 @@ import org.mockito.Mockito;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
+import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
+import org.rulelearn.types.TextIdentificationField;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 /**
  * Tests for {@link InformationTableWithDecisionDistributions}.
@@ -152,6 +157,62 @@ class InformationTableWithDecisionDistributionsTest {
 		} catch (InvalidValueException exception) {
 			//OK
 		}
+	}
+	
+
+	/**
+	 * Test method for {@link InformationTableWithDecisionDistributions#InformationTableWithDecisionDistributions(InformationTable)}.
+	 */
+	@Test
+	void testInformationTableWithDecisionDistributionsInformationTableBoolean01() {
+		Attribute[] attributes = new Attribute[] {
+				new EvaluationAttribute("a0", true, AttributeType.CONDITION,
+						IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN),
+				new EvaluationAttribute("a1", true, AttributeType.DECISION,
+						IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.COST), new UnknownSimpleFieldMV2(), AttributePreferenceType.COST),
+				new IdentificationAttribute("a2", true, new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE))
+		};
+		List<Field[]> listOfFields = new ArrayList<Field[]>();
+		listOfFields.add(new Field[] {
+				IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN),
+				IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.COST),
+				new TextIdentificationField("test1")
+		});
+		listOfFields.add(new Field[] {
+				IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN),
+				IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.COST),
+				new TextIdentificationField("test2")
+		});
+		
+		InformationTable informationTable = new InformationTable(attributes, listOfFields);
+		
+		InformationTableWithDecisionDistributions copiedInformationTable = new InformationTableWithDecisionDistributions(informationTable);
+		
+		//test if fields are copied
+		assertEquals(copiedInformationTable.getAttributes().length, informationTable.getAttributes().length);
+		int attributesCount = copiedInformationTable.getAttributes().length;
+		for (int i = 0; i < attributesCount; i++) {
+			assertEquals(copiedInformationTable.getAttributes()[i], informationTable.getAttributes()[i]);
+		}
+		assertEquals(copiedInformationTable.getIndex2IdMapper(), informationTable.getIndex2IdMapper());
+		assertEquals(copiedInformationTable.getActiveConditionAttributeFields(), informationTable.getActiveConditionAttributeFields());
+		assertEquals(copiedInformationTable.getNotActiveOrDescriptionAttributeFields(), informationTable.getNotActiveOrDescriptionAttributeFields());
+		assertEquals(copiedInformationTable.getDecisions().length, informationTable.getDecisions().length);
+		int decisionsCount = copiedInformationTable.getDecisions().length;
+		for (int i = 0; i < decisionsCount; i++) {
+			assertEquals(copiedInformationTable.getDecisions()[i], informationTable.getDecisions()[i]);
+		}
+		assertEquals(copiedInformationTable.getIdentifiers().length, informationTable.getIdentifiers().length);
+		int identifiersCount = copiedInformationTable.getIdentifiers().length;
+		for (int i = 0; i < identifiersCount; i++) {
+			assertEquals(copiedInformationTable.getIdentifiers()[i], informationTable.getIdentifiers()[i]);
+		}
+		assertEquals(copiedInformationTable.getActiveIdentificationAttributeIndex(), informationTable.getActiveIdentificationAttributeIndex());
+		assertEquals(copiedInformationTable.attributeMap, informationTable.attributeMap);
+		
+		//test if additionally distributions are created
+		assertNotNull(copiedInformationTable.getDecisionDistribution());
+		assertNotNull(copiedInformationTable.getDominanceConesDecisionDistributions());
 	}
 
 	/**

@@ -1,0 +1,13 @@
+[{
+  "ID": "b70eac70-b4ac-11e7-9460-002564d9514f",
+  "SourceAssetCriticality": "low",
+  "TargetAssetCriticality": "critical",
+  "TimeFromDetectTime": "187296.193",
+  "Priority": "2"
+}, {
+  "ID": "b70eac70-b4ac-11e7-9460-002564d9514e",
+  "SourceAssetCriticality": "NA",
+  "TargetAssetCriticality": "critical",
+  "TimeFromDetectTime": "1.0728096193E7",
+  "Priority": "3"
+}]

@@ -306,7 +306,7 @@ class SimpleRuleClassifierTest {
 					System.out.println(ex.toString());
 				}
 				
-				ObjectBuilder ob = new ObjectBuilder(attributes);
+				ObjectBuilder ob = (new ObjectBuilder.Builder(attributes)).build();
 				List<String []> objects = null;
 				objects = ob.getObjects(json);
 				

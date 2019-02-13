@@ -1,0 +1,3 @@
+ID,SourceAssetCriticality,TargetAssetCriticality,TimeToDueDate,TimeFromDetectTime,SeverityForAttackCategory,MAQuality,AttackSourceReputationScore,MaxCVE,Rank,Priority
+b70eac70-b4ac-11e7-9460-000000000001,NA,NA,44.58,86.71,NA,0.21,0.34,1.1,579,5
+b70eac70-b4ac-11e7-9460-000000000002,NA,NA,40.24,55.89,NA,0.69,0.95,7,578,5

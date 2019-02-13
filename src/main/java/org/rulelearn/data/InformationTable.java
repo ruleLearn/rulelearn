@@ -332,6 +332,39 @@ public class InformationTable {
 	}
 	
 	/**
+	 * A wrapper-type constructor, passing arguments to {@link InformationTable#InformationTable(InformationTable, boolean)} with the boolean flag set to {@code false}. 
+	 * 
+	 * @param informationTable see {@link InformationTable#InformationTable(InformationTable, boolean)}
+	 * @throws NullPointerException see {@link InformationTable#InformationTable(InformationTable, boolean)}
+	 */
+	public InformationTable(InformationTable informationTable) {
+		this(informationTable, false);
+	}
+	
+	/**
+	 * Copy constructor.
+	 * 
+	 * @param informationTable information table to be copied
+	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
+	 *        at the cost of returning a read-only information table, or should return a safe information table (that can be modified),
+	 *        at the cost of returning the result slower
+	 * @throws NullPointerException if the given information table is {@code null}
+	 */
+	public InformationTable(InformationTable informationTable, boolean accelerateByReadOnlyResult) {
+		if (informationTable == null) {
+			throw new NullPointerException("Cannot copy null information table.");
+		}
+		this.attributes = informationTable.getAttributes(accelerateByReadOnlyResult);
+		this.mapper = informationTable.getIndex2IdMapper();
+		this.activeConditionAttributeFields = informationTable.getActiveConditionAttributeFields();
+		this.notActiveOrDescriptionAttributeFields = informationTable.getNotActiveOrDescriptionAttributeFields();
+		this.decisions = informationTable.getDecisions(accelerateByReadOnlyResult);
+		this.activeIdentificationAttributeFields = informationTable.getIdentifiers(accelerateByReadOnlyResult);
+		this.activeIdentificationAttributeIndex = informationTable.getActiveIdentificationAttributeIndex();
+		this.attributeMap = informationTable.attributeMap;
+	}
+	
+	/**
 	 * Gets sub-table of this information table, corresponding to active condition attributes only.
 	 * If there are no such attributes, then returns {@code null}.
 	 * 

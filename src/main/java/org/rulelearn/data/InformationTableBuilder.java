@@ -16,9 +16,16 @@
 
 package org.rulelearn.data;
 
+import static org.rulelearn.core.Precondition.notNull;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.UUID;
 
+import org.rulelearn.data.json.AttributeDeserializer;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
@@ -32,6 +39,11 @@ import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.TextIdentificationField;
 import org.rulelearn.types.UUIDIdentificationField;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import com.univocity.parsers.conversions.TrimConversion;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -44,6 +56,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class InformationTableBuilder {
+	
 	/** 
 	 * Default string representations of missing value.
 	 */
@@ -96,18 +109,16 @@ public class InformationTableBuilder {
 	 */
 	public InformationTableBuilder(Attribute[] attributes) {
 		this();
-		
-		this.attributes = attributes;
-		
 		// check attributes and initialize fields
 		if (attributes != null) {
 			for (Attribute attribute : attributes) {
-				if (attribute == null) throw new NullPointerException("At least one attribute is not set");
+				if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
 			}
+			this.attributes = attributes;
 			this.fields = new ObjectArrayList<Field []>();
 		}
 		else {
-			throw new NullPointerException("Attributes are not set");
+			throw new NullPointerException("Attributes are not set.");
 		}
 	}
 	
@@ -116,10 +127,11 @@ public class InformationTableBuilder {
 	 * 
 	 * @param attributes table with attributes
 	 * @param separator separator of object's evaluations
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
+	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or separator have not been set
 	 */
 	public InformationTableBuilder(Attribute[] attributes, String separator) {
 		this(attributes);
+		notNull(separator, "Separator is null.");
 		this.separator = separator;
 	}
 	
@@ -127,12 +139,13 @@ public class InformationTableBuilder {
 	 * Constructor initializing this information table builder, setting attributes, and missing values strings (i.e., array of strings representing missing values).
 	 * 
 	 * @param attributes table with attributes
-	 * @param missingValuesStrings array of string representations of missing values
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
+	 * @param missingValueStrings array of string representations of missing values
+	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or strings representing missing values have not been set 
 	 */
-	public InformationTableBuilder(Attribute[] attributes, String [] missingValuesStrings) {
+	public InformationTableBuilder(Attribute[] attributes, String [] missingValueStrings) {
 		this(attributes);
-		this.missingValueStrings = missingValuesStrings;
+		notNull(missingValueStrings, "Missing value strings array is null.");
+		this.missingValueStrings = missingValueStrings;
 	}
 	
 	/**
@@ -140,12 +153,13 @@ public class InformationTableBuilder {
 	 * 
 	 * @param attributes table with attributes
 	 * @param separator separator of object's evaluations
-	 * @param missingValuesStrings array of string representations of missing values
-	 * @throws NullPointerException if all or some of attributes of the constructed information table have not been set
+	 * @param missingValueStrings array of string representations of missing values
+	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or sparator, and/or strings representing missing values have not been set
 	 */
-	public InformationTableBuilder(Attribute[] attributes, String separator, String [] missingValuesStrings) {
+	public InformationTableBuilder(Attribute[] attributes, String separator, String [] missingValueStrings) {
 		this(attributes, separator);
-		this.missingValueStrings = missingValuesStrings;
+		notNull(missingValueStrings, "Missing value strings array is null.");
+		this.missingValueStrings = missingValueStrings;
 	}
 	
 	/**
@@ -181,16 +195,16 @@ public class InformationTableBuilder {
 	 * @throws IndexOutOfBoundsException if given attribute index does not correspond to any attribute of the constructed information table
 	 */
 	public void addObject(String[] objectDescriptions) {
-		Field[] object = new Field[objectDescriptions.length];
-		if (objectDescriptions.length > attributes.length)
-			throw new IndexOutOfBoundsException("Object has more evaluations than the number of attributes declared.");
+		if (objectDescriptions.length != attributes.length)
+			throw new IndexOutOfBoundsException("Object has different number of evaluations than the number of attributes declared.");
 		
-		for (int i = 0; i < objectDescriptions.length; i++) {
-			if (attributes[i] instanceof EvaluationAttribute) {
-				object[i] = parseEvaluation(objectDescriptions[i], (EvaluationAttribute)attributes[i]);
+		Field[] object = new Field[this.attributes.length];
+		for (int i = 0; i < this.attributes.length; i++) {
+			if (this.attributes[i] instanceof EvaluationAttribute) {
+				object[i] = parseEvaluation(objectDescriptions[i], (EvaluationAttribute)this.attributes[i]);
 			}
-			else if (attributes[i] instanceof IdentificationAttribute) {
-				object[i] = parseIdentification(objectDescriptions[i], (IdentificationAttribute)attributes[i]);
+			else if (this.attributes[i] instanceof IdentificationAttribute) {
+				object[i] = parseIdentification(objectDescriptions[i], (IdentificationAttribute)this.attributes[i]);
 			}
 		}
 		
@@ -211,7 +225,6 @@ public class InformationTableBuilder {
 		EvaluationField field = null;
 		boolean missingValue = false;
 	
-		
 		// get rid of white spaces
 		evaluation = trimConversion.execute(evaluation);
 		// check whether it is a missing value
@@ -308,7 +321,7 @@ public class InformationTableBuilder {
 		
 		return field;
 	}
-		
+	
 	/**
 	 * Builds information table.
 	 * 
@@ -317,7 +330,230 @@ public class InformationTableBuilder {
 	public InformationTable build() {
 		return new InformationTable(attributes, fields);
 	}
+	
+	/**
+	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored in CSV format.
+	 * Internally it uses {@link InformationTableBuilder#safelyBuildFromCSVFile(String, String, boolean, char)}.
+	 * 
+	 * No header in parsed CSV file, and default separator {@link org.rulelearn.data.csv.ObjectBuilder#DEFAULT_SEPARATOR} is assumed.
+	 * 
+	 * @param pathToJSONAttributeFile a path to JSON file with attributes
+	 * @param pathToCSVObjectFile a path to the CSV file with objects
+	 * 
+	 * @return constructed information table or {@code null} value provided that it was not possible to construct the table
+	 * @throws NullPointerException if path to JSON file and/or path to CSV file have not been set
+	 * @throws IOException when there is problem with handling JSON file and/or CSV file
+	 * @throws FileNotFoundException when JSON file and/or CSV file cannot be found
+	 * @throws UnsupportedEncodingException when encoding of CSV file is not supported
+	 */
+	public static InformationTable buildFromCSVFile(String pathToJSONAttributeFile, String pathToCSVObjectFile) throws IOException, FileNotFoundException, UnsupportedEncodingException {
+		return safelyBuildFromCSVFile(pathToJSONAttributeFile, pathToCSVObjectFile, false, org.rulelearn.data.csv.ObjectBuilder.DEFAULT_SEPARATOR);
+	}
+	
+	/**
+	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored in CSV format.
+	 * Internally it uses {@link InformationTableBuilder#safelyBuildFromCSVFile(String, String, boolean, char)}.
+	 * 
+	 * No header in parsed CSV file is assumed.
+	 * 
+	 * @param pathToJSONAttributeFile a path to JSON file with attributes
+	 * @param pathToCSVObjectFile a path to the CSV file with objects
+	 * @param separator representation of a separator of fields in CSV file
+	 * 
+	 * @return constructed information table or {@code null} value provided that it was not possible to construct the table
+	 * @throws NullPointerException if path to JSON file and/or path to CSV file have not been set
+	 * @throws IOException when there is problem with handling JSON file and/or CSV file
+	 * @throws FileNotFoundException when JSON file and/or CSV file cannot be found
+	 * @throws UnsupportedEncodingException when encoding of CSV file is not supported
+	 */
+	public static InformationTable buildFromCSVFile(String pathToJSONAttributeFile, String pathToCSVObjectFile, char separator) throws IOException, FileNotFoundException, UnsupportedEncodingException {
+		return safelyBuildFromCSVFile(pathToJSONAttributeFile, pathToCSVObjectFile, false, separator);
+	}
+	
+	/**
+	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored in CSV format.
+	 * Internally it uses {@link InformationTableBuilder#safelyBuildFromCSVFile(String, String, boolean, char)}.
+	 * 
+	 * Default separator {@link org.rulelearn.data.csv.ObjectBuilder#DEFAULT_SEPARATOR} is assumed.
+	 * 
+	 * @param pathToJSONAttributeFile a path to JSON file with attributes
+	 * @param pathToCSVObjectFile a path to the CSV file with objects
+	 * @param header indicates whether header is present in CSV file
+	 * 
+	 * @return constructed information table or {@code null} value provided that it was not possible to construct the table
+	 * @throws NullPointerException if path to JSON file and/or path to CSV file have not been set
+	 * @throws IOException when there is problem with handling JSON file and/or CSV file
+	 * @throws FileNotFoundException when JSON file and/or CSV file cannot be found
+	 * @throws UnsupportedEncodingException when encoding of CSV file is not supported
+	 */
+	public static InformationTable buildFromCSVFile(String pathToJSONAttributeFile, String pathToCSVObjectFile, boolean header) throws IOException, FileNotFoundException, UnsupportedEncodingException {
+		return safelyBuildFromCSVFile(pathToJSONAttributeFile, pathToCSVObjectFile, header, org.rulelearn.data.csv.ObjectBuilder.DEFAULT_SEPARATOR);
+	}
+	
+	/**
+	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored in CSV format.
+	 * Internally it uses {@link InformationTableBuilder#safelyBuildFromCSVFile(String, String, boolean, char)}.
+	 * 
+	 * @param pathToJSONAttributeFile a path to JSON file with attributes
+	 * @param pathToCSVObjectFile a path to the CSV file with objects
+	 * @param header indicates whether header is present in CSV file
+	 * @param separator representation of a separator of fields in CSV file
+	 * 
+	 * @return constructed information table or {@code null} value provided that it was not possible to construct the table
+	 * @throws NullPointerException if path to JSON file and/or path to CSV file have not been set
+	 * @throws IOException when there is problem with handling JSON file and/or CSV file
+	 * @throws FileNotFoundException when JSON file and/or CSV file cannot be found
+	 * @throws UnsupportedEncodingException when encoding of CSV file is not supported
+	 */
+	public static InformationTable buildFromCSVFile(String pathToJSONAttributeFile, String pathToCSVObjectFile, boolean header, char separator) throws IOException, FileNotFoundException, UnsupportedEncodingException {
+		return safelyBuildFromCSVFile(pathToJSONAttributeFile, pathToCSVObjectFile, header, separator);
+	}
+	
+	/**
+	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored in CSV format.
+	 * Internally it uses {@link InformationTableBuilder#safelyBuildFromCSVFile(String, String, boolean, char)}.
+	 * 
+	 * Default separator {@link org.rulelearn.data.csv.ObjectBuilder#DEFAULT_SEPARATOR} is assumed.
+	 * 
+	 * @param pathToJSONAttributeFile a path to JSON file with attributes
+	 * @param pathToCSVObjectFile a path to the CSV file with objects
+	 * @param header indicates whether header is present in CSV file
+	 * 
+	 * @return constructed information table or {@code null} value provided that it was not possible to construct the table
+	 * @throws NullPointerException if path to JSON file and/or path to CSV file have not been set
+	 * @throws IOException when there is problem with handling JSON file and/or CSV file
+	 * @throws FileNotFoundException when JSON file and/or CSV file cannot be found
+	 * @throws UnsupportedEncodingException when encoding of CSV file is not supported
+	 */
+	public static InformationTable safelyBuildFromCSVFile(String pathToJSONAttributeFile, String pathToCSVObjectFile, boolean header) throws IOException, FileNotFoundException, UnsupportedEncodingException {
+		return safelyBuildFromCSVFile(pathToJSONAttributeFile, pathToCSVObjectFile, header, org.rulelearn.data.csv.ObjectBuilder.DEFAULT_SEPARATOR);
+	}
+	
+	/**
+	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored in CSV format.
+	 * Internally it uses attribute deserializer {@link AttributeDeserializer} to load attributes and object builder {@link org.rulelearn.data.csv.ObjectBuilder} to load objects.
+	 * 
+	 * @param pathToJSONAttributeFile a path to JSON file with attributes
+	 * @param pathToCSVObjectFile a path to the CSV file with objects
+	 * @param header indicates whether header is present in CSV file
+	 * @param separator representation of a separator of fields in CSV file
+	 * 
+	 * @return constructed information table or {@code null} value provided that it was not possible to construct the table 
+	 * @throws NullPointerException if path to JSON file and/or path to CSV file have not been set
+	 * @throws IOException when there is problem with handling JSON file and/or CSV file
+	 * @throws FileNotFoundException when JSON file and/or CSV file cannot be found
+	 * @throws UnsupportedEncodingException when encoding of CSV file is not supported
+	 */
+	public static InformationTable safelyBuildFromCSVFile(String pathToJSONAttributeFile, String pathToCSVObjectFile, boolean header, char separator) throws IOException, FileNotFoundException, UnsupportedEncodingException {
+		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");
+		notNull(pathToCSVObjectFile, "Path to CSV file with objects is null.");
+		
+		Attribute [] attributes = null;
+		List<String []> objects = null;
+		InformationTableBuilder informationTableBuilder = null;
+		InformationTable informationTable = null;
+		
+		// load attributes
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		
+		try (JsonReader jsonReader = new JsonReader(new FileReader(pathToJSONAttributeFile))) {
+			attributes = gson.fromJson(jsonReader, Attribute[].class);
+			
+			// construct information table builder
+			if (attributes != null) {
+				// load objects 
+				org.rulelearn.data.csv.ObjectBuilder ob = new org.rulelearn.data.csv.ObjectBuilder.Builder().attributes(attributes).header(header).separator(separator).build();
+				objects = ob.getObjects(pathToCSVObjectFile);
+				informationTableBuilder = new InformationTableBuilder(attributes, new String[] {org.rulelearn.data.csv.ObjectBuilder.DEFAULT_MISSING_VALUE_STRING});
+				if (objects != null) {
+					for (int i = 0; i < objects.size(); i++) {
+						informationTableBuilder.addObject(objects.get(i));
+					}
+				}
+			}
+		}
+		
+		// build information table
+		if (informationTableBuilder != null) {
+			informationTable = informationTableBuilder.build();
+		}
+		
+		return informationTable;
+	}
 
+	/**
+	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored also in JSON format.
+	 * Internally it uses {@link InformationTableBuilder#safelyBuildFromJSONFile(String, String)}.
+	 * 
+	 * @param pathToJSONAttributeFile a path to JSON file with attributes
+	 * @param pathToJSONObjectFile a path to the JSON file with objects
+	 * @throws NullPointerException if path to any JSON file has not been set
+	 * @throws IOException when there is problem with handling JSON file
+	 * @throws FileNotFoundException when JSON file cannot be found
+	 * 
+	 * @return constructed information table
+	 */
+	public static InformationTable buildFromJSONFile(String pathToJSONAttributeFile, String pathToJSONObjectFile) throws IOException, FileNotFoundException {
+		return safelyBuildFromJSONFile(pathToJSONAttributeFile, pathToJSONObjectFile);
+	}
+	
+	/**
+	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored also in JSON format.
+	 * Internally it uses attribute deserializer {@link AttributeDeserializer} to load attributes and object builder {@link org.rulelearn.data.json.ObjectBuilder} to load objects.
+	 * 
+	 * @param pathToJSONAttributeFile a path to JSON file with attributes
+	 * @param pathToJSONObjectFile a path to the JSON file with objects
+	 * @return constructed information table
+	 * @throws NullPointerException if path to any JSON file has not been set
+	 * @throws IOException when there is problem with handling JSON file
+	 * @throws FileNotFoundException when JSON file cannot be found
+	 */
+	public static InformationTable safelyBuildFromJSONFile(String pathToJSONAttributeFile, String pathToJSONObjectFile) throws IOException, FileNotFoundException {
+		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");
+		notNull(pathToJSONObjectFile, "Path to JSON file with objects is null.");
+		
+		Attribute [] attributes = null;
+		List<String []> objects = null;
+		InformationTableBuilder informationTableBuilder = null;
+		InformationTable informationTable = null;
+		
+		// load attributes
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		
+		try(JsonReader jsonAttributesReader = new JsonReader(new FileReader(pathToJSONAttributeFile))) {
+			attributes = gson.fromJson(jsonAttributesReader, Attribute[].class);
+			// load objects
+			JsonElement json = null;
+			try(JsonReader jsonObjectsReader = new JsonReader(new FileReader(pathToJSONObjectFile))) {
+				JsonParser jsonParser = new JsonParser();
+				json = jsonParser.parse(jsonObjectsReader);
+			}
+			org.rulelearn.data.json.ObjectBuilder ob = new org.rulelearn.data.json.ObjectBuilder.Builder(attributes).build();
+			objects = ob.getObjects(json);
+			
+			// construct information table builder
+			if (attributes != null) {
+				informationTableBuilder = new InformationTableBuilder(attributes, new String[] {org.rulelearn.data.json.ObjectBuilder.DEFAULT_MISSING_VALUE_STRING});
+				if (objects != null) {
+					for (int i = 0; i < objects.size(); i++) {
+						informationTableBuilder.addObject(objects.get(i));
+					}
+				}
+			}
+		}
+		
+		// build information table
+		if (informationTableBuilder != null) {
+			informationTable = informationTableBuilder.build();
+		}
+
+		return informationTable;
+	}
+	
 	/**
 	 * Gets missing value strings.
 	 * 

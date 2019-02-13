@@ -17,6 +17,7 @@
 package org.rulelearn.data;
 
 import java.util.Objects;
+
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.UnknownSimpleField;
 
@@ -47,6 +48,16 @@ public class EvaluationAttribute extends Attribute {
 	 */
 	protected AttributePreferenceType preferenceType;
 	
+	/**
+	 * Constructs this evaluation attribute.
+	 * 
+	 * @param name name of the constructed attribute
+	 * @param active activity status of the constructed attribute
+	 * @param type attribute type of the constructed attribute - see {@link AttributeType}
+	 * @param valueType evaluation value type
+	 * @param missingValueType type of missing value on the constructed attribute
+	 * @param preferenceType preference type of the constructed attribute - see {@link AttributePreferenceType}
+	 */
 	public EvaluationAttribute (String name, boolean active, AttributeType type, EvaluationField valueType, UnknownSimpleField missingValueType, AttributePreferenceType preferenceType) {
 		super(name, active);
 		this.type = type;
@@ -142,7 +153,7 @@ public class EvaluationAttribute extends Attribute {
 	/**
      * Gets hash code of this attribute.
      *
-     * @return hash code of this field
+     * @return hash code of this attribute
      */
 	@Override
 	public int hashCode () {

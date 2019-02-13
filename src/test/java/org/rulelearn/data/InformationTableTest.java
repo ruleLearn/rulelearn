@@ -16,11 +16,15 @@
 
 package org.rulelearn.data;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rulelearn.core.InvalidValueException;
@@ -182,6 +186,38 @@ class InformationTableTest {
 		} catch (Exception exception) {
 			fail("Should create information table for an empty list of attributes and objects' fields.");
 		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#InformationTable(InformationTable, boolean)} class constructor.
+	 * Tests if given information table is properly copied.
+	 */
+	@Test
+	public void testInformationTable05() {
+		InformationTable informationTable = configuration02.getInformationTable(false);
+		
+		InformationTable copiedInformationTable = new InformationTable(informationTable, true);
+		
+		assertEquals(copiedInformationTable.getAttributes().length, informationTable.getAttributes().length);
+		int attributesCount = copiedInformationTable.getAttributes().length;
+		for (int i = 0; i < attributesCount; i++) {
+			assertEquals(copiedInformationTable.getAttributes()[i], informationTable.getAttributes()[i]);
+		}
+		assertEquals(copiedInformationTable.getIndex2IdMapper(), informationTable.getIndex2IdMapper());
+		assertEquals(copiedInformationTable.getActiveConditionAttributeFields(), informationTable.getActiveConditionAttributeFields());
+		assertEquals(copiedInformationTable.getNotActiveOrDescriptionAttributeFields(), informationTable.getNotActiveOrDescriptionAttributeFields());
+		assertEquals(copiedInformationTable.getDecisions().length, informationTable.getDecisions().length);
+		int decisionsCount = copiedInformationTable.getDecisions().length;
+		for (int i = 0; i < decisionsCount; i++) {
+			assertEquals(copiedInformationTable.getDecisions()[i], informationTable.getDecisions()[i]);
+		}
+		assertEquals(copiedInformationTable.getIdentifiers().length, informationTable.getIdentifiers().length);
+		int identifiersCount = copiedInformationTable.getIdentifiers().length;
+		for (int i = 0; i < identifiersCount; i++) {
+			assertEquals(copiedInformationTable.getIdentifiers()[i], informationTable.getIdentifiers()[i]);
+		}
+		assertEquals(copiedInformationTable.getActiveIdentificationAttributeIndex(), informationTable.getActiveIdentificationAttributeIndex());
+		assertEquals(copiedInformationTable.attributeMap, informationTable.attributeMap);
 	}
 	
 	/**

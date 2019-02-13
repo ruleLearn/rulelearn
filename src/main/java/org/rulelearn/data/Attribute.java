@@ -17,6 +17,7 @@
 package org.rulelearn.data;
 
 import java.util.Objects;
+
 import org.rulelearn.types.Field;
 
 /**
@@ -36,7 +37,12 @@ public abstract class Attribute {
 	 */
 	protected boolean active = true;
 	
-	
+	/**
+	 * Constructs this attribute using given name and activity status.
+	 * 
+	 * @param name name of the constructed attribute
+	 * @param active activity status of the constructed attribute
+	 */
 	public Attribute (String name, boolean active) {
 		this.name = name;
 		this.active = active;
@@ -98,7 +104,7 @@ public abstract class Attribute {
 	/**
      * Gets hash code of this attribute.
      *
-     * @return hash code of this field
+     * @return hash code of this attribute
      */
 	@Override
 	public int hashCode () {
