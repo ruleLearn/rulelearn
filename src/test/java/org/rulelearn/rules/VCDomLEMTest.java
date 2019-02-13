@@ -296,10 +296,7 @@ class VCDomLEMTest {
 						{ "q", "5",    "13",   "0"}
 				});
 		
-		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(
-				informationTableTestConfiguration.getAttributes(),
-				informationTableTestConfiguration.getListOfFields(),
-				true); //TODO: use copy constructor from develop branch
+		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(informationTableTestConfiguration.getInformationTable(true));
 		
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();

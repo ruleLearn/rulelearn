@@ -126,7 +126,7 @@ public class InformationTable {
 	
 	/**
 	 * Maps local index of an active condition attribute (called AC-attribute) to the global index of this attribute
-	 * in the array of all attributes of this information table.
+	 * in the array of all attributes of this information table. Can be empty, but should not be {@code null}.
 	 */
 	Int2IntMap localActiveConditionAttributeIndex2GlobalAttributeIndexMap;
 	
@@ -149,7 +149,7 @@ public class InformationTable {
 	protected InformationTable(Attribute[] attributes, Index2IdMapper mapper, Table<EvaluationAttribute, EvaluationField> activeConditionAttributeFields, Table<Attribute, Field> notActiveOrDescriptionAttributeFields,
 			Decision[] decisions, 
 			IdentificationField[] activeIdentificationAttributeFields, int activeIdentificationAttributeIndex,
-			int[] attributeMap, boolean accelerateByReadOnlyParams) {
+			int[] attributeMap, Int2IntMap localActiveConditionAttributeIndex2GlobalAttributeIndexMap, boolean accelerateByReadOnlyParams) {
 		this.attributes = accelerateByReadOnlyParams ? attributes : attributes.clone();
 		this.mapper = mapper;
 		this.activeConditionAttributeFields = activeConditionAttributeFields;
@@ -162,6 +162,8 @@ public class InformationTable {
 		this.activeIdentificationAttributeIndex = activeIdentificationAttributeIndex;
 		
 		this.attributeMap = accelerateByReadOnlyParams ? attributeMap : attributeMap.clone();
+		this.localActiveConditionAttributeIndex2GlobalAttributeIndexMap = accelerateByReadOnlyParams ? localActiveConditionAttributeIndex2GlobalAttributeIndexMap :
+			new Int2IntOpenHashMap(localActiveConditionAttributeIndex2GlobalAttributeIndexMap);
 	}
 	
 	
@@ -213,9 +215,6 @@ public class InformationTable {
 				numberOfActiveConditionAttributes++;
 			} else if (isActiveDecisionAttribute(attributes[i])) {
 				numberOfActiveDecisionAttributes++;
-//				if (numberOfActiveDecisionAttributes > 1) {
-//					throw new InvalidValueException("The number of active decision attributes is greater than 1.");
-//				}
 			} else if (isActiveIdentificationAttribute(attributes[i])) {
 				numberOfActiveIdentificationAttributes++;
 				if (numberOfActiveIdentificationAttributes > 1) {
@@ -361,7 +360,9 @@ public class InformationTable {
 		this.decisions = informationTable.getDecisions(accelerateByReadOnlyResult);
 		this.activeIdentificationAttributeFields = informationTable.getIdentifiers(accelerateByReadOnlyResult);
 		this.activeIdentificationAttributeIndex = informationTable.getActiveIdentificationAttributeIndex();
-		this.attributeMap = informationTable.attributeMap;
+		this.attributeMap = accelerateByReadOnlyResult ? informationTable.attributeMap : informationTable.attributeMap.clone();
+		this.localActiveConditionAttributeIndex2GlobalAttributeIndexMap = accelerateByReadOnlyResult ? informationTable.localActiveConditionAttributeIndex2GlobalAttributeIndexMap :
+			new Int2IntOpenHashMap(informationTable.localActiveConditionAttributeIndex2GlobalAttributeIndexMap);
 	}
 	
 	/**
@@ -748,7 +749,8 @@ public class InformationTable {
 		}
 		
 		return new InformationTable(this.attributes, newMapper, newActiveConditionAttributeFields, newNotActiveOrDescriptionAttributeFields,
-				newDecisions, newActiveIdentificationAttributeFields, this.activeIdentificationAttributeIndex, this.attributeMap, accelerateByReadOnlyResult);
+				newDecisions, newActiveIdentificationAttributeFields, this.activeIdentificationAttributeIndex, this.attributeMap,
+				this.localActiveConditionAttributeIndex2GlobalAttributeIndexMap, accelerateByReadOnlyResult);
 	}
 	
 	/**

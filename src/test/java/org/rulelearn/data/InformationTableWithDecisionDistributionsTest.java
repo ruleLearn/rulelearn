@@ -208,7 +208,12 @@ class InformationTableWithDecisionDistributionsTest {
 			assertEquals(copiedInformationTable.getIdentifiers()[i], informationTable.getIdentifiers()[i]);
 		}
 		assertEquals(copiedInformationTable.getActiveIdentificationAttributeIndex(), informationTable.getActiveIdentificationAttributeIndex());
-		assertEquals(copiedInformationTable.attributeMap, informationTable.attributeMap);
+		assertEquals(copiedInformationTable.attributeMap.length, informationTable.attributeMap.length);
+		for (int i = 0; i < copiedInformationTable.attributeMap.length; i++) {
+			assertEquals(copiedInformationTable.attributeMap[i], informationTable.attributeMap[i]);
+		}
+		assertEquals(copiedInformationTable.localActiveConditionAttributeIndex2GlobalAttributeIndexMap,
+				informationTable.localActiveConditionAttributeIndex2GlobalAttributeIndexMap);
 		
 		//test if additionally distributions are created
 		assertNotNull(copiedInformationTable.getDecisionDistribution());
