@@ -58,7 +58,7 @@ class CoverageInApproximationMeasureTest {
 	 * Test for method {@link CoverageInApproximationMeasure#evaluate(RuleConditions)}.
 	 */
 	@Test
-	void testEvalueate() {
+	void testEvaluate() {
 		CoverageInApproximationMeasure coverageInApproximationMeasure = CoverageInApproximationMeasure.getInstance();
 		
 		assertEquals(6, coverageInApproximationMeasure.evaluate(this.ruleConditionsMock));
@@ -68,7 +68,7 @@ class CoverageInApproximationMeasureTest {
 	 * Test for method {@link CoverageInApproximationMeasure#evaluateWithCondition(RuleConditions, Condition)}.
 	 */
 	@Test
-	void testEvalueateWithCondition01() {
+	void testEvaluateWithCondition01() {
 		CoverageInApproximationMeasure coverageInApproximationMeasure = CoverageInApproximationMeasure.getInstance();
 		
 		assertEquals(5, coverageInApproximationMeasure.evaluateWithCondition(this.ruleConditionsMock, this.conditionMock));
@@ -78,7 +78,7 @@ class CoverageInApproximationMeasureTest {
 	 * Test for method {@link CoverageInApproximationMeasure#evaluateWithCondition(RuleConditions, Condition)}.
 	 */
 	@Test
-	void testEvalueateWithCondition02() {
+	void testEvaluateWithCondition02() {
 		CoverageInApproximationMeasure coverageInApproximationMeasure = CoverageInApproximationMeasure.getInstance();
 		
 		assertEquals(Double.MIN_VALUE, coverageInApproximationMeasure.evaluateWithCondition(this.ruleConditionsMock, null));
@@ -88,7 +88,7 @@ class CoverageInApproximationMeasureTest {
 	 * Test for method {@link CoverageInApproximationMeasure#evaluateWithoutCondition(RuleConditions, int)}.
 	 */
 	@Test
-	void testEvalueateWithoutCondition() {
+	void testEvaluateWithoutCondition() {
 		CoverageInApproximationMeasure coverageInApproximationMeasure = CoverageInApproximationMeasure.getInstance();
 		
 		assertEquals(1, coverageInApproximationMeasure.evaluateWithoutCondition(this.ruleConditionsMock, 0));
