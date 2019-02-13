@@ -37,6 +37,20 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public class CoverageInApproximationMeasure implements GainTypeMeasure, RuleConditionsEvaluator, MonotonicConditionAdditionEvaluator, ConditionRemovalEvaluator {
 	
+	private static final CoverageInApproximationMeasure INSTANCE = new CoverageInApproximationMeasure();
+	
+	private CoverageInApproximationMeasure () {
+	}
+	
+	/**
+	 * Returns reference to singleton instance of coverage in approximation measure.
+	 * 
+	 * @return reference to singleton instance of coverage in approximation measure
+	 */
+	public static CoverageInApproximationMeasure getInstance() { 
+		return INSTANCE; 
+	}
+	
 	/** 
 	 * {@inheritDoc}
 	 * 

@@ -59,7 +59,7 @@ class CoverageInApproximationMeasureTest {
 	 */
 	@Test
 	void testEvalueate() {
-		CoverageInApproximationMeasure coverageInApproximationMeasure = new CoverageInApproximationMeasure();
+		CoverageInApproximationMeasure coverageInApproximationMeasure = CoverageInApproximationMeasure.getInstance();
 		
 		assertEquals(6, coverageInApproximationMeasure.evaluate(this.ruleConditionsMock));
 	}
@@ -69,7 +69,7 @@ class CoverageInApproximationMeasureTest {
 	 */
 	@Test
 	void testEvalueateWithCondition01() {
-		CoverageInApproximationMeasure coverageInApproximationMeasure = new CoverageInApproximationMeasure();
+		CoverageInApproximationMeasure coverageInApproximationMeasure = CoverageInApproximationMeasure.getInstance();
 		
 		assertEquals(5, coverageInApproximationMeasure.evaluateWithCondition(this.ruleConditionsMock, this.conditionMock));
 	}
@@ -79,7 +79,7 @@ class CoverageInApproximationMeasureTest {
 	 */
 	@Test
 	void testEvalueateWithCondition02() {
-		CoverageInApproximationMeasure coverageInApproximationMeasure = new CoverageInApproximationMeasure();
+		CoverageInApproximationMeasure coverageInApproximationMeasure = CoverageInApproximationMeasure.getInstance();
 		
 		assertEquals(Double.MIN_VALUE, coverageInApproximationMeasure.evaluateWithCondition(this.ruleConditionsMock, null));
 	}
@@ -89,7 +89,7 @@ class CoverageInApproximationMeasureTest {
 	 */
 	@Test
 	void testEvalueateWithoutCondition() {
-		CoverageInApproximationMeasure coverageInApproximationMeasure = new CoverageInApproximationMeasure();
+		CoverageInApproximationMeasure coverageInApproximationMeasure = CoverageInApproximationMeasure.getInstance();
 		
 		assertEquals(1, coverageInApproximationMeasure.evaluateWithoutCondition(this.ruleConditionsMock, 0));
 	}
@@ -99,7 +99,7 @@ class CoverageInApproximationMeasureTest {
 	 */
 	@Test
 	void testGetMonotonicityType() {
-		CoverageInApproximationMeasure coverageInApproximationMeasure = new CoverageInApproximationMeasure(); 
+		CoverageInApproximationMeasure coverageInApproximationMeasure = CoverageInApproximationMeasure.getInstance(); 
 		
 		assertEquals(MonotonicConditionAdditionEvaluator.MonotonicityType.IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS, 
 				coverageInApproximationMeasure.getMonotonictyType());
