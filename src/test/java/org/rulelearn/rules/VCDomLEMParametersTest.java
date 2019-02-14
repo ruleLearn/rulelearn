@@ -60,4 +60,21 @@ class VCDomLEMParametersTest {
 		parameters = parametersBuilder.clearConsistencyThresholds().consistencyThresholds(thresholds).build();
 		assertEquals(thresholds, parameters.getConsistencyThresholds());
 	}
+	
+	/**
+	 * Test for method {@link VCDomLEMParameters#toBuilder()}.
+	 */
+	@Test
+	void testBuilderAndToBuilder() {
+		VCDomLEMParameters parameters = new VCDomLEMParameters.VCDomLEMParametersBuilder().consistencyThreshold(VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD).consistencyThreshold(0.1).build();
+		
+		List<Double> thresholds = Arrays.asList(VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD, 0.1);
+		
+		//get builder from parameters to construct new parameters
+		VCDomLEMParameters.VCDomLEMParametersBuilder parametersBuilder = parameters.toBuilder();
+		VCDomLEMParameters newParameters = parametersBuilder.build();
+		
+		assertEquals(thresholds, newParameters.getConsistencyThresholds());
+		assertEquals(parameters.getConsistencyThresholds(), newParameters.getConsistencyThresholds());
+	}
 }
