@@ -37,6 +37,9 @@ import lombok.experimental.FieldDefaults;
 @Builder(toBuilder = true)
 @FieldDefaults(makeFinal = true)
 public class VCDomLEMParameters {
+	
+	// TODO modify getters of array fields to provide copy of array by default (and reference in a specific getter)
+	
 	public static final double DEFAULT_CONSISTENCY_TRESHOLD = 0.0;
 	public static final ConditionAdditionEvaluator[] DEFAULT_CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {EpsilonConsistencyMeasure.getInstance(), 
 			CoverageInApproximationMeasure.getInstance()};
@@ -83,4 +86,12 @@ public class VCDomLEMParameters {
 	@NonNull
 	@Builder.Default
 	private RuleMinimalityChecker ruleMinimalityChecker = new SingleEvaluationRuleMinimalityChecker(EpsilonConsistencyMeasure.getInstance());
+	
+	@NonNull
+	@Builder.Default
+	RuleType ruleType = RuleType.CERTAIN; //certain/possible
+	
+	@NonNull
+	@Builder.Default
+	AllowedObjectsType allowedObjectsType = AllowedObjectsType.POSITIVE_REGION;
 }
