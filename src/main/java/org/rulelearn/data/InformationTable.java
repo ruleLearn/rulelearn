@@ -142,6 +142,7 @@ public class InformationTable {
 	 * @param activeIdentificationAttributeFields list of identifiers of subsequent objects
 	 * @param activeIdentificationAttributeIndex index of the only active identification attribute
 	 * @param attributeMap see {@link #attributeMap}
+	 * @param localActiveConditionAttributeIndex2GlobalAttributeIndexMap see {@link #localActiveConditionAttributeIndex2GlobalAttributeIndexMap}
 	 * @param accelerateByReadOnlyParams tells if construction of this information table should be accelerated by assuming that the given references
 	 *        to arrays are not going to be used outside this class
 	 *        to modify that arrays (and thus, this object does not need to clone the arrays for internal read-only use)

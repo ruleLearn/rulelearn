@@ -20,8 +20,6 @@ import java.util.List;
 
 import org.rulelearn.approximations.ApproximatedSet;
 import org.rulelearn.core.Precondition;
-import org.rulelearn.core.ReadOnlyArrayReference;
-import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -58,9 +56,7 @@ public class VCDomLEM {
 	
 	//TODO: write javadoc
 	public RuleSet generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider) {
-		//TODO: validate method parameters
-		RuleType ruleType = RuleType.CERTAIN; //TODO: use field from private VC-DomLEM parameters, once available
-		AllowedObjectsType allowedObjectsType = AllowedObjectsType.POSITIVE_REGION; //TODO: use field from private VC-DomLEM parameters, once available
+		//TODO: validate method parameters (also checking number of thresholds w.r.t. the number of approximated sets)
 		
 		List<RuleConditionsWithApproximatedSet> minimalRuleConditionsWithApproximatedSets = new ObjectArrayList<RuleConditionsWithApproximatedSet>(); //rule conditions for approximated sets considered so far
 		List<RuleConditions> approximatedSetRuleConditions; //rule conditions for current approximated set
@@ -72,7 +68,8 @@ public class VCDomLEM {
 		
 		for (int i = 0; i < approximatedSetsCount; i++) {
 			approximatedSet = approximatedSetProvider.getApproximatedSet(i);
-			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, ruleType, allowedObjectsType, approximatedSetRuleDecisionsProvider);
+			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, vcDomLEMParameters.getRuleType(), vcDomLEMParameters.getAllowedObjectsType(),
+					approximatedSetRuleDecisionsProvider);
 			
 			verifiedRuleConditionsWithApproximatedSet = new ObjectArrayList<RuleConditionsWithApproximatedSet>();
 			for (RuleConditions ruleConditions : approximatedSetRuleConditions) { //verify minimality of each rule conditions
@@ -90,7 +87,7 @@ public class VCDomLEM {
 		int ruleIndex = 0;
 		
 		for (RuleConditionsWithApproximatedSet minimalRuleConditionsWithApproximatedSet : minimalRuleConditionsWithApproximatedSets ) {
-			rules[ruleIndex] = new Rule(ruleType, approximatedSetRuleDecisionsProvider.getRuleSemantics(minimalRuleConditionsWithApproximatedSet.getApproximatedSet()),
+			rules[ruleIndex] = new Rule(vcDomLEMParameters.getRuleType(), approximatedSetRuleDecisionsProvider.getRuleSemantics(minimalRuleConditionsWithApproximatedSet.getApproximatedSet()),
 					minimalRuleConditionsWithApproximatedSet.getRuleConditions(),
 					approximatedSetRuleDecisionsProvider.getRuleDecisions(minimalRuleConditionsWithApproximatedSet.getApproximatedSet()));
 			ruleCoverageInformationArray[ruleIndex] = minimalRuleConditionsWithApproximatedSet.getRuleConditions().getRuleCoverageInformation();
