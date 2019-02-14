@@ -23,7 +23,6 @@ import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 
-import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -54,14 +53,13 @@ public class VCDomLEM {
 	 */
 	public VCDomLEM(VCDomLEMParameters vcDomLEMParameters) {
 		Precondition.notNull(vcDomLEMParameters, "VC-DomLEM parameters are null.");
-		this.vcDomLEMParameters = vcDomLEMParameters; //TODO: copy VC-DomLEM parameters
+		this.vcDomLEMParameters = vcDomLEMParameters;
 	}
 	
 	//TODO: write javadoc
 	public RuleSet generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider) {
 		//TODO: validate method parameters
 		RuleType ruleType = RuleType.CERTAIN; //TODO: use field from private VC-DomLEM parameters, once available
-		RuleSemantics ruleSemantics = RuleSemantics.AT_LEAST; //TODO: use field from private VC-DomLEM parameters, once available
 		AllowedObjectsType allowedObjectsType = AllowedObjectsType.POSITIVE_REGION; //TODO: use field from private VC-DomLEM parameters, once available
 		
 		List<RuleConditionsWithApproximatedSet> minimalRuleConditionsWithApproximatedSets = new ObjectArrayList<RuleConditionsWithApproximatedSet>(); //rule conditions for approximated sets considered so far
@@ -74,7 +72,7 @@ public class VCDomLEM {
 		
 		for (int i = 0; i < approximatedSetsCount; i++) {
 			approximatedSet = approximatedSetProvider.getApproximatedSet(i);
-			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, ruleType, ruleSemantics, allowedObjectsType);
+			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, ruleType, allowedObjectsType, approximatedSetRuleDecisionsProvider);
 			
 			verifiedRuleConditionsWithApproximatedSet = new ObjectArrayList<RuleConditionsWithApproximatedSet>();
 			for (RuleConditions ruleConditions : approximatedSetRuleConditions) { //verify minimality of each rule conditions
@@ -92,7 +90,8 @@ public class VCDomLEM {
 		int ruleIndex = 0;
 		
 		for (RuleConditionsWithApproximatedSet minimalRuleConditionsWithApproximatedSet : minimalRuleConditionsWithApproximatedSets ) {
-			rules[ruleIndex] = new Rule(ruleType, ruleSemantics, minimalRuleConditionsWithApproximatedSet.getRuleConditions(),
+			rules[ruleIndex] = new Rule(ruleType, approximatedSetRuleDecisionsProvider.getRuleSemantics(minimalRuleConditionsWithApproximatedSet.getApproximatedSet()),
+					minimalRuleConditionsWithApproximatedSet.getRuleConditions(),
 					approximatedSetRuleDecisionsProvider.getRuleDecisions(minimalRuleConditionsWithApproximatedSet.getApproximatedSet()));
 			ruleCoverageInformationArray[ruleIndex] = minimalRuleConditionsWithApproximatedSet.getRuleConditions().getRuleCoverageInformation();
 			ruleIndex++;
@@ -102,15 +101,8 @@ public class VCDomLEM {
 	}
 	
 	//TODO: write javadoc
-	public RuleSet generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider,
-			DoubleList consistencyThresholds) {
-		//TODO: validate method parameters
-		//this.vcDomLEMParameters.setConsistencyThresholds(consistencyThresholds); //TODO: overwrite consistency thresholds stored in internal VC-DomLEM parameters
-		return this.generateRules(approximatedSetProvider, approximatedSetRuleDecisionsProvider);
-	}
-	
-	//TODO: write javadoc
-	private List<RuleConditions> calculateApproximatedSetRuleConditionsList(ApproximatedSet approximatedSet, RuleType ruleType, RuleSemantics ruleSemantics, AllowedObjectsType allowedObjectsType) {
+	private List<RuleConditions> calculateApproximatedSetRuleConditionsList(ApproximatedSet approximatedSet, RuleType ruleType, AllowedObjectsType allowedObjectsType,
+			ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider) {
 		List<RuleConditions> approximatedSetRuleConditions = new ObjectArrayList<RuleConditions>(); //the result
 		
 		IntSortedSet indicesOfApproximationObjects = null; //set of objects that need to be covered (each object by at least one rule conditions)
@@ -166,7 +158,7 @@ public class VCDomLEM {
 			ruleConditionsBuilder = new RuleConditionsBuilder(
 					indicesOfConsideredObjects, approximatedSet.getInformationTable(),
 					approximatedSet.getObjects(), indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, approximatedSet.getNeutralObjects(),
-					ruleType, ruleSemantics,
+					ruleType, approximatedSetRuleDecisionsProvider.getRuleSemantics(approximatedSet),
 					vcDomLEMParameters.getConditionGenerator(), vcDomLEMParameters.getRuleInductionStoppingConditionChecker(), vcDomLEMParameters.getConditionSeparator());
 			ruleConditions = ruleConditionsBuilder.build(); //build rule conditions
 			
@@ -184,13 +176,7 @@ public class VCDomLEM {
 	
 	//TODO: write javadoc
 	public VCDomLEMParameters getParameters() {
-		return this.getParameters(false); //TODO: return copy of private VC-DomLEM parameters
+		return this.vcDomLEMParameters;
 	}
-	
-	//TODO: write javadoc
-	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT) //TODO: is this annotation right?
-	public VCDomLEMParameters getParameters(boolean readOnlyResult) {
-		return readOnlyResult ? this.vcDomLEMParameters : this.vcDomLEMParameters; //TODO: for readOnlyResult==false, return a copy of private VC-DomLEM parameters
-	}
-	
+
 }

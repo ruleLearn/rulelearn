@@ -35,4 +35,12 @@ public interface ApproximatedSetRuleDecisionsProvider {
 	 */
 	public Rule.RuleDecisions getRuleDecisions(ApproximatedSet approximatedSet);
 	
+	/**
+	 * Gets semantics of decision rule generated for given approximated set.
+	 * 
+	 * @param approximatedSet set for which decision rule is built
+	 * @return semantics of decision rule generated for given approximated set
+	 */
+	public RuleSemantics getRuleSemantics(ApproximatedSet approximatedSet);
+	
 }

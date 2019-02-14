@@ -133,4 +133,27 @@ public class UnionRuleDecisionsProvider implements ApproximatedSetRuleDecisionsP
 		
 	}
 
+	/**
+	 * Gets semantics of decision rule generated for given union.
+	 * 
+	 * @param union union for which decision rule is built
+	 * @return semantics of decision rule generated for given union
+	 * 
+	 * @throws ClassCastException if given approximated set is not of type {@link Union}
+	 */
+	@Override
+	public RuleSemantics getRuleSemantics(ApproximatedSet union) {
+		if (!(union instanceof Union)) {
+			throw new ClassCastException("Cannot cast ApproximatedSet to Union.");
+		}
+		
+		Union aUnion = (Union)union;
+		
+		if (aUnion.getUnionType() == Union.UnionType.AT_LEAST) {
+			return RuleSemantics.AT_LEAST;
+		} else {
+			return RuleSemantics.AT_MOST;
+		}
+	}
+
 }
