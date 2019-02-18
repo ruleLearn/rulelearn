@@ -16,6 +16,8 @@
 
 package org.rulelearn.data;
 
+import java.util.Objects;
+
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
 
@@ -27,7 +29,7 @@ import org.rulelearn.core.Precondition;
  */
 public class AttributeWithContext <T extends Attribute> {
 	/**
-	 * Number (index) of the attribute in the array of all attributes.
+	 * Number (index) of the attribute in the array of all attributes of an information table.
 	 */
 	protected int attributeIndex;
 
@@ -51,9 +53,9 @@ public class AttributeWithContext <T extends Attribute> {
 	}
 	
 	/**
-	 * Gets number (index) of the attribute.
+	 * Gets number (index) of the attribute in the array of all attributes of an information table.
 	 * 
-	 * @return number (index) of the attribute
+	 * @return number (index) of the attribute in the array of all attributes of an information table
 	 */
 	public int getAttributeIndex() {
 		return this.attributeIndex;
@@ -75,6 +77,16 @@ public class AttributeWithContext <T extends Attribute> {
 	 */
 	public T getAttribute() {
 		return this.attribute;
+	}
+	
+	/**
+     * Gets hash code of this object.
+     *
+     * @return hash code of this object
+     */
+	@Override
+    public int hashCode() {
+		return Objects.hash(this.getClass(), this.attribute, this.attributeIndex);
 	}
 	
 }

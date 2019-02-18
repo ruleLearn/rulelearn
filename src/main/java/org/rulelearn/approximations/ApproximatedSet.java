@@ -16,8 +16,12 @@
 
 package org.rulelearn.approximations;
 
+import static org.rulelearn.core.Precondition.notNull;
+
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
+
 import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -25,9 +29,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSets;
-
-import static org.rulelearn.core.Precondition.notNull;
-import org.rulelearn.core.TernaryLogicValue;
 
 /**
  * Top level class for all sets of objects that can be approximated using the rough set concept.
@@ -81,32 +82,22 @@ public abstract class ApproximatedSet {
 	protected IntSortedSet objects = null;
 	
 	/**
-	 * Limiting decision, determining which objects from the information table belong to this approximated set.
-	 */
-	protected Decision limitingDecision;
-	
-	/**
-	 * Indicates if objects having decision equal to the limiting decision of this approximated set should be included in this approximated set.
-	 * Value of this field affects calculation of objects belonging to this set.
-	 * Defaults to {@code true}.
-	 */
-	protected boolean includeLimitingDecision = true;
-	
-	/**
-	 * Constructs this approximated set using given information table, limiting decision, and rough set calculator.
-	 * Calculates objects belonging to this approximated entity.
+	 * Constructs this approximated set using given information table and rough set calculator.
 	 * 
 	 * @param informationTable information table containing, among other objects, the objects belonging to this approximated set
-	 * @param limitingDecision limiting decision, determining which objects from the information table belong to this set
 	 * @param roughSetCalculator rough set calculator used to calculate approximations and boundary of this set
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public ApproximatedSet(InformationTable informationTable, Decision limitingDecision, RoughSetCalculator<? extends ApproximatedSet> roughSetCalculator) {
+	public ApproximatedSet(InformationTable informationTable, RoughSetCalculator<? extends ApproximatedSet> roughSetCalculator) {
 		this.informationTable = notNull(informationTable, "Information table for constructed approximated set is null.");
-		this.limitingDecision = notNull(limitingDecision, "Limiting decision for constructed approximated set is null.");
 		this.roughSetCalculator = notNull(roughSetCalculator, "Rough set calculator for constructed approximated set is null.");
 	}
+	
+	/**
+	 * Sole constructor, facilitating construction of subclass objects. Does not provide any initialization of fields.
+	 */
+	ApproximatedSet() {}
 	
 	/**
 	 * Gets the information table for which this approximated set was defined.
@@ -115,15 +106,6 @@ public abstract class ApproximatedSet {
 	 */
 	public InformationTable getInformationTable() {
 		return informationTable;
-	}
-
-	/**
-	 * Gets limiting decision of this set, determining which objects from the information table belong to this set.
-	 * 
-	 * @return limiting decision of this set, determining which objects from the information table belong to this set
-	 */
-	public Decision getLimitingDecision() {
-		return limitingDecision;
 	}
 	
 	/**
@@ -158,6 +140,14 @@ public abstract class ApproximatedSet {
 	 * Stored set should be unmodifiable, as obtained by {@link IntSortedSets#unmodifiable(IntSortedSet)}.
 	 */
 	protected abstract void findObjects();
+	
+	/**
+	 * Gets set of objects from information table that are neither positive nor negative with respect to this approximated set.
+	 * 
+	 * @return set of objects from information table that are neither positive nor negative with respect to this approximated set;
+	 *         if the notion of neutral objects does not make sense for particular approximated set, returns an empty set
+	 */
+	public abstract IntSortedSet getNeutralObjects();
 	
 //	/**
 //	 * Gets indices of uncomparable objects from the information table such that this set's limiting decision is uncomparable with their decision.
@@ -360,14 +350,54 @@ public abstract class ApproximatedSet {
 	/**
 	 * Tests if this approximated set is concordant with given decision.
 	 * 
-	 * @param decision decision that limiting decision of this set should be compared with
-	 * @return {@link TernaryLogicValue#TRUE} if this sets' limiting decision is concordant with given decision,
-	 *         {@link TernaryLogicValue#FALSE} if this sets' limiting decision is not concordant with given decision,
-	 *         {@link TernaryLogicValue#UNCOMPARABLE} if this sets' limiting decision is uncomparable with given decision
+	 * @param decision tested decision
+	 * @return {@link TernaryLogicValue#TRUE} if this set is concordant with given decision,
+	 *         {@link TernaryLogicValue#FALSE} if this set is not concordant with given decision,
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if this set is neither concordant nor discordant with given decision
 	 * 
 	 * @throws NullPointerException if given decision is {@code null}
 	 */
 	protected abstract TernaryLogicValue isConcordantWithDecision(Decision decision);
+	
+	/**
+	 * Tells if given decision is positive with respect to this approximated set.
+	 * 
+	 * @param decision decision to verify for being positive with respect to this approximated set
+	 * @return {@code true} if given decision is positive with respect to this approximated set,
+	 *         {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given decision is {@code null}
+	 */
+	public abstract boolean isDecisionPositive(Decision decision);
+	
+	/**
+	 * Tells if given decision is negative with respect to this approximated set.
+	 * 
+	 * @param decision decision to verify for being negative with respect to this approximated set
+	 * @return {@code true} if given decision is negative with respect to this approximated set,
+	 *         {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given decision is {@code null}
+	 */
+	public abstract boolean isDecisionNegative(Decision decision);
+	
+	/**
+	 * Tells if given object is positive with respect to this approximated set.
+	 * 
+	 * @param objectNumber index of an object from the information table
+	 * @return {@code true} if object with given number is positive with respect to this approximated set,
+	 *         {@code false} otherwise
+	 */
+	public abstract boolean isObjectPositive(int objectNumber);
+	
+	/**
+	 * Tells if given object is negative with respect to this approximated set.
+	 * 
+	 * @param objectNumber index of an object from the information table
+	 * @return {@code true} if object with given number is negative with respect to this approximated set,
+	 *         {@code false} otherwise
+	 */
+	public abstract boolean isObjectNegative(int objectNumber);
 	
 	/**
 	 * Gets the size of the set of objects that is complementary to the set of objects belonging to this approximated set.
@@ -378,15 +408,6 @@ public abstract class ApproximatedSet {
 	public abstract int getComplementarySetSize();
 
 	/**
-	 * Tells if this approximated set includes objects whose decision is equal to the limiting decision.
-	 * 
-	 * @return {@code true} if this approximated set includes objects whose decision is equal to the limiting decision, {@code false} otherwise
-	 */
-	public boolean isIncludeLimitingDecision() {
-		return includeLimitingDecision;
-	}
-	
-	/**
 	 * Tells if this approximated set is meaningful, i.e., it does not contain all the objects from the information table
 	 * 
 	 * @return {@code true} if this approximated set is meaningful, i.e., it does not contain all the objects from the information table,
@@ -395,5 +416,17 @@ public abstract class ApproximatedSet {
 	public boolean isMeaningful() {
 		return this.size() != this.informationTable.getNumberOfObjects();
 	}
+	
+	/**
+	 * Tells if this approximated set contains given set, i.e., conditions that determine what objects belong to this set are equally or less restrictive than those
+	 * conditions, that determine the objects belonging to the other set.
+	 * 
+	 * @param approximatedSet other approximated set of the same type
+	 * @return {@code true} if this set includes (contains) the other set,
+	 *         {@code false} otherwise
+	 * 
+	 * @throws ClassCastException if type of the other set prevents it from comparison with this set 
+	 */
+	public abstract boolean includes(ApproximatedSet approximatedSet);
 	
 }

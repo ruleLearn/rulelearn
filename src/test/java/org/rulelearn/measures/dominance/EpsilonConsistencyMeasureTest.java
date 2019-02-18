@@ -16,14 +16,13 @@
 
 package org.rulelearn.measures.dominance;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 import java.util.Iterator;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -31,9 +30,18 @@ import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Union.UnionType;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.DecisionDistribution;
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
-import org.rulelearn.measures.MeasureType;
+import org.rulelearn.measures.Measure;
+import org.rulelearn.rules.Condition;
+import org.rulelearn.rules.MonotonicConditionAdditionEvaluator;
+import org.rulelearn.rules.RuleConditions;
+import org.rulelearn.rules.RuleCoverageInformation;
+import org.rulelearn.types.EvaluationField;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 
 /**
  * Tests for {@link EpsilonConsistencyMeasure}. Test is based on illustrative example represented in figure (note that all criteria, including decision criterion, are gain-type): 
@@ -64,10 +72,20 @@ class EpsilonConsistencyMeasureTest {
 	@Mock
 	private Iterator<Decision> decisionClassDistributionIterator3, decisionClassDistributionIterator4, decisionClassDistributionIterator5;
 	
+	@Mock 
+	private RuleConditions ruleConditionsMock;
+	@Mock
+	private Condition<EvaluationField> conditionMock;
+	@Mock 
+	private InformationTable informationTableMock1;
+	@Mock 
+	private RuleCoverageInformation ruleCoverageInformationMock;
+	
+	
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		this.measure = new EpsilonConsistencyMeasure();
+		this.measure = EpsilonConsistencyMeasure.getInstance();
 		// mock unions
 		when(this.unionAtLeast2Mock.getUnionType()).thenReturn(UnionType.AT_LEAST);
 		when(this.unionAtLeast3Mock.getUnionType()).thenReturn(UnionType.AT_LEAST);
@@ -116,6 +134,21 @@ class EpsilonConsistencyMeasureTest {
 		when(this.coneDecisionClassDistribution5.getCount(class1)).thenReturn(1);
 		when(this.coneDecisionClassDistribution5.getCount(class2)).thenReturn(1);
 		when(this.coneDecisionClassDistribution5.getCount(class3)).thenReturn(1);
+		
+		// mock evaluation for a rule condition
+		when(this.ruleConditionsMock.getIndicesOfCoveredObjects()).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4, 5}));
+		when(this.ruleConditionsMock.getIndicesOfCoveredObjectsWithCondition(this.conditionMock)).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4}));
+		when(this.ruleConditionsMock.getIndicesOfCoveredObjectsWithoutCondition(0)).thenReturn(new IntArrayList(new int [] {4, 5}));
+		when(this.ruleConditionsMock.getIndicesOfPositiveObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {0, 1, 2, 3, 4}));
+		when(this.ruleConditionsMock.getLearningInformationTable()).thenReturn(this.informationTableMock1);
+		when(this.informationTableMock1.getNumberOfObjects()).thenReturn(10);
+		when(this.ruleConditionsMock.getIndicesOfNeutralObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {}));
+		
+		// mock evaluation of a rule coverage information
+		when(this.ruleCoverageInformationMock.getIndicesOfCoveredObjects()).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4, 5}));
+		when(this.ruleCoverageInformationMock.getIndicesOfPositiveObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {0, 1, 2}));
+		when(this.ruleCoverageInformationMock.getIndicesOfNeutralObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {4}));
+		when(this.ruleCoverageInformationMock.getAllObjectsCount()).thenReturn(10);
 	}
 
 	/**
@@ -123,7 +156,7 @@ class EpsilonConsistencyMeasureTest {
 	 */
 	@Test
 	void testGetType() {
-		assertEquals(MeasureType.COST, this.measure.getType());
+		assertEquals(Measure.MeasureType.COST, this.measure.getType());
 	}
 
 	/**
@@ -148,5 +181,54 @@ class EpsilonConsistencyMeasureTest {
 	@Test
 	void testEpsilonOnObject5withRespectToUnionAtMost1() {
 		assertEquals(((double)2)/7, this.measure.calculateConsistency(4, this.unionAtMost1Mock));
+	}
+	
+	/**
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#evaluate(RuleConditions)}.
+	 */
+	@Test
+	void testEvalueate01() {		
+		assertEquals(0.2, this.measure.evaluate(this.ruleConditionsMock));
+	}
+	
+	/**
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#evaluate(RuleCoverageInformation)}.
+	 */
+	@Test
+	void testEvalueate02() {		
+		assertEquals(((double)1)/3, this.measure.evaluate(this.ruleCoverageInformationMock));
+	}
+	
+	/**
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#evaluateWithCondition(RuleConditions, Condition)}.
+	 */
+	@Test
+	void testEvalueateWithCondition01() {
+		assertEquals(0, this.measure.evaluateWithCondition(this.ruleConditionsMock, this.conditionMock));
+	}
+	
+	/**
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#evaluateWithCondition(RuleConditions, Condition)}.
+	 */
+	@Test
+	void testEvalueateWithCondition02() {
+		assertEquals(Double.MAX_VALUE, this.measure.evaluateWithCondition(this.ruleConditionsMock, null));
+	}
+
+	/**
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#evaluateWithoutCondition(RuleConditions, int)}.
+	 */
+	@Test
+	void testEvalueateWithoutCondition() {
+		assertEquals(0.2, this.measure.evaluateWithoutCondition(this.ruleConditionsMock, 0));
+	}
+	
+	/**
+	 * Test for method {@link org.rulelearn.measures.dominance.EpsilonConsistencyMeasure#getMonotonictyType()}.
+	 */
+	@Test
+	void testGetMonotonicityType() {
+		assertEquals(MonotonicConditionAdditionEvaluator.MonotonicityType.DETERIORATES_WITH_NUMBER_OF_COVERED_OBJECTS, 
+				this.measure.getMonotonictyType());
 	}
 }

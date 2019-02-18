@@ -19,6 +19,7 @@ package org.rulelearn.dominance;
 import static org.rulelearn.core.Precondition.notNull;
 import java.util.function.BiPredicate;
 import org.rulelearn.core.TernaryLogicValue;
+import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.Table;
 import org.rulelearn.types.EvaluationField;
@@ -54,7 +55,7 @@ public final class DominanceChecker {
 	protected static boolean isInRelationWith(int x, int y, InformationTable informationTable, BiPredicate<EvaluationField, EvaluationField> integralRelationTester) {
 		notNull(informationTable, "Information table for checking dominance is null.");
 		
-		Table<EvaluationField> evaluations = informationTable.getActiveConditionAttributeFields();
+		Table<EvaluationAttribute, EvaluationField> evaluations = informationTable.getActiveConditionAttributeFields();
 		EvaluationField[] xEvaluations = evaluations.getFields(x);
 		EvaluationField[] yEvaluations = evaluations.getFields(y);
 		

@@ -18,6 +18,9 @@ package org.rulelearn.types;
 
 import java.util.Objects;
 
+import org.rulelearn.core.EvaluationFieldCalculator;
+import org.rulelearn.data.AttributePreferenceType;
+
 /**
  * Field representing integer number value.
  * Should be instantiated using {@link IntegerFieldFactory#create(int, AttributePreferenceType)}.
@@ -122,6 +125,16 @@ public abstract class IntegerField extends KnownSimpleField {
 	 */
 	public String toString() {
 		return String.valueOf(this.value);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField) {
+		return calculator.calculate(this, otherField);
 	}
 	
 }

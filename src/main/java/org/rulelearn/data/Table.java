@@ -29,12 +29,12 @@ import org.rulelearn.types.Field;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class Table<T extends Field> {
+public class Table<S extends Attribute, T extends Field> {
 	
 	/**
 	 * All attributes for which this table stores values.
 	 */
-	protected Attribute[] attributes;
+	protected S[] attributes;
 	/**
 	 * All fields stored in this table, indexed by object's index and attribute's index.
 	 */
@@ -55,7 +55,7 @@ public class Table<T extends Field> {
 	 *        to unique object's id, which is meaningful in general
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public Table(Attribute[] attributes, T[][] fields, Index2IdMapper mapper) {
+	public Table(S[] attributes, T[][] fields, Index2IdMapper mapper) {
 		this(attributes, fields, mapper, false);
 	}
 	
@@ -77,7 +77,7 @@ public class Table<T extends Field> {
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT)
-	public Table(Attribute[] attributes, T[][] fields, Index2IdMapper mapper, boolean accelerateByReadOnlyParams) {
+	public Table(S[] attributes, T[][] fields, Index2IdMapper mapper, boolean accelerateByReadOnlyParams) {
 		if (attributes == null) {
 			throw new NullPointerException("Attributes are null.");
 		}
@@ -163,7 +163,7 @@ public class Table<T extends Field> {
 	 * @throws NullPointerException if given array with object indices is {@code null}
 	 * @throws IndexOutOfBoundsException if any of the given indices does not match the number of considered objects
 	 */
-	public Table<T> select(int[] objectIndices) {
+	public Table<S,T> select(int[] objectIndices) {
 		return this.select(objectIndices, false);
 	}
 	
@@ -180,7 +180,7 @@ public class Table<T extends Field> {
 	 * @throws NullPointerException if given array with object indices is {@code null}
 	 * @throws IndexOutOfBoundsException if any of the given indices does not match the number of considered objects
 	 */
-	public Table<T> select(int[] objectIndices, boolean accelerateByReadOnlyResult) {
+	public Table<S,T> select(int[] objectIndices, boolean accelerateByReadOnlyResult) {
 		int[] newObjectIndex2Id = new int[objectIndices.length]; //data for new mapper
 		//T[][] newFields = (T[][]) new Field[objectIndices.length][];
 		T[][] newFields = Arrays.copyOf(this.fields, objectIndices.length); //take a target-length-part of the original array (to assure correct array type)
@@ -191,7 +191,7 @@ public class Table<T extends Field> {
 			newObjectIndex2Id[i] = this.mapper.getId(objectIndices[i]); //re-map object's id
 		}
 		
-		return new Table<T>(this.attributes, newFields, new Index2IdMapper(newObjectIndex2Id), accelerateByReadOnlyResult);
+		return new Table<S,T>(this.attributes, newFields, new Index2IdMapper(newObjectIndex2Id), accelerateByReadOnlyResult);
 	}
 	
 	/**
@@ -217,7 +217,7 @@ public class Table<T extends Field> {
 	 * 
 	 * @return attributes for which this table stores values
 	 */
-	public Attribute[] getAttributes () {
+	public S[] getAttributes () {
 		return this.getAttributes(false);
 	}
 	
@@ -230,7 +230,7 @@ public class Table<T extends Field> {
 	 *        modified outside this object), at the cost of returning the result slower
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
-	public Attribute[] getAttributes(boolean accelerateByReadOnlyResult) {
+	public S[] getAttributes(boolean accelerateByReadOnlyResult) {
 		return accelerateByReadOnlyResult ? this.attributes : this.attributes.clone();
 	}	
 	

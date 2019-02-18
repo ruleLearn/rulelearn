@@ -16,17 +16,23 @@
 
 package org.rulelearn.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
 import org.rulelearn.types.IdentificationField;
+import org.rulelearn.types.KnownSimpleField;
 import org.rulelearn.types.TextIdentificationField;
 import org.rulelearn.types.UUIDIdentificationField;
+
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 /**
  * Information table composed of fields storing identifiers/evaluations of all considered objects on all specified attributes, among which we distinguish:<br>
@@ -59,25 +65,20 @@ public class InformationTable {
 	 * Sub-table, corresponding to active condition attributes only.
 	 * This sub-table is used in calculations. Equals to {@code null} if there are no active condition attributes.
 	 */
-	protected Table<EvaluationField> activeConditionAttributeFields = null;
+	protected Table<EvaluationAttribute, EvaluationField> activeConditionAttributeFields = null;
 	/**
 	 * Sub-table, corresponding to all attributes which are either not active or description ones.
 	 * This sub-table is not used in calculations. It stores values of such supplementary attributes
 	 * mainly for the on-screen presentation of data and their write-back to file.
 	 * Equals to {@code null} if there are no supplementary attributes.
 	 */
-	protected Table<Field> notActiveOrDescriptionAttributeFields = null;
+	protected Table<Attribute, Field> notActiveOrDescriptionAttributeFields = null;
 	
 	/**
 	 * Contains decisions associated with subsequent objects. Each decision is defined by an ordered set of object's evaluations on active decision attributes.
 	 * Can be {@code null}, e.g., if this information table stores evaluations of test objects (for which decisions are unknown).
 	 */
 	protected Decision[] decisions = null;
-	
-//	/**
-//	 * Index of the only active decision attribute used in calculations. If there is no such attribute, equals to -1.
-//	 */
-//	protected int activeDecisionAttributeIndex = -1;
 	
 	/**
 	 * Contains identifiers of objects assigned to them by the only active identification attribute.
@@ -94,13 +95,13 @@ public class InformationTable {
 	 * Maps global index of an attribute of this information table to encoded local index of an active condition attribute (called AC-attribute)
 	 * or to encoded local index of a non-active/description attribute (called NA/D-attribute).
 	 * Encoding of a local index of an AC-attribute is done by adding 1.
-	 * Encoding of a local index of a NA/D-attribute is done by subtracting 1.<br>
+	 * Encoding of a local index of a NA/D-attribute is done by taking negative value and then subtracting 1.<br>
 	 * <br>
 	 * Suppose that the 3-rd global attribute (having global index 2) is the first AC-attribute (having local index 0).
-	 * Then, {@code attributeMap[2]} encodes 0, so it will be equal to 1.<br>
+	 * Then, {@code attributeMap[2]} encodes 0, so it will be equal to 0+1=1.<br>
 	 * <br>
-	 * Suppose that the 5-rd global attribute (having global index 4) is the first NA/D-attribute (having local index 0).
-	 * Then, {@code attributeMap[4]} encodes 0, so it will be equal to -1.<br>
+	 * Suppose that the 5-rd global attribute (having global index 4) is the second NA/D-attribute (having local index 1).
+	 * Then, {@code attributeMap[4]} encodes 1, so it will be equal to (-1)-1=-2.<br>
 	 * <br>
 	 * This map also marks active decision attributes (called AD-attributes) and the only active identification attribute (called AI-attribute),
 	 * if there are such attributes.<br>
@@ -124,6 +125,12 @@ public class InformationTable {
 	protected int[] attributeMap;
 	
 	/**
+	 * Maps local index of an active condition attribute (called AC-attribute) to the global index of this attribute
+	 * in the array of all attributes of this information table. Can be empty, but should not be {@code null}.
+	 */
+	Int2IntMap localActiveConditionAttributeIndex2GlobalAttributeIndexMap;
+	
+	/**
 	 * Protected copy constructor for internal use only. Sets all data fields of this information table.
 	 * 
 	 * @param attributes all attributes of constructed information table (identification and evaluation (condition/decision/description) ones, both active and non-active)
@@ -135,14 +142,15 @@ public class InformationTable {
 	 * @param activeIdentificationAttributeFields list of identifiers of subsequent objects
 	 * @param activeIdentificationAttributeIndex index of the only active identification attribute
 	 * @param attributeMap see {@link #attributeMap}
+	 * @param localActiveConditionAttributeIndex2GlobalAttributeIndexMap see {@link #localActiveConditionAttributeIndex2GlobalAttributeIndexMap}
 	 * @param accelerateByReadOnlyParams tells if construction of this information table should be accelerated by assuming that the given references
 	 *        to arrays are not going to be used outside this class
 	 *        to modify that arrays (and thus, this object does not need to clone the arrays for internal read-only use)
 	 */
-	protected InformationTable(Attribute[] attributes, Index2IdMapper mapper, Table<EvaluationField> activeConditionAttributeFields, Table<Field> notActiveOrDescriptionAttributeFields,
+	protected InformationTable(Attribute[] attributes, Index2IdMapper mapper, Table<EvaluationAttribute, EvaluationField> activeConditionAttributeFields, Table<Attribute, Field> notActiveOrDescriptionAttributeFields,
 			Decision[] decisions, 
 			IdentificationField[] activeIdentificationAttributeFields, int activeIdentificationAttributeIndex,
-			int[] attributeMap, boolean accelerateByReadOnlyParams) {
+			int[] attributeMap, Int2IntMap localActiveConditionAttributeIndex2GlobalAttributeIndexMap, boolean accelerateByReadOnlyParams) {
 		this.attributes = accelerateByReadOnlyParams ? attributes : attributes.clone();
 		this.mapper = mapper;
 		this.activeConditionAttributeFields = activeConditionAttributeFields;
@@ -155,6 +163,8 @@ public class InformationTable {
 		this.activeIdentificationAttributeIndex = activeIdentificationAttributeIndex;
 		
 		this.attributeMap = accelerateByReadOnlyParams ? attributeMap : attributeMap.clone();
+		this.localActiveConditionAttributeIndex2GlobalAttributeIndexMap = accelerateByReadOnlyParams ? localActiveConditionAttributeIndex2GlobalAttributeIndexMap :
+			new Int2IntOpenHashMap(localActiveConditionAttributeIndex2GlobalAttributeIndexMap);
 	}
 	
 	
@@ -206,9 +216,6 @@ public class InformationTable {
 				numberOfActiveConditionAttributes++;
 			} else if (isActiveDecisionAttribute(attributes[i])) {
 				numberOfActiveDecisionAttributes++;
-//				if (numberOfActiveDecisionAttributes > 1) {
-//					throw new InvalidValueException("The number of active decision attributes is greater than 1.");
-//				}
 			} else if (isActiveIdentificationAttribute(attributes[i])) {
 				numberOfActiveIdentificationAttributes++;
 				if (numberOfActiveIdentificationAttributes > 1) {
@@ -233,12 +240,14 @@ public class InformationTable {
 		int notActiveOrDescriptionAttributeIndex = 0;
 		
 		this.attributeMap = new int[attributes.length];
+		this.localActiveConditionAttributeIndex2GlobalAttributeIndexMap = new Int2IntOpenHashMap();
 		
 		//split attributes into two tables + mark active decision attributes (if there are any) and active identification attribute (if there is such an attribute)
 		for (int i = 0; i < attributes.length; i++) {
 			if (isActiveConditionAttribute(attributes[i])) {
 				activeConditionAttributes[activeConditionAttributeIndex] = (EvaluationAttribute)attributes[i];
 				this.attributeMap[i] = this.encodeActiveConditionAttributeIndex(activeConditionAttributeIndex);
+				this.localActiveConditionAttributeIndex2GlobalAttributeIndexMap.put(activeConditionAttributeIndex, i);
 				activeConditionAttributeIndex++;
 			} else if (isActiveDecisionAttribute(attributes[i])) {
 //				this.activeDecisionAttributeIndex = i;
@@ -316,10 +325,10 @@ public class InformationTable {
 		//map each object (row of this information table) to a unique id, and remember that mapping
 		this.mapper = new Index2IdMapper(UniqueIdGenerator.getInstance().getUniqueIds(listOfFields.size()), true);
 		
-		this.activeConditionAttributeFields = hasActiveConditionAttributes ? new Table<EvaluationField>(activeConditionAttributes, activeConditionAttributesFieldsArray, this.mapper, true) : null;
+		this.activeConditionAttributeFields = hasActiveConditionAttributes ? new Table<EvaluationAttribute, EvaluationField>(activeConditionAttributes, activeConditionAttributesFieldsArray, this.mapper, true) : null;
 		this.decisions = hasActiveDecisionAttributes ? decisions : null;
 		this.activeIdentificationAttributeFields = hasActiveIdentificationAttribute ? activeIdentificationAttributeFields : null;
-		this.notActiveOrDescriptionAttributeFields = hasNotActiveOrDescriptionAttributes ? new Table<Field>(notActiveOrDescriptionAttributes, notActiveOrDescriptionFieldsArray, this.mapper, true) : null;
+		this.notActiveOrDescriptionAttributeFields = hasNotActiveOrDescriptionAttributes ? new Table<Attribute, Field>(notActiveOrDescriptionAttributes, notActiveOrDescriptionFieldsArray, this.mapper, true) : null;
 	}
 	
 	/**
@@ -352,7 +361,9 @@ public class InformationTable {
 		this.decisions = informationTable.getDecisions(accelerateByReadOnlyResult);
 		this.activeIdentificationAttributeFields = informationTable.getIdentifiers(accelerateByReadOnlyResult);
 		this.activeIdentificationAttributeIndex = informationTable.getActiveIdentificationAttributeIndex();
-		this.attributeMap = informationTable.attributeMap;
+		this.attributeMap = accelerateByReadOnlyResult ? informationTable.attributeMap : informationTable.attributeMap.clone();
+		this.localActiveConditionAttributeIndex2GlobalAttributeIndexMap = accelerateByReadOnlyResult ? informationTable.localActiveConditionAttributeIndex2GlobalAttributeIndexMap :
+			new Int2IntOpenHashMap(informationTable.localActiveConditionAttributeIndex2GlobalAttributeIndexMap);
 	}
 	
 	/**
@@ -361,7 +372,7 @@ public class InformationTable {
 	 * 
 	 * @return sub-table of this information table, corresponding to active condition attributes only
 	 */
-	public Table<EvaluationField> getActiveConditionAttributeFields() {
+	public Table<EvaluationAttribute, EvaluationField> getActiveConditionAttributeFields() {
 		return this.activeConditionAttributeFields;
 	}
 
@@ -371,7 +382,7 @@ public class InformationTable {
 	 * 
 	 * @return sub-table of this information table, corresponding to all attributes which are either not active or description ones
 	 */
-	public Table<Field> getNotActiveOrDescriptionAttributeFields() {
+	public Table<Attribute, Field> getNotActiveOrDescriptionAttributeFields() {
 		return this.notActiveOrDescriptionAttributeFields;
 	}
 	
@@ -379,7 +390,8 @@ public class InformationTable {
 	 * Gets array of decisions concerning subsequent objects of this information table; i-th entry stores decision concerning i-th object.
 	 * Result can be {@code null}, e.g., if this information table stores evaluations of test objects (for which decisions are unknown).
 	 * 
-	 * @return array of decisions concerning subsequent objects of this information table
+	 * @return array of decisions concerning subsequent objects of this information table,
+	 *         or {@code null} if this information table does not store any decisions
 	 */
 	public Decision[] getDecisions() {
 		return this.getDecisions(false);
@@ -392,7 +404,8 @@ public class InformationTable {
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
 	 *        at the cost of returning a read-only array, or should return a safe array (that can be
 	 *        modified outside this object), at the cost of returning the result slower
-	 * @return array of decisions concerning subsequent objects of this information table
+	 * @return array of decisions concerning subsequent objects of this information table,
+	 *         or {@code null} if this information table does not store any decisions
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
 	public Decision[] getDecisions(boolean accelerateByReadOnlyResult) {
@@ -413,6 +426,97 @@ public class InformationTable {
 		} else {
 			return null;
 		}
+	}
+	
+	/**
+	 * Calculates ordered (from the worst to the best) array of all unique fully-determined decisions assigned to objects of this information table.
+	 * A fully-determined decision {@link Decision} is a decision whose all contributing evaluations are non-missing (are instances of {@link KnownSimpleField}).
+	 * For any two decisions from the returned array, {@code decision1.equals(decision2)} should return {@code false}.
+	 * Result can be {@code null}, e.g., if this information table stores evaluations of test objects (for which decisions are unknown).
+	 * 
+	 * @return array with unique fully-determined decisions ordered from the worst to the best,
+	 *         or {@code null} if this information table does not store any decisions
+	 * @see Decision#hasNoMissingEvaluation()
+	 */
+	public Decision[] calculateOrderedUniqueFullyDeterminedDecisions() {
+		Decision[] allDecisions = this.getDecisions(true);
+		
+		if (allDecisions == null || allDecisions.length <= 1) {
+			return allDecisions;
+		}
+		
+		ArrayList<Decision> orderedUniqueFullyDeterminedDecisionsList = new ArrayList<Decision>();
+		
+		//auxiliary variables
+		Decision candidateDecision;
+		Decision alreadyPresentDecision;
+		boolean iterate;
+		int decisionIndex;
+		
+		//create sorted list of decisions:
+		
+		//extract first fully-determined decision (if there is any)
+		int startingIndex = allDecisions.length; //make sure that if there is no fully-determined decision, so first such decision could not be found, then next such decisions would not be searched for
+		for (int i = 0; i < allDecisions.length; i++) {
+			//current decision is fully-determined
+			if (allDecisions[i].hasNoMissingEvaluation()) {
+				orderedUniqueFullyDeterminedDecisionsList.add(allDecisions[i]);
+				startingIndex = i + 1;
+				break; //first fully-determined decision found
+			}
+		}
+		
+		//iterate through objects and extract next unique fully-determined decisions, retaining respective order of comparable decisions
+		for (int i = startingIndex; i < allDecisions.length; i++) {
+			candidateDecision = allDecisions[i];
+			
+			//verify if candidate decision satisfies loop entry condition of being fully-determined
+			if (candidateDecision.hasNoMissingEvaluation()) {
+				iterate = true;
+				decisionIndex = 0;
+				
+				while (iterate) {
+					alreadyPresentDecision = orderedUniqueFullyDeterminedDecisionsList.get(decisionIndex);
+					//candidate decision is equal (identical) to compared decision from the list
+					if (candidateDecision.equals(alreadyPresentDecision)) {
+						//ignore candidate decision since it is already present in the list of decisions
+						iterate = false;
+					}
+					//candidate decision is different than compared decision from the list
+					else {
+						//candidate decision is worse than compared decision from the list
+						if (candidateDecision.isAtMostAsGoodAs(alreadyPresentDecision) == TernaryLogicValue.TRUE) {
+							//insert candidate decision into appropriate position and shift following elements forward
+							orderedUniqueFullyDeterminedDecisionsList.add(decisionIndex, candidateDecision);
+							iterate = false;
+						}
+						//candidate decision is better than compared decision from the list
+						//or is incomparable with the compared decision from the list
+						else {
+							//there is no next decision on the list
+							if (decisionIndex == orderedUniqueFullyDeterminedDecisionsList.size() - 1) {
+								//append candidate decision to the end of the list
+								orderedUniqueFullyDeterminedDecisionsList.add(candidateDecision);
+								iterate = false;
+							}
+							//there is next decision on the list
+							else {
+								decisionIndex++; //go to next decision from the list
+							} //else
+						} //else
+					} //else
+				} //while
+			} //if
+		} //for
+		
+		//create returned array of decisions
+		int decisionsCount = orderedUniqueFullyDeterminedDecisionsList.size();
+		Decision[] orderedUniqueFullyDeterminedDecisions = new Decision[decisionsCount];
+		
+		for (int i = 0; i < decisionsCount; i++)
+			orderedUniqueFullyDeterminedDecisions[i] = orderedUniqueFullyDeterminedDecisionsList.get(i);
+		
+		return orderedUniqueFullyDeterminedDecisions;
 	}
 	
 	/**
@@ -615,13 +719,13 @@ public class InformationTable {
 	public InformationTable select(int[] objectIndices, boolean accelerateByReadOnlyResult) {
 		Index2IdMapper newMapper = null;
 		
-		Table<EvaluationField> newActiveConditionAttributeFields = null;
+		Table<EvaluationAttribute, EvaluationField> newActiveConditionAttributeFields = null;
 		if (this.activeConditionAttributeFields != null) {
 			newActiveConditionAttributeFields = this.activeConditionAttributeFields.select(objectIndices, accelerateByReadOnlyResult);
 			newMapper = newActiveConditionAttributeFields.getIndex2IdMapper(); //use already calculated mapper
 		}
 		
-		Table<Field> newNotActiveOrDescriptionAttributeFields = null;
+		Table<Attribute, Field> newNotActiveOrDescriptionAttributeFields = null;
 		if (this.notActiveOrDescriptionAttributeFields != null) {
 			newNotActiveOrDescriptionAttributeFields = this.notActiveOrDescriptionAttributeFields.select(objectIndices, accelerateByReadOnlyResult);
 			if (newMapper == null) {
@@ -646,7 +750,8 @@ public class InformationTable {
 		}
 		
 		return new InformationTable(this.attributes, newMapper, newActiveConditionAttributeFields, newNotActiveOrDescriptionAttributeFields,
-				newDecisions, newActiveIdentificationAttributeFields, this.activeIdentificationAttributeIndex, this.attributeMap, accelerateByReadOnlyResult);
+				newDecisions, newActiveIdentificationAttributeFields, this.activeIdentificationAttributeIndex, this.attributeMap,
+				this.localActiveConditionAttributeIndex2GlobalAttributeIndexMap, accelerateByReadOnlyResult);
 	}
 	
 	/**
@@ -684,4 +789,37 @@ public class InformationTable {
 	public int getActiveIdentificationAttributeIndex() {
 		return this.activeIdentificationAttributeIndex;
 	}
+	
+	/**
+	 * Takes given local index of an active condition attribute (i.e., index of such attribute in the table returned by {@link #getActiveConditionAttributeFields()},
+	 * and translates it to the index that this attribute has in the array returned by {@link #getAttributes()}.<br>
+	 * <br>
+	 * Suppose there are nine attributes:<br>
+	 * - attr0: active {@link EvaluationAttribute} of type {@link AttributeType#CONDITION},<br>
+	 * - attr1: active {@link EvaluationAttribute} of type {@link AttributeType#DESCRIPTION},<br>
+	 * - attr2: non-active {@link EvaluationAttribute} of type {@link AttributeType#CONDITION},<br>
+	 * - attr3: active {@link EvaluationAttribute} of type {@link AttributeType#CONDITION},<br>
+	 * - attr4: active {@link EvaluationAttribute} of type {@link AttributeType#DECISION},<br>
+	 * - attr5: non-active {@link EvaluationAttribute} of type {@link AttributeType#DECISION},<br>
+	 * - attr6: non-active {@link EvaluationAttribute} of type {@link AttributeType#DESCRIPTION},<br>
+	 * - attr7: active {@link IdentificationAttribute} with value type {@link TextIdentificationField},<br>
+	 * - attr8: non-active {@link IdentificationAttribute} with value type {@link UUIDIdentificationField}.<br>
+	 * <br>
+	 * Then:<br>
+	 * - {@code translateActiveConditionAttributeIndex2GlobalAttributeIndex[0] == 0},<br>
+	 * - {@code translateActiveConditionAttributeIndex2GlobalAttributeIndex[1] == 3},<br>
+	 * and {@code translateActiveConditionAttributeIndex2GlobalAttributeIndex[i] == -1} for {@code i different than 0 and 1}.
+	 * 
+	 * @param localActiveConditionAttributeIndex index of an attribute in the table returned by {@link #getActiveConditionAttributeFields()}
+	 * @return index of the considered attribute in the array of attributes returned by {@link #getAttributes()},
+	 *         or -1 if given attribute index does not map to any global attribute index
+	 */
+	public int translateLocalActiveConditionAttributeIndex2GlobalAttributeIndex(int localActiveConditionAttributeIndex) {
+		if (this.localActiveConditionAttributeIndex2GlobalAttributeIndexMap.containsKey(localActiveConditionAttributeIndex)) {
+			return this.localActiveConditionAttributeIndex2GlobalAttributeIndexMap.get(localActiveConditionAttributeIndex);
+		} else {
+			return -1;
+		}
+	}
+
 }

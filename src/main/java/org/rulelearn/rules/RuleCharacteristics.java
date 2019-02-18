@@ -16,12 +16,16 @@
 
 package org.rulelearn.rules;
 
-import org.rulelearn.core.UnknownValueException;
-import static org.rulelearn.core.Precondition.nonNegative;
 import static org.rulelearn.core.Precondition.known;
+import static org.rulelearn.core.Precondition.nonNegative;
 import static org.rulelearn.core.Precondition.within01Interval;
 import static org.rulelearn.core.Precondition.withinMinus1Plus1Interval;
+
+import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
+
 import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.UnknownValueException;
 
 /**
  * Characteristics of a decision rule. One can get from this object only:<br>
@@ -77,7 +81,7 @@ public class RuleCharacteristics {
 	/**
 	 * Value of rule consistency measure $\epsilon'$ calculated for a decision rule in the context of an information table.
 	 */
-	protected double epsilonPrim = UNKNOWN_DOUBLE_VALUE;
+	protected double epsilonPrime = UNKNOWN_DOUBLE_VALUE;
 	/**
 	 * Value of rule confirmation measure $f$ calculated for a decision rule in the context of an information table.
 	 */
@@ -131,6 +135,14 @@ public class RuleCharacteristics {
 		}
 		this.support = support;
 	}
+	
+	/**
+	 * Checks whether support is set.
+	 * @return {@code true} if support is set or {@code false} otherwise
+	 */
+	public boolean isSupportSet() {
+		return (support != UNKNOWN_INT_VALUE);
+	}
 
 	/**
 	 * Gets strength of a decision rule in the context of an information table.
@@ -154,6 +166,14 @@ public class RuleCharacteristics {
 			within01Interval(strength, "Rule's strength has to be within [0,1] interval."); //assert that characteristic satisfies constraint(s)
 		}
 		this.strength = strength;
+	}
+	
+	/**
+	 * Checks whether strength is set.
+	 * @return {@code true} if strength is set or {@code false} otherwise
+	 */
+	public boolean isStrengthSet() {
+		return (strength != UNKNOWN_DOUBLE_VALUE);
 	}
 
 	/**
@@ -188,6 +208,14 @@ public class RuleCharacteristics {
 		}
 		this.confidence = confidence;
 	}
+	
+	/**
+	 * Checks whether confidence is set.
+	 * @return {@code true} if confidence is set or {@code false} otherwise
+	 */
+	public boolean isConfidenceSet() {
+		return (confidence != UNKNOWN_DOUBLE_VALUE);
+	}
 
 	/**
 	 * Gets coverage factor of a decision rule in the context of an information table.
@@ -211,6 +239,14 @@ public class RuleCharacteristics {
 			within01Interval(coverageFactor, "Rule's coverage factor has to be within [0,1] interval."); //assert that characteristic satisfies constraint(s)
 		}
 		this.coverageFactor = coverageFactor;
+	}
+	
+	/**
+	 * Checks whether coverage factor is set.
+	 * @return {@code true} if coverage factor is set or {@code false} otherwise
+	 */
+	public boolean isCoverageFactorSet() {
+		return (coverageFactor != UNKNOWN_DOUBLE_VALUE);
 	}
 
 	/**
@@ -237,6 +273,14 @@ public class RuleCharacteristics {
 		this.coverage = coverage;
 	}
 
+	/**
+	 * Checks whether coverage is set.
+	 * @return {@code true} if coverage is set or {@code false} otherwise
+	 */
+	public boolean isCoverageSet() {
+		return (coverage != UNKNOWN_INT_VALUE);
+	}
+	
 	/**
 	 * Gets negative coverage of a decision rule (number of negative objects covered by the rule) in the context of an information table.
 	 * An object is negative, if its decision does not match rule's decision part.
@@ -273,6 +317,14 @@ public class RuleCharacteristics {
 	}
 
 	/**
+	 * Checks whether negative coverage is set.
+	 * @return {@code true} if negative coverage is set or {@code false} otherwise
+	 */
+	public boolean isNegativeCoverageSet() {
+		return (negativeCoverage != UNKNOWN_INT_VALUE);
+	}
+	
+	/**
 	 * Gets value of rule consistency measure $\epsilon$ calculated for a decision rule in the context of an information table.
 	 * 
 	 * @return value of rule consistency measure $\epsilon$ calculated for a decision rule in the context of an information table
@@ -295,6 +347,14 @@ public class RuleCharacteristics {
 		}
 		this.epsilon = epsilon;
 	}
+	
+	/**
+	 * Checks whether epsilon is set.
+	 * @return {@code true} if epsilon is set or {@code false} otherwise
+	 */
+	public boolean isEpsilonSet() {
+		return (epsilon != UNKNOWN_DOUBLE_VALUE);
+	}
 
 	/**
 	 * Gets value of rule consistency measure $\epsilon'$ calculated for a decision rule in the context of an information table.
@@ -303,7 +363,7 @@ public class RuleCharacteristics {
 	 * @throws UnknownValueException if value of rule consistency measure $\epsilon'$ is unknown (not stored in these characteristics)
 	 */
 	public double getEpsilonPrime() {
-		return known(epsilonPrim, UNKNOWN_DOUBLE_VALUE, "Value of rule consistency measure epsilon' is unknown.");
+		return known(epsilonPrime, UNKNOWN_DOUBLE_VALUE, "Value of rule consistency measure epsilon' is unknown.");
 	}
 	
 	/**
@@ -317,9 +377,17 @@ public class RuleCharacteristics {
 		if (epsilonPrim != UNKNOWN_DOUBLE_VALUE) {
 			nonNegative(epsilonPrim, "Value of rule consistency measure epsilon' has to be >= 0."); //assert that characteristic satisfies constraint(s)
 		}
-		this.epsilonPrim = epsilonPrim;
+		this.epsilonPrime = epsilonPrim;
 	}
 
+	/**
+	 * Checks whether epsilon prime is set.
+	 * @return {@code true} if epsilon prime is set or {@code false} otherwise
+	 */
+	public boolean isEpsilonPrimeSet() {
+		return (epsilonPrime != UNKNOWN_DOUBLE_VALUE);
+	}
+	
 	/**
 	 * Gets value of rule confirmation measure $f$ calculated for a decision rule in the context of an information table.
 	 * 
@@ -345,6 +413,14 @@ public class RuleCharacteristics {
 	}
 
 	/**
+	 * Checks whether rule confirmation measure $f$ is set.
+	 * @return {@code true} if rule confirmation measure $f$ is set or {@code false} otherwise
+	 */
+	public boolean isFConfirmationSet() {
+		return (fConfirmation != UNKNOWN_DOUBLE_VALUE);
+	}
+	
+	/**
 	 * Gets value of rule confirmation measure $a$ calculated for a decision rule in the context of an information table.
 	 * 
 	 * @return value of rule confirmation measure $a$ calculated for a decision rule in the context of an information table
@@ -369,6 +445,14 @@ public class RuleCharacteristics {
 	}
 
 	/**
+	 * Checks whether rule confirmation measure $a$ is set.
+	 * @return {@code true} if rule confirmation measure $a$ is set or {@code false} otherwise
+	 */
+	public boolean isAConfirmationSet() {
+		return (aConfirmation != UNKNOWN_DOUBLE_VALUE);
+	}
+	
+	/**
 	 * Gets value of rule confirmation measure $z$ calculated for a decision rule in the context of an information table.
 	 * 
 	 * @return value of rule confirmation measure $z$ calculated for a decision rule in the context of an information table
@@ -390,6 +474,14 @@ public class RuleCharacteristics {
 			withinMinus1Plus1Interval(zConfirmation, "Value of rule confirmation measure 'z' has to be within interval [-1,1].");
 		}
 		this.zConfirmation = zConfirmation;
+	}
+	
+	/**
+	 * Checks whether rule confirmation measure $z$ is set.
+	 * @return {@code true} if rule confirmation measure $z$ is set or {@code false} otherwise
+	 */
+	public boolean isZConfirmationSet() {
+		return (zConfirmation != UNKNOWN_DOUBLE_VALUE);
 	}
 
 	/**
@@ -419,6 +511,14 @@ public class RuleCharacteristics {
 	}
 
 	/**
+	 * Checks whether rule confirmation measure $l$ is set.
+	 * @return {@code true} if rule confirmation measure $l$ is set or {@code false} otherwise
+	 */
+	public boolean isLConfirmationSet() {
+		return (lConfirmation != UNKNOWN_DOUBLE_VALUE);
+	}
+	
+	/**
 	 * Gets value of rule confirmation measure $c<sub>1</sub>$ calculated for a decision rule in the context of an information table.
 	 * 
 	 * @return value of rule confirmation measure $c<sub>1</sub>$ calculated for a decision rule in the context of an information table
@@ -436,6 +536,14 @@ public class RuleCharacteristics {
 	 */
 	public void setC1Confirmation(double c1Confirmation) {
 		this.c1Confirmation = c1Confirmation; //no additional validation possible in the general case, with any values of measure's parameters alpha and beta
+	}
+	
+	/**
+	 * Checks whether rule confirmation measure $c<sub>1</sub>$ is set.
+	 * @return {@code true} if rule confirmation measure $c<sub>1</sub>$ is set or {@code false} otherwise
+	 */
+	public boolean isC1ConfirmationSet() {
+		return (c1Confirmation != UNKNOWN_DOUBLE_VALUE);
 	}
 	
 	/**
@@ -460,6 +568,56 @@ public class RuleCharacteristics {
 			withinMinus1Plus1Interval(sConfirmation, "Value of rule confirmation measure 's' has to be within interval [-1,1].");
 		}
 		this.sConfirmation = sConfirmation;
+	}
+	
+	/**
+	 * Checks whether rule confirmation measure $s$ is set.
+	 * @return {@code true} if rule confirmation measure $s$ is set or {@code false} otherwise
+	 */
+	public boolean isSConfirmationSet() {
+		return (sConfirmation != UNKNOWN_DOUBLE_VALUE);
+	}
+	
+	/**
+	 * Tells if the characteristic returned by the given getter is set. Exemplary usage:<br>
+	 * {@code RuleCharacteristics ruleCharacteristics = new RuleCharacteristics();}<br>
+	 * {@code boolean isSet = ruleCharacteristics.isCharacteristicSet(ruleCharacteristics::getSupport);}
+	 * 
+	 * @param intCharacteristicGetter reference to a getter returning an integer characteristic stored in this object
+	 * @return {@code true} if the characteristic returned by the given getter is set, {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given parameter is {@code null}
+	 */
+	public boolean isCharacteristicSet(IntSupplier intCharacteristicGetter) {
+		try {
+			intCharacteristicGetter.getAsInt();
+			return true;
+		} catch (UnknownValueException exception) {
+			return false;
+		} catch (NullPointerException exception) {
+			throw new NullPointerException("Integer-type characteristic getter is null.");
+		}
+	}
+	
+	/**
+	 * Tells if the characteristic returned by the given getter is set. Exemplary usage:<br>
+	 * {@code RuleCharacteristics ruleCharacteristics = new RuleCharacteristics();}<br>
+	 * {@code boolean isSet = ruleCharacteristics.isCharacteristicSet(ruleCharacteristics::getEpsilon);}
+	 * 
+	 * @param doubleCharacteristicGetter reference to a getter returning a floating-point characteristic stored in this object
+	 * @return {@code true} if the characteristic returned by the given getter is set, {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given parameter is {@code null}
+	 */
+	public boolean isCharacteristicSet(DoubleSupplier doubleCharacteristicGetter) {
+		try {
+			doubleCharacteristicGetter.getAsDouble();
+			return true;
+		} catch (UnknownValueException exception) {
+			return false;
+		} catch (NullPointerException exception) {
+			throw new NullPointerException("Floating-point-type characteristic getter is null.");
+		}
 	}
 	
 }

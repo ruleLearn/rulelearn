@@ -22,9 +22,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.rulelearn.data.AttributePreferenceType;
+import org.mockito.Mockito;
 import org.rulelearn.types.EvaluationField;
-import org.rulelearn.types.IntegerFieldFactory;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -36,8 +35,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 class RuleSetTest {
 
-	private List<Condition<? extends EvaluationField>> conditions = null;
-	private List<Condition<? extends EvaluationField>> decisions = null;
 	private Rule firstRule = null;
 	private Rule secondRule = null; 
 	
@@ -47,15 +44,17 @@ class RuleSetTest {
 	@BeforeEach
 	public void setUp() {
 		SimpleConditionAtLeast condition = null;
-		this.conditions = new ObjectArrayList<>();
-		this.conditions.add(condition);
+		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
+		conditions.add(condition);
 		
-		SimpleConditionAtLeast decision = null;
-		this.decisions = new ObjectArrayList<>();
-		this.decisions.add(decision);
+		SimpleConditionAtLeast decision = Mockito.mock(SimpleConditionAtLeast.class);;
 		
-		this.firstRule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), conditions, decisions);
-		this.secondRule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST), conditions, decisions);
+		List<List<Condition<? extends EvaluationField>>> decisions = new ObjectArrayList<>();
+		decisions.add(new ObjectArrayList<>());
+		decisions.get(0).add(decision);
+		
+		this.firstRule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_LEAST, conditions, decisions);
+		this.secondRule = new Rule(RuleType.CERTAIN, RuleSemantics.AT_MOST, conditions, decisions);
 	}
 	
 	/**

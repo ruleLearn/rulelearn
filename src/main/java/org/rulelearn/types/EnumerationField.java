@@ -18,6 +18,7 @@ package org.rulelearn.types;
 
 import java.util.Objects;
 
+import org.rulelearn.core.EvaluationFieldCalculator;
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
@@ -177,5 +178,15 @@ public abstract class EnumerationField extends KnownSimpleField {
 	 */
 	public String toString() {
 		return String.valueOf(this.list.getElement(this.value));
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField) {
+		return calculator.calculate(this, otherField);
 	}
 }

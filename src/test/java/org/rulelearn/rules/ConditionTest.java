@@ -16,11 +16,13 @@
 
 package org.rulelearn.rules;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTable;
@@ -41,7 +43,7 @@ class ConditionTest {
 	 * In other words, {@link #condition} implements each abstract method of {@link Condition} by calling respective method on
 	 * {@link #conditionMock}.
 	 */
-	private Condition<EvaluationField> conditionMock;
+	private Condition<? extends EvaluationField> conditionMock;
 	
 	private int attributeIndex = 3;
 	
@@ -51,7 +53,12 @@ class ConditionTest {
 	/**
 	 * Instance of tested class, newly initialized in each testing method.
 	 */
-	private Condition<EvaluationField> condition;
+	private Condition<? extends EvaluationField> condition;
+	
+	@SuppressWarnings("unchecked")
+	private static <T extends EvaluationField> boolean satisfiedByHelper(Condition<T> conditionMock, EvaluationField evaluation) { //applies wildcard capture
+		return conditionMock.satisfiedBy((T)evaluation); //TODO: test this cast
+	}
 	
 	/**
 	 * Initializes all mocks before each unit test.
@@ -64,11 +71,11 @@ class ConditionTest {
 		this.conditionMock = Mockito.mock(Condition.class);
 	}
 	
-	private Condition<EvaluationField> createCondition(EvaluationAttributeWithContext attributeWithContext, EvaluationField limitingEvaluation) {
-		return new Condition<EvaluationField>(attributeWithContext, limitingEvaluation) {
+	private <T extends EvaluationField> Condition<T> createCondition(EvaluationAttributeWithContext attributeWithContext, T limitingEvaluation) {
+		return new Condition<T>(attributeWithContext, limitingEvaluation) {
 			@Override
-			public boolean satisfiedBy(EvaluationField evaluation) {
-				return conditionMock.satisfiedBy(evaluation);
+			public boolean satisfiedBy(T evaluation) {
+				return satisfiedByHelper(conditionMock, evaluation);
 			}
 
 			@Override
@@ -77,8 +84,9 @@ class ConditionTest {
 			}
 
 			@Override
-			public Condition<EvaluationField> duplicate() {
-				return conditionMock.duplicate();
+			@SuppressWarnings("unchecked")
+			public Condition<T> duplicate() {
+				return (Condition<T>)conditionMock.duplicate(); //TODO: test this cast
 			}
 
 			@Override
@@ -94,6 +102,16 @@ class ConditionTest {
 			@Override
 			public RuleSemantics getRuleSemantics() {
 				return conditionMock.getRuleSemantics();
+			}
+
+			@Override
+			public String getRelationSymbol() {
+				return conditionMock.getRelationSymbol();
+			}
+
+			@Override
+			public <S extends EvaluationField> TernaryLogicValue isAtMostAsGeneralAs(Condition<S> otherCondition) {
+				return conditionMock.isAtMostAsGeneralAs(otherCondition);
 			}
 		};
 	}
@@ -132,7 +150,8 @@ class ConditionTest {
 		boolean result = true;
 		
 		Mockito.when(informationTableMock.getField(objectIndex, attributeWithContextMock.getAttributeIndex())).thenReturn(evaluation);
-		Mockito.when(conditionMock.satisfiedBy(evaluation)).thenReturn(result);
+		//Mockito.when(conditionMock.satisfiedBy(evaluation)).thenReturn(result);
+		Mockito.when(satisfiedByHelper(conditionMock, evaluation)).thenReturn(result);
 		
 		assertEquals(condition.satisfiedBy(objectIndex, informationTableMock), result);
 	}

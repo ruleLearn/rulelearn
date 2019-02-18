@@ -33,7 +33,7 @@ import org.rulelearn.data.Decision;
 import org.rulelearn.data.DecisionDistribution;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
-import org.rulelearn.measures.MeasureType;
+import org.rulelearn.measures.Measure;
 
 /**
  * Tests for {@link RoughMembershipMeasure}. Test is based on illustrative example represented in figure (note that all criteria, including decision criterion, are gain-type): 
@@ -67,7 +67,7 @@ class RoughMembershipMeasureTest {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		this.measure = new RoughMembershipMeasure();
+		this.measure = RoughMembershipMeasure.getInstance();
 		// mock unions
 		when(this.unionAtLeast2Mock.getUnionType()).thenReturn(UnionType.AT_LEAST);
 		when(this.unionAtLeast3Mock.getUnionType()).thenReturn(UnionType.AT_LEAST);
@@ -120,7 +120,7 @@ class RoughMembershipMeasureTest {
 	 */
 	@Test
 	void testGetType() {
-		assertEquals(MeasureType.GAIN, this.measure.getType());
+		assertEquals(Measure.MeasureType.GAIN, this.measure.getType());
 	}
 	
 	/**

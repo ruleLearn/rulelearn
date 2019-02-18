@@ -16,8 +16,6 @@
 
 package org.rulelearn.rules;
 
-import java.util.Objects;
-
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.types.SimpleField;
 
@@ -26,7 +24,10 @@ import org.rulelearn.types.SimpleField;
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+ * 
+ * @deprecated Replaced by {@link Condition}.
  */
+@Deprecated
 public abstract class SimpleCondition extends Condition<SimpleField> {
 	
 	/**
@@ -42,16 +43,6 @@ public abstract class SimpleCondition extends Condition<SimpleField> {
 	}
 	
 	/**
-     * {@inheritDoc}
-     * 
-     * @return {@inheritDoc}
-     */
-	@Override
-	public int hashCode () {
-		return Objects.hash(this.getClass(), this.limitingEvaluation);
-	}
-	
-	/**
 	 * {@inheritDoc}
 	 * 
 	 * @return {@inheritDoc}
@@ -61,11 +52,4 @@ public abstract class SimpleCondition extends Condition<SimpleField> {
 		return (new StringBuilder()).append(this.attributeWithContext.getAttributeName()).append(" ").append(this.getRelationSymbol()).append(" ").append(this.limitingEvaluation).toString();
 	}
 	
-	/**
-	 * Gets symbol of relation embodied in this condition.
-	 * 
-	 * @return symbol of relation embodied in this condition
-	 */
-	public abstract String getRelationSymbol();
-
 }

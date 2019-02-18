@@ -26,10 +26,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
@@ -604,6 +606,250 @@ class InformationTableTest {
 		
 		for (int i = 0; i < numberOfObjects; i++) {
 			assertEquals(decisions[i], expectedDecisions[i]);
+		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()} method}.
+	 * Tests cost-type decision criterion.
+	 */
+	@Test
+	public void testCalculateOrderedUniqueDecisions01() {
+		InformationTable informationTable = configuration01.getInformationTable(true);
+		int activeDecisionAttributeIndex = 5;
+		AttributePreferenceType preferenceType = ((EvaluationAttribute)this.configuration01.getAttributes()[activeDecisionAttributeIndex]).getPreferenceType();
+		
+		
+		Decision[] expectedDecisions = { //take into account that decision criterion has cost preference type
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(35, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(34, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(19, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(-25, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(-72, preferenceType), activeDecisionAttributeIndex)
+		};
+		
+		Decision[] orderedUniqueDecisions = informationTable.calculateOrderedUniqueFullyDeterminedDecisions();
+		
+		assertEquals(orderedUniqueDecisions.length, 5);
+		for (int i = 0; i < orderedUniqueDecisions.length; i++) {
+			assertEquals(orderedUniqueDecisions[i], expectedDecisions[i]);
+		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()} method}.
+	 * Tests gain-type decision criterion and repeating evaluations on decision attribute.
+	 */
+	@Test
+	public void testCalculateOrderedUniqueDecisions02() {
+		InformationTable informationTable = Mockito.mock(InformationTable.class);
+		int activeDecisionAttributeIndex = 0;
+		AttributePreferenceType preferenceType = AttributePreferenceType.GAIN;
+		
+		Decision[] allDecisions = {
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(1, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(1, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(-2, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(-2, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(5, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(5, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(-3, preferenceType), activeDecisionAttributeIndex),
+		};
+		
+		Mockito.when(informationTable.getDecisions(true)).thenReturn(allDecisions);
+		Mockito.when(informationTable.calculateOrderedUniqueFullyDeterminedDecisions()).thenCallRealMethod();
+		
+		Decision[] expectedDecisions = {
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(-3, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(-2, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(1, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(5, preferenceType), activeDecisionAttributeIndex),
+		};
+		
+		Decision[] orderedUniqueDecisions = informationTable.calculateOrderedUniqueFullyDeterminedDecisions();
+		
+		assertEquals(orderedUniqueDecisions.length, expectedDecisions.length);
+		for (int i = 0; i < orderedUniqueDecisions.length; i++) {
+			assertEquals(orderedUniqueDecisions[i], expectedDecisions[i]);
+		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()} method}.
+	 * Tests sorting in presence of an mv_2-type missing value.
+	 */
+	@Test
+	public void testCalculateOrderedUniqueDecisions03() {
+		InformationTable informationTable = Mockito.mock(InformationTable.class);
+		int activeDecisionAttributeIndex = 0;
+		AttributePreferenceType preferenceType = AttributePreferenceType.GAIN;
+		
+		Decision[] allDecisions = {
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(1, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(1, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(-2, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(new UnknownSimpleFieldMV2(), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(5, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(5, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(-3, preferenceType), activeDecisionAttributeIndex),
+		};
+		
+		Mockito.when(informationTable.getDecisions(true)).thenReturn(allDecisions);
+		Mockito.when(informationTable.calculateOrderedUniqueFullyDeterminedDecisions()).thenCallRealMethod();
+		
+		Decision[] expectedDecisions = {
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(-3, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(-2, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(1, preferenceType), activeDecisionAttributeIndex),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(5, preferenceType), activeDecisionAttributeIndex),
+		};
+		
+		Decision[] orderedUniqueDecisions = informationTable.calculateOrderedUniqueFullyDeterminedDecisions();
+		
+		for (int i = 0; i < orderedUniqueDecisions.length; i++) {
+			System.out.println(orderedUniqueDecisions[i]);
+		}
+		
+		assertEquals(orderedUniqueDecisions.length, expectedDecisions.length);
+		for (int i = 0; i < orderedUniqueDecisions.length; i++) {
+			assertEquals(orderedUniqueDecisions[i], expectedDecisions[i]);
+		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()} method}.
+	 * Tests sorting in presence of composite decisions with missing values.
+	 */
+	@Test
+	public void testCalculateOrderedUniqueDecisions04() {
+		InformationTable informationTable = Mockito.mock(InformationTable.class);
+		int activeDecisionAttributeIndex1 = 0;
+		int activeDecisionAttributeIndex2 = 1;
+		AttributePreferenceType preferenceType1 = AttributePreferenceType.GAIN;
+		AttributePreferenceType preferenceType2 = AttributePreferenceType.GAIN;
+		
+		Decision[] allDecisions = {
+				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(2, preferenceType1), new UnknownSimpleFieldMV2()},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
+				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(1, preferenceType1), IntegerFieldFactory.getInstance().create(4, preferenceType2)},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
+				new CompositeDecision(new EvaluationField[] {new UnknownSimpleFieldMV2(), IntegerFieldFactory.getInstance().create(3, preferenceType2)},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
+				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(0, preferenceType1), IntegerFieldFactory.getInstance().create(5, preferenceType2)},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
+				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(0, preferenceType1), IntegerFieldFactory.getInstance().create(6, preferenceType2)},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
+				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(1, preferenceType1), IntegerFieldFactory.getInstance().create(4, preferenceType2)},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}), //again (1,4),
+				new CompositeDecision(new EvaluationField[] {new UnknownSimpleFieldMV2(), new UnknownSimpleFieldMV2()},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2})
+		};
+		
+		Mockito.when(informationTable.getDecisions(true)).thenReturn(allDecisions);
+		Mockito.when(informationTable.calculateOrderedUniqueFullyDeterminedDecisions()).thenCallRealMethod();
+		
+		//1 0 0
+		//4 5 6
+		Decision[] expectedDecisions = {
+				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(1, preferenceType1), IntegerFieldFactory.getInstance().create(4, preferenceType2)},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
+				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(0, preferenceType1), IntegerFieldFactory.getInstance().create(5, preferenceType2)},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
+				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(0, preferenceType1), IntegerFieldFactory.getInstance().create(6, preferenceType2)},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2})
+		};
+		
+		Decision[] orderedUniqueDecisions = informationTable.calculateOrderedUniqueFullyDeterminedDecisions();
+		
+		for (int i = 0; i < orderedUniqueDecisions.length; i++) {
+			System.out.println(orderedUniqueDecisions[i]);
+		}
+
+		assertEquals(orderedUniqueDecisions.length, expectedDecisions.length);
+		for (int i = 0; i < orderedUniqueDecisions.length; i++) {
+			assertEquals(orderedUniqueDecisions[i], expectedDecisions[i]);
+		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()} method}.
+	 * Tests sorting in presence of composite decisions, all not fully-determined.
+	 */
+	@Test
+	public void testCalculateOrderedUniqueDecisions05() {
+		InformationTable informationTable = Mockito.mock(InformationTable.class);
+		int activeDecisionAttributeIndex1 = 0;
+		int activeDecisionAttributeIndex2 = 1;
+		AttributePreferenceType preferenceType1 = AttributePreferenceType.GAIN;
+		AttributePreferenceType preferenceType2 = AttributePreferenceType.GAIN;
+		
+		Decision[] allDecisions = {
+				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(2, preferenceType1), new UnknownSimpleFieldMV2()},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
+				new CompositeDecision(new EvaluationField[] {new UnknownSimpleFieldMV2(), IntegerFieldFactory.getInstance().create(4, preferenceType2)},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
+				new CompositeDecision(new EvaluationField[] {new UnknownSimpleFieldMV2(), IntegerFieldFactory.getInstance().create(3, preferenceType2)},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
+				new CompositeDecision(new EvaluationField[] {new UnknownSimpleFieldMV2(), new UnknownSimpleFieldMV2()},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2})
+		};
+		
+		Mockito.when(informationTable.getDecisions(true)).thenReturn(allDecisions);
+		Mockito.when(informationTable.calculateOrderedUniqueFullyDeterminedDecisions()).thenCallRealMethod();
+		
+		Decision[] expectedDecisions = {}; //empty list
+		Decision[] orderedUniqueDecisions = informationTable.calculateOrderedUniqueFullyDeterminedDecisions();
+		
+		for (int i = 0; i < orderedUniqueDecisions.length; i++) {
+			System.out.println(orderedUniqueDecisions[i]);
+		}
+
+		assertEquals(orderedUniqueDecisions.length, expectedDecisions.length);
+		for (int i = 0; i < orderedUniqueDecisions.length; i++) {
+			assertEquals(orderedUniqueDecisions[i], expectedDecisions[i]);
+		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()} method}.
+	 * Tests sorting in presence of only one fully-determined composite decision.
+	 */
+	@Test
+	public void testCalculateOrderedUniqueDecisions06() {
+		InformationTable informationTable = Mockito.mock(InformationTable.class);
+		int activeDecisionAttributeIndex1 = 0;
+		int activeDecisionAttributeIndex2 = 1;
+		AttributePreferenceType preferenceType1 = AttributePreferenceType.GAIN;
+		AttributePreferenceType preferenceType2 = AttributePreferenceType.GAIN;
+		
+		Decision[] allDecisions = {
+				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(2, preferenceType1), new UnknownSimpleFieldMV2()},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
+				new CompositeDecision(new EvaluationField[] {new UnknownSimpleFieldMV2(), IntegerFieldFactory.getInstance().create(4, preferenceType2)},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
+				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(3, preferenceType1), IntegerFieldFactory.getInstance().create(3, preferenceType2)},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
+				new CompositeDecision(new EvaluationField[] {new UnknownSimpleFieldMV2(), new UnknownSimpleFieldMV2()},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2})
+		};
+		
+		Mockito.when(informationTable.getDecisions(true)).thenReturn(allDecisions);
+		Mockito.when(informationTable.calculateOrderedUniqueFullyDeterminedDecisions()).thenCallRealMethod();
+		
+		//3
+		//3
+		Decision[] expectedDecisions = {
+				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(3, preferenceType1), IntegerFieldFactory.getInstance().create(3, preferenceType2)},
+						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2})};
+		Decision[] orderedUniqueDecisions = informationTable.calculateOrderedUniqueFullyDeterminedDecisions();
+		
+		for (int i = 0; i < orderedUniqueDecisions.length; i++) {
+			System.out.println(orderedUniqueDecisions[i]);
+		}
+
+		assertEquals(orderedUniqueDecisions.length, expectedDecisions.length);
+		for (int i = 0; i < orderedUniqueDecisions.length; i++) {
+			assertEquals(orderedUniqueDecisions[i], expectedDecisions[i]);
 		}
 	}
 	

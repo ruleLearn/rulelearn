@@ -16,13 +16,18 @@
 
 package org.rulelearn.rules;
 
+import static org.rulelearn.core.Precondition.notNull;
+
+import java.util.Objects;
+
+import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributeWithContext;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.types.CompositeField;
 import org.rulelearn.types.EvaluationField;
-import static org.rulelearn.core.Precondition.notNull;
-
-import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.types.SimpleField;
 
 /**
  * Condition of a decision rule. May be present both in the condition part and in the decision part of the rule.
@@ -33,16 +38,17 @@ import org.rulelearn.core.InvalidValueException;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public abstract class Condition<T extends EvaluationField> {
+	//TODO: check if implementation of isAtMostAsGeneralAs works also for conditions having limiting evaluation of type CompositeField
 	
 	/**
 	 * Information about an attribute for which this condition has been created.
 	 */
-	protected EvaluationAttributeWithContext attributeWithContext;
+	EvaluationAttributeWithContext attributeWithContext;
 	
 	/**
 	 * Limiting evaluation with respect to which this condition is defined. E.g., in case of condition 'price &gt;= 5', limiting evaluation is equal to 5.
 	 */
-	protected T limitingEvaluation;
+	T limitingEvaluation;
 	
 	/**
 	 * Gets the limiting evaluation of this condition.
@@ -62,16 +68,16 @@ public abstract class Condition<T extends EvaluationField> {
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	protected Condition(EvaluationAttributeWithContext attributeWithContext, T limitingEvaluation) {
+	Condition(EvaluationAttributeWithContext attributeWithContext, T limitingEvaluation) {
 		this.attributeWithContext = notNull(attributeWithContext, "Attribute with context of constructed condition is null.");
 		this.limitingEvaluation = notNull(limitingEvaluation, "Limiting evaluation of constructed condition is null.");
 	}
 
 	/**
-     * Checks if given evaluation fulfills this condition.
+     * Checks if given evaluation of an object satisfies this condition.
      * 
      * @param evaluation evaluation (field) to check
-     * @return {@code true} if given evaluation fulfills this condition, {@code false} otherwise
+     * @return {@code true} if given evaluation satisfies this condition, {@code false} otherwise
      * 
      * @throws NullPointerException if given evaluation does not conform to {@link org.rulelearn.core.Precondition#notNull(Object, String)}
      */
@@ -81,7 +87,7 @@ public abstract class Condition<T extends EvaluationField> {
      * Checks if an object from the information table, defined by its index, fulfills this condition.
      * 
      * @param objectIndex index of an object in the given information table
-     * @param informationTable information table containing the object to check (and possibly also other objects)
+     * @param informationTable information table containing the object to check
      * 
      * @return {@code true} if considered object fulfills this condition, {@code false} otherwise
      * 
@@ -95,12 +101,19 @@ public abstract class Condition<T extends EvaluationField> {
     	return this.satisfiedBy((T)informationTable.getField(objectIndex, this.attributeWithContext.getAttributeIndex()));
     }
     
-	/**
-	 * Gets text representation of this condition
+    /**
+	 * Gets text representation of this condition.
 	 * 
 	 * @return text representation of this condition
 	 */
-	public abstract String toString();
+    public abstract String toString();
+	
+	/**
+	 * Gets symbol of relation embodied in this condition.
+	 * 
+	 * @return symbol of relation embodied in this condition
+	 */
+	public abstract String getRelationSymbol();
 	
 	/**
 	 * Gets a "meta" object storing attribute for which this condition is defined + context of that attribute.
@@ -113,7 +126,7 @@ public abstract class Condition<T extends EvaluationField> {
 	}
 
 	/**
-	 * Returns duplicate of this condition
+	 * Returns duplicate of this condition.
 	 * 
 	 * @return duplicate of this condition
 	 */
@@ -135,7 +148,9 @@ public abstract class Condition<T extends EvaluationField> {
      * @return hash code of this condition
      */
 	@Override
-    public abstract int hashCode(); 
+    public int hashCode() {
+		return Objects.hash(this.getClass(), this.limitingEvaluation, this.attributeWithContext);
+	}
 	
 	/**
 	 * Gets semantics of a decision rule having this condition on the RHS, as the only condition.
@@ -144,4 +159,27 @@ public abstract class Condition<T extends EvaluationField> {
 	 * @throws InvalidValueException if the type of the attribute for which this condition is defined is not decision one
 	 */
 	public abstract RuleSemantics getRuleSemantics();
+	
+	/**
+	 * Tells if this condition can be decomposed to an array of simpler conditions, each corresponding to a {@link SimpleField}.
+	 * 
+	 * @return {@code true} if this condition can be decomposed to an array of simpler conditions, {@code false} otherwise
+	 */
+	public boolean isDecomposable() {
+		return this.limitingEvaluation instanceof CompositeField;
+	}
+	
+	/**
+	 * Tells if this condition is at most as general as the given condition.
+	 * 
+	 * @param otherCondition the other condition that this condition is being compared to
+	 * @param<S> type used for wildcard capture
+	 * @return {@link TernaryLogicValue#TRUE} if this condition is at most as general as the other condition (i.e., equally specific, or more specific),
+	 *         {@link TernaryLogicValue#FALSE} if this condition is not at most as general as the other condition
+	 *         (is more general, or both conditions are of the same type but cover distinct objects as their limiting evaluations are incomparable),
+	 *         {@link TernaryLogicValue#UNCOMPARABLE} if type of the other condition prevents comparison
+	 */
+	//public abstract TernaryLogicValue isAtMostAsGeneralAs(Condition<? extends EvaluationField> otherCondition);
+	public abstract <S extends EvaluationField> TernaryLogicValue isAtMostAsGeneralAs(Condition<S> otherCondition); //performs wildcard capture
+
 }

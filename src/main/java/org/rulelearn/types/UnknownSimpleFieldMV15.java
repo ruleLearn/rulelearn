@@ -18,9 +18,10 @@ package org.rulelearn.types;
 
 import java.util.Objects;
 
+import org.rulelearn.core.ComparableExt;
+import org.rulelearn.core.EvaluationFieldCalculator;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
-import org.rulelearn.types.SimpleField;
 
 /**
  * Class implementing a missing attribute value handled according to approach denoted by mv_{1.5}. This approach is described in:<br>
@@ -75,7 +76,7 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 	}
 
 	/**
-	 * Compares the other field to this field. Does the reverse comparison than {@link Comparable#compareTo(Object)}.
+	 * Compares the other field to this field. Does the reverse comparison than {@link ComparableExt#compareToEx(Object)}.
 	 * 
 	 * @param otherField other field to be compared to this field
 	 * @return zero, as any other non-null simple field is assumed to be equal to this field
@@ -187,6 +188,36 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 	@Override
 	public String toString() {
 		return "?";
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField) {
+		return calculator.calculate(this, otherField);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@code true}
+	 */
+	@Override
+	public boolean equalWhenComparedToAnyEvaluation() {
+		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@code false}
+	 */
+	@Override
+	public boolean equalWhenReverseComparedToAnyEvaluation() {
+		return false;
 	}
 
 }

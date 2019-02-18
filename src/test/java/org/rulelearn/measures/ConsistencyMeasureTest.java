@@ -16,8 +16,9 @@
 
 package org.rulelearn.measures;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,16 +38,16 @@ class ConsistencyMeasureTest {
 	private double threshold;
 	
 	@Mock
-	private ConsistencyMeasure<ApproximatedSet> measure;
+	private ConsistencyMeasure<ApproximatedSet> measureMock;
 	@Mock
-	private ApproximatedSet set;
+	private ApproximatedSet setMock;
 	
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
 		this.objectIndex = 0;
 		this.threshold = 0.0;
-		when(measure.isConsistencyThresholdReached(this.objectIndex, this.set, this.threshold)).thenCallRealMethod();
+		when(measureMock.isConsistencyThresholdReached(this.objectIndex, this.setMock, this.threshold)).thenCallRealMethod();
 	}
 	
 	/**
@@ -54,16 +55,16 @@ class ConsistencyMeasureTest {
 	 */
 	@Test
 	void testIsConsistencyThresholdReachedForGainTypeMeasure() {
-		when(measure.getType()).thenReturn(MeasureType.GAIN);
+		when(measureMock.getType()).thenReturn(Measure.MeasureType.GAIN);
 		// test the same value as threshold
-		when(measure.calculateConsistency(this.objectIndex, this.set)).thenReturn(this.threshold);
-		assertTrue(this.measure.isConsistencyThresholdReached(this.objectIndex, this.set, this.threshold));
+		when(measureMock.calculateConsistency(this.objectIndex, this.setMock)).thenReturn(this.threshold);
+		assertTrue(this.measureMock.isConsistencyThresholdReached(this.objectIndex, this.setMock, this.threshold));
 		// test lower value than threshold
-		when(measure.calculateConsistency(this.objectIndex, this.set)).thenReturn(this.threshold - 0.5);
-		assertFalse(this.measure.isConsistencyThresholdReached(this.objectIndex, this.set, this.threshold));
+		when(measureMock.calculateConsistency(this.objectIndex, this.setMock)).thenReturn(this.threshold - 0.5);
+		assertFalse(this.measureMock.isConsistencyThresholdReached(this.objectIndex, this.setMock, this.threshold));
 		// test higher value than threshold
-		when(measure.calculateConsistency(this.objectIndex, this.set)).thenReturn(this.threshold + 0.5);
-		assertTrue(this.measure.isConsistencyThresholdReached(this.objectIndex, this.set, this.threshold));
+		when(measureMock.calculateConsistency(this.objectIndex, this.setMock)).thenReturn(this.threshold + 0.5);
+		assertTrue(this.measureMock.isConsistencyThresholdReached(this.objectIndex, this.setMock, this.threshold));
 	}
 
 	/**
@@ -71,15 +72,15 @@ class ConsistencyMeasureTest {
 	 */
 	@Test
 	void testIsConsistencyThresholdReachedForCostTypeMeasure() {
-		when(measure.getType()).thenReturn(MeasureType.COST);
+		when(measureMock.getType()).thenReturn(Measure.MeasureType.COST);
 		// test the same value as threshold
-		when(measure.calculateConsistency(this.objectIndex, this.set)).thenReturn(this.threshold);
-		assertTrue(this.measure.isConsistencyThresholdReached(this.objectIndex, this.set, this.threshold));
+		when(measureMock.calculateConsistency(this.objectIndex, this.setMock)).thenReturn(this.threshold);
+		assertTrue(this.measureMock.isConsistencyThresholdReached(this.objectIndex, this.setMock, this.threshold));
 		// test lower value than threshold
-		when(measure.calculateConsistency(this.objectIndex, this.set)).thenReturn(this.threshold - 0.5);
-		assertTrue(this.measure.isConsistencyThresholdReached(this.objectIndex, this.set, this.threshold));
+		when(measureMock.calculateConsistency(this.objectIndex, this.setMock)).thenReturn(this.threshold - 0.5);
+		assertTrue(this.measureMock.isConsistencyThresholdReached(this.objectIndex, this.setMock, this.threshold));
 		// test higher value than threshold
-		when(measure.calculateConsistency(this.objectIndex, this.set)).thenReturn(this.threshold + 0.5);
-		assertFalse(this.measure.isConsistencyThresholdReached(this.objectIndex, this.set, this.threshold));
+		when(measureMock.calculateConsistency(this.objectIndex, this.setMock)).thenReturn(this.threshold + 0.5);
+		assertFalse(this.measureMock.isConsistencyThresholdReached(this.objectIndex, this.setMock, this.threshold));
 	}
 }

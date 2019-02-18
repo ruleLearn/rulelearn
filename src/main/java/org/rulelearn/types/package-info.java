@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-package org.rulelearn.measures;
-
 /**
- * Type of a measure.
+ * Provides classes and interfaces representing basic field types. These types allow to represent identifiers and evaluations of objects.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public enum MeasureType {
-	
-	/**
-	 * Type of a gain-type measure.
-	 */
-	GAIN,
-	/**
-	 * Type of a cost-type measure.
-	 */
-	COST
-}
+package org.rulelearn.types;

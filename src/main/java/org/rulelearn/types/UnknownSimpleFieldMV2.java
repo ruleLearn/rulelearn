@@ -19,8 +19,8 @@ package org.rulelearn.types;
 import java.util.Objects;
 
 import org.rulelearn.core.ComparableExt;
+import org.rulelearn.core.EvaluationFieldCalculator;
 import org.rulelearn.core.TernaryLogicValue;
-import org.rulelearn.types.SimpleField;
 
 /**
  * Class implementing a missing attribute value handled according to approach denoted by mv_2. This approach is described in:<br>
@@ -163,6 +163,36 @@ public class UnknownSimpleFieldMV2 extends UnknownSimpleField {
 	@Override
 	public String toString() {
 		return "?";
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField) {
+		return calculator.calculate(this, otherField);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@code true}
+	 */
+	@Override
+	public boolean equalWhenComparedToAnyEvaluation() {
+		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@code true}
+	 */
+	@Override
+	public boolean equalWhenReverseComparedToAnyEvaluation() {
+		return true;
 	}
 
 }

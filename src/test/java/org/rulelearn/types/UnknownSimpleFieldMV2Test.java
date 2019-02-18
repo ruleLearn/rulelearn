@@ -293,4 +293,20 @@ class UnknownSimpleFieldMV2Test {
 		assertEquals(new UnknownSimpleFieldMV2().toString(), "?");
 	}
 	
+	/**
+	 * Tests {@link UnknownSimpleFieldMV2#equalWhenComparedToAnyEvaluation()} method.
+	 */
+	@Test
+	public void testEqualWhenComparedToAnyEvaluation() {
+		assertEquals(new UnknownSimpleFieldMV2().equalWhenComparedToAnyEvaluation(), true);
+	}
+	
+	/**
+	 * Tests {@link UnknownSimpleFieldMV2#equalWhenReverseComparedToAnyEvaluation()} method.
+	 */
+	@Test
+	public void testEqualWhenReverseComparedToAnyEvaluation() {
+		assertEquals(new UnknownSimpleFieldMV2().equalWhenReverseComparedToAnyEvaluation(), true);
+	}
+	
 }

@@ -16,13 +16,16 @@
 
 package org.rulelearn.rules;
 
+import static org.rulelearn.core.Precondition.notNull;
+
 import org.rulelearn.core.ComparisonResult;
 import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttributeWithContext;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.SimpleField;
-import static org.rulelearn.core.Precondition.notNull;
 
 /**
  * Condition reflecting evaluations of type {@link SimpleField} and relation "&lt;=".
@@ -30,7 +33,10 @@ import static org.rulelearn.core.Precondition.notNull;
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+ * 
+ * @deprecated Replaced by {@link ConditionAtMost}.
  */
+@Deprecated
 public class SimpleConditionAtMost extends SimpleCondition {
 
 	/**
@@ -60,8 +66,9 @@ public class SimpleConditionAtMost extends SimpleCondition {
      */
 	@Override
 	public boolean satisfiedBy(SimpleField evaluation) {
-		ComparisonResult comparisonResult =  notNull(evaluation, "Evaluation to be verified against condition is null.").compareToEnum(this.limitingEvaluation);
-		return (comparisonResult == ComparisonResult.SMALLER_THAN) || (comparisonResult == ComparisonResult.EQUAL);
+		//ComparisonResult comparisonResult = notNull(evaluation, "Evaluation to be verified against condition is null.").compareToEnum(this.limitingEvaluation);
+		ComparisonResult comparisonResult = this.limitingEvaluation.compareToEnum(notNull(evaluation, "Evaluation to be verified against condition is null."));
+		return (comparisonResult == ComparisonResult.GREATER_THAN) || (comparisonResult == ComparisonResult.EQUAL);
 	}
 
 	/**
@@ -113,6 +120,18 @@ public class SimpleConditionAtMost extends SimpleCondition {
 		} else {
 			throw new InvalidValueException("Cannot establish rule semantics given a simple 'at most' condition w.r.t. a decision attribute without preference type.");
 			//TODO: do something else?
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <S extends EvaluationField> TernaryLogicValue isAtMostAsGeneralAs(Condition<S> otherCondition) {
+		if (otherCondition instanceof SimpleConditionAtMost) {
+			return null; //TODO: implement
+		} else {
+			return TernaryLogicValue.UNCOMPARABLE;
 		}
 	}
 

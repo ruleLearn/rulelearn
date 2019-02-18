@@ -24,6 +24,8 @@ import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.RealFieldFactory;
+import org.rulelearn.types.UnknownSimpleFieldMV15;
+
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 import static org.mockito.Mockito.*;
@@ -360,6 +362,36 @@ class CompositeDecisionTest {
 		assertTrue(decisionText.indexOf("7=>3.5") > -1);
 		assertTrue(decisionText.indexOf("6=>4") > -1);
 		assertTrue(decisionText.indexOf("3=>2") > -1);
+	}
+	
+	/**
+	 * Test for {@link CompositeDecision#hasNoMissingEvaluation()} method.
+	 */
+	@Test
+	void testHasNoMissingEvaluation01() {
+		EvaluationField[] evaluations1 = {
+				IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN),
+				IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.COST),
+				RealFieldFactory.getInstance().create(3.5, AttributePreferenceType.GAIN)};
+		int[] attributeIndices1 = {3, 6, 7};
+		
+		Decision decision = new CompositeDecision(evaluations1, attributeIndices1);
+		assertTrue(decision.hasNoMissingEvaluation());
+	}
+	
+	/**
+	 * Test for {@link CompositeDecision#hasNoMissingEvaluation()} method.
+	 */
+	@Test
+	void testHasNoMissingEvaluation02() {
+		EvaluationField[] evaluations1 = {
+				IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN),
+				IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.COST),
+				new UnknownSimpleFieldMV15()};
+		int[] attributeIndices1 = {3, 6, 7};
+		
+		Decision decision = new CompositeDecision(evaluations1, attributeIndices1);
+		assertFalse(decision.hasNoMissingEvaluation());
 	}
 
 }

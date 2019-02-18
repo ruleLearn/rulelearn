@@ -15,7 +15,7 @@
  */
 
 /**
- * Package grouping different consistency measures.
+ * Provides classes and interfaces allowing to calculate and operate with different types of measures (i.e., measures defined for rules and objects).
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

@@ -16,12 +16,26 @@
 
 package org.rulelearn.measures.dominance;
 
+import static org.rulelearn.core.OperationsOnCollections.getNumberOfElementsFromListNotPresentInSets;
+import static org.rulelearn.core.Precondition.notNull;
+
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Union.UnionType;
 import org.rulelearn.data.Decision;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
-import org.rulelearn.measures.MeasureType;
 import org.rulelearn.measures.ConsistencyMeasure;
+import org.rulelearn.measures.CostTypeMeasure;
+import org.rulelearn.rules.Condition;
+import org.rulelearn.rules.ConditionRemovalEvaluator;
+import org.rulelearn.rules.MonotonicConditionAdditionEvaluator;
+import org.rulelearn.rules.RuleConditions;
+import org.rulelearn.rules.RuleConditionsEvaluator;
+import org.rulelearn.rules.RuleCoverageInformation;
+import org.rulelearn.rules.RuleEvaluator;
+import org.rulelearn.types.EvaluationField;
+
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Epsilon consistency measure defined with respect to union of decision classes in Błaszczyński, J., Greco, S., Słowiński, R., Szeląg, M.: 
@@ -35,10 +49,24 @@ import org.rulelearn.measures.ConsistencyMeasure;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class EpsilonConsistencyMeasure implements ConsistencyMeasure<Union> {
+public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMeasure<Union>, MonotonicConditionAdditionEvaluator, ConditionRemovalEvaluator, RuleConditionsEvaluator, RuleEvaluator {
 
 	protected final static double BEST_VALUE = 0.0;
 	protected final static double WORST_VALUE = 1.0;
+	
+	private static final EpsilonConsistencyMeasure INSTANCE = new EpsilonConsistencyMeasure();
+	
+	private EpsilonConsistencyMeasure () {
+	}
+	
+	/**
+	 * Returns reference to singleton instance of epsilon consistency measure.
+	 * 
+	 * @return reference to singleton instance of epsilon consistency measure
+	 */
+	public static EpsilonConsistencyMeasure getInstance() { 
+		return INSTANCE; 
+	}
 	
 	/**
 	 * Calculates value of epsilon consistency of the given object with respect to the given union of decision classes.
@@ -72,13 +100,101 @@ public class EpsilonConsistencyMeasure implements ConsistencyMeasure<Union> {
 		
 		return (((double)negativeCount) / union.getComplementarySetSize());
 	}
-
-	/* 
+	
+	/** 
 	 * {@inheritDoc}
+	 * 
+	 * @param ruleConditions {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * @throws NullPointerException {@inheritDoc} 
 	 */
 	@Override
-	public MeasureType getType() {
-		return MeasureType.COST;
+	public double evaluate(RuleConditions ruleConditions) {
+		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
+		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjects();
+		IntSet positiveObjects = ruleConditions.getIndicesOfPositiveObjects();
+		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
+		
+		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, positiveObjects, neutralObjects) /
+				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - positiveObjects.size() - neutralObjects.size()));
+	}
+
+	/** 
+	 * {@inheritDoc}
+	 * 
+	 * @param ruleConditions {@inheritDoc}
+	 * @param condition {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * @throws NullPointerException {@inheritDoc}
+	 */
+	@Override
+	public double evaluateWithCondition(RuleConditions ruleConditions, Condition<EvaluationField> condition) {
+		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
+		
+		if (condition != null) { 
+			IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithCondition(condition);
+			IntSet positiveObjects = ruleConditions.getIndicesOfPositiveObjects();
+			IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
+			
+			return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, positiveObjects, neutralObjects) /
+					(ruleConditions.getLearningInformationTable().getNumberOfObjects() - positiveObjects.size() - neutralObjects.size()));
+		}
+		else {
+			return Double.MAX_VALUE;
+		}
+	}
+
+	/** 
+	 * {@inheritDoc}
+	 * 
+	 * @param ruleConditions {@inheritDoc}
+	 * @param conditionIndex {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * 
+	 * @throws NullPointerException {@inheritDoc}
+	 * @throws IndexOutOfBoundsException {@inheritDoc}
+	 */
+	@Override
+	public double evaluateWithoutCondition(RuleConditions ruleConditions, int conditionIndex) {
+		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
+		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithoutCondition(conditionIndex);
+		IntSet positiveObjects = ruleConditions.getIndicesOfPositiveObjects();
+		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
+		
+		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, positiveObjects, neutralObjects) /
+				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - positiveObjects.size() - neutralObjects.size()));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param ruleCoverageInformation {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * @throws NullPointerException {@inheritDoc}
+	 */
+	@Override
+	public double evaluate(RuleCoverageInformation ruleCoverageInformation) {
+		notNull(ruleCoverageInformation, "Rule coverage information for which evaluation is made is null.");
+		IntList coveredObjects = ruleCoverageInformation.getIndicesOfCoveredObjects();
+		IntSet positiveObjects = ruleCoverageInformation.getIndicesOfPositiveObjects();
+		IntSet neutralObjects = ruleCoverageInformation.getIndicesOfNeutralObjects();
+		
+		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, positiveObjects, neutralObjects)) /
+				(ruleCoverageInformation.getAllObjectsCount() - positiveObjects.size() - neutralObjects.size());
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public MonotonicityType getMonotonictyType() {
+		return MonotonicityType.DETERIORATES_WITH_NUMBER_OF_COVERED_OBJECTS;
 	}
 
 }

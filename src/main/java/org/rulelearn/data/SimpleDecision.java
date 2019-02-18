@@ -17,6 +17,7 @@
 package org.rulelearn.data;
 
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.KnownSimpleField;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -219,6 +220,16 @@ public class SimpleDecision extends Decision {
 		sb.append("=>");
 		sb.append(evaluation);
 		return sb.toString();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public boolean hasNoMissingEvaluation() {
+		return this.evaluation instanceof KnownSimpleField;
 	}
 	
 }

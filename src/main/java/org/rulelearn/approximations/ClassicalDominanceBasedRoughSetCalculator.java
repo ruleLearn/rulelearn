@@ -90,9 +90,9 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 	 * @return set of indices of objects belonging to the lower approximation of this approximated set
 	 */
 	public IntSortedSet calculateLowerApproximationForReflexiveDominanceRelations(Union union) {
-		InformationTableWithDecisionDistributions infromationTable = union.getInformationTable(); 
+		InformationTableWithDecisionDistributions informationTable = union.getInformationTable(); 
 		IntIterator unionObjectIndicesIterator  = union.getObjects().iterator();
-		DominanceConesDecisionDistributions dominanceCDD = infromationTable.getDominanceConesDecisionDistributions();
+		DominanceConesDecisionDistributions dominanceCDD = informationTable.getDominanceConesDecisionDistributions();
 		IntSortedSet lowerApproximationObjects = null;  
 		boolean canBeAdded = false;
 		
@@ -152,9 +152,9 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 	 * @return set of indices of objects belonging to the lower approximation of this approximated set
 	 */
 	public IntSortedSet calculateLowerApproximationForNotReflexiveDominanceRelations(Union union) {
-		InformationTableWithDecisionDistributions infromationTable = union.getInformationTable(); 
-		int objectsCount = infromationTable.getNumberOfObjects();
-		DominanceConesDecisionDistributions dominanceCDD = infromationTable.getDominanceConesDecisionDistributions();
+		InformationTableWithDecisionDistributions informationTable = union.getInformationTable(); 
+		int objectsCount = informationTable.getNumberOfObjects();
+		DominanceConesDecisionDistributions dominanceCDD = informationTable.getDominanceConesDecisionDistributions();
 		IntSortedSet lowerApproximationObjects = null;  
 		boolean canBeAdded = false;
 		
@@ -211,19 +211,22 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 	 */
 	@Override
 	public IntSortedSet calculateUpperApproximation(Union union) {
-		InformationTableWithDecisionDistributions infromationTable = union.getInformationTable(); 
-		int objectsCount = infromationTable.getNumberOfObjects();
-		DominanceConesDecisionDistributions dominanceCDD = infromationTable.getDominanceConesDecisionDistributions();
+		InformationTableWithDecisionDistributions informationTable = union.getInformationTable(); 
+		int objectsCount = informationTable.getNumberOfObjects();
+		DominanceConesDecisionDistributions dominanceCDD = informationTable.getDominanceConesDecisionDistributions();
 		IntSortedSet upperApproximationObjects = null;
+		IntSortedSet neutralObjects = union.getNeutralObjects();
 		
 		if (union.getUnionType() == UnionType.AT_LEAST) {
 			upperApproximationObjects = new IntLinkedOpenHashSet();
 			for (int i = 0; i < objectsCount; i++) {
 				// check whether some objects from the set (i.e., union) are present in a negative dominance cone based on the object
 				for (Decision decision : dominanceCDD.getNegativeDConeDecisionClassDistribution(i).getDecisions()) {
-					//if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
 					if (union.isDecisionPositive(decision)) {
-						upperApproximationObjects.add(i);
+						// check whether object that may be added to the approximation is not neutral
+						if (!neutralObjects.contains(i)) {
+							upperApproximationObjects.add(i);
+						}
 						break;
 					}
 				}
@@ -234,9 +237,11 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 			for (int i = 0; i < objectsCount; i++) {
 				// check whether some objects from the set (i.e., union) are present in a positive inverted dominance cone based on the object 
 				for (Decision decision : dominanceCDD.getPositiveInvDConeDecisionClassDistribution(i).getDecisions()) {
-					//if (union.isConcordantWithDecision(decision) == TernaryLogicValue.TRUE) {
 					if (union.isDecisionPositive(decision)) {
-						upperApproximationObjects.add(i);
+						// check whether object that may be added to the approximation is not neutral
+						if (!neutralObjects.contains(i)) {
+							upperApproximationObjects.add(i);
+						}
 						break;
 					}
 				}

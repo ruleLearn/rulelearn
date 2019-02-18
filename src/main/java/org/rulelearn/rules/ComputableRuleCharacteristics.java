@@ -17,79 +17,74 @@
 package org.rulelearn.rules;
 
 import static org.rulelearn.core.Precondition.notNull;
-import org.rulelearn.data.InformationTable;
 
 /**
- * Characteristics of a decision rule, calculated in the context of a particular rule and information table. This class extends {@link RuleCharacteristics}
+ * Characteristics of a decision rule, calculated using rule coverage information {@link RuleCoverageInformation}. This class extends {@link RuleCharacteristics}
  * by ensuring that if any characteristic is not stored explicitly, it will be calculated on demand.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class ComputableRuleCharacteristics extends RuleCharacteristics {
-	/**
-	 * Decision rule against which these characteristics are calculated.
-	 */
-	protected Rule rule = null;
 	
 	/**
-	 * Information table against which these characteristics are calculated.
+	 * Coverage information concerning considered decision rule {@link Rule}.
 	 */
-	protected InformationTable informationTable = null;
+	RuleCoverageInformation ruleCoverageInformation;
 	
 	/**
 	 * Number of all objects from the information table
 	 * which are not covered by the rule but match rule's decision part.
 	 */
-	protected int positiveNotCoveredObjectsCount = UNKNOWN_INT_VALUE;
+	int positiveNotCoveredObjectsCount = UNKNOWN_INT_VALUE;
 	/**
 	 * Number of all objects from the information table
 	 * which are not covered by the rule and do not match rule's decision part.
 	 */
-	protected int negativeNotCoveredObjectsCount = UNKNOWN_INT_VALUE;
+	int negativeNotCoveredObjectsCount = UNKNOWN_INT_VALUE;
 	
 	/**
 	 * Parameter of confirmation measure $c<sub>1</sub>$.
 	 */
-	protected double alpha = 0.5;
+	double alpha = 0.5;
 	/**
 	 * Parameter of confirmation measure $c<sub>1</sub>$.
 	 */
-	protected double beta = 0.5;
+	double beta = 0.5;
 	
 	/**
-	 * Creates these rule characteristics, for the given rule and information table.
+	 * Creates these rule characteristics using given rule coverage information.
 	 * 
-	 * @param rule decision rule against which these characteristics are calculated
-	 * @param informationTable information table against which these characteristics are calculated
-	 * 
-	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @param ruleCoverageInformation coverage information concerning considered decision rule {@link RuleCoverageInformation}
+	 * @throws NullPointerException if given parameter is {@code null}
 	 */
-	public ComputableRuleCharacteristics(Rule rule, InformationTable informationTable) {
+	public ComputableRuleCharacteristics(RuleCoverageInformation ruleCoverageInformation) {
 		super();
-		this.rule = notNull(rule, "Decision rule for which characteristics should be calculated is null.");
-		this.informationTable = notNull(informationTable, "Information table for which rule characteristics should be calculated is null.");
+		this.ruleCoverageInformation = notNull(ruleCoverageInformation, "Rule coverage information is null.");
+	}
+	
+	/**
+	 * Gets value of given rule evaluator.
+	 * TODO: caching?
+	 * 
+	 * @param ruleEvaluator rule evaluator
+	 * @return value of given rule evaluator
+	 */
+	public double getCharacteristic(RuleEvaluator ruleEvaluator) {
+		return ruleEvaluator.evaluate(ruleCoverageInformation);
 	}
 	
 	//TODO: override getters throwing an exception, to compute required characteristic on demand
 	//TODO: use additional supplementary fields: positiveNotCoveredObjectsCount, negativeNotCoveredObjectsCount
 	
 	/**
-	 * Gets decision rule for which these characteristics are computed.
+	 * Gets coverage information concerning considered decision rule.
 	 * 
-	 * @return decision rule for which these characteristics are computed
+	 * @return coverage information concerning considered decision rule
+	 * @see RuleCoverageInformation
 	 */
-	public Rule getRule() {
-		return this.rule;
-	}
-	
-	/**
-	 * Gets information table for which these characteristics are computed.
-	 * 
-	 * @return information table for which these characteristics are computed
-	 */
-	public InformationTable getInformationTable() {
-		return this.informationTable;
+	public RuleCoverageInformation getRuleCoverageInformation() {
+		return this.ruleCoverageInformation;
 	}
 	
 	/**
@@ -191,10 +186,10 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	 */
 	@Override
 	public double getEpsilonPrime() {
-		if (epsilonPrim == UNKNOWN_DOUBLE_VALUE) {
+		if (epsilonPrime == UNKNOWN_DOUBLE_VALUE) {
 			//TODO: calculate measure
 		}
-		return epsilonPrim;
+		return epsilonPrime;
 	}
 	
 	/**

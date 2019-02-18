@@ -17,12 +17,30 @@
 package org.rulelearn.measures;
 
 /**
- * Contract for all classes representing measures.
+ * Contract for all classes representing measures/evaluators.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public interface Measure {
+	
+	/**
+	 * Type of the measure.
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	public static enum MeasureType {
+		
+		/**
+		 * Type of a gain-type measure indicating that the higher the value the more it is preferred.
+		 */
+		GAIN,
+		/**
+		 * Type of a cost-type measure indicating that the lower the value the more it is preferred.
+		 */
+		COST
+	}
 
 	/**
 	 * Gets type of this measure.
@@ -30,5 +48,5 @@ public interface Measure {
 	 * @return see {@link MeasureType}
 	 */
 	public MeasureType getType();
-	
+
 }

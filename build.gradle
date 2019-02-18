@@ -65,6 +65,10 @@ dependencies {
 	// To use Log4J's LogManager
 	testRuntimeOnly("org.apache.logging.log4j:log4j-core:2.10.0") //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/
 	testRuntimeOnly("org.apache.logging.log4j:log4j-jul:2.10.0") //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/
+	
+	// Lombok
+	annotationProcessor("org.projectlombok:lombok:1.18.4")
+    compileOnly("org.projectlombok:lombok:1.18.4")
 }
 
 compileJava {
@@ -103,7 +107,7 @@ junitPlatform {
 		}
 		tags {
 			// include 'fast'
-			// exclude 'slow'
+			//exclude 'integration'
 		}
 		// includeClassNamePattern '.*Test'
 	}
@@ -115,7 +119,8 @@ junitPlatform {
 javadoc {
 	options.author = true
 	options.addStringOption("charset", "UTF-8")
-	options.addBooleanOption('html5', true)
+	options.addStringOption("encoding", "UTF-8");
+	//options.addBooleanOption('html5', true)
 	
 	if (project.properties["org.gradle.java.home"] == null ) {
 		if (System.getenv('JAVA_HOME') != null) {

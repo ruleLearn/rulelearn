@@ -47,6 +47,56 @@ public final class Precondition {
 	}
 	
 	/**
+	 * Verifies if given object reference is not {@code null}, and if so, returns this reference.
+	 * This methods offers the same functionality as {@link Objects#requireNonNull(Object, String)}.
+	 * 
+	 * @param object object reference to verify
+	 * @param errorMsg parts of error message of the thrown {@link NullPointerException}, used when given object does not verify non-null precondition
+	 * @param <T> type of the object to verify
+	 * @return {@code object}, if {@code object != null}
+	 * 
+	 * @throws NullPointerException with error message concatenated from given parts, if given object reference is {@code null}
+	 */
+	public static <T extends Object> T notNull(T object, String... errorMsg) {
+		if (object != null) {
+			return object;
+		} else {
+			StringBuilder sb = new StringBuilder();
+			for (String errorMsgPart : errorMsg) {
+				sb.append(errorMsgPart);
+			}
+			throw new NullPointerException(sb.toString());
+		}
+	}
+	
+	/**
+	 * Verifies if given array of objects is not {@code null}, and also if each element of that array is not {@code null}. In all verifications succeed, returns given array.
+	 * 
+	 * @param objects array of objects to verify
+	 * @param nullArrayErrorMsg error message of the thrown {@link NullPointerException}, used when given array of objects is {@code null}
+	 * @param nullElementErrorMessage error message of the thrown {@link NullPointerException}, used when some element of the array is {@code null};
+	 *        if contains "%i" substring, the first occurrence of this substring is replaced with the index of {@code null} element
+	 * @param <T> type of the objects in the verified array
+	 * @return {@code objects}, if {@code objects != null}, and for each index i: {@code objects[i] != null}
+	 * 
+	 * @throws NullPointerException with {@code nullArrayErrorMsg} error message if given array of objects is {@code null}
+	 * @throws NullPointerException with {@code nullElementErrorMessage} error message if given array of objects is not {@code null}, but some of its elements is {@code null} - in such case,
+	 *         given error message is modified by replacing first occurrence of the string "%i" with the index of the {@code null} element 
+	 */
+	public static <T extends Object> T[] notNullWithContents(T[] objects, String nullArrayErrorMsg, String nullElementErrorMessage) {
+		if (objects != null) {
+			int index = 0;
+			for (T object : objects) {
+				notNull(object, nullElementErrorMessage.replaceFirst("%i", String.valueOf(index)));
+				index++;
+			}
+			return objects;
+		} else {
+			throw new NullPointerException(nullArrayErrorMsg);
+		}
+	} 
+	
+	/**
 	 * Verifies if given number is non-negative.
 	 * 
 	 * @param number number to verify

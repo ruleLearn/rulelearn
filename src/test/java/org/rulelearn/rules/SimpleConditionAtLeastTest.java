@@ -26,6 +26,9 @@ import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.SimpleField;
+import org.rulelearn.types.UnknownSimpleFieldMV15;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -174,6 +177,22 @@ class SimpleConditionAtLeastTest {
 	}
 	
 	/**
+	 * Test method for {@link org.rulelearn.rules.SimpleConditionAtLeast#satisfiedBy(org.rulelearn.types.SimpleField)}.
+	 */
+	@Test
+	public void testSatisfiedBySimpleField_05() {
+		assertTrue(this.getCondition(AttributeType.CONDITION, AttributePreferenceType.GAIN, 1, 7).satisfiedBy(new UnknownSimpleFieldMV2()));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.SimpleConditionAtLeast#satisfiedBy(org.rulelearn.types.SimpleField)}.
+	 */
+	@Test
+	public void testSatisfiedBySimpleField_06() {
+		assertFalse(this.getCondition(AttributeType.CONDITION, AttributePreferenceType.GAIN, 1, 7).satisfiedBy(new UnknownSimpleFieldMV15()));
+	}
+	
+	/**
 	 * Test method for {@link org.rulelearn.rules.SimpleConditionAtLeast#satisfiedBy(int, org.rulelearn.data.InformationTable))}.
 	 */
 	@Test
@@ -198,7 +217,6 @@ class SimpleConditionAtLeastTest {
 		when(informationTableMock.getField(objectIndex, attributeIndex)).thenReturn(IntegerFieldFactory.getInstance().create(4, attributePreferenceType));
 		assertFalse(this.getCondition(AttributeType.CONDITION, attributePreferenceType, attributeIndex, IntegerFieldFactory.getInstance().create(5, attributePreferenceType)).satisfiedBy(objectIndex, informationTableMock));
 	}
-
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.SimpleConditionAtLeast#duplicate()}.

@@ -18,12 +18,13 @@ package org.rulelearn.data;
 
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.KnownSimpleField;
 
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Decision reflecting a single object from an information table. It may relate to an {@link EvaluationField} evaluation of this object on the only active decision attribute,
- * or to an ordered set of {@link EvaluationField} evaluations of this object on subsequent active decision attributes. Each such evaluation contributes to this decision.
+ * or to a set of {@link EvaluationField} evaluations of this object on subsequent active decision attributes. Each such evaluation contributes to this decision.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -111,5 +112,12 @@ public abstract class Decision {
      */
 	@Override
     public abstract String toString();
+	
+	/**
+	 * Tells if this decision is fully-determined, i.e., its all contributing evaluations are non-missing (are instances of {@link KnownSimpleField}).
+	 * 
+	 * @return {@code true} if this decision is fully-determined, i.e., its all contributing evaluations are non-missing (are instances of {@link KnownSimpleField})
+	 */
+	public abstract boolean hasNoMissingEvaluation();
 	
 }

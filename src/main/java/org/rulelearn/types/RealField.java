@@ -18,6 +18,8 @@ package org.rulelearn.types;
 
 import java.util.Objects;
 
+import org.rulelearn.core.EvaluationFieldCalculator;
+
 /**
  * Field representing a real number value.
  * Should be instantiated using {@link RealFieldFactory#create(double, org.rulelearn.data.AttributePreferenceType)}.
@@ -125,4 +127,13 @@ public abstract class RealField extends KnownSimpleField {
 		return String.valueOf(this.value);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField) {
+		return calculator.calculate(this, otherField);
+	}
 }

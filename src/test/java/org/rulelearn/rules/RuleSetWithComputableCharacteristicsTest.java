@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.rulelearn.data.InformationTable;
 
 /**
  * Tests for {@link RuleSetWithComputableCharacteristics}.
@@ -31,12 +30,12 @@ import org.rulelearn.data.InformationTable;
 class RuleSetWithComputableCharacteristicsTest {
 
 	/**
-	 * Test method for {@link RuleSetWithComputableCharacteristics#RuleSetWithComputableCharacteristics(Rule[], InformationTable)}.
+	 * Test method for {@link RuleSetWithComputableCharacteristics#RuleSetWithComputableCharacteristics(Rule[], RuleCoverageInformation[])}.
 	 */
 	@Test
-	void testRuleSetWithComputableCharacteristicsRuleArrayInformationTable01() {
+	void testRuleSetWithComputableCharacteristics01() {
 		try {
-			new RuleSetWithComputableCharacteristics(null, Mockito.mock(InformationTable.class));
+			new RuleSetWithComputableCharacteristics(null, new RuleCoverageInformation[] {Mockito.mock(RuleCoverageInformation.class)});
 			fail("Should not create rule set with computable characteristics for null rules.");
 		} catch (NullPointerException exception) {
 			//OK
@@ -44,37 +43,37 @@ class RuleSetWithComputableCharacteristicsTest {
 	}
 
 	/**
-	 * Test method for {@link RuleSetWithComputableCharacteristics#RuleSetWithComputableCharacteristics(Rule[], InformationTable)}.
+	 * Test method for {@link RuleSetWithComputableCharacteristics#RuleSetWithComputableCharacteristics(Rule[], RuleCoverageInformation[])}.
 	 */
 	@Test
-	void testRuleSetWithComputableCharacteristicsRuleArrayInformationTable02() {
+	void testRuleSetWithComputableCharacteristics02() {
 		try {
 			new RuleSetWithComputableCharacteristics(new Rule[] {Mockito.mock(Rule.class)}, null);
-			fail("Should not create rule set with computable characteristics for null information table.");
+			fail("Should not create rule set with computable characteristics for null array with rule coverage information.");
 		} catch (NullPointerException exception) {
 			//OK
 		}
 	}
 	
 	/**
-	 * Test method for {@link RuleSetWithComputableCharacteristics#RuleSetWithComputableCharacteristics(Rule[], InformationTable)}.
+	 * Test method for {@link RuleSetWithComputableCharacteristics#RuleSetWithComputableCharacteristics(Rule[], RuleCoverageInformation[])}.
 	 */
 	@Test
-	void testRuleSetWithComputableCharacteristicsRuleArrayInformationTable03() {
+	void testRuleSetWithComputableCharacteristics03() {
 		try {
-			new RuleSetWithComputableCharacteristics(new Rule[] {Mockito.mock(Rule.class)}, Mockito.mock(InformationTable.class));
+			new RuleSetWithComputableCharacteristics(new Rule[] {Mockito.mock(Rule.class)}, new RuleCoverageInformation[] {Mockito.mock(RuleCoverageInformation.class)});
 		} catch (NullPointerException exception) {
-			fail("Should create rule set with computable characteristics for given rules and information table.");
+			fail("Should create rule set with computable characteristics for given rules and array of rule coverage information.");
 		}
 	}	
 	
 	/**
-	 * Test method for {@link RuleSetWithComputableCharacteristics#RuleSetWithComputableCharacteristics(Rule[], InformationTable, boolean)}.
+	 * Test method for {@link RuleSetWithComputableCharacteristics#RuleSetWithComputableCharacteristics(Rule[], RuleCoverageInformation[], boolean)}.
 	 */
 	@Test
-	void testRuleSetWithComputableCharacteristicsRuleArrayInformationTableBoolean01() {
+	void testRuleSetWithComputableCharacteristicsBoolean01() {
 		try {
-			new RuleSetWithComputableCharacteristics(null, Mockito.mock(InformationTable.class), true);
+			new RuleSetWithComputableCharacteristics(null, new RuleCoverageInformation[] {Mockito.mock(RuleCoverageInformation.class)}, true);
 			fail("Should not create rule set with computable characteristics for null rules.");
 		} catch (NullPointerException exception) {
 			//OK
@@ -82,27 +81,47 @@ class RuleSetWithComputableCharacteristicsTest {
 	}
 	
 	/**
-	 * Test method for {@link RuleSetWithComputableCharacteristics#RuleSetWithComputableCharacteristics(Rule[], InformationTable, boolean)}.
+	 * Test method for {@link RuleSetWithComputableCharacteristics#RuleSetWithComputableCharacteristics(Rule[], RuleCoverageInformation[], boolean)}.
 	 */
 	@Test
-	void testRuleSetWithComputableCharacteristicsRuleArrayInformationTableBoolean02() {
+	void testRuleSetWithComputableCharacteristicsBoolean02() {
 		try {
 			new RuleSetWithComputableCharacteristics(new Rule[] {Mockito.mock(Rule.class)}, null, true);
-			fail("Should not create rule set with computable characteristics for null information table.");
+			fail("Should not create rule set with computable characteristics for null array of rule coverage information.");
 		} catch (NullPointerException exception) {
 			//OK
 		}
 	}
 	
 	/**
-	 * Test method for {@link RuleSetWithComputableCharacteristics#RuleSetWithComputableCharacteristics(Rule[], InformationTable, boolean)}.
+	 * Test method for {@link RuleSetWithComputableCharacteristics#RuleSetWithComputableCharacteristics(Rule[], RuleCoverageInformation[], boolean)}.
 	 */
 	@Test
-	void testRuleSetWithComputableCharacteristicsRuleArrayInformationTableBoolean03() {
+	void testRuleSetWithComputableCharacteristicsBoolean03() {
+		RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics;
+		RuleCoverageInformation[] ruleCoverageInformationArray = new RuleCoverageInformation[] {Mockito.mock(RuleCoverageInformation.class)};
 		try {
-			new RuleSetWithComputableCharacteristics(new Rule[] {Mockito.mock(Rule.class)}, Mockito.mock(InformationTable.class), true);
+			ruleSetWithComputableCharacteristics = new RuleSetWithComputableCharacteristics(new Rule[] {Mockito.mock(Rule.class)},
+					ruleCoverageInformationArray, true); //allow cloning
+			assertTrue(ruleSetWithComputableCharacteristics.ruleCoverageInformationArray == ruleCoverageInformationArray);
 		} catch (NullPointerException exception) {
-			fail("Should create rule set with computable characteristics for given rules and information table.");
+			fail("Should create rule set with computable characteristics for given rules and array of rule coverage information.");
+		}
+	}
+	
+	/**
+	 * Test method for {@link RuleSetWithComputableCharacteristics#RuleSetWithComputableCharacteristics(Rule[], RuleCoverageInformation[], boolean)}.
+	 */
+	@Test
+	void testRuleSetWithComputableCharacteristicsBoolean04() {
+		RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics;
+		RuleCoverageInformation[] ruleCoverageInformationArray = new RuleCoverageInformation[] {Mockito.mock(RuleCoverageInformation.class)};
+		try {
+			ruleSetWithComputableCharacteristics = new RuleSetWithComputableCharacteristics(new Rule[] {Mockito.mock(Rule.class)},
+					ruleCoverageInformationArray, false); //avoid cloning
+			assertFalse(ruleSetWithComputableCharacteristics.ruleCoverageInformationArray == ruleCoverageInformationArray);
+		} catch (NullPointerException exception) {
+			fail("Should create rule set with computable characteristics for given rules and array of rule coverage information.");
 		}
 	}
 
@@ -112,28 +131,17 @@ class RuleSetWithComputableCharacteristicsTest {
 	@Test
 	void testGetRuleCharacteristicsInt() {
 		Rule rule = Mockito.mock(Rule.class);
-		InformationTable informationTable = Mockito.mock(InformationTable.class);
-		RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = new RuleSetWithComputableCharacteristics(new Rule[] {rule}, informationTable);
+		RuleCoverageInformation ruleCoverageInformation = Mockito.mock(RuleCoverageInformation.class);
+		RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = new RuleSetWithComputableCharacteristics(new Rule[] {rule},
+				new RuleCoverageInformation[] {ruleCoverageInformation});
 		
 		ComputableRuleCharacteristics computableRuleCharacteristics = ruleSetWithComputableCharacteristics.getRuleCharacteristics(0);
 		
 		assertTrue(computableRuleCharacteristics instanceof ComputableRuleCharacteristics);
-		assertTrue(computableRuleCharacteristics.getRule() == rule);
-		assertTrue(computableRuleCharacteristics.getInformationTable() == informationTable);
+		assertTrue(computableRuleCharacteristics.getRuleCoverageInformation() == ruleCoverageInformation);
 		
 		assertTrue(computableRuleCharacteristics == ruleSetWithComputableCharacteristics.getRuleCharacteristics(0)); //test if existing object is returned
 		
-	}
-
-	/**
-	 * Test method for {@link org.rulelearn.rules.RuleSetWithComputableCharacteristics#getInformationTable()}.
-	 */
-	@Test
-	void testGetInformationTable() {
-		InformationTable informationTable = Mockito.mock(InformationTable.class);
-		RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = new RuleSetWithComputableCharacteristics(new Rule[] {Mockito.mock(Rule.class)}, informationTable, true);
-		
-		assertTrue(ruleSetWithComputableCharacteristics.getInformationTable() == informationTable);
 	}
 
 }

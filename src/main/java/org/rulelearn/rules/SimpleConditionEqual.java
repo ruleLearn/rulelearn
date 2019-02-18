@@ -16,13 +16,16 @@
 
 package org.rulelearn.rules;
 
+import static org.rulelearn.core.Precondition.notNull;
+
 import org.rulelearn.core.ComparisonResult;
 import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttributeWithContext;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.SimpleField;
-import static org.rulelearn.core.Precondition.notNull;
 
 /**
  * Condition reflecting evaluations of type {@link SimpleField} and relation "=".
@@ -30,7 +33,10 @@ import static org.rulelearn.core.Precondition.notNull;
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+ * 
+ * @deprecated Replaced by {@link ConditionEqual}.
  */
+@Deprecated
 public class SimpleConditionEqual extends SimpleCondition {
 
 	/**
@@ -111,6 +117,18 @@ public class SimpleConditionEqual extends SimpleCondition {
 		} else {
 			throw new InvalidValueException("Cannot establish rule semantics given a simple 'equal' condition w.r.t. a decision attribute having preference type.");
 			//TODO: do something else?
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <S extends EvaluationField> TernaryLogicValue isAtMostAsGeneralAs(Condition<S> otherCondition) {
+		if (otherCondition instanceof SimpleConditionEqual) {
+			return null; //TODO: implement
+		} else {
+			return TernaryLogicValue.UNCOMPARABLE;
 		}
 	}
 

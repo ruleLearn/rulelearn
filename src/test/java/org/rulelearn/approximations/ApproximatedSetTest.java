@@ -16,11 +16,17 @@
 
 package org.rulelearn.approximations;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
@@ -30,8 +36,6 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSets;
-
-import static org.mockito.Mockito.*;
 
 /**
  * Test for {@link ApproximatedSet} class.
@@ -45,10 +49,6 @@ class ApproximatedSetTest {
 	 * Mock of {@link InformationTable}, injected in the constructor of {@link ApproximatedSet}.
 	 */
 	private InformationTable informationTableMock;
-	/**
-	 * Mock of {@link Decision}, injected in the constructor of {@link ApproximatedSet}.
-	 */
-	private Decision limitingDecisionMock;
 	/**
 	 * Mock of {@link RoughSetCalculator}, injected in the constructor of {@link ApproximatedSet}.
 	 */
@@ -73,19 +73,18 @@ class ApproximatedSetTest {
 	@SuppressWarnings("unchecked")
 	private void setup() {
 		this.informationTableMock = mock(InformationTable.class);
-		this.limitingDecisionMock = mock(Decision.class);
 		this.roughSetCalculatorMock = (RoughSetCalculator<ApproximatedSet>)mock(RoughSetCalculator.class);
 		
 		this.approximatedSetMock = mock(ApproximatedSet.class);
 	}
 	
 	/**
-	 * Initializes {@link #approximatedSet} by calling {@link ApproximatedSet} constructor using mocks: {@link #informationTableMock},
-	 * {@link #limitingDecisionMock}, and {@link #roughSetCalculatorMock}. Abstract methods of {@link ApproximatedSet} are implemented using calls
+	 * Initializes {@link #approximatedSet} by calling {@link ApproximatedSet} constructor using mocks: {@link #informationTableMock}
+	 * and {@link #roughSetCalculatorMock}. Abstract methods of {@link ApproximatedSet} are implemented using calls
 	 * to respective methods of {@link #approximatedSetMock} (which, obviously, will work if first recorded on that mock).
 	 */
 	private void createApproximatedSet() {
-		this.approximatedSet = new ApproximatedSet(informationTableMock, limitingDecisionMock, roughSetCalculatorMock) {
+		this.approximatedSet = new ApproximatedSet(informationTableMock, roughSetCalculatorMock) {
 			@Override
 			protected TernaryLogicValue isConcordantWithDecision(Decision decision) {
 				return approximatedSetMock.isConcordantWithDecision(decision);
@@ -120,6 +119,37 @@ class ApproximatedSetTest {
 			protected void findObjects() {
 				approximatedSetMock.findObjects();
 			}
+
+			@Override
+			public IntSortedSet getNeutralObjects() {
+				return approximatedSetMock.getNeutralObjects();
+			}
+
+			@Override
+			public boolean isDecisionPositive(Decision decision) {
+				return approximatedSetMock.isDecisionPositive(decision);
+			}
+
+			@Override
+			public boolean isDecisionNegative(Decision decision) {
+				return approximatedSetMock.isDecisionNegative(decision);
+			}
+
+			@Override
+			public boolean isObjectPositive(int objectNumber) {
+				return approximatedSetMock.isObjectPositive(objectNumber);
+			}
+
+			@Override
+			public boolean isObjectNegative(int objectNumber) {
+				return approximatedSetMock.isObjectNegative(objectNumber);
+			}
+
+			@Override
+			public boolean includes(ApproximatedSet approximatedSet) {
+				return approximatedSetMock.includes(approximatedSet);
+			}
+
 		};
 	}
 	
@@ -130,15 +160,6 @@ class ApproximatedSetTest {
 	void testGetInformationTable() {
 		createApproximatedSet();
 		assertSame(this.approximatedSet.getInformationTable(), this.informationTableMock);
-	}
-
-	/**
-	 * Test method for {@link org.rulelearn.approximations.ApproximatedSet#getLimitingDecision()}.
-	 */
-	@Test
-	void testGetLimitingDecision() {
-		createApproximatedSet();
-		assertSame(this.approximatedSet.getLimitingDecision(), this.limitingDecisionMock);
 	}
 
 	/**
@@ -586,7 +607,7 @@ class ApproximatedSetTest {
 		}).when(approximatedSetMock).findObjects(); //mocking a void method
 		
 		createApproximatedSet(); //create instance of tested class
-		Mockito.when(this.informationTableMock.getNumberOfObjects()).thenReturn(10);
+		when(this.informationTableMock.getNumberOfObjects()).thenReturn(10);
 		
 		assertTrue(this.approximatedSet.isMeaningful());
 	}
@@ -611,7 +632,7 @@ class ApproximatedSetTest {
 		}).when(approximatedSetMock).findObjects(); //mocking a void method
 		
 		createApproximatedSet(); //create instance of tested class
-		Mockito.when(this.informationTableMock.getNumberOfObjects()).thenReturn(6);
+		when(this.informationTableMock.getNumberOfObjects()).thenReturn(6);
 		
 		assertFalse(this.approximatedSet.isMeaningful());
 	}

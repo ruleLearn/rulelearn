@@ -1,0 +1,38 @@
+/**
+ * Copyright (C) Jerzy Błaszczyński, Marcin Szeląg
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.rulelearn.rules;
+
+/**
+ * Type of objects allowed to be covered by rule conditions {@link RuleConditions}, determining the way of construction of these rule conditions.
+ *
+ * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+ * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+ */
+public enum AllowedObjectsType {
+	/**
+	 * Allowed objects type used when {@link RuleConditions} can cover objects from the positive region of an approximated set.
+	 */
+	POSITIVE_REGION,
+	/**
+	 * Allowed objects type used when {@link RuleConditions} can cover objects from the positive and boundary regions of an approximated set.
+	 */
+	POSITIVE_AND_BOUNDARY_REGIONS,
+	/**
+	 * Allowed objects type used when {@link RuleConditions} can cover any objects from considered learning information table.
+	 */
+	ANY_REGION
+}

@@ -20,6 +20,7 @@ import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.KnownSimpleField;
@@ -45,6 +46,43 @@ public class CentralTendencyCalculator {
 	 */
 	public static SimpleField calculateMean(SimpleField a, SimpleField b) {
 		SimpleField mean = null;
+		
+		if ((a instanceof KnownSimpleField) && (b instanceof KnownSimpleField)) {
+			if ((a instanceof EnumerationField) && (b instanceof EnumerationField)) {
+				mean = CentralTendencyCalculator.calculateMean((EnumerationField)a, (EnumerationField)b);
+			}
+			else if ((a instanceof IntegerField) && (b instanceof IntegerField)) {
+				mean = CentralTendencyCalculator.calculateMean((IntegerField)a, (IntegerField)b);
+			}
+			else if ((a instanceof RealField) && (b instanceof RealField)) {
+				mean = CentralTendencyCalculator.calculateMean((RealField)a, (RealField)b);
+			}
+		}
+		else if ((a instanceof KnownSimpleField) && (b instanceof UnknownSimpleField)) {
+			mean = CentralTendencyCalculator.calculateMean((KnownSimpleField)a, (UnknownSimpleField)b);
+		}
+		else if ((a instanceof UnknownSimpleField) && (b instanceof KnownSimpleField)) {
+			mean = CentralTendencyCalculator.calculateMean((UnknownSimpleField)a, (KnownSimpleField)b);
+		}
+		else if ((a instanceof KnownSimpleField) && (b == null)) {
+			mean = a;
+		}
+		else if ((a == null) && (b instanceof KnownSimpleField)) {
+			mean = b;
+		}
+		
+		return mean;
+	}
+	
+	/**
+	 * Calculates mean (average) value of two fields of {@link EvaluationField} type. Returns {@code null} when it is impossible to calculate mean value.
+	 * 
+	 * @param a first averaged field
+	 * @param b second averaged field
+	 * @return mean (average) value of two fields or {@code null} when it is impossible to calculate mean value
+	 */
+	public static EvaluationField calculateMean(EvaluationField a, EvaluationField b) {
+		EvaluationField mean = null;
 		
 		if ((a instanceof KnownSimpleField) && (b instanceof KnownSimpleField)) {
 			if ((a instanceof EnumerationField) && (b instanceof EnumerationField)) {
