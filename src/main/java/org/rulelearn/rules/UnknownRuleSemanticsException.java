@@ -17,7 +17,7 @@
 package org.rulelearn.rules;
 
 /**
- * Exception occurring when the semantics of rule is different than expected (i.e., it might be correct but is not concordant with the expected semantics).
+ * Exception occurring when the semantics of a decision rule is different than expected (i.e., it might be correct but is not concordant with the expected semantics).
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

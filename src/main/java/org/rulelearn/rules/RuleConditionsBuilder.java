@@ -41,6 +41,7 @@ public class RuleConditionsBuilder {
 	 * Indices of objects considered when adding next condition to constructed rule conditions. Updated at each iteration, after appending next condition.
 	 */
 	IntList indicesOfConsideredObjects;
+	
 	InformationTable learningInformationTable;
 	IntSet indicesOfPositiveObjects;
 	IntSet indicesOfApproximationObjects;
@@ -110,7 +111,7 @@ public class RuleConditionsBuilder {
 		while (!ruleInductionStoppingConditionChecker.isStoppingConditionSatisified(ruleConditions)) {
 			try {
 				bestCondition = conditionGenerator.getBestCondition(indicesOfConsideredObjects, ruleConditions);
-				//TODO: consider more efficient implementation of using condition separator
+				//TODO: consider more efficient implementation of usage of condition separator
 				if (this.conditionSeparator == null) {
 					ruleConditions.addCondition(bestCondition);
 				} else {

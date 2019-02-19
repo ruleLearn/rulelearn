@@ -43,11 +43,12 @@ class RuleSetTest {
 	 */
 	@BeforeEach
 	public void setUp() {
-		SimpleConditionAtLeast condition = null;
+		ConditionAtLeast<? extends EvaluationField> condition = null;
 		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
 		conditions.add(condition);
 		
-		SimpleConditionAtLeast decision = Mockito.mock(SimpleConditionAtLeast.class);;
+		@SuppressWarnings("unchecked")
+		ConditionAtLeast<? extends EvaluationField> decision = Mockito.mock(ConditionAtLeast.class);
 		
 		List<List<Condition<? extends EvaluationField>>> decisions = new ObjectArrayList<>();
 		decisions.add(new ObjectArrayList<>());

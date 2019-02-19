@@ -16,10 +16,13 @@
 
 package org.rulelearn.rules;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.rulelearn.core.InvalidSizeException;
 
 /**
  * Tests for {@link RuleSetWithComputableCharacteristics}.
@@ -124,12 +127,26 @@ class RuleSetWithComputableCharacteristicsTest {
 			fail("Should create rule set with computable characteristics for given rules and array of rule coverage information.");
 		}
 	}
+	
+	/**
+	 * Test method for {@link RuleSetWithComputableCharacteristics#RuleSetWithComputableCharacteristics(Rule[], RuleCoverageInformation[], boolean)}.
+	 */
+	@Test
+	void testRuleSetWithComputableCharacteristicsBoolean05() {
+		try {
+			new RuleSetWithComputableCharacteristics(new Rule[] {Mockito.mock(Rule.class), Mockito.mock(Rule.class)},
+					new RuleCoverageInformation[] {Mockito.mock(RuleCoverageInformation.class)}, false); //different number of rules and rule coverage information objects
+			fail("Should not create rule set with computable characteristics for different number of rules and rule coverage information objects.");
+		} catch (InvalidSizeException exception) {
+			//OK
+		}
+	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.RuleSetWithComputableCharacteristics#getRuleCharacteristics(int)}.
 	 */
 	@Test
-	void testGetRuleCharacteristicsInt() {
+	void testGetRuleCharacteristicsInt01() {
 		Rule rule = Mockito.mock(Rule.class);
 		RuleCoverageInformation ruleCoverageInformation = Mockito.mock(RuleCoverageInformation.class);
 		RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = new RuleSetWithComputableCharacteristics(new Rule[] {rule},
@@ -141,6 +158,36 @@ class RuleSetWithComputableCharacteristicsTest {
 		assertTrue(computableRuleCharacteristics.getRuleCoverageInformation() == ruleCoverageInformation);
 		
 		assertTrue(computableRuleCharacteristics == ruleSetWithComputableCharacteristics.getRuleCharacteristics(0)); //test if existing object is returned
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleSetWithComputableCharacteristics#getRuleCharacteristics(int)}.
+	 */
+	@Test
+	void testGetRuleCharacteristicsInt02() {
+		Rule rule0 = Mockito.mock(Rule.class);
+		Rule rule1 = Mockito.mock(Rule.class);
+		RuleCoverageInformation ruleCoverageInformation0 = Mockito.mock(RuleCoverageInformation.class);
+		RuleCoverageInformation ruleCoverageInformation1 = Mockito.mock(RuleCoverageInformation.class);
+		
+		RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = new RuleSetWithComputableCharacteristics(new Rule[] {rule0, rule1},
+				new RuleCoverageInformation[] {ruleCoverageInformation0, ruleCoverageInformation1}); //two rules, two rule coverage information objects
+		
+		ComputableRuleCharacteristics computableRuleCharacteristics = ruleSetWithComputableCharacteristics.getRuleCharacteristics(0);
+		
+		assertTrue(computableRuleCharacteristics instanceof ComputableRuleCharacteristics);
+		assertTrue(computableRuleCharacteristics.getRuleCoverageInformation() == ruleCoverageInformation0);
+		
+		assertTrue(computableRuleCharacteristics == ruleSetWithComputableCharacteristics.getRuleCharacteristics(0)); //test if existing object is returned
+		
+		//---
+		
+		computableRuleCharacteristics = ruleSetWithComputableCharacteristics.getRuleCharacteristics(1);
+		
+		assertTrue(computableRuleCharacteristics instanceof ComputableRuleCharacteristics);
+		assertTrue(computableRuleCharacteristics.getRuleCoverageInformation() == ruleCoverageInformation1);
+		
+		assertTrue(computableRuleCharacteristics == ruleSetWithComputableCharacteristics.getRuleCharacteristics(1)); //test if existing object is returned
 		
 	}
 
