@@ -27,7 +27,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -38,14 +37,10 @@ import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.EvaluationAttributeWithContext;
-import org.rulelearn.data.IdentificationAttribute;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.data.InformationTableBuilder;
 import org.rulelearn.data.SimpleDecision;
-import org.rulelearn.data.json.AttributeDeserializer;
-import org.rulelearn.data.json.EvaluationAttributeSerializer;
-import org.rulelearn.data.json.IdentificationAttributeSerializer;
-import org.rulelearn.data.json.ObjectBuilder;
+import org.rulelearn.data.json.AttributeParser;
+import org.rulelearn.data.json.ObjectParser;
 import org.rulelearn.rules.ConditionAtLeast;
 import org.rulelearn.rules.ConditionAtMost;
 import org.rulelearn.rules.Rule;
@@ -55,12 +50,6 @@ import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 
 /**
  * Tests for {@link SimpleRuleClassifier}.
@@ -251,87 +240,44 @@ class SimpleRuleClassifierTest {
 	@Test
 	void testLoading() {
 		Attribute [] attributes = null;
-		
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
-		gsonBuilder.registerTypeAdapter(IdentificationAttribute.class, new IdentificationAttributeSerializer());
-		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
-		Gson gson = gsonBuilder.create();
-		
-		JsonReader jsonReader = null;
-		try {
-			jsonReader = new JsonReader(new FileReader("src/test/resources/data/csv/prioritisation.json"));
+		AttributeParser attributeParser = new AttributeParser();
+		try (FileReader attributeReader = new FileReader("src/test/resources/data/csv/prioritisation.json")) {
+			attributes = attributeParser.parseAttributes(attributeReader);
+			if (attributes != null) {
+				Map<Integer, RuleSet> rules = null;
+				RuleParser ruleParser = new RuleParser(attributes);
+				try (FileInputStream fileRulesStream = new FileInputStream("src/test/resources/data/ruleml/prioritisation2.rules.xml")) {
+					rules = ruleParser.parseRules(fileRulesStream);
+					if ((rules != null) & (rules.size() > 0)) {
+						ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
+						InformationTable informationTable = null;
+						try (FileReader objectReader = new FileReader("src/test/resources/data/json/examples.json")) {
+							informationTable = objectParser.parseObjects(objectReader);
+							SimpleRuleClassifier classifier = new SimpleRuleClassifier(rules.get(1), new SimpleClassificationResult(
+										new SimpleDecision(EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 2, 
+																			AttributePreferenceType.COST), 10)));
+							//System.out.println(classifier.classify(0, iT).getSuggestedDecision().getEvaluation());
+							assertEquals(new SimpleDecision(EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 1, 
+									AttributePreferenceType.COST), 10), classifier.classify(0, informationTable).getSuggestedDecision());
+							//System.out.println(classifier.classify(1, iT).getSuggestedDecision().getEvaluation());
+							assertEquals(new SimpleDecision(EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 2, 
+									AttributePreferenceType.COST), 10), classifier.classify(1, informationTable).getSuggestedDecision());
+						}
+					}
+					else {
+						fail("Unable to load RuleML file.");
+					}
+				}
+			}
+			else {
+				fail("Unable to load JSON file with meta-data.");
+			}
 		}
 		catch (FileNotFoundException ex) {
 			System.out.println(ex.toString());
 		}
-		
-		Map<Integer, RuleSet> rules = null;
-		if (jsonReader != null) {
-			attributes = gson.fromJson(jsonReader, Attribute[].class);
-			try {
-				jsonReader.close();
-				jsonReader = null;
-			}
-			catch (IOException ex){
-				System.out.println(ex.toString());
-			}
-			
-			RuleParser ruleParser = new RuleParser(attributes);
-			try {
-				rules = ruleParser.parseRules(new FileInputStream("src/test/resources/data/ruleml/prioritisation2.rules.xml"));
-			}
-			catch (FileNotFoundException ex) {
-				System.out.println(ex.toString());
-			}
-			if ((rules != null) & (rules.size() > 0)) {
-				JsonElement json = null;
-				try {
-					jsonReader = new JsonReader(new FileReader("src/test/resources/data/json/examples.json"));
-				}
-				catch (FileNotFoundException ex) {
-					System.out.println(ex.toString());
-				}
-				if (jsonReader != null) {
-					JsonParser jsonParser = new JsonParser();
-					json = jsonParser.parse(jsonReader);
-				}
-				else {
-					fail("Unable to load JSON test file with definition of objects");
-				}
-				try {
-					jsonReader.close();
-				}
-				catch (IOException ex){
-					System.out.println(ex.toString());
-				}
-				
-				ObjectBuilder ob = (new ObjectBuilder.Builder(attributes)).build();
-				List<String []> objects = null;
-				objects = ob.getObjects(json);
-				
-				InformationTableBuilder iTB = new InformationTableBuilder(attributes, ",", new String[] {"?"});
-				for (int i = 0; i < objects.size(); i++) {
-					iTB.addObject(objects.get(i));
-				}
-				InformationTable iT = iTB.build();
-				
-				SimpleRuleClassifier classifier = new SimpleRuleClassifier(rules.get(1), new SimpleClassificationResult(
-						new SimpleDecision(EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 2, 
-																AttributePreferenceType.COST), 10)));
-				//System.out.println(classifier.classify(0, iT).getSuggestedDecision().getEvaluation());
-				assertEquals(new SimpleDecision(EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 1, 
-						AttributePreferenceType.COST), 10), classifier.classify(0, iT).getSuggestedDecision());
-				//System.out.println(classifier.classify(1, iT).getSuggestedDecision().getEvaluation());
-				assertEquals(new SimpleDecision(EnumerationFieldFactory.getInstance().create(((EnumerationField)attributes[10].getValueType()).getElementList(), 2, 
-						AttributePreferenceType.COST), 10), classifier.classify(1, iT).getSuggestedDecision());
-			}
-			else {
-				fail("Unable to load RuleML file.");
-			}
-		}
-		else {
-			fail("Unable to load JSON file with attributes.");
+		catch (IOException ex) {
+			System.out.println(ex.toString());
 		}
 	}
 	

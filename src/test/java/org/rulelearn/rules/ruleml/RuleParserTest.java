@@ -27,16 +27,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.data.Attribute;
-import org.rulelearn.data.EvaluationAttribute;
-import org.rulelearn.data.IdentificationAttribute;
-import org.rulelearn.data.json.AttributeDeserializer;
-import org.rulelearn.data.json.EvaluationAttributeSerializer;
-import org.rulelearn.data.json.IdentificationAttributeSerializer;
+import org.rulelearn.data.json.AttributeParser;
 import org.rulelearn.rules.RuleSet;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
 
 /**
  * Test for {@link RuleParser}.
@@ -52,29 +44,30 @@ class RuleParserTest {
 	 */
 	@Test
 	public void testLoading() {
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
-		gsonBuilder.registerTypeAdapter(IdentificationAttribute.class, new IdentificationAttributeSerializer());
-		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
-		Gson gson = gsonBuilder.create();
-		
-		try (FileReader fileAttributeReader = new FileReader("src/test/resources/data/csv/prioritisation.json"); JsonReader jsonAttributeReader = new JsonReader(fileAttributeReader);) {
-			Map<Integer, RuleSet> rules = null;
-			Attribute [] attributes = gson.fromJson(jsonAttributeReader, Attribute[].class);
-			RuleParser ruleParser = new RuleParser(attributes);
-			try (FileInputStream fileRulesStream = new FileInputStream("src/test/resources/data/ruleml/prioritisation1.rules.xml")) {
-				rules = ruleParser.parseRules(fileRulesStream);
-				if (rules != null) {
-					assertEquals(rules.size(), 1);
-					RuleSet firstRuleSet = rules.get(1);
-					assertEquals(firstRuleSet.size(), 2);
+		Attribute [] attributes = null;
+		AttributeParser attributeParser = new AttributeParser();
+		try (FileReader attributeReader = new FileReader("src/test/resources/data/csv/prioritisation.json")) {
+			attributes = attributeParser.parseAttributes(attributeReader);
+			if (attributes != null) {
+				Map<Integer, RuleSet> rules = null;
+				RuleParser ruleParser = new RuleParser(attributes);
+				try (FileInputStream fileRulesStream = new FileInputStream("src/test/resources/data/ruleml/prioritisation1.rules.xml")) {
+					rules = ruleParser.parseRules(fileRulesStream);
+					if (rules != null) {
+						assertEquals(rules.size(), 1);
+						RuleSet firstRuleSet = rules.get(1);
+						assertEquals(firstRuleSet.size(), 2);
+					}
+					else {
+						fail("Unable to load RuleML file.");
+					}
 				}
-				else {
-					fail("Unable to load RuleML file.");
+				catch (FileNotFoundException ex) {
+					System.out.println(ex.toString());
 				}
 			}
-			catch (FileNotFoundException ex) {
-				System.out.println(ex.toString());
+			else {
+				fail("Unable to load JSON file with meta-data.");
 			}
 		}
 		catch (FileNotFoundException ex) {
@@ -82,7 +75,7 @@ class RuleParserTest {
 		}
 		catch (IOException ex) {
 			System.out.println(ex.toString());
-		}		
+		}
 	}
 	
 }

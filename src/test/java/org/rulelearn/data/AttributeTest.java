@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.data.json.AttributeDeserializer;
@@ -53,16 +54,8 @@ class AttributeTest {
 		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		
-		JsonReader jsonReader = null;
-		try {
-			jsonReader = new JsonReader(new FileReader("src/test/resources/data/csv/prioritisation.json"));
-		}
-		catch (FileNotFoundException ex) {
-			System.out.println(ex.toString());
-		}
-		
-		// compare result of loading to serialization/deserialization
-		if (jsonReader != null) {
+		try (FileReader fileReader = new FileReader("src/test/resources/data/csv/prioritisation.json"); JsonReader jsonReader = new JsonReader(fileReader)) {
+			// compare result of loading to serialization/deserialization
 			attributes = gson.fromJson(jsonReader, Attribute[].class);
 			String json = gson.toJson(attributes);
 			// System.out.println(json);
@@ -70,8 +63,12 @@ class AttributeTest {
 			
 			assertArrayEquals(attributes, testAttributes);
 		}
-		else
-			fail("Unable to load JSON test file");
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		catch (IOException ex) {
+			System.out.println(ex.toString());
+		}
 	}
 
 }
