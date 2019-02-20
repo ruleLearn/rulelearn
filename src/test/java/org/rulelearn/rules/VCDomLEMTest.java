@@ -55,9 +55,50 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 class VCDomLEMTest {
+	
+	/**
+	 * Gets information table with decision distributions for "symptoms" data set.
+	 * 
+	 * @return information table with decision distributions for Symptoms data set
+	 */
+	private InformationTableWithDecisionDistributions getInformationTableSymptoms() {
+		AttributePreferenceType attrPrefType;
+		
+		InformationTableTestConfiguration informationTableTestConfiguration = new InformationTableTestConfiguration (
+				new Attribute[] {
+						new IdentificationAttribute("bus", true, new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE)),
+						new EvaluationAttribute("symptom1", true, AttributeType.CONDITION,
+								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), attrPrefType),
+						new EvaluationAttribute("symptom2", true, AttributeType.CONDITION,
+								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), attrPrefType),
+						new EvaluationAttribute("state", true, AttributeType.DECISION,
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), attrPrefType)
+					},
+				new String[][] {
+						{ "a", "40",   "17.8", "2"},
+						{ "b", "35",   "30",   "2"},
+						{ "c", "32.5", "39",   "2"},
+						{ "d", "31",   "35",   "2"},
+						{ "e", "27.5", "17.5", "2"},
+						{ "f", "24",   "17.5", "2"},
+						{ "g", "22.5", "20",   "2"},
+						{ "h", "30.8", "19",   "1"},
+						{ "i", "27",   "25",   "1"},
+						{ "j", "21",   "9.5",  "1"},
+						{ "k", "18",   "12.5", "1"},
+						{ "l", "10.5", "25.5", "1"},
+						{ "m", "9.75", "17",   "1"},
+						{ "n", "17.5", "5",    "0"},
+						{ "o", "11",   "2",    "0"},
+						{ "p", "10",   "9",    "0"},
+						{ "q", "5",    "13",   "0"}
+				});
+		
+		return new InformationTableWithDecisionDistributions(informationTableTestConfiguration.getInformationTable(true));
+	}
 
 	/**
-	 * Tests upward unions and certain rules.
+	 * Manually tests upward unions and certain rules.
 	 */
 	@Test
 	@Tag("integration")
@@ -90,41 +131,7 @@ class VCDomLEMTest {
 		RuleConditionsSetPruner ruleConditionsSetPruner = new EvaluationsAndOrderRuleConditionsSetPruner(ruleConditionsEvaluators);
 		RuleMinimalityChecker ruleMinimalityChecker = new SingleEvaluationRuleMinimalityChecker(ruleConditionsEvaluator);
 		
-		InformationTableTestConfiguration informationTableTestConfiguration = new InformationTableTestConfiguration (
-				new Attribute[] {
-						new IdentificationAttribute("bus", true, new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE)),
-						new EvaluationAttribute("symptom1", true, AttributeType.CONDITION,
-								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN),
-						new EvaluationAttribute("symptom2", true, AttributeType.CONDITION,
-								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN),
-						new EvaluationAttribute("state", true, AttributeType.DECISION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN)
-					},
-				new String[][] {
-						{ "a", "40",   "17.8", "2"},
-						{ "b", "35",   "30",   "2"},
-						{ "c", "32.5", "39",   "2"},
-						{ "d", "31",   "35",   "2"},
-						{ "e", "27.5", "17.5", "2"},
-						{ "f", "24",   "17.5", "2"},
-						{ "g", "22.5", "20",   "2"},
-						{ "h", "30.8", "19",   "1"},
-						{ "i", "27",   "25",   "1"},
-						{ "j", "21",   "9.5",  "1"},
-						{ "k", "18",   "12.5", "1"},
-						{ "l", "10.5", "25.5", "1"},
-						{ "m", "9.75", "17",   "1"},
-						{ "n", "17.5", "5",    "0"},
-						{ "o", "11",   "2",    "0"},
-						{ "p", "10",   "9",    "0"},
-						{ "q", "5",    "13",   "0"}
-				});
-		
-		//InformationTableWithDecisionDistributions informationTable = Mockito.mock(InformationTableWithDecisionDistributions.class);
-		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(
-				informationTableTestConfiguration.getAttributes(),
-				informationTableTestConfiguration.getListOfFields(),
-				true); //TODO: use copy constructor from develop branch
+		InformationTableWithDecisionDistributions informationTable = getInformationTableSymptoms();
 		
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
@@ -161,7 +168,7 @@ class VCDomLEMTest {
 		RuleCoverageInformation[] ruleCoverageInformationArray = new RuleCoverageInformation[minimalRuleConditionsWithApproximatedSets.size()];
 		int ruleIndex = 0;
 		
-		System.out.println("Rule induced with VC-DomLEM:"); //DEL
+		System.out.println("Rules induced by VC-DomLEM:"); //DEL
 		
 		for (RuleConditionsWithApproximatedSet minimalRuleConditionsWithApproximatedSet : minimalRuleConditionsWithApproximatedSets ) {
 			rules[ruleIndex] = new Rule(ruleType, ruleSemantics, minimalRuleConditionsWithApproximatedSet.getRuleConditions(),
@@ -263,41 +270,9 @@ class VCDomLEMTest {
 	 */
 	@Test
 	@Tag("integration")
-	public void testSymptomsUpwardUnionCertain() {
+	public void testSymptomsUpwardUnionsCertain() {
+		InformationTableWithDecisionDistributions informationTable = getInformationTableSymptoms();
 		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).build();
-		
-		InformationTableTestConfiguration informationTableTestConfiguration = new InformationTableTestConfiguration (
-				new Attribute[] {
-						new IdentificationAttribute("bus", true, new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE)),
-						new EvaluationAttribute("symptom1", true, AttributeType.CONDITION,
-								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN),
-						new EvaluationAttribute("symptom2", true, AttributeType.CONDITION,
-								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN),
-						new EvaluationAttribute("state", true, AttributeType.DECISION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), AttributePreferenceType.GAIN)
-					},
-				new String[][] {
-						{ "a", "40",   "17.8", "2"},
-						{ "b", "35",   "30",   "2"},
-						{ "c", "32.5", "39",   "2"},
-						{ "d", "31",   "35",   "2"},
-						{ "e", "27.5", "17.5", "2"},
-						{ "f", "24",   "17.5", "2"},
-						{ "g", "22.5", "20",   "2"},
-						{ "h", "30.8", "19",   "1"},
-						{ "i", "27",   "25",   "1"},
-						{ "j", "21",   "9.5",  "1"},
-						{ "k", "18",   "12.5", "1"},
-						{ "l", "10.5", "25.5", "1"},
-						{ "m", "9.75", "17",   "1"},
-						{ "n", "17.5", "5",    "0"},
-						{ "o", "11",   "2",    "0"},
-						{ "p", "10",   "9",    "0"},
-						{ "q", "5",    "13",   "0"}
-				});
-		
-		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(informationTableTestConfiguration.getInformationTable(true));
-		
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
 		
@@ -305,7 +280,7 @@ class VCDomLEMTest {
 		
 		assertEquals(ruleSet.size(), 3);
 		
-		System.out.println("Rule induced with VC-DomLEM:"); //DEL
+		System.out.println("Certain at least rules induced with VC-DomLEM:"); //DEL
 		for (int i = 0; i < ruleSet.size(); i++) {
 			System.out.println(ruleSet.getRule(i));
 		}
@@ -314,6 +289,32 @@ class VCDomLEMTest {
 		//(symptom1 >= 31.0) => (state >= 2)
 		//(symptom1 >= 18.0) => (state >= 1)
 		//(symptom2 >= 17.0) => (state >= 1)
+	}
+	
+	/**
+	 * Tests downward unions and certain rules for "symptoms" data set.
+	 */
+	@Test
+	@Tag("integration")
+	public void testSymptomsDownwardUnionsCertain() {
+		InformationTableWithDecisionDistributions informationTable = getInformationTableSymptoms();
+		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).build();
+		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_MOST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
+		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
+		
+		RuleSet ruleSet = (new VCDomLEM(vcDomLEMParameters)).generateRules(approximatedSetProvider, approximatedSetRuleDecisionsProvider);
+		
+		assertEquals(ruleSet.size(), 3);
+		
+		System.out.println("Certain at most rules induced with VC-DomLEM:"); //DEL
+		for (int i = 0; i < ruleSet.size(); i++) {
+			System.out.println(ruleSet.getRule(i));
+		}
+		
+		//expected output:
+		//(symptom2 <= 9.0) => (state <= 0)
+		//(symptom1 <= 5.0) => (state <= 0)
+		//(symptom1 <= 21.0) => (state <= 1)
 	}
 
 }
