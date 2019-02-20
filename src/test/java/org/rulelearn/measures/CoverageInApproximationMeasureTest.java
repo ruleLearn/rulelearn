@@ -50,8 +50,8 @@ class CoverageInApproximationMeasureTest {
 		MockitoAnnotations.initMocks(this);
 		when(this.ruleConditionsMock.getIndicesOfCoveredObjects()).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4, 5}));
 		when(this.ruleConditionsMock.getIndicesOfCoveredObjectsWithCondition(this.conditionMock)).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4}));
-		when(this.ruleConditionsMock.getIndicesOfCoveredObjectsWithoutCondition(0)).thenReturn(new IntArrayList(new int [] {5}));
-		when(this.ruleConditionsMock.getIndicesOfApproximationObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {0, 1, 2, 3, 4, 5, 4, 5, 6, 7, 8 , 9}));
+		when(this.ruleConditionsMock.getIndicesOfCoveredObjectsWithoutCondition(0)).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4, 5, 6, 10}));
+		when(this.ruleConditionsMock.getIndicesOfApproximationObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {0, 1, 2, 3, 4, 5, 4, 5, 6, 7, 8, 9}));
 	}
 	
 	/**
@@ -61,7 +61,7 @@ class CoverageInApproximationMeasureTest {
 	void testEvaluate() {
 		CoverageInApproximationMeasure coverageInApproximationMeasure = CoverageInApproximationMeasure.getInstance();
 		
-		assertEquals(6, coverageInApproximationMeasure.evaluate(this.ruleConditionsMock));
+		assertEquals(6.0, coverageInApproximationMeasure.evaluate(this.ruleConditionsMock));
 	}
 	
 	/**
@@ -71,7 +71,7 @@ class CoverageInApproximationMeasureTest {
 	void testEvaluateWithCondition01() {
 		CoverageInApproximationMeasure coverageInApproximationMeasure = CoverageInApproximationMeasure.getInstance();
 		
-		assertEquals(5, coverageInApproximationMeasure.evaluateWithCondition(this.ruleConditionsMock, this.conditionMock));
+		assertEquals(5.0, coverageInApproximationMeasure.evaluateWithCondition(this.ruleConditionsMock, this.conditionMock));
 	}
 	
 	/**
@@ -91,7 +91,7 @@ class CoverageInApproximationMeasureTest {
 	void testEvaluateWithoutCondition() {
 		CoverageInApproximationMeasure coverageInApproximationMeasure = CoverageInApproximationMeasure.getInstance();
 		
-		assertEquals(1, coverageInApproximationMeasure.evaluateWithoutCondition(this.ruleConditionsMock, 0));
+		assertEquals(7.0, coverageInApproximationMeasure.evaluateWithoutCondition(this.ruleConditionsMock, 0));
 	}
 	
 	/**
