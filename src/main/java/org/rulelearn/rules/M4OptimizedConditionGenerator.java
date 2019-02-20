@@ -75,9 +75,11 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 
 		//updates this interval using result of comparison of candidate condition and currently best condition
 		void update(ConditionComparisonResult candidateVSBestConditionComparisonResult, KnownSimpleField candidateLimitingEvaluation) {
-			if (candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_BETTER || candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_EQUAL) {
+			if (candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_BETTER ||
+					candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_EQUAL) {
 				sufficientEvaluation = candidateLimitingEvaluation;
 			} else {
+				//TODO
 				insufficientEvaluation = candidateLimitingEvaluation;
 			}
 		}
@@ -492,7 +494,7 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		case CERTAIN:
 			return constructCertainRuleCondition(ruleSemantics, evaluationAttribute, limitingEvaluation, globalAttributeIndex);
 		case POSSIBLE:
-			constructPossibleRuleCondition(ruleSemantics, evaluationAttribute, limitingEvaluation, globalAttributeIndex);
+			return constructPossibleRuleCondition(ruleSemantics, evaluationAttribute, limitingEvaluation, globalAttributeIndex);
 		default:
 			throw new InvalidValueException("Cannot construct condition if rule type is neither certain nor possible.");
 		}

@@ -17,6 +17,7 @@
 package org.rulelearn.rules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -56,24 +57,28 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 class VCDomLEMTest {
 	
+	private Attribute[] getAttributesSymptoms() {
+		AttributePreferenceType attrPrefType;
+		
+		return new Attribute[] {
+				new IdentificationAttribute("bus", true, new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE)),
+				new EvaluationAttribute("symptom1", true, AttributeType.CONDITION,
+						RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), attrPrefType),
+				new EvaluationAttribute("symptom2", true, AttributeType.CONDITION,
+						RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), attrPrefType),
+				new EvaluationAttribute("state", true, AttributeType.DECISION,
+						IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), attrPrefType)
+			};
+	}
+	
 	/**
 	 * Gets information table with decision distributions for "symptoms" data set.
 	 * 
-	 * @return information table with decision distributions for Symptoms data set
+	 * @return information table with decision distributions for "symptoms" data set
 	 */
 	private InformationTableWithDecisionDistributions getInformationTableSymptoms() {
-		AttributePreferenceType attrPrefType;
-		
 		InformationTableTestConfiguration informationTableTestConfiguration = new InformationTableTestConfiguration (
-				new Attribute[] {
-						new IdentificationAttribute("bus", true, new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE)),
-						new EvaluationAttribute("symptom1", true, AttributeType.CONDITION,
-								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), attrPrefType),
-						new EvaluationAttribute("symptom2", true, AttributeType.CONDITION,
-								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), attrPrefType),
-						new EvaluationAttribute("state", true, AttributeType.DECISION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), new UnknownSimpleFieldMV2(), attrPrefType)
-					},
+				getAttributesSymptoms(),
 				new String[][] {
 						{ "a", "40",   "17.8", "2"},
 						{ "b", "35",   "30",   "2"},
@@ -96,13 +101,44 @@ class VCDomLEMTest {
 		
 		return new InformationTableWithDecisionDistributions(informationTableTestConfiguration.getInformationTable(true));
 	}
+	
+	/**
+	 * Gets information table with decision distributions for "symptoms2" data set.
+	 * 
+	 * @return information table with decision distributions for "symptoms2" data set
+	 */
+	private InformationTableWithDecisionDistributions getInformationTableSymptoms2() {
+		InformationTableTestConfiguration informationTableTestConfiguration = new InformationTableTestConfiguration (
+				getAttributesSymptoms(),
+				new String[][] {
+						{ "a", "40",   "17.8", "2"},
+						{ "b", "35",   "30",   "2"},
+						{ "c", "32.5", "39",   "2"},
+						{ "d", "31",   "35",   "2"},
+						{ "e", "27.5", "28",   "2"}, //changed symptom2 from 17.5 to 28
+						{ "f", "24",   "27",   "2"}, //changed symptom2 from 17.5 to 27
+						{ "g", "22.5", "20",   "2"},
+						{ "h", "30.8", "19",   "1"},
+						{ "i", "27",   "25",   "1"},
+						{ "j", "21",   "9.5",  "1"},
+						{ "k", "18",   "12.5", "1"},
+						{ "l", "10.5", "25.5", "1"},
+						{ "m", "9.75", "17",   "1"},
+						{ "n", "17.5", "5",    "0"},
+						{ "o", "11",   "2",    "0"},
+						{ "p", "10",   "9",    "0"},
+						{ "q", "5",    "13",   "0"}
+				});
+		
+		return new InformationTableWithDecisionDistributions(informationTableTestConfiguration.getInformationTable(true));
+	}
 
 	/**
 	 * Manually tests upward unions and certain rules.
 	 */
 	@Test
 	@Tag("integration")
-	public void testUpwardUnionCertainManually() {
+	void testUpwardUnionCertainManually() {
 		EpsilonConsistencyMeasure consistencyMeasure = EpsilonConsistencyMeasure.getInstance();
 		double consistencyThreshold = 0.0;
 		
@@ -280,15 +316,134 @@ class VCDomLEMTest {
 		
 		assertEquals(ruleSet.size(), 3);
 		
-		System.out.println("Certain at least rules induced with VC-DomLEM:"); //DEL
+		System.out.println("Certain at least rules induced with VC-DomLEM for symptoms data set:"); //DEL
 		for (int i = 0; i < ruleSet.size(); i++) {
 			System.out.println(ruleSet.getRule(i));
 		}
 		
 		//expected output:
+		int ruleIndex;
+		int condIndex;
 		//(symptom1 >= 31.0) => (state >= 2)
+		assertTrue(ruleSet.getRule(ruleIndex = 0).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(31.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN));
 		//(symptom1 >= 18.0) => (state >= 1)
+		assertTrue(ruleSet.getRule(ruleIndex = 1).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(18.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN));
 		//(symptom2 >= 17.0) => (state >= 1)
+		assertTrue(ruleSet.getRule(ruleIndex = 2).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 2);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(17.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN));
+	}
+	
+	/**
+	 * Tests upward unions and certain rules for "symptoms" data set.
+	 */
+	@Test
+	@Tag("integration")
+	public void testSymptoms2UpwardUnionsCertain() {
+		InformationTableWithDecisionDistributions informationTable = getInformationTableSymptoms2();
+		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).build();
+		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
+		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
+		
+		RuleSet ruleSet = (new VCDomLEM(vcDomLEMParameters)).generateRules(approximatedSetProvider, approximatedSetRuleDecisionsProvider);
+		
+		assertEquals(ruleSet.size(), 4);
+		
+		System.out.println("Certain at least rules induced with VC-DomLEM for symptoms2 data set:"); //DEL
+		for (int i = 0; i < ruleSet.size(); i++) {
+			System.out.println(ruleSet.getRule(i));
+		}
+		
+		//expected output:
+		int ruleIndex;
+		int condIndex;
+		//(symptom2 >= 27.0) => (state >= 2)
+		assertTrue(ruleSet.getRule(ruleIndex = 0).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 2);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(27.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN));
+		//(symptom1 >= 40.0) => (state >= 2)
+		assertTrue(ruleSet.getRule(ruleIndex = 1).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(40.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN));
+		//(symptom1 >= 18.0) => (state >= 1)
+		assertTrue(ruleSet.getRule(ruleIndex = 2).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(18.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN));
+		//(symptom2 >= 17.0) => (state >= 1)
+		assertTrue(ruleSet.getRule(ruleIndex = 3).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 2);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(17.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN));
+	}
+	
+	/**
+	 * Tests upward unions and possible rules for "symptoms" data set.
+	 */
+	@Test
+	@Tag("integration")
+	public void testSymptomsUpwardUnionsPossible() {
+		InformationTableWithDecisionDistributions informationTable = getInformationTableSymptoms();
+		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).ruleType(RuleType.POSSIBLE).build();
+		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
+		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
+		
+		RuleSet ruleSet = (new VCDomLEM(vcDomLEMParameters)).generateRules(approximatedSetProvider, approximatedSetRuleDecisionsProvider);
+		
+		assertEquals(ruleSet.size(), 3);
+		
+		System.out.println("Possible at least rules induced with VC-DomLEM for symptoms data set:"); //DEL
+		for (int i = 0; i < ruleSet.size(); i++) {
+			System.out.println(ruleSet.getRule(i));
+		}
+		
+		//expected output:
+		int ruleIndex;
+		int condIndex;
+		//(symptom1 >= 22.5) => (state >= 2)
+		assertTrue(ruleSet.getRule(ruleIndex = 0).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastObjectVSThreshold); //ConditionAtLeastObjectVSThreshold (!)
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(22.5, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN));
+		//(symptom1 >= 18.0) => (state >= 1)
+		assertTrue(ruleSet.getRule(ruleIndex = 1).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(18.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN));
+		//(symptom2 >= 17.0) => (state >= 1)
+		assertTrue(ruleSet.getRule(ruleIndex = 2).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 2);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(17.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN));
 	}
 	
 	/**
@@ -306,15 +461,35 @@ class VCDomLEMTest {
 		
 		assertEquals(ruleSet.size(), 3);
 		
-		System.out.println("Certain at most rules induced with VC-DomLEM:"); //DEL
+		System.out.println("Certain at most rules induced with VC-DomLEM for symptoms data set:"); //DEL
 		for (int i = 0; i < ruleSet.size(); i++) {
 			System.out.println(ruleSet.getRule(i));
 		}
 		
 		//expected output:
+		int ruleIndex;
+		int condIndex;
 		//(symptom2 <= 9.0) => (state <= 0)
+		assertTrue(ruleSet.getRule(ruleIndex = 0).getConditions(true)[condIndex = 0] instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 2);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(9.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN));
 		//(symptom1 <= 5.0) => (state <= 0)
+		assertTrue(ruleSet.getRule(ruleIndex = 1).getConditions(true)[condIndex = 0] instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(5.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN));
 		//(symptom1 <= 21.0) => (state <= 1)
+		assertTrue(ruleSet.getRule(ruleIndex = 2).getConditions(true)[condIndex = 0] instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(21.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN));
 	}
 
 }
