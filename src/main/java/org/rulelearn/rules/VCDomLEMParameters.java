@@ -58,7 +58,7 @@ public class VCDomLEMParameters {
 	
 	@NonNull
 	@Builder.Default
-	private ConditionRemovalEvaluator[] conditionRemovalEvaluators = new ConditionRemovalEvaluator[] {EpsilonConsistencyMeasure.getInstance()};
+	private ConditionRemovalEvaluator[] conditionRemovalEvaluators = new ConditionRemovalEvaluator[] {EpsilonConsistencyMeasure.getInstance()}; //not used in default rule conditions pruner
 	
 	@NonNull
 	@Builder.Default

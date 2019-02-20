@@ -36,9 +36,12 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 /**
- * Condition generator taking advantage of the assumption that for any gain/cost-type condition attribute having {@link SimpleField} evaluations (i.e., evaluations which can be completely ordered),
- * the order of elementary conditions involving that attribute, implied by each considered condition addition evaluator, is consistent with the preference order in the value set of that attribute.
- * It assumes that each considered condition addition evaluator has monotonicity property (m4), which enables to speed up search for conditions related to gain/cost-type condition attributes having {@link SimpleField} evaluations.<br>
+ * Condition generator taking advantage of the assumption that for any gain/cost-type condition attribute having {@link SimpleField} evaluations
+ * (i.e., evaluations which can be completely ordered),
+ * the order of elementary conditions involving that attribute, implied by each considered condition addition evaluator,
+ * is consistent with the preference order in the value set of that attribute.
+ * It assumes that each considered condition addition evaluator has monotonicity property (m4),
+ * which enables to speed up search for conditions related to gain/cost-type condition attributes having {@link SimpleField} evaluations.<br>
  * <br>
  * For example, given attribute q with integer values, the following monotonic relationships are assumed:
  * <ul>
@@ -47,7 +50,13 @@ import it.unimi.dsi.fastutil.objects.ObjectSet;
  *   <li>the worse the attribute value t, the lower (less preferred) the evaluation of elementary condition "q(x) is at most as good as t" calculated by each gain-type condition addition evaluator,</li>
  *   <li>the worse the attribute value t, the lower (more preferred) the evaluation of elementary condition "q(x) is at most as good as t" calculated by each cost-type condition addition evaluator,</li>
  * </ul>
- * where q(x) denotes value (evaluation) of object x with respect to attribute q.
+ * where q(x) denotes value (evaluation) of object x with respect to attribute q.<br>
+ * <br>
+ * This condition generator assumes that given a list (array) of monotonic condition addition evaluators {@link MonotonicConditionAdditionEvaluator},
+ * that should be considered lexicographically,
+ * if that list (array) contains evaluators for which monotonicity type is equal to {@link MonotonicConditionAdditionEvaluator.MonotonicityType#DETERIORATES_WITH_NUMBER_OF_COVERED_OBJECTS}
+ * and also evaluators for which monotonicity type is equal to {@link MonotonicConditionAdditionEvaluator.MonotonicityType#IMPROVES_WITH_NUMBER_OF_COVERED_OBJECTS},
+ * then that list is composed of exactly two disjoint sublists of evaluators, each containing evaluators of the same monotonicity type.
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -57,7 +66,16 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 	enum ConditionComparisonResult {
 		CANDIDATE_CONDITION_IS_BETTER,
 		CANDIDATE_CONDITION_IS_EQUAL,
-		CANDIDATE_CONDITION_IS_WORSE
+		/**
+		 * Indicates that candidate condition is lexicographically worse than the best condition already with respect to the k first (leading) evaluators having the same monotonicity type. 
+		 */
+		CANDIDATE_CONDITION_IS_WORSE_WRT_FIRST_EVALUATORS,
+		/**
+		 * Indicates that candidate condition is lexicographically worse than the best condition only with respect to the n-k last (trailing) evaluators having the same monotonicity type,
+		 * different than k first (leading) evaluators. With respect to these k first evaluators, both conditions are equal.
+		 * Such situation may occur only if considered evaluators have more than one monotonicity type. 
+		 */
+		CANDIDATE_CONDITION_IS_WORSE_WRT_SECOND_EVALUATORS
 	}
 	
 	abstract class ConditionLimitingEvaluationInterval {
@@ -79,8 +97,9 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 					candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_EQUAL) {
 				sufficientEvaluation = candidateLimitingEvaluation;
 			} else {
-				//TODO
-				insufficientEvaluation = candidateLimitingEvaluation;
+				if (candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_WORSE_WRT_FIRST_EVALUATORS) {
+					insufficientEvaluation = candidateLimitingEvaluation;
+				}
 			}
 		}
 		
@@ -194,6 +213,12 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 	boolean containsEvaluatorsOfDifferentMonotonicityType;
 	
 	/**
+	 * Count of the condition addition evaluators having the same monotonicity type {@link MonotonicConditionAdditionEvaluator.MonotonicityType} as the
+	 * first condition addition evaluator (indexed by 0) in the array of all these evaluators.
+	 */
+	int firstMonotonicityTypeEvaluatorsCount;
+	
+	/**
 	 * Constructor for this condition generator. Stores given monotonic condition addition evaluators for use in {@link #getBestCondition(IntList, RuleConditions)}.
 	 * 
 	 * @param conditionAdditionEvaluators array with monotonic condition addition evaluators used lexicographically
@@ -210,11 +235,14 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 			Precondition.notNull(conditionEvaluator.getMonotonictyType(), "Monotonicty type of a monotonic condition addition evaluator is null.");
 		}
 		
-		int monotonicityTypeSwitchCount = 0; //tells how many times monotonicity type is switched when iterating from the first to the last evaluator
 		this.containsEvaluatorsOfDifferentMonotonicityType = false;
+		this.firstMonotonicityTypeEvaluatorsCount = -1;
+		int monotonicityTypeSwitchCount = 0; //tells how many times monotonicity type is switched when iterating from the first to the last evaluator
+		
 		for (int i = 1; i < conditionAdditionEvaluators.length; i++) {
 			if (conditionAdditionEvaluators[i].getMonotonictyType() != conditionAdditionEvaluators[i-1].getMonotonictyType()) {
 				this.containsEvaluatorsOfDifferentMonotonicityType = true;
+				this.firstMonotonicityTypeEvaluatorsCount = i;
 				monotonicityTypeSwitchCount++;
 				//break;
 			}
@@ -222,6 +250,10 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		
 		if (monotonicityTypeSwitchCount > 1) {
 			throw new InvalidValueException("More than one switch of monotonicity type occurred when iterating from the first to the last monotonic condition addition evaluator.");
+		}
+		
+		if (this.firstMonotonicityTypeEvaluatorsCount == -1) {
+			this.firstMonotonicityTypeEvaluatorsCount = conditionAdditionEvaluators.length; //all evaluators are of the same monotonicity type
 		}
 	}
 	
@@ -365,24 +397,26 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 			//at this point, least/most restrictive limiting evaluation among considered objects, for considered criterion, has been calculated, so one can construct candidate condition employing that limiting evaluation
 			candidateCondition = constructCondition(ruleConditions.getRuleType(), ruleConditions.getRuleSemantics(), activeConditionAttribute, extremeLimitingEvaluation, globalAttributeIndex);
 			candidateConditionWithEvaluations.setCondition(candidateCondition); //set extreme condition
-			candidateVSBestConditionComparisonResult = compareCandidateAndBestCondition(candidateConditionWithEvaluations, bestConditionWithEvaluations, 1); //compare candidate and best condition w.r.t. the first evaluator only
+			candidateVSBestConditionComparisonResult = compareCandidateAndBestCondition(candidateConditionWithEvaluations, bestConditionWithEvaluations, this.firstMonotonicityTypeEvaluatorsCount); //compare candidate and best condition w.r.t. the first evaluator(s) only, having the same monotonicity type
 
 			checkLessExtremeEvaluations = (containsEvaluatorsOfDifferentMonotonicityType ? true : false);
 			
 			//check comparison result and update best condition if needed
 			switch (candidateVSBestConditionComparisonResult) {
-			case CANDIDATE_CONDITION_IS_BETTER: //candidate condition is better already w.r.t. the first evaluator
+			case CANDIDATE_CONDITION_IS_BETTER: //candidate condition is better already w.r.t. the first evaluator(s)
 				bestConditionWithEvaluations.copy(candidateConditionWithEvaluations); //update best condition
 				break;
 			case CANDIDATE_CONDITION_IS_EQUAL:
-				candidateVSBestConditionComparisonResult = compareCandidateAndBestCondition(candidateConditionWithEvaluations, bestConditionWithEvaluations, conditionAdditionEvaluators.length); //compare conditions w.r.t. all evaluators (using already stored evaluations for the first evaluator)
+				candidateVSBestConditionComparisonResult = compareCandidateAndBestCondition(candidateConditionWithEvaluations, bestConditionWithEvaluations, conditionAdditionEvaluators.length); //compare conditions w.r.t. all evaluators (using already stored evaluations for the first evaluator(s))
 				if (candidateVSBestConditionComparisonResult == ConditionComparisonResult.CANDIDATE_CONDITION_IS_BETTER) {
 					bestConditionWithEvaluations.copy(candidateConditionWithEvaluations); //update best condition
 				}
 				break;
-			case CANDIDATE_CONDITION_IS_WORSE: //candidate condition is worse already w.r.t. the first evaluator
+			case CANDIDATE_CONDITION_IS_WORSE_WRT_FIRST_EVALUATORS: //candidate condition is worse already w.r.t. the first evaluator(s)
 				checkLessExtremeEvaluations = false; //go to next active condition attribute as for the current attribute best condition cannot be improved
 				break;
+			case CANDIDATE_CONDITION_IS_WORSE_WRT_SECOND_EVALUATORS:
+				throw new InvalidValueException("Unexpected result of comparison of candidate and best condition w.r.t. the first monotonicity type evaluators."); //this should not happen
 			}
 			
 			if (checkLessExtremeEvaluations) {
@@ -457,7 +491,10 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 	 * @param usedEvaluatorsCount number of consecutive condition addition evaluators used in the comparison; has to be {@code >= 0} and {@code <= conditionAdditionEvaluators.length}
 	 * 
 	 * @return {@link ConditionComparisonResult#CANDIDATE_CONDITION_IS_BETTER} if given candidate condition is better than given best condition,
-	 *         {@link ConditionComparisonResult#CANDIDATE_CONDITION_IS_WORSE} if given candidate condition is worse than given best condition,
+	 *         {@link ConditionComparisonResult#CANDIDATE_CONDITION_IS_WORSE_WRT_FIRST_EVALUATORS} if given candidate condition is lexicographically worse than given best condition
+	 *         already w.r.t. the first sublist of evaluators,
+	 *         {@link ConditionComparisonResult#CANDIDATE_CONDITION_IS_WORSE_WRT_SECOND_EVALUATORS} if given candidate condition is lexicographically worse than given best condition
+	 *         only w.r.t. the second sublist of evaluators,
 	 *         {@link ConditionComparisonResult#CANDIDATE_CONDITION_IS_EQUAL} otherwise
 	 */
 	ConditionComparisonResult compareCandidateAndBestCondition(ConditionWithEvaluations candidateConditionWithEvaluations, ConditionWithEvaluations bestConditionWithEvaluations, int usedEvaluatorsCount) {
@@ -472,13 +509,17 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 				if (conditionAdditionEvaluators[i].getType() == MeasureType.GAIN) { //candidate condition is better at i-th evaluation
 					return ConditionComparisonResult.CANDIDATE_CONDITION_IS_BETTER;
 				} else { //COST
-					return ConditionComparisonResult.CANDIDATE_CONDITION_IS_WORSE;
+					return (i < this.firstMonotonicityTypeEvaluatorsCount ?
+								ConditionComparisonResult.CANDIDATE_CONDITION_IS_WORSE_WRT_FIRST_EVALUATORS :
+								ConditionComparisonResult.CANDIDATE_CONDITION_IS_WORSE_WRT_SECOND_EVALUATORS);
 				}
 			}
 			
 			if (candidateConditionEvaluation < bestConditionEvaluation) {
 				if (conditionAdditionEvaluators[i].getType() == MeasureType.GAIN) { //candidate condition is worse at i-th evaluation
-					return ConditionComparisonResult.CANDIDATE_CONDITION_IS_WORSE;
+					return (i < this.firstMonotonicityTypeEvaluatorsCount ?
+								ConditionComparisonResult.CANDIDATE_CONDITION_IS_WORSE_WRT_FIRST_EVALUATORS :
+								ConditionComparisonResult.CANDIDATE_CONDITION_IS_WORSE_WRT_SECOND_EVALUATORS);
 				} else { //COST
 					return ConditionComparisonResult.CANDIDATE_CONDITION_IS_BETTER;
 				}
