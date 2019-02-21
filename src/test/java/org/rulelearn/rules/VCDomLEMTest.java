@@ -27,6 +27,7 @@ import org.rulelearn.approximations.ApproximatedSet;
 import org.rulelearn.approximations.ClassicalDominanceBasedRoughSetCalculator;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
+import org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
@@ -117,8 +118,8 @@ class VCDomLEMTest {
 						{ "b", "35",   "30",   "2"},
 						{ "c", "32.5", "39",   "2"},
 						{ "d", "31",   "35",   "2"},
-						{ "e", "27.5", "28",   "2"}, //changed symptom2 from 17.5 to 28
-						{ "f", "24",   "27",   "2"}, //changed symptom2 from 17.5 to 27
+						{ "e", "27.5", "28",   "2"}, //changes w.r.t. "symptoms" data: symptom2 changed from 17.5 to 28
+						{ "f", "24",   "27",   "2"}, //changes w.r.t. "symptoms" data: symptom2 changed from 17.5 to 27
 						{ "g", "22.5", "20",   "2"},
 						{ "h", "30.8", "19",   "1"},
 						{ "i", "27",   "25",   "1"},
@@ -350,13 +351,89 @@ class VCDomLEMTest {
 	}
 	
 	/**
+	 * Tests upward unions and certain rules for "symptoms" data set using VC-DRSA.
+	 */
+	@Test
+	@Tag("integration")
+	public void testSymptomsUpwardUnionsCertainVCDRSA() {
+		InformationTableWithDecisionDistributions informationTable = getInformationTableSymptoms();
+		
+		double consistencyThreshold = (double)1 / (double)10;
+		final RuleInductionStoppingConditionChecker STOPPING_CONDITION_CHECKER =
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+		
+		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).
+				consistencyThreshold(Double.valueOf(consistencyThreshold)).
+				ruleInductionStoppingConditionChecker(STOPPING_CONDITION_CHECKER).
+				ruleConditionsPruner(new AttributeOrderRuleConditionsPruner(STOPPING_CONDITION_CHECKER)).
+				ruleConditionsSetPruner(new DummyRuleConditionsSetPruner()). //skip removal of redundant rules to check all the rules that have been built along the way
+				build();
+		
+		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new Unions(informationTable, new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold)));
+		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
+		
+		RuleSet ruleSet = (new VCDomLEM(vcDomLEMParameters)).generateRules(approximatedSetProvider, approximatedSetRuleDecisionsProvider);
+		
+		assertEquals(ruleSet.size(), 5);
+		
+		System.out.println("Certain at least rules induced with VC-DomLEM for symptoms data set using VC-DRSA:"); //DEL
+		for (int i = 0; i < ruleSet.size(); i++) {
+			System.out.println(ruleSet.getRule(i));
+		}
+		
+		//expected output:
+		int ruleIndex;
+		int condIndex;
+		//(symptom1 >= 31.0) => (state >= 2)
+		assertTrue(ruleSet.getRule(ruleIndex = 0).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(31.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN));
+		//(symptom1 >= 27.5) => (state >= 2)
+		assertTrue(ruleSet.getRule(ruleIndex = 1).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(27.5, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN));
+		//(symptom1 >= 22.5) & (symptom2 >= 20.0) => (state >= 2)
+		assertTrue(ruleSet.getRule(ruleIndex = 2).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(22.5, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex = 2).getConditions(true)[condIndex = 1] instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 2);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(20.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN));
+		//(symptom1 >= 18.0) => (state >= 1)
+		assertTrue(ruleSet.getRule(ruleIndex = 3).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(18.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN));
+		//(symptom2 >= 17.0) => (state >= 1)
+		assertTrue(ruleSet.getRule(ruleIndex = 4).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 2);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(17.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtLeastThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN));
+	}
+	
+	/**
 	 * Tests upward unions and certain rules for "symptoms2" data set.
 	 */
 	@Test
 	@Tag("integration")
 	public void testSymptoms2UpwardUnionsCertain() {
 		InformationTableWithDecisionDistributions informationTable = getInformationTableSymptoms2();
+		
 		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).build();
+		
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
 		
@@ -409,6 +486,7 @@ class VCDomLEMTest {
 	@Tag("integration")
 	public void testSymptomsUpwardUnionsPossible() {
 		InformationTableWithDecisionDistributions informationTable = getInformationTableSymptoms();
+		
 		//TODO: is it possibly to simplify construction of VC-DomLEM parameters for possible rules? 
 		final ConditionAdditionEvaluator[] CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {CoverageOutsideApproximationMeasure.getInstance(), 
 				CoverageInApproximationMeasure.getInstance()};
@@ -416,6 +494,7 @@ class VCDomLEMTest {
 				CoverageOutsideApproximationMeasure.getInstance()};
 		final RuleInductionStoppingConditionChecker STOPPING_CONDITION_CHECKER =
 				new EvaluationAndCoverageStoppingConditionChecker(CoverageOutsideApproximationMeasure.getInstance(), VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
+		
 		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).
 				conditionAdditionEvaluators(CONDITION_ADDITION_EVALUATORS).
 				//conditionRemovalEvaluators(new ConditionRemovalEvaluator[] {CoverageOutsideApproximationMeasure.getInstance()}).
@@ -427,6 +506,7 @@ class VCDomLEMTest {
 				ruleMinimalityChecker(new SingleEvaluationRuleMinimalityChecker(CoverageOutsideApproximationMeasure.getInstance())).
 				ruleType(RuleType.POSSIBLE).
 				build();
+		
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
 		
@@ -472,7 +552,9 @@ class VCDomLEMTest {
 	@Tag("integration")
 	public void testSymptomsDownwardUnionsCertain() {
 		InformationTableWithDecisionDistributions informationTable = getInformationTableSymptoms();
+		
 		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).build();
+		
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_MOST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
 		
@@ -512,12 +594,87 @@ class VCDomLEMTest {
 	}
 	
 	/**
+	 * Tests downward unions and certain rules for "symptoms" data set using VC-DRSA.
+	 */
+	@Test
+	@Tag("integration")
+	public void testSymptomsDownwardUnionsCertainVCDRSA() {
+		InformationTableWithDecisionDistributions informationTable = getInformationTableSymptoms();
+		
+		double consistencyThreshold = (double)2 / (double)7;
+		final RuleInductionStoppingConditionChecker STOPPING_CONDITION_CHECKER =
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+		
+		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).
+				consistencyThreshold(Double.valueOf(consistencyThreshold)).
+				ruleInductionStoppingConditionChecker(STOPPING_CONDITION_CHECKER).
+				ruleConditionsPruner(new AttributeOrderRuleConditionsPruner(STOPPING_CONDITION_CHECKER)).
+				ruleConditionsSetPruner(new DummyRuleConditionsSetPruner()). //skip removal of redundant rules to check all the rules that have been built along the way
+				build();
+		
+		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_MOST, new Unions(informationTable, new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold)));
+		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
+		
+		RuleSet ruleSet = (new VCDomLEM(vcDomLEMParameters)).generateRules(approximatedSetProvider, approximatedSetRuleDecisionsProvider);
+		
+		assertEquals(ruleSet.size(), 5);
+		
+		System.out.println("Certain at most rules induced with VC-DomLEM for symptoms data set using VC-DRSA:"); //DEL
+		for (int i = 0; i < ruleSet.size(); i++) {
+			System.out.println(ruleSet.getRule(i));
+		}
+		
+		//expected output:
+		int ruleIndex;
+		int condIndex;
+		//(symptom2 <= 9.0) => (state <= 0)
+		assertTrue(ruleSet.getRule(ruleIndex = 0).getConditions(true)[condIndex = 0] instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 2);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(9.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN));
+		//(symptom1 <= 5.0) => (state <= 0)
+		assertTrue(ruleSet.getRule(ruleIndex = 1).getConditions(true)[condIndex = 0] instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(5.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN));
+		//(symptom1 <= 21.0) => (state <= 1)
+		assertTrue(ruleSet.getRule(ruleIndex = 2).getConditions(true)[condIndex = 0] instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(21.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN));
+		//(symptom1 <= 27.0) => (state <= 1)
+		assertTrue(ruleSet.getRule(ruleIndex = 3).getConditions(true)[condIndex = 0] instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(27.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN));
+		//(symptom1 <= 30.8) & (symptom2 <= 19.0) => (state <= 1)
+		assertTrue(ruleSet.getRule(ruleIndex = 4).getConditions(true)[condIndex = 0] instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(30.8, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex = 4).getConditions(true)[condIndex = 1] instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 2);
+		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getLimitingEvaluation(), RealFieldFactory.getInstance().create(19.0, AttributePreferenceType.GAIN));
+		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtMostThresholdVSObject);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
+		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN));
+	}
+	
+	/**
 	 * Tests downward unions and possible rules for "symptoms" data set.
 	 */
 	@Test
 	@Tag("integration")
 	public void testSymptomsDownwardUnionsPossible() {
 		InformationTableWithDecisionDistributions informationTable = getInformationTableSymptoms();
+		
 		//TODO: is it possibly to simplify construction of VC-DomLEM parameters for possible rules? 
 		final ConditionAdditionEvaluator[] CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {CoverageOutsideApproximationMeasure.getInstance(), 
 				CoverageInApproximationMeasure.getInstance()};
@@ -525,6 +682,7 @@ class VCDomLEMTest {
 				CoverageOutsideApproximationMeasure.getInstance()};
 		final RuleInductionStoppingConditionChecker STOPPING_CONDITION_CHECKER =
 				new EvaluationAndCoverageStoppingConditionChecker(CoverageOutsideApproximationMeasure.getInstance(), VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
+		
 		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).
 				conditionAdditionEvaluators(CONDITION_ADDITION_EVALUATORS).
 				//conditionRemovalEvaluators(new ConditionRemovalEvaluator[] {CoverageOutsideApproximationMeasure.getInstance()}).

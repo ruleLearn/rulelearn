@@ -30,6 +30,7 @@ import org.rulelearn.data.InformationTableWithDecisionDistributions;
 
 //TODO: set complementary unions, if possible
 //TODO: update javadoc to account for only partial comparability of decisions
+//TODO: constructor allowing to set different thresholds for different upward/downward unions
 
 /**
  * Container for all upward and downward unions that can be defined with respect to an information table.

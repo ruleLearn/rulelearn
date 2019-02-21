@@ -110,7 +110,7 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 	 */
 	@Override
 	public List<RuleConditions> prune(List<RuleConditions> ruleConditionsList, IntSet indicesOfObjectsToKeepCovered) {
-		Precondition.notNull(ruleConditionsList, "List of rule conditions for evaluations and order rule conditions pruner is null.");
+		Precondition.notNull(ruleConditionsList, "List of rule conditions for evaluations and order rule conditions set pruner is null.");
 		Precondition.notNull(indicesOfObjectsToKeepCovered, "Set of objects to keep covered is null.");
 		
 		//Inner naming convention: "rule" is used instead of "ruleConditions" and "index" is dropped, e.g., "object" is used instead of "objectIndex"
