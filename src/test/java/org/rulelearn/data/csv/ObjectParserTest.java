@@ -123,7 +123,7 @@ class ObjectParserTest {
 				}
 			}
 			else {
-				fail("Unable to load CSV test file with definition of attributes");
+				fail("Unable to load JSON test file with definition of attributes");
 			}
 		}
 		catch (FileNotFoundException ex) {
