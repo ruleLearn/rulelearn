@@ -55,19 +55,19 @@ public class AttributeOrderRuleConditionsPruner extends AbstractRuleConditionsPr
 			int numberOfAttributes = ruleConditions.getLearningInformationTable().getNumberOfAttributes();
 			int attributeIndex = 0;
 			IntList conditionIndices = null;
-			int i = 0;
 			while (attributeIndex < numberOfAttributes) {
 				if (ruleConditions.containsConditionForAttribute(attributeIndex)) {
 					conditionIndices = ruleConditions.getConditionIndicesForAttribute(attributeIndex);
+					int i = 0;
 					while (i < conditionIndices.size()) {
 						if (stoppingConditionChecker.isStoppingConditionSatisifiedWithoutCondition(ruleConditions, conditionIndices.getInt(i))) {
 							ruleConditions.removeCondition(conditionIndices.getInt(i));
+							break;
 						}
 						else {
 							i++;
-						}
+						}						
 					}
-					i = 0;
 				}
 				attributeIndex++;
 			}			
