@@ -634,23 +634,101 @@ public class Rule {
 	 * 
 	 * @return text representation of this rule
 	 */
-	public String toString() { //TODO: take into account more general configuration of decisions
+	public String toString() {
+		return toString(false);
+	}
+	
+	/**
+	 * Gets text representation of this rule.
+	 * 
+	 * @return text representation of this rule
+	 */
+	public String toString(boolean sortConditions) {
 		StringBuilder sB = new StringBuilder();
-		
-		//start rule
-		if (ruleStarter != null && !ruleStarter.equals("")) {
-			sB.append(ruleStarter).append(" ");
+		if (sortConditions) {
+			sB = appendRuleStarter(sB);
+			sB = appendSortedConditions(sB);
+			sB = appendDecisions(sB);
+		} else {
+			sB = appendRuleStarter(sB);
+			sB = appendConditions(sB);
+			sB = appendDecisions(sB);
 		}
-
+		return sB.toString();
+	}	
+	
+	/**
+	 * Appends condition part to given string builder. Particular conditions are appended in the same order in which they have been added to this rule.
+	 * 
+	 * @param sB string builder used to build this rule
+	 * @return string builder with appended condition part
+	 */
+	StringBuilder appendConditions(StringBuilder sB) {
 		//append conditions
 		for (int i = 0; i < this.conditions.length; i++) {
 			sB.append("(").append(this.conditions[i].toString()).append(")");
-			
+
 			if (i < this.conditions.length - 1) { //not last condition
 				sB.append(" ").append(andConnective).append(" ");
 			}
 		}
 		
+		return sB;
+	}
+	
+	/**
+	 * Appends condition part to given string builder, composed of conditions sorted according to ascending attribute order.
+	 * 
+	 * @param sB string builder used to build this rule
+	 * @return string builder with appended condition part
+	 */
+	StringBuilder appendSortedConditions(StringBuilder sB) {
+		//append conditions
+		Condition<? extends EvaluationField>[] clonedConditions = this.conditions.clone();
+		
+		java.util.Arrays.sort(clonedConditions, (condition1, condition2) -> {
+			int i = condition1.getAttributeWithContext().getAttributeIndex();
+			int j = condition2.getAttributeWithContext().getAttributeIndex();
+			if (i < j) {
+				return -1;
+			} else {
+				return (i == j) ? 0 : 1;
+			}
+		}); //sort conditions in ascending attribute order
+		
+		for (int i = 0; i < clonedConditions.length; i++) {
+			sB.append("(").append(clonedConditions[i].toString()).append(")");
+
+			if (i < clonedConditions.length - 1) { //not last condition
+				sB.append(" ").append(andConnective).append(" ");
+			}
+		}
+		
+		return sB;
+	}
+	
+	/**
+	 * Appends rule starter {@link #ruleStarter} to given string builder.
+	 * 
+	 * @param sB string builder used to build this rule
+	 * @return string builder with appended rule starter
+	 */
+	StringBuilder appendRuleStarter(StringBuilder sB) {
+		//start rule
+		if (ruleStarter != null && !ruleStarter.equals("")) {
+			sB.append(ruleStarter).append(" ");
+		}
+		
+		return sB;
+	}
+	
+	/**
+	 * Appends {@link #conditionsAndDecisionsDelimiter} and decision part to given string builder.
+	 * 
+	 * @param sB string builder used to build this rule
+	 * @return string builder with appended decision part
+	 */
+	StringBuilder appendDecisions(StringBuilder sB) { //TODO: take into account more general configuration of decisions
 		String ruleTypeIndicator;
 		if (this.type == RuleType.CERTAIN) {
 			ruleTypeIndicator = "";
@@ -688,7 +766,7 @@ public class Rule {
 			}
 		}
 		
-		return sB.toString();
+		return sB;
 	}
 
 	/**

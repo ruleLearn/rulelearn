@@ -801,7 +801,8 @@ class VCDomLEMTest {
 		
 		System.out.println("Certain at least rules induced with VC-DomLEM for windsor data set:"); //DEL
 		for (int i = 0; i < ruleSet.size(); i++) {
-			System.out.println(ruleSet.getRule(i));
+			//System.out.println(ruleSet.getRule(i).toString(true));
+			System.out.println(ruleSet.getRule(i).toString(false));
 		}
 	}
 
