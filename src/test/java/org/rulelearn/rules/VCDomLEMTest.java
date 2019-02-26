@@ -18,7 +18,11 @@ package org.rulelearn.rules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.jupiter.api.Tag;
@@ -33,8 +37,11 @@ import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.IdentificationAttribute;
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableTestConfiguration;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
+import org.rulelearn.data.csv.ObjectParser;
+import org.rulelearn.data.json.AttributeParser;
 import org.rulelearn.measures.CoverageInApproximationMeasure;
 import org.rulelearn.measures.CoverageOutsideApproximationMeasure;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
@@ -134,6 +141,50 @@ class VCDomLEMTest {
 				});
 		
 		return new InformationTableWithDecisionDistributions(informationTableTestConfiguration.getInformationTable(true));
+	}
+	
+	/**
+	 * Gets information table with decision distributions for "windsor" data set.
+	 * 
+	 * @return information table with decision distributions for "windsor" data set
+	 */
+	private InformationTableWithDecisionDistributions getInformationTableWindsor() {
+		InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = null;
+		try (FileReader attributesReader = new FileReader("src/test/resources/data/csv/windsor.json")) {
+			Attribute [] attributes = null;
+			AttributeParser attributeParser = new AttributeParser();
+			attributes = attributeParser.parseAttributes(attributesReader);
+			if (attributes != null) {
+				ObjectParser objectParser = new ObjectParser.Builder(attributes).header(false).separator('\t').build();
+				InformationTable informationTable = null;
+				try (FileReader objectsReader = new FileReader("src/test/resources/data/csv/windsor.csv")) {
+					informationTable = objectParser.parseObjects(objectsReader);
+					if (informationTable != null) {
+						informationTableWithDecisionDistributions = new InformationTableWithDecisionDistributions(informationTable);
+					}
+					else {
+						fail("Unable to load CSV test file with definition of windsor objects.");
+					}
+				}
+				catch (FileNotFoundException ex) {
+					System.out.println(ex.toString());
+				}
+				catch (IOException ex) {
+					System.out.println(ex.toString());
+				}
+			}
+			else {
+				fail("Unable to load JSON test file with definition of windsor attributes.");
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		catch (IOException ex) {
+			System.out.println(ex.toString());
+		}
+		
+		return informationTableWithDecisionDistributions;
 	}
 
 	/**
@@ -730,6 +781,28 @@ class VCDomLEMTest {
 		assertTrue(ruleSet.getRule(ruleIndex).getDecision() instanceof ConditionAtMostThresholdVSObject);
 		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getAttributeWithContext().getAttributeIndex(), 3);
 		assertEquals(ruleSet.getRule(ruleIndex).getDecision().getLimitingEvaluation(), IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN));
+	}
+	
+	/**
+	 * Tests downward unions and possible rules for "symptoms" data set.
+	 */
+	@Test
+	@Tag("integration")
+	public void testWindsorUpwardUnionsCertain() {
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor();
+		
+		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).build();
+		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
+		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
+		
+		RuleSet ruleSet = (new VCDomLEM(vcDomLEMParameters)).generateRules(approximatedSetProvider, approximatedSetRuleDecisionsProvider);
+		
+		//assertEquals(ruleSet.size(), 3);
+		
+		System.out.println("Certain at least rules induced with VC-DomLEM for windsor data set:"); //DEL
+		for (int i = 0; i < ruleSet.size(); i++) {
+			System.out.println(ruleSet.getRule(i));
+		}
 	}
 
 }

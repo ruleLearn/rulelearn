@@ -90,7 +90,7 @@ public class RuleConditions {
 	/**
 	 * Maps index of an attribute from learning information table to list of indices of conditions concerning this attribute that are stored in {@link #conditions}.
 	 */
-	Int2ObjectMap<IntList> attributeIndex2ConditionIndices;
+	Int2ObjectMap<IntList> attributeIndex2ConditionIndices; //TODO: think of other structure that does not require update of remaining condition indices once some condition index gets removed
 	
 	/**
 	 * Indices of objects from learning information table covered by these rule conditions.
@@ -491,7 +491,31 @@ public class RuleConditions {
 			}
 		}
 		
+	}
+	
+	/**
+	 * Removes given condition index of (just) removed condition from the list mapped by given attribute index and decrements remaining condition indices greater than that index.
+	 * 
+	 * @param attributeIndex index of an attribute for which condition has just been removed
+	 * @param removedConditionIndex index of a condition that has just been removed
+	 */
+	private void updateAttributeIndex2ConditionIndices(int attributeIndex, int removedConditionIndex) {
+		IntList listOfConditionIndices = this.attributeIndex2ConditionIndices.get(attributeIndex); //should not be empty!
+		listOfConditionIndices.rem(removedConditionIndex); //iterates through the list (it usually contains 1 element, at maximum 2 elements, so the cost is negligible)
+		if (listOfConditionIndices.isEmpty()) {
+			this.attributeIndex2ConditionIndices.remove(attributeIndex); //remove the mapping from attribute's index to a list of condition indices
+		}
 		
+		int position;
+		for (IntList listOfTestedConditionIndices : this.attributeIndex2ConditionIndices.values()) { //consider all lists of condition indices, no matter for which attribute they refer to
+			position = 0;
+			for (int conditionIndex : listOfTestedConditionIndices) {
+				if (conditionIndex > removedConditionIndex) {
+					listOfTestedConditionIndices.set(position, conditionIndex - 1); //replace condition index with the decremented one
+				}
+				position++;
+			}
+		}
 	}
 	
 	/**
@@ -509,12 +533,8 @@ public class RuleConditions {
 		//...and only then remove that condition
 		this.conditions.remove(conditionIndex);
 		
-		//remove condition index from the map
-		IntList listOfConditionIndices = this.attributeIndex2ConditionIndices.get(attributeIndex); //should not be empty!
-		listOfConditionIndices.rem(conditionIndex); //iterates through the list (it usually contains 1 element, at maximum 2 elements, so the cost is negligible)
-		if (listOfConditionIndices.isEmpty()) {
-			this.attributeIndex2ConditionIndices.remove(attributeIndex); //remove the mapping from attribute's index to a list of condition indices
-		}
+		//remove condition index from the map and decrement remaining indices greater than removed index!
+		this.updateAttributeIndex2ConditionIndices(attributeIndex, conditionIndex);
 	}
 	
 	/**
