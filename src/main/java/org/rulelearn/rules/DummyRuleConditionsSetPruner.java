@@ -23,7 +23,7 @@ import org.rulelearn.core.Precondition;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * Dummy rule conditions set pruner, that does not perform any pruning, and just returned original rule set.
+ * Dummy rule conditions set pruner, that does not perform any pruning, and just returns original list of rule conditions.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

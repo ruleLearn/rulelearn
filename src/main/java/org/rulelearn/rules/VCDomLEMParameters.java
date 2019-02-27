@@ -77,7 +77,7 @@ public class VCDomLEMParameters {
 	
 	@NonNull
 	@Builder.Default
-	private AbstractRuleConditionsPruner ruleConditionsPruner = new AttributeOrderRuleConditionsPruner(DEFAULT_STOPPING_CONDITION_CHECKER);
+	private RuleConditionsPruner ruleConditionsPruner = new AttributeOrderRuleConditionsPruner(DEFAULT_STOPPING_CONDITION_CHECKER);
 	
 	@NonNull
 	@Builder.Default

@@ -791,7 +791,11 @@ class VCDomLEMTest {
 	public void testWindsorUpwardUnionsCertain() {
 		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor();
 		
-		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).build();
+		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).
+				ruleConditionsPruner(new DummyRuleConditionsPruner()).
+				ruleConditionsSetPruner(new DummyRuleConditionsSetPruner()).
+				ruleMinimalityChecker(new DummyRuleMinimalityChecker()).
+				build();
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
 		
@@ -801,8 +805,8 @@ class VCDomLEMTest {
 		
 		System.out.println("Certain at least rules induced with VC-DomLEM for windsor data set:"); //DEL
 		for (int i = 0; i < ruleSet.size(); i++) {
-			//System.out.println(ruleSet.getRule(i).toString(true));
-			System.out.println(ruleSet.getRule(i).toString(false));
+			System.out.println(ruleSet.getRule(i).toString(true));
+			//System.out.println(ruleSet.getRule(i).toString());
 		}
 	}
 
