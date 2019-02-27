@@ -17,6 +17,7 @@
 package org.rulelearn.approximations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileNotFoundException;
@@ -57,6 +58,7 @@ class ApproximationsTest {
 					informationTable = objectParser.parseObjects(objectsReader);
 					if (informationTable != null) {
 						assertEquals(546, informationTable.getNumberOfObjects());
+						assertTrue(informationTable.getDecisions() != null);
 						// calculate unions
 						Unions unions = new Unions(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
 						Union[] downwardUnions = unions.getDownwardUnions(true);
@@ -115,6 +117,7 @@ class ApproximationsTest {
 					informationTable = objectParser.parseObjects(objectsReader);
 					if (informationTable != null) {
 						assertEquals(546, informationTable.getNumberOfObjects());
+						assertTrue(informationTable.getDecisions() != null);
 						// calculate unions
 						Unions unions = new Unions(new InformationTableWithDecisionDistributions(informationTable), new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), 0.1));
 						Union[] downwardUnions = unions.getDownwardUnions(true);
@@ -136,6 +139,60 @@ class ApproximationsTest {
 					}
 					else {
 						fail("Unable to load CSV test file with definition of objects");
+					}
+				}
+				catch (FileNotFoundException ex) {
+					System.out.println(ex.toString());
+				}
+				catch (IOException ex) {
+					System.out.println(ex.toString());
+				}
+			}
+			else {
+				fail("Unable to load JSON test file with definition of attributes");
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		catch (IOException ex) {
+			System.out.println(ex.toString());
+		}
+	}
+	
+	/**
+	 * Test calculation of lower, and upper approximations of unions in @code a learning data set for the prioritisation problem using {@link ClassicalDominanceBasedRoughSetCalculator}.
+	 */
+	@Test
+	void testLearningSetPriotitisationWithClassicalDominanceBasedRoughSetCalculator() {
+		try (FileReader attributeReader = new FileReader("src/test/resources/data/json/metadata-prioritisation.json")) {
+			Attribute [] attributes = null;
+			AttributeParser attributeParser = new AttributeParser();
+			attributes = attributeParser.parseAttributes(attributeReader);
+			if (attributes != null) {
+				org.rulelearn.data.json.ObjectParser objectParser = new org.rulelearn.data.json.ObjectParser.Builder(attributes).build();
+				InformationTable informationTable = null;
+				try (FileReader objectReader = new FileReader("src/test/resources/data/json/learning-set-prioritisation-2019-02-27.json")) {
+					informationTable = objectParser.parseObjects(objectReader);
+					if (informationTable != null) {
+						assertEquals(50, informationTable.getNumberOfObjects());
+						assertTrue(informationTable.getDecisions() != null);
+						// calculate unions
+						Unions unions = new Unions(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
+						Union[] downwardUnions = unions.getDownwardUnions(true);
+						Union[] upwardUnions = unions.getUpwardUnions(true);
+						// print them out
+						for (Union union : downwardUnions) {
+							//System.out.println("at least "+union.getLimitingDecision()+" -> "+union.getAccuracyOfApproximation());
+							assertEquals(1.0, union.getAccuracyOfApproximation());
+						}
+						for (Union union : upwardUnions) {
+							//System.out.println("at least "+union.getLimitingDecision()+" -> "+union.getAccuracyOfApproximation());
+							assertEquals(1.0, union.getAccuracyOfApproximation());
+						}
+					}
+					else {
+						fail("Unable to load JSON test file with definition of objects");
 					}
 				}
 				catch (FileNotFoundException ex) {

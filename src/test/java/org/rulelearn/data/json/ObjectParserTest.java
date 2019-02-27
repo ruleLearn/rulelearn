@@ -94,10 +94,9 @@ class ObjectParserTest {
 	 */
 	@Test
 	void testParseObjects01() {
-		Attribute [] attributes = null;
-		
-		AttributeParser attributeParser = new AttributeParser();
 		try (FileReader attributeReader = new FileReader("src/test/resources/data/csv/prioritisation.json")) {
+			Attribute [] attributes = null;
+			AttributeParser attributeParser = new AttributeParser();
 			attributes = attributeParser.parseAttributes(attributeReader);
 			if (attributes != null) {
 				ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
@@ -136,10 +135,9 @@ class ObjectParserTest {
 	 */
 	@Test
 	void testParseObjects02() {
-		Attribute [] attributes = null;
-		
-		AttributeParser attributeParser = new AttributeParser();
 		try (FileReader attributeReader = new FileReader("src/test/resources/data/json/metadata-example.json")) {
+			Attribute [] attributes = null;
+			AttributeParser attributeParser = new AttributeParser();
 			attributes = attributeParser.parseAttributes(attributeReader);
 			if (attributes != null) {
 				ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
@@ -148,6 +146,47 @@ class ObjectParserTest {
 					informationTable = objectParser.parseObjects(objectReader);
 					if (informationTable != null) {
 						assertEquals(2, informationTable.getNumberOfObjects());
+						assertTrue(informationTable.getDecisions() != null);
+					}
+					else {
+						fail("Unable to load JSON test file with definition of objects");
+					}
+				}
+				catch (FileNotFoundException ex) {
+					System.out.println(ex.toString());
+				}
+				catch (IOException ex) {
+					System.out.println(ex.toString());
+				}
+			}
+			else {
+				fail("Unable to load JSON test file with definition of attributes");
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		catch (IOException ex) {
+			System.out.println(ex.toString());
+		}
+	}
+	
+	/**
+	 * Test method for {@link ObjectParser#parseObjects(java.io.Reader)}.
+	 */
+	@Test
+	void testParseObjects03() {
+		try (FileReader attributeReader = new FileReader("src/test/resources/data/json/metadata-prioritisation.json")) {
+			Attribute [] attributes = null;
+			AttributeParser attributeParser = new AttributeParser();
+			attributes = attributeParser.parseAttributes(attributeReader);
+			if (attributes != null) {
+				ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
+				InformationTable informationTable = null;
+				try (FileReader objectReader = new FileReader("src/test/resources/data/json/learning-set-prioritisation-2019-02-27.json")) {
+					informationTable = objectParser.parseObjects(objectReader);
+					if (informationTable != null) {
+						assertEquals(50, informationTable.getNumberOfObjects());
 						assertTrue(informationTable.getDecisions() != null);
 					}
 					else {
