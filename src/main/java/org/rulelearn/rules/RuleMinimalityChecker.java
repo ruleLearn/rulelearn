@@ -36,7 +36,7 @@ public abstract class RuleMinimalityChecker implements RuleChecker {
 	/**
 	 * List of rule conditions evaluators used to evaluate compared decision rules.
 	 */
-	RuleConditionsEvaluator[] ruleConditionsEvaluators;
+	RuleConditionsEvaluator[] ruleConditionsEvaluators = null;
 	
 	/**
 	 * Constructs this checker storing given rule conditions evaluators.
@@ -50,6 +50,12 @@ public abstract class RuleMinimalityChecker implements RuleChecker {
 		this.ruleConditionsEvaluators = Precondition.nonEmpty(Precondition.notNullWithContents(ruleConditionsEvaluators,
 				"Rule conditions evaluators for rule minimality checker are null.",
 				"Rule conditions evaluator for rule minimality checker is null at index %i."), "Array of rule conditions evaluators is empty.");
+	}
+	
+	/**
+	 * Sole constructor to be used in subclasses that do not need any rule conditions evaluators.
+	 */
+	RuleMinimalityChecker() {
 	}
 
 	/**
