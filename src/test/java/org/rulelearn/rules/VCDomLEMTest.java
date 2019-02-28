@@ -43,7 +43,7 @@ import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.data.csv.ObjectParser;
 import org.rulelearn.data.json.AttributeParser;
 import org.rulelearn.measures.CoverageInApproximationMeasure;
-import org.rulelearn.measures.CoverageOutsideApproximationMeasure;
+import org.rulelearn.measures.RelativeCoverageOutsideApproximationMeasure;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
@@ -539,12 +539,12 @@ class VCDomLEMTest {
 		InformationTableWithDecisionDistributions informationTable = getInformationTableSymptoms();
 		
 		//TODO: is it possibly to simplify construction of VC-DomLEM parameters for possible rules? 
-		final ConditionAdditionEvaluator[] CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {CoverageOutsideApproximationMeasure.getInstance(), 
+		final ConditionAdditionEvaluator[] CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {RelativeCoverageOutsideApproximationMeasure.getInstance(), 
 				CoverageInApproximationMeasure.getInstance()};
 		final RuleConditionsEvaluator[] RULE_CONDITIONS_EVALUATORS = new RuleConditionsEvaluator[] {CoverageInApproximationMeasure.getInstance(), 
-				CoverageOutsideApproximationMeasure.getInstance()};
+				RelativeCoverageOutsideApproximationMeasure.getInstance()};
 		final RuleInductionStoppingConditionChecker STOPPING_CONDITION_CHECKER =
-				new EvaluationAndCoverageStoppingConditionChecker(CoverageOutsideApproximationMeasure.getInstance(), VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
+				new EvaluationAndCoverageStoppingConditionChecker(RelativeCoverageOutsideApproximationMeasure.getInstance(), 0);
 		
 		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).
 				conditionAdditionEvaluators(CONDITION_ADDITION_EVALUATORS).
@@ -554,7 +554,7 @@ class VCDomLEMTest {
 				ruleInductionStoppingConditionChecker(STOPPING_CONDITION_CHECKER).
 				ruleConditionsPruner(new AttributeOrderRuleConditionsPruner(STOPPING_CONDITION_CHECKER)).
 				ruleConditionsSetPruner(new EvaluationsAndOrderRuleConditionsSetPruner(RULE_CONDITIONS_EVALUATORS)).
-				ruleMinimalityChecker(new SingleEvaluationRuleMinimalityChecker(CoverageOutsideApproximationMeasure.getInstance())).
+				ruleMinimalityChecker(new SingleEvaluationRuleMinimalityChecker(RelativeCoverageOutsideApproximationMeasure.getInstance())).
 				ruleType(RuleType.POSSIBLE).
 				build();
 		
@@ -727,12 +727,12 @@ class VCDomLEMTest {
 		InformationTableWithDecisionDistributions informationTable = getInformationTableSymptoms();
 		
 		//TODO: is it possibly to simplify construction of VC-DomLEM parameters for possible rules? 
-		final ConditionAdditionEvaluator[] CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {CoverageOutsideApproximationMeasure.getInstance(), 
+		final ConditionAdditionEvaluator[] CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {RelativeCoverageOutsideApproximationMeasure.getInstance(), 
 				CoverageInApproximationMeasure.getInstance()};
 		final RuleConditionsEvaluator[] RULE_CONDITIONS_EVALUATORS = new RuleConditionsEvaluator[] {CoverageInApproximationMeasure.getInstance(), 
-				CoverageOutsideApproximationMeasure.getInstance()};
+				RelativeCoverageOutsideApproximationMeasure.getInstance()};
 		final RuleInductionStoppingConditionChecker STOPPING_CONDITION_CHECKER =
-				new EvaluationAndCoverageStoppingConditionChecker(CoverageOutsideApproximationMeasure.getInstance(), VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
+				new EvaluationAndCoverageStoppingConditionChecker(RelativeCoverageOutsideApproximationMeasure.getInstance(), VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
 		
 		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).
 				conditionAdditionEvaluators(CONDITION_ADDITION_EVALUATORS).
@@ -742,7 +742,7 @@ class VCDomLEMTest {
 				ruleInductionStoppingConditionChecker(STOPPING_CONDITION_CHECKER).
 				ruleConditionsPruner(new AttributeOrderRuleConditionsPruner(STOPPING_CONDITION_CHECKER)).
 				ruleConditionsSetPruner(new EvaluationsAndOrderRuleConditionsSetPruner(RULE_CONDITIONS_EVALUATORS)).
-				ruleMinimalityChecker(new SingleEvaluationRuleMinimalityChecker(CoverageOutsideApproximationMeasure.getInstance())).
+				ruleMinimalityChecker(new SingleEvaluationRuleMinimalityChecker(RelativeCoverageOutsideApproximationMeasure.getInstance())).
 				ruleType(RuleType.POSSIBLE).
 				build();
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_MOST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
@@ -805,8 +805,8 @@ class VCDomLEMTest {
 		
 		System.out.println("Certain at least rules induced with VC-DomLEM for windsor data set:"); //DEL
 		for (int i = 0; i < ruleSet.size(); i++) {
-			System.out.println(ruleSet.getRule(i).toString(true));
-			//System.out.println(ruleSet.getRule(i).toString());
+			//System.out.println(ruleSet.getRule(i).toString(true));
+			System.out.println(ruleSet.getRule(i).toString());
 		}
 	}
 

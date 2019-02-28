@@ -30,30 +30,31 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * Coverage outside approximation measure, calculated to check the number of objects that neither belong to the considered approximation nor are neutral but are covered by rule conditions.
+ * Relative coverage outside approximation measure. It calculates the ratio of
+ * the number of objects which are covered by rule conditions but neither belong to the considered approximation nor are neutral 
+ * and the number of objects that neither belong to the considered approximation nor are neutral.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class CoverageOutsideApproximationMeasure implements CostTypeMeasure, RuleConditionsEvaluator, MonotonicConditionAdditionEvaluator, ConditionRemovalEvaluator {
-	
+public class RelativeCoverageOutsideApproximationMeasure implements CostTypeMeasure, RuleConditionsEvaluator, MonotonicConditionAdditionEvaluator, ConditionRemovalEvaluator {
 	/**
 	 * The only instance of this measure (singleton).
 	 */
-	private static final CoverageOutsideApproximationMeasure INSTANCE = new CoverageOutsideApproximationMeasure();
+	private static final RelativeCoverageOutsideApproximationMeasure INSTANCE = new RelativeCoverageOutsideApproximationMeasure();
 	
 	/**
 	 * Sole constructor. Ensures adherence to singleton design pattern.
 	 */
-	private CoverageOutsideApproximationMeasure () {
+	private RelativeCoverageOutsideApproximationMeasure () {
 	}
 	
 	/**
-	 * Returns reference to singleton instance of coverage outside approximation measure.
+	 * Returns reference to singleton instance of relative coverage outside approximation measure.
 	 * 
-	 * @return reference to singleton instance of coverage outside approximation measure
+	 * @return reference to singleton instance of relative coverage outside approximation measure
 	 */
-	public static CoverageOutsideApproximationMeasure getInstance() {
+	public static RelativeCoverageOutsideApproximationMeasure getInstance() { 
 		return INSTANCE; 
 	}
 	
@@ -70,9 +71,11 @@ public class CoverageOutsideApproximationMeasure implements CostTypeMeasure, Rul
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
 		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjects();
 		IntSet approximationObjects = ruleConditions.getIndicesOfApproximationObjects();
+		IntSet positiveObjects = ruleConditions.getIndicesOfPositiveObjects();
 		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
 		
-		return getNumberOfElementsFromListNotPresentInSets(coveredObjects, approximationObjects, neutralObjects);
+		return (double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, approximationObjects, neutralObjects) / 
+				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - positiveObjects.size() - neutralObjects.size());
 	}
 	
 	/** 
@@ -91,12 +94,14 @@ public class CoverageOutsideApproximationMeasure implements CostTypeMeasure, Rul
 		if (condition != null) {
 			IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithCondition(condition);
 			IntSet approximationObjects = ruleConditions.getIndicesOfApproximationObjects();
+			IntSet positiveObjects = ruleConditions.getIndicesOfPositiveObjects();
 			IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
 			
-			return getNumberOfElementsFromListNotPresentInSets(coveredObjects, approximationObjects, neutralObjects);
+			return (double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, approximationObjects, neutralObjects) /
+					(ruleConditions.getLearningInformationTable().getNumberOfObjects() - positiveObjects.size() - neutralObjects.size());
 		}
 		else {
-			return Double.MAX_VALUE; 
+			return Double.MAX_VALUE;
 		}
 	}
 
@@ -116,9 +121,11 @@ public class CoverageOutsideApproximationMeasure implements CostTypeMeasure, Rul
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
 		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithoutCondition(conditionIndex);
 		IntSet approximationObjects = ruleConditions.getIndicesOfApproximationObjects();
+		IntSet positiveObjects = ruleConditions.getIndicesOfPositiveObjects();
 		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
 		
-		return getNumberOfElementsFromListNotPresentInSets(coveredObjects, approximationObjects, neutralObjects);
+		return (double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, approximationObjects, neutralObjects) / 
+				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - positiveObjects.size() - neutralObjects.size());
 	}
 
 	/**

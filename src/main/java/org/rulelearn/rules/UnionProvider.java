@@ -23,7 +23,7 @@ import org.rulelearn.core.Precondition;
 
 /**
  * Provides upward/downward unions of ordered decision classes {@link Union} from a set of unions (union container) {@link Unions}.
- * Type of provided unions can be set in class constructor and also modified later using {@link #setProvidedUnionType(Union.UnionType)}.
+ * Type of provided unions is set in class constructor.
  * Should it be equal to {@code Union.UnionType#AT_LEAST},
  * a call to {@link #getApproximatedSet(int)} returns i-th upward union from the union container.<br>
  * Should it be equal to {@code Union.UnionType#AT_MOST},
@@ -65,15 +65,15 @@ public class UnionProvider implements ApproximatedSetProvider {
 		this.providedUnionType = providedUnionType;
 	}
 	
-	/**
-	 * Sets type of subsequently provided unions.
-	 * 
-	 * @param providedUnionType type of union provided by this provider upon future calls to {@link #getApproximatedSet(int)}
-	 */
-	public void setProvidedUnionType(Union.UnionType providedUnionType) {
-		Precondition.notNull(providedUnionType, "Union type for union provider is null.");
-		this.providedUnionType = providedUnionType;
-	}
+//	/**
+//	 * Sets type of subsequently provided unions.
+//	 * 
+//	 * @param providedUnionType type of union provided by this provider upon future calls to {@link #getApproximatedSet(int)}
+//	 */
+//	public void setProvidedUnionType(Union.UnionType providedUnionType) {
+//		Precondition.notNull(providedUnionType, "Union type for union provider is null.");
+//		this.providedUnionType = providedUnionType;
+//	}
 	
 	/**
 	 * Gets type of provided unions.

@@ -52,6 +52,7 @@ class CoverageOutsideApproximationMeasureTest {
 		when(this.ruleConditionsMock.getIndicesOfCoveredObjectsWithCondition(this.conditionMock)).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4}));
 		when(this.ruleConditionsMock.getIndicesOfCoveredObjectsWithoutCondition(0)).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4, 5, 10, 11}));
 		when(this.ruleConditionsMock.getIndicesOfApproximationObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {0, 1, 2, 3, 4, 5, 4, 5, 6, 7, 8, 9}));
+		when(this.ruleConditionsMock.getIndicesOfNeutralObjects()).thenReturn(new IntLinkedOpenHashSet());
 	}
 	
 	/**
@@ -81,7 +82,7 @@ class CoverageOutsideApproximationMeasureTest {
 	void testEvaluateWithCondition02() {
 		CoverageOutsideApproximationMeasure coverageOutsideApproximationMeasure = CoverageOutsideApproximationMeasure.getInstance();
 		
-		assertEquals(Double.MIN_VALUE, coverageOutsideApproximationMeasure.evaluateWithCondition(this.ruleConditionsMock, null));
+		assertEquals(Double.MAX_VALUE, coverageOutsideApproximationMeasure.evaluateWithCondition(this.ruleConditionsMock, null));
 	}
 
 	/**
