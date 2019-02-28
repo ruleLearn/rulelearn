@@ -54,8 +54,14 @@ public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMe
 	protected final static double BEST_VALUE = 0.0;
 	protected final static double WORST_VALUE = 1.0;
 	
+	/**
+	 * The only instance of this measure (singleton).
+	 */
 	private static final EpsilonConsistencyMeasure INSTANCE = new EpsilonConsistencyMeasure();
 	
+	/**
+	 * Sole constructor. Ensures adherence to singleton design pattern.
+	 */
 	private EpsilonConsistencyMeasure () {
 	}
 	

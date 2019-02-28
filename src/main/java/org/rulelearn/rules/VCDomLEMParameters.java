@@ -18,7 +18,7 @@ package org.rulelearn.rules;
 
 import java.util.List;
 
-import org.rulelearn.measures.CoverageInApproximationMeasure;
+import org.rulelearn.measures.SupportMeasure;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
 
 import lombok.Builder;
@@ -41,9 +41,11 @@ public class VCDomLEMParameters {
 	// TODO modify getters of array fields to provide copy of array by default (and reference in a specific getter)
 	
 	public static final double DEFAULT_CONSISTENCY_TRESHOLD = 0.0;
-	public static final ConditionAdditionEvaluator[] DEFAULT_CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {EpsilonConsistencyMeasure.getInstance(), 
-			CoverageInApproximationMeasure.getInstance()};
-	public static final RuleConditionsEvaluator[] DEFAULT_RULE_CONDITIONS_EVALUATORS = new RuleConditionsEvaluator[] {CoverageInApproximationMeasure.getInstance(), 
+	public static final ConditionAdditionEvaluator[] DEFAULT_CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {
+			EpsilonConsistencyMeasure.getInstance(), 
+			SupportMeasure.getInstance()};
+	public static final RuleConditionsEvaluator[] DEFAULT_RULE_CONDITIONS_EVALUATORS = new RuleConditionsEvaluator[] {
+			SupportMeasure.getInstance(), 
 			EpsilonConsistencyMeasure.getInstance()};
 	public static final RuleInductionStoppingConditionChecker DEFAULT_STOPPING_CONDITION_CHECKER = 
 			new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), DEFAULT_CONSISTENCY_TRESHOLD);

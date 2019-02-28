@@ -16,8 +16,8 @@
 
 package org.rulelearn.measures;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +51,7 @@ class SupportMeasureTest {
 	 */
 	@Test
 	void testEvaluate() {
-		SupportMeasure support = new SupportMeasure();
+		SupportMeasure support = SupportMeasure.getInstance();
 		assertEquals(4, support.evaluate(this.ruleCoverageInformationMock));
 	}
 
