@@ -641,6 +641,8 @@ public class Rule {
 	/**
 	 * Gets text representation of this rule.
 	 * 
+	 * @param sortConditions tells if conditions should be sorted according to attribute order,
+	 *        or leaved in their "natural" order (i.e., in the order in which they have been added to this rule)
 	 * @return text representation of this rule
 	 */
 	public String toString(boolean sortConditions) {

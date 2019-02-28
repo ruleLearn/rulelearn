@@ -544,7 +544,7 @@ class VCDomLEMTest {
 		final RuleConditionsEvaluator[] RULE_CONDITIONS_EVALUATORS = new RuleConditionsEvaluator[] {CoverageInApproximationMeasure.getInstance(), 
 				CoverageOutsideApproximationMeasure.getInstance()};
 		final RuleInductionStoppingConditionChecker STOPPING_CONDITION_CHECKER =
-				new EvaluationAndCoverageStoppingConditionChecker(CoverageOutsideApproximationMeasure.getInstance(), VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
+				new EvaluationAndCoverageStoppingConditionChecker(CoverageOutsideApproximationMeasure.getInstance(), 0);
 		
 		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).
 				conditionAdditionEvaluators(CONDITION_ADDITION_EVALUATORS).
@@ -805,8 +805,8 @@ class VCDomLEMTest {
 		
 		System.out.println("Certain at least rules induced with VC-DomLEM for windsor data set:"); //DEL
 		for (int i = 0; i < ruleSet.size(); i++) {
-			System.out.println(ruleSet.getRule(i).toString(true));
-			//System.out.println(ruleSet.getRule(i).toString());
+			//System.out.println(ruleSet.getRule(i).toString(true));
+			System.out.println(ruleSet.getRule(i).toString());
 		}
 	}
 

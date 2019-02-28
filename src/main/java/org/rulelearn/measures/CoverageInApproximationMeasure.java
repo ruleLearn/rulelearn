@@ -36,9 +36,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class CoverageInApproximationMeasure implements GainTypeMeasure, RuleConditionsEvaluator, MonotonicConditionAdditionEvaluator, ConditionRemovalEvaluator {
-	
+
+	/**
+	 * The only instance of this measure (singleton).
+	 */
 	private static final CoverageInApproximationMeasure INSTANCE = new CoverageInApproximationMeasure();
 	
+	/**
+	 * Sole constructor. Ensures adherence to singleton design pattern. 
+	 */
 	private CoverageInApproximationMeasure () {
 	}
 	

@@ -18,6 +18,7 @@ package org.rulelearn.rules;
 
 import static org.rulelearn.core.Precondition.notNull;
 
+import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 
@@ -78,5 +79,29 @@ public class RuleSet {
 	 */
 	public int size() {
 		return this.rules.length;
+	}
+	
+	/**
+	 * Gets a new rule set by joining given two rule sets.
+	 * 
+	 * @param ruleSet1 first rule set to join
+	 * @param ruleSet2 second rule set to join
+	 * @return a new rule set composing of rules from the two given rule sets
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 */
+	public static RuleSet join(RuleSet ruleSet1, RuleSet ruleSet2) {
+		Precondition.notNull(ruleSet1, "First rule set to join is null.");
+		Precondition.notNull(ruleSet2, "Second rule set to join is null.");
+		
+		Rule[] rules = new Rule[ruleSet1.size() + ruleSet2.size()];
+		for (int i = 0; i < ruleSet1.size(); i++) {
+			rules[i] = ruleSet1.getRule(i);
+		}
+		int shift = ruleSet1.size();
+		for (int i = 0; i < ruleSet2.size(); i++) {
+			rules[shift + i] = ruleSet2.getRule(i);
+		}
+		return new RuleSet(rules, true);
 	}
 }

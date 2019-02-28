@@ -37,8 +37,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public class CoverageOutsideApproximationMeasure implements CostTypeMeasure, RuleConditionsEvaluator, MonotonicConditionAdditionEvaluator, ConditionRemovalEvaluator {
 	
+	/**
+	 * The only instance of this measure (singleton).
+	 */
 	private static final CoverageOutsideApproximationMeasure INSTANCE = new CoverageOutsideApproximationMeasure();
 	
+	/**
+	 * Sole constructor. Ensures adherence to singleton design pattern.
+	 */
 	private CoverageOutsideApproximationMeasure () {
 	}
 	

@@ -122,7 +122,7 @@ public class RuleConditionsBuilder {
 				indicesOfCoveredObjects = ruleConditions.getIndicesOfCoveredObjects();
 				indicesOfNoLongerCoveredObjects = new IntOpenHashSet();
 				for (int previouslyCoveredObjectIndex : indicesOfConsideredObjects) {
-					if (!indicesOfCoveredObjects.contains(previouslyCoveredObjectIndex)) { //previously covered object is no longer covered
+					if (!indicesOfCoveredObjects.contains(previouslyCoveredObjectIndex)) { //previously covered object is no longer covered //TODO: more efficient implementation
 						indicesOfNoLongerCoveredObjects.add(previouslyCoveredObjectIndex);
 					}
 				}
