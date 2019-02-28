@@ -516,7 +516,7 @@ public class RuleParser {
 	 */
 	protected Condition<? extends EvaluationField> parseRuleCondition (Element atomElement) throws RuleParseException {
 		Condition<? extends EvaluationField> condition = null;
-		boolean relationThresholdVSObject = false; // by default relation is of type object versus value
+		boolean relationThresholdVSObject = true; // by default relation is of type threshold versus object
         NodeList relationList = atomElement.getElementsByTagName("rel");
         if (relationList.getLength() > 1) {
             throw new RuleParseException("More than one relation ('rel' node) inside an 'atom' node detected in RuleML.");
@@ -533,8 +533,8 @@ public class RuleParser {
 			if (attributes.getLength() == 1) {
 				if ("type".equals(attributes.item(0).getNodeName())) {
     				type = attributes.item(0).getNodeValue();
-    				if (type.equalsIgnoreCase("value-object")) {
-    					relationThresholdVSObject = true;
+    				if (type.equalsIgnoreCase(RuleMLElements.OBJECT_VS_THRESHOLD)) {
+    					relationThresholdVSObject = false;
     				}
 				}
 			}

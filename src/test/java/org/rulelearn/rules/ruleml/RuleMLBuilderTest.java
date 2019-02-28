@@ -577,7 +577,7 @@ class RuleMLBuilderTest {
 		when(this.ruleSetMock.getRule(1)).thenReturn(this.ruleAtMostMock);
 		when(this.ruleSetMock.size()).thenReturn(2);
 		
-		String ruleSetRuleML = "<?xml version=\"1.01\" encoding=\"UTF-8\"?>\n" + 
+		String ruleSetRuleML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
 				"<?xml-model href=\"http://deliberation.ruleml.org/1.01/relaxng/datalogplus_min_relaxed.rnc\"?>\n" + 
 				"<RuleML xmlns=\"http://ruleml.org/spec\">\n" + 
 				"<act index=\"1\">\n" + 
@@ -640,7 +640,7 @@ class RuleMLBuilderTest {
 				"</RuleML>\n";
 		
 		//System.out.println(ruleMLBuilder.toRuleMLString(this.ruleSetMock, 1));
-		assertEquals(ruleMLBuilder.toRuleMLString(this.ruleSetMock, 1), ruleSetRuleML);
+		assertEquals(ruleSetRuleML, ruleMLBuilder.toRuleMLString(this.ruleSetMock, 1));
 	}
 	
 	/**
@@ -660,7 +660,7 @@ class RuleMLBuilderTest {
 		when(this.ruleSetWithCharacteristicsMock.getRuleCharacteristics(0)).thenReturn(this.ruleCharacteristicsMock);
 		when(this.ruleSetWithCharacteristicsMock.size()).thenReturn(1);
 		
-		String ruleSetRuleML = "<?xml version=\"1.01\" encoding=\"UTF-8\"?>\n" + 
+		String ruleSetRuleML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
 				"<?xml-model href=\"http://deliberation.ruleml.org/1.01/relaxng/datalogplus_min_relaxed.rnc\"?>\n" + 
 				"<RuleML xmlns=\"http://ruleml.org/spec\">\n" + 
 				"<act index=\"00000000-0000-0000-0000-000000000001\">\n" + 
