@@ -51,7 +51,7 @@ class CoverageInApproximationMeasureTest {
 		when(this.ruleConditionsMock.getIndicesOfCoveredObjects()).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4, 5}));
 		when(this.ruleConditionsMock.getIndicesOfCoveredObjectsWithCondition(this.conditionMock)).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4}));
 		when(this.ruleConditionsMock.getIndicesOfCoveredObjectsWithoutCondition(0)).thenReturn(new IntArrayList(new int [] {0, 1, 2, 3, 4, 5, 6, 10}));
-		when(this.ruleConditionsMock.getIndicesOfApproximationObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {0, 1, 2, 3, 4, 5, 4, 5, 6, 7, 8, 9}));
+		when(this.ruleConditionsMock.getIndicesOfApproximationObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
 	}
 	
 	/**
