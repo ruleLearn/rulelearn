@@ -1951,5 +1951,259 @@ class VCDomLEMTest {
 			assertEquals(ruleSet.getRule(i).toString(), expectedRules[i]);
 		}
 	}
+	
+	/**
+	 * Tests downward unions and certain rules for "windsor" data set.
+	 * Employs DRSA.
+	 * Uses dummy pruners and dummy rule minimality checker.
+	 */
+	@Test
+	@Tag("integration")
+	public void testWindsorDownwardUnionsCertainRulesDRSADummy() {
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor();
+		
+		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).
+				ruleConditionsPruner(new DummyRuleConditionsPruner()).
+				ruleConditionsSetPruner(new DummyRuleConditionsSetPruner()).
+				ruleMinimalityChecker(new DummyRuleMinimalityChecker()).
+				build();
+		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_MOST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
+		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
+		
+		RuleSet ruleSet = (new VCDomLEM(vcDomLEMParameters)).generateRules(approximatedSetProvider, approximatedSetRuleDecisionsProvider);
+		
+		String[] expectedRules = {
+				"(lot_size <= 1836.0) => (sale_price <= 0)",
+				"(nbed <= 1) => (sale_price <= 0)",
+				"(lot_size <= 2000.0) & (nbed <= 3) => (sale_price <= 0)",
+				"(lot_size <= 2160.0) & (desire_loc <= 0) & (nbed <= 3) & (nbath <= 1) => (sale_price <= 0)",
+				"(lot_size <= 2500.0) & (nstoreys <= 1) & (nbed <= 3) => (sale_price <= 0)",
+				"(lot_size <= 2700.0) & (nbed <= 2) & (rec_room <= 0) => (sale_price <= 0)",
+				"(lot_size <= 2700.0) & (nstoreys <= 1) & (nbed <= 3) => (sale_price <= 0)",
+				"(lot_size <= 2800.0) & (nstoreys <= 1) & (basement <= 0) => (sale_price <= 0)",
+				"(lot_size <= 2835.0) & (nbed <= 2) & (rec_room <= 0) => (sale_price <= 0)",
+				"(lot_size <= 2910.0) & (nbed <= 2) & (rec_room <= 0) => (sale_price <= 0)",
+				"(lot_size <= 2910.0) & (nstoreys <= 1) & (basement <= 0) => (sale_price <= 0)",
+				"(lot_size <= 2990.0) & (nbed <= 2) & (rec_room <= 0) => (sale_price <= 0)",
+				"(lot_size <= 3000.0) & (nstoreys <= 1) & (basement <= 0) => (sale_price <= 0)",
+				"(lot_size <= 3000.0) & (nstoreys <= 1) & (nbed <= 2) => (sale_price <= 0)",
+				"(lot_size <= 3000.0) & (nbed <= 2) & (rec_room <= 0) & (air_cond <= 0) => (sale_price <= 0)",
+				"(lot_size <= 3040.0) & (nstoreys <= 1) & (basement <= 0) => (sale_price <= 0)",
+				"(lot_size <= 3090.0) & (nbed <= 2) & (nstoreys <= 1) => (sale_price <= 0)",
+				"(drive <= 0) & (nbed <= 2) & (lot_size <= 3500.0) & (nbath <= 1) => (sale_price <= 0)",
+				"(drive <= 0) & (nbed <= 2) & (lot_size <= 3930.0) & (basement <= 0) => (sale_price <= 0)",
+				"(drive <= 0) & (nstoreys <= 1) & (lot_size <= 3180.0) & (nbath <= 1) => (sale_price <= 0)",
+				"(drive <= 0) & (nstoreys <= 1) & (lot_size <= 4320.0) & (basement <= 0) & (air_cond <= 0) => (sale_price <= 0)",
+				"(lot_size <= 3185.0) & (nbed <= 2) & (nstoreys <= 1) & (nbath <= 1) => (sale_price <= 0)",
+				"(lot_size <= 3264.0) & (nbed <= 2) & (nstoreys <= 1) & (nbath <= 1) => (sale_price <= 0)",
+				"(lot_size <= 3500.0) & (nbed <= 2) & (nstoreys <= 1) & (nbath <= 1) & (desire_loc <= 0) & (ngarage <= 0) => (sale_price <= 0)",
+				"(lot_size <= 2520.0) => (sale_price <= 1)",
+				"(nbed <= 1) => (sale_price <= 1)",
+				"(lot_size <= 2787.0) & (basement <= 0) => (sale_price <= 1)",
+				"(lot_size <= 2787.0) & (nstoreys <= 1) => (sale_price <= 1)",
+				"(lot_size <= 2800.0) & (basement <= 0) => (sale_price <= 1)",
+				"(lot_size <= 2856.0) & (basement <= 0) => (sale_price <= 1)",
+				"(lot_size <= 2850.0) & (ngarage <= 0) & (drive <= 0) => (sale_price <= 1)",
+				"(lot_size <= 2910.0) & (nstoreys <= 1) => (sale_price <= 1)",
+				"(lot_size <= 2990.0) & (nstoreys <= 1) => (sale_price <= 1)",
+				"(drive <= 0) & (nbed <= 2) & (rec_room <= 0) => (sale_price <= 1)",
+				"(drive <= 0) & (nbed <= 2) & (basement <= 0) => (sale_price <= 1)",
+				"(drive <= 0) & (lot_size <= 3300.0) & (ngarage <= 0) => (sale_price <= 1)",
+				"(drive <= 0) & (lot_size <= 3300.0) & (nbath <= 1) => (sale_price <= 1)",
+				"(drive <= 0) & (nstoreys <= 1) & (basement <= 0) => (sale_price <= 1)",
+				"(drive <= 0) & (nstoreys <= 1) & (rec_room <= 0) & (nbath <= 1) => (sale_price <= 1)",
+				"(drive <= 0) & (basement <= 0) & (air_cond <= 0) & (lot_size <= 3660.0) => (sale_price <= 1)",
+				"(lot_size <= 3120.0) & (nstoreys <= 1) => (sale_price <= 1)",
+				"(lot_size <= 3120.0) & (nbed <= 2) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3120.0) & (basement <= 0) & (nstoreys <= 2) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3185.0) & (nstoreys <= 1) & (rec_room <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3180.0) & (basement <= 0) & (ngarage <= 0) & (nstoreys <= 2) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3290.0) & (nstoreys <= 1) & (rec_room <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3240.0) & (basement <= 0) & (nstoreys <= 2) & (desire_loc <= 0) & (nbath <= 1) & (air_cond <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3360.0) & (nstoreys <= 1) & (rec_room <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3350.0) & (basement <= 0) & (ngarage <= 0) & (nstoreys <= 2) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3420.0) & (nbed <= 2) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3480.0) & (nstoreys <= 1) & (rec_room <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3450.0) & (basement <= 0) & (nbath <= 1) & (nstoreys <= 2) & (air_cond <= 0) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3500.0) & (nstoreys <= 1) & (rec_room <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3500.0) & (nstoreys <= 1) & (nbath <= 1) => (sale_price <= 1)",
+				"(lot_size <= 3500.0) & (basement <= 0) & (nbath <= 1) & (nstoreys <= 2) & (air_cond <= 0) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3512.0) & (nstoreys <= 1) & (rec_room <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3520.0) & (nstoreys <= 1) & (nbed <= 2) => (sale_price <= 1)",
+				"(lot_size <= 3620.0) & (nstoreys <= 1) & (rec_room <= 0) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3600.0) & (nbed <= 2) & (desire_loc <= 0) & (rec_room <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3630.0) & (nstoreys <= 1) & (rec_room <= 0) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3649.0) & (nstoreys <= 1) & (rec_room <= 0) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(nbed <= 2) & (lot_size <= 4095.0) & (rec_room <= 0) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(nbed <= 2) & (lot_size <= 4000.0) & (rec_room <= 0) & (nstoreys <= 1) => (sale_price <= 1)",
+				"(nbed <= 2) & (lot_size <= 4280.0) & (basement <= 0) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(nbed <= 2) & (lot_size <= 4500.0) & (basement <= 0) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(nbed <= 2) & (lot_size <= 4750.0) & (basement <= 0) & (nbath <= 1) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(nbed <= 2) & (lot_size <= 4840.0) & (basement <= 0) & (desire_loc <= 0) & (nbath <= 1) => (sale_price <= 1)",
+				"(nbed <= 2) & (basement <= 0) & (lot_size <= 5320.0) & (desire_loc <= 0) & (nbath <= 1) => (sale_price <= 1)",
+				"(nbed <= 2) & (basement <= 0) & (lot_size <= 5320.0) & (air_cond <= 0) & (nstoreys <= 1) => (sale_price <= 1)",
+				"(nbed <= 2) & (basement <= 0) & (air_cond <= 0) & (desire_loc <= 0) & (lot_size <= 8400.0) => (sale_price <= 1)",
+				"(nbed <= 2) & (basement <= 0) & (air_cond <= 0) & (nstoreys <= 1) & (lot_size <= 10360.0) => (sale_price <= 1)",
+				"(nbed <= 2) & (basement <= 0) & (lot_size <= 5600.0) & (desire_loc <= 0) & (nbath <= 1) => (sale_price <= 1)",
+				"(lot_size <= 3750.0) & (nstoreys <= 1) & (rec_room <= 0) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3850.0) & (nstoreys <= 1) & (rec_room <= 0) & (desire_loc <= 0) & (ngarage <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3960.0) & (nstoreys <= 1) & (basement <= 0) & (desire_loc <= 0) & (ngarage <= 0) => (sale_price <= 1)",
+				"(lot_size <= 4000.0) & (nstoreys <= 1) & (basement <= 0) & (desire_loc <= 0) & (ngarage <= 0) => (sale_price <= 1)",
+				"(lot_size <= 4340.0) & (nstoreys <= 1) & (basement <= 0) & (desire_loc <= 0) & (ngarage <= 0) => (sale_price <= 1)",
+				"(nstoreys <= 1) & (lot_size <= 5880.0) & (basement <= 0) & (desire_loc <= 0) & (ngarage <= 1) => (sale_price <= 1)",
+				"(nstoreys <= 1) & (basement <= 0) & (ngarage <= 0) & (desire_loc <= 0) & (lot_size <= 6020.0) => (sale_price <= 1)",
+				"(lot_size <= 3210.0) => (sale_price <= 2)",
+				"(drive <= 0) => (sale_price <= 2)",
+				"(nbed <= 1) => (sale_price <= 2)",
+				"(lot_size <= 3480.0) & (nstoreys <= 2) => (sale_price <= 2)",
+				"(lot_size <= 3680.0) & (nbed <= 3) => (sale_price <= 2)",
+				"(lot_size <= 3640.0) & (ngarage <= 0) => (sale_price <= 2)",
+				"(lot_size <= 3630.0) & (nstoreys <= 2) & (ngarage <= 1) => (sale_price <= 2)",
+				"(lot_size <= 3630.0) & (nstoreys <= 2) & (nbath <= 1) => (sale_price <= 2)",
+				"(lot_size <= 3750.0) & (nbed <= 3) => (sale_price <= 2)",
+				"(lot_size <= 3934.0) & (nstoreys <= 1) => (sale_price <= 2)",
+				"(lot_size <= 3900.0) & (nbed <= 2) => (sale_price <= 2)",
+				"(lot_size <= 3900.0) & (nbed <= 3) & (ngarage <= 1) => (sale_price <= 2)",
+				"(lot_size <= 3792.0) & (ngarage <= 0) & (rec_room <= 0) => (sale_price <= 2)",
+				"(lot_size <= 3990.0) & (ngarage <= 0) & (rec_room <= 0) => (sale_price <= 2)",
+				"(nbed <= 2) & (lot_size <= 6440.0) => (sale_price <= 2)",
+				"(nbed <= 2) & (basement <= 0) & (lot_size <= 8400.0) => (sale_price <= 2)",
+				"(nbed <= 2) & (basement <= 0) & (air_cond <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4000.0) & (nstoreys <= 1) & (basement <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4000.0) & (ngarage <= 0) & (rec_room <= 0) & (nbath <= 1) => (sale_price <= 2)",
+				"(lot_size <= 4000.0) & (ngarage <= 1) & (air_cond <= 0) & (nstoreys <= 2) => (sale_price <= 2)",
+				"(lot_size <= 4079.0) & (ngarage <= 0) & (air_cond <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4040.0) & (basement <= 0) & (nbed <= 3) & (ngarage <= 1) => (sale_price <= 2)",
+				"(lot_size <= 4240.0) & (nstoreys <= 1) & (ngarage <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4240.0) & (ngarage <= 0) & (air_cond <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4240.0) & (ngarage <= 0) & (rec_room <= 0) & (nbath <= 1) => (sale_price <= 2)",
+				"(lot_size <= 4200.0) & (ngarage <= 1) & (air_cond <= 0) & (nstoreys <= 2) & (basement <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4260.0) & (ngarage <= 0) & (nbath <= 1) & (rec_room <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4400.0) & (nstoreys <= 1) & (basement <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4400.0) & (ngarage <= 0) & (nbed <= 3) & (nbath <= 1) => (sale_price <= 2)",
+				"(lot_size <= 4360.0) & (ngarage <= 0) & (nbath <= 1) & (rec_room <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4520.0) & (nstoreys <= 1) & (ngarage <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4520.0) & (ngarage <= 0) & (nbed <= 3) & (nstoreys <= 2) & (nbath <= 1) => (sale_price <= 2)",
+				"(lot_size <= 4500.0) & (basement <= 0) & (nbed <= 3) & (ngarage <= 1) & (nstoreys <= 3) => (sale_price <= 2)",
+				"(lot_size <= 4775.0) & (nstoreys <= 1) & (ngarage <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4775.0) & (ngarage <= 0) & (nbath <= 1) & (air_cond <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4640.0) & (ngarage <= 0) & (nbath <= 1) & (nstoreys <= 2) & (rec_room <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4640.0) & (nbath <= 1) & (ngarage <= 1) & (nstoreys <= 2) & (rec_room <= 0) & (basement <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4600.0) & (basement <= 0) & (nbed <= 3) & (ngarage <= 1) & (nstoreys <= 2) => (sale_price <= 2)",
+				"(lot_size <= 4840.0) & (ngarage <= 0) & (air_cond <= 0) & (nbed <= 3) & (rec_room <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4840.0) & (nbath <= 1) & (basement <= 0) & (nstoreys <= 2) & (rec_room <= 0) & (ngarage <= 1) => (sale_price <= 2)",
+				"(lot_size <= 4995.0) & (nstoreys <= 1) & (basement <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4995.0) & (nstoreys <= 1) & (rec_room <= 0) & (ngarage <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4950.0) & (ngarage <= 0) & (nbath <= 1) & (nstoreys <= 2) & (rec_room <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4920.0) & (nbath <= 1) & (basement <= 0) & (nstoreys <= 2) & (rec_room <= 0) & (ngarage <= 1) => (sale_price <= 2)",
+				"(lot_size <= 5010.0) & (ngarage <= 0) & (air_cond <= 0) & (nbed <= 3) & (rec_room <= 0) => (sale_price <= 2)",
+				"(lot_size <= 5400.0) & (nstoreys <= 1) & (basement <= 0) => (sale_price <= 2)",
+				"(lot_size <= 5400.0) & (air_cond <= 0) & (ngarage <= 0) & (nbath <= 1) & (rec_room <= 0) => (sale_price <= 2)",
+				"(lot_size <= 5495.0) & (nstoreys <= 1) & (nbed <= 3) & (rec_room <= 0) & (ngarage <= 0) => (sale_price <= 2)",
+				"(lot_size <= 5500.0) & (nstoreys <= 1) & (rec_room <= 0) & (nbed <= 3) & (ngarage <= 0) => (sale_price <= 2)",
+				"(lot_size <= 5500.0) & (air_cond <= 0) & (basement <= 0) & (nbed <= 3) & (nstoreys <= 2) & (ngarage <= 1) => (sale_price <= 2)",
+				"(lot_size <= 5800.0) & (nstoreys <= 1) & (basement <= 0) => (sale_price <= 2)",
+				"(lot_size <= 5880.0) & (nstoreys <= 1) & (basement <= 0) => (sale_price <= 2)",
+				"(lot_size <= 5985.0) & (nstoreys <= 1) & (rec_room <= 0) & (nbed <= 3) & (ngarage <= 0) => (sale_price <= 2)",
+				"(nstoreys <= 1) & (basement <= 0) & (ngarage <= 0) => (sale_price <= 2)",
+				"(nstoreys <= 1) & (basement <= 0) & (lot_size <= 7000.0) & (air_cond <= 0) => (sale_price <= 2)",
+				"(nstoreys <= 1) & (basement <= 0) & (lot_size <= 8250.0) & (nbath <= 1) & (air_cond <= 0) => (sale_price <= 2)",
+				"(nstoreys <= 1) & (lot_size <= 6100.0) & (ngarage <= 0) & (nbed <= 3) & (rec_room <= 0) => (sale_price <= 2)",
+				"(nstoreys <= 1) & (ngarage <= 0) & (air_cond <= 0) & (rec_room <= 0) => (sale_price <= 2)",
+				"(ngarage <= 0) & (air_cond <= 0) & (lot_size <= 6360.0) & (nbed <= 3) & (rec_room <= 0) => (sale_price <= 2)",
+				"(ngarage <= 0) & (air_cond <= 0) & (nbath <= 1) & (nstoreys <= 2) & (rec_room <= 0) => (sale_price <= 2)",
+				"(ngarage <= 0) & (air_cond <= 0) & (nbath <= 1) & (nstoreys <= 2) & (basement <= 0) => (sale_price <= 2)"
+		};
+		
+//		System.out.println("Certain at most rules induced with VC-DomLEM for windsor data set (DRSA), without pruning:"); //DEL
+//		for (int i = 0; i < ruleSet.size(); i++) {
+//			//System.out.println(ruleSet.getRule(i).toString(true));
+//			System.out.println(ruleSet.getRule(i).toString());
+//		}
+		
+		assertEquals(ruleSet.size(), expectedRules.length); //140
+		
+		for (int i = 0; i < expectedRules.length; i++) {
+			assertEquals(ruleSet.getRule(i).toString(), expectedRules[i]);
+		}
+	}
+	
+	/**
+	 * Tests downward unions and certain rules for "windsor" data set.
+	 * Employs DRSA.
+	 * Uses all pruners and rule minimality checker.
+	 */
+	@Test
+	@Tag("integration")
+	public void testWindsorDownwardUnionsCertainRulesDRSAPruning() {
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor();
+		
+		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).build();
+		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_MOST, new Unions(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
+		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionRuleDecisionsProvider();
+		
+		RuleSet ruleSet = (new VCDomLEM(vcDomLEMParameters)).generateRules(approximatedSetProvider, approximatedSetRuleDecisionsProvider);
+		
+		String[] expectedRules = {
+				"(lot_size <= 2000.0) & (nbed <= 3) => (sale_price <= 0)",
+				"(lot_size <= 2160.0) & (desire_loc <= 0) & (nbed <= 3) & (nbath <= 1) => (sale_price <= 0)",
+				"(lot_size <= 3000.0) & (nbed <= 2) & (rec_room <= 0) & (air_cond <= 0) => (sale_price <= 0)",
+				"(lot_size <= 3040.0) & (nstoreys <= 1) & (basement <= 0) => (sale_price <= 0)",
+				"(drive <= 0) & (nbed <= 2) & (lot_size <= 3930.0) & (basement <= 0) => (sale_price <= 0)",
+				"(drive <= 0) & (nstoreys <= 1) & (lot_size <= 4320.0) & (basement <= 0) & (air_cond <= 0) => (sale_price <= 0)",
+				"(lot_size <= 3264.0) & (nbed <= 2) & (nstoreys <= 1) & (nbath <= 1) => (sale_price <= 0)",
+				"(lot_size <= 3500.0) & (nbed <= 2) & (nstoreys <= 1) & (nbath <= 1) & (desire_loc <= 0) & (ngarage <= 0) => (sale_price <= 0)",
+				"(lot_size <= 2520.0) => (sale_price <= 1)",
+				"(lot_size <= 2856.0) & (basement <= 0) => (sale_price <= 1)",
+				"(drive <= 0) & (lot_size <= 3300.0) & (ngarage <= 0) => (sale_price <= 1)",
+				"(drive <= 0) & (nstoreys <= 1) & (rec_room <= 0) & (nbath <= 1) => (sale_price <= 1)",
+				"(drive <= 0) & (basement <= 0) & (air_cond <= 0) & (lot_size <= 3660.0) => (sale_price <= 1)",
+				"(lot_size <= 3350.0) & (basement <= 0) & (ngarage <= 0) & (nstoreys <= 2) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(lot_size <= 3500.0) & (nstoreys <= 1) & (nbath <= 1) => (sale_price <= 1)",
+				"(lot_size <= 3500.0) & (basement <= 0) & (nbath <= 1) & (nstoreys <= 2) & (air_cond <= 0) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(nbed <= 2) & (lot_size <= 4095.0) & (rec_room <= 0) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(nbed <= 2) & (basement <= 0) & (air_cond <= 0) & (desire_loc <= 0) & (lot_size <= 8400.0) => (sale_price <= 1)",
+				"(nbed <= 2) & (basement <= 0) & (air_cond <= 0) & (nstoreys <= 1) & (lot_size <= 10360.0) => (sale_price <= 1)",
+				"(nbed <= 2) & (basement <= 0) & (lot_size <= 5600.0) & (desire_loc <= 0) & (nbath <= 1) => (sale_price <= 1)",
+				"(lot_size <= 3750.0) & (nstoreys <= 1) & (rec_room <= 0) & (desire_loc <= 0) => (sale_price <= 1)",
+				"(nstoreys <= 1) & (lot_size <= 5880.0) & (basement <= 0) & (desire_loc <= 0) & (ngarage <= 1) => (sale_price <= 1)",
+				"(nstoreys <= 1) & (basement <= 0) & (ngarage <= 0) & (desire_loc <= 0) & (lot_size <= 6020.0) => (sale_price <= 1)",
+				"(lot_size <= 3210.0) => (sale_price <= 2)",
+				"(drive <= 0) => (sale_price <= 2)",
+				"(lot_size <= 3480.0) & (nstoreys <= 2) => (sale_price <= 2)",
+				"(lot_size <= 3630.0) & (nstoreys <= 2) & (nbath <= 1) => (sale_price <= 2)",
+				"(lot_size <= 3750.0) & (nbed <= 3) => (sale_price <= 2)",
+				"(nbed <= 2) & (lot_size <= 6440.0) => (sale_price <= 2)",
+				"(nbed <= 2) & (basement <= 0) & (air_cond <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4000.0) & (ngarage <= 1) & (air_cond <= 0) & (nstoreys <= 2) => (sale_price <= 2)",
+				"(lot_size <= 4400.0) & (ngarage <= 0) & (nbed <= 3) & (nbath <= 1) => (sale_price <= 2)",
+				"(lot_size <= 4500.0) & (basement <= 0) & (nbed <= 3) & (ngarage <= 1) & (nstoreys <= 3) => (sale_price <= 2)",
+				"(lot_size <= 4775.0) & (ngarage <= 0) & (nbath <= 1) & (air_cond <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4600.0) & (basement <= 0) & (nbed <= 3) & (ngarage <= 1) & (nstoreys <= 2) => (sale_price <= 2)",
+				"(lot_size <= 4950.0) & (ngarage <= 0) & (nbath <= 1) & (nstoreys <= 2) & (rec_room <= 0) => (sale_price <= 2)",
+				"(lot_size <= 4920.0) & (nbath <= 1) & (basement <= 0) & (nstoreys <= 2) & (rec_room <= 0) & (ngarage <= 1) => (sale_price <= 2)",
+				"(lot_size <= 5400.0) & (air_cond <= 0) & (ngarage <= 0) & (nbath <= 1) & (rec_room <= 0) => (sale_price <= 2)",
+				"(lot_size <= 5500.0) & (air_cond <= 0) & (basement <= 0) & (nbed <= 3) & (nstoreys <= 2) & (ngarage <= 1) => (sale_price <= 2)",
+				"(lot_size <= 5880.0) & (nstoreys <= 1) & (basement <= 0) => (sale_price <= 2)",
+				"(nstoreys <= 1) & (basement <= 0) & (lot_size <= 8250.0) & (nbath <= 1) & (air_cond <= 0) => (sale_price <= 2)",
+				"(nstoreys <= 1) & (lot_size <= 6100.0) & (ngarage <= 0) & (nbed <= 3) & (rec_room <= 0) => (sale_price <= 2)",
+				"(nstoreys <= 1) & (ngarage <= 0) & (air_cond <= 0) & (rec_room <= 0) => (sale_price <= 2)",
+				"(ngarage <= 0) & (air_cond <= 0) & (lot_size <= 6360.0) & (nbed <= 3) & (rec_room <= 0) => (sale_price <= 2)",
+				"(ngarage <= 0) & (air_cond <= 0) & (nbath <= 1) & (nstoreys <= 2) & (rec_room <= 0) => (sale_price <= 2)",
+				"(ngarage <= 0) & (air_cond <= 0) & (nbath <= 1) & (nstoreys <= 2) & (basement <= 0) => (sale_price <= 2)"
+		};
+		
+//		System.out.println("Certain at most rules induced with VC-DomLEM for windsor data set (DRSA), with pruning:"); //DEL
+//		for (int i = 0; i < ruleSet.size(); i++) {
+//			//System.out.println(ruleSet.getRule(i).toString(true));
+//			System.out.println(ruleSet.getRule(i).toString());
+//		}
+		
+		assertEquals(ruleSet.size(), expectedRules.length); //46
+		
+		for (int i = 0; i < expectedRules.length; i++) {
+			assertEquals(ruleSet.getRule(i).toString(), expectedRules[i]);
+		}
+	}
 
 }
