@@ -204,6 +204,16 @@ public class Union extends ApproximatedSet {
 	}
 	
 	/**
+	 * TODO
+	 * @param unionType
+	 * @param informationTable
+	 * @param roughSetCalculator
+	 */
+	Union(UnionType unionType, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator) {
+		super();
+	}
+	
+	/**
 	 * Validates given limiting decision, taking into account given information table. Checks if each attribute contributing to the given decision
 	 * is an evaluation attribute, is active, and of type {@link AttributeType#DECISION}. Moreover, at least one of the attributes has to have
 	 * preference type different than {@link AttributePreferenceType#NONE}.
