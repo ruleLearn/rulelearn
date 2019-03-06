@@ -401,17 +401,21 @@ public class Union extends ApproximatedSet {
 	
 	/**
 	 * Tests if this union is concordant with given decision. In case of an upward union, returns:<br>
-	 * - {@link TernaryLogicValue#TRUE} if limiting decision of this union is at most as good as the given decision,<br>
-	 * - {@link TernaryLogicValue#FALSE} if limiting decision of this union	is strictly better than the given decision,<br>
+	 * - {@link TernaryLogicValue#TRUE} if limiting decision of this union is at most as good as the given decision
+	 *   (strictly worse if {@link #isIncludeLimitingDecision() == false),<br>
+	 * - {@link TernaryLogicValue#FALSE} if limiting decision of this union	is strictly better than the given decision
+	 *   (strictly better or equal if {@link #isIncludeLimitingDecision() == false),<br>
 	 * - {@link TernaryLogicValue#UNCOMPARABLE} otherwise.<br> 
-	 * In case of a downward union, return:<br>
-	 * - {@link TernaryLogicValue#TRUE} if limiting decision of this union is at least as good as the given decision,<br>
-	 * - {@link TernaryLogicValue#FALSE} if limiting decision of this union	is strictly worse than the given decision,<br>
+	 * In case of a downward union, returns:<br>
+	 * - {@link TernaryLogicValue#TRUE} if limiting decision of this union is at least as good as the given decision
+	 *   (strictly better if {@link #isIncludeLimitingDecision() == false),<br>
+	 * - {@link TernaryLogicValue#FALSE} if limiting decision of this union	is strictly worse than the given decision,
+	 *   (strictly worse or equal if {@link #isIncludeLimitingDecision() == false)<br>
 	 * - {@link TernaryLogicValue#UNCOMPARABLE} otherwise.
 	 * 
 	 * @param decision decision that limiting decision of this union should be compared with
-	 * @return {@link TernaryLogicValue#TRUE} if this unions' limiting decision is concordant with given decision,
-	 *         {@link TernaryLogicValue#FALSE} if this unions' limiting decision is not concordant with given decision,
+	 * @return {@link TernaryLogicValue#TRUE} if this union is concordant with given decision,
+	 *         {@link TernaryLogicValue#FALSE} if this union is not concordant with given decision,
 	 *         {@link TernaryLogicValue#UNCOMPARABLE} if this unions' limiting decision is uncomparable with given decision
 	 * 
 	 * @throws NullPointerException if given decision is {@code null}
