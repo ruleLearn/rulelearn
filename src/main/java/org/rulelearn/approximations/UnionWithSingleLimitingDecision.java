@@ -67,12 +67,12 @@ public class UnionWithSingleLimitingDecision extends Union {
 	 * Tells if given decision is positive with respect to the union of ordered decision classes that would be constructed for given parameters.
 	 * See {@link #isDecisionPositive(Decision)}.
 	 * 
-	 * @param decision decision to verify for being positive with the union of ordered decision classes that would be constructed for given parameters
-	 * @param unionType see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param limitingDecision see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param informationTable see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param decision decision to verify for being positive with respect to the union of ordered decision classes that would be constructed for given parameters
+	 * @param unionType see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param limitingDecision see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param informationTable see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
 	 * 
-	 * @return {@code true} if given decision is positive with the union of ordered decision classes that would be constructed for given parameters,
+	 * @return {@code true} if given decision is positive with respect to the union of ordered decision classes that would be constructed for given parameters,
 	 *         {@code false} otherwise
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
@@ -91,7 +91,7 @@ public class UnionWithSingleLimitingDecision extends Union {
 	 * @param unionType type of this union; see {@link UnionType}
 	 * @param limitingDecision decision that serves as a limit for this union; e.g., decision "3" is a limit for union "at least 3" and "at most 3" 
 	 * @param informationTable information table with considered objects, some of which belong to this union
-	 * @param roughSetCalculator dominance-based rough set calculator used to calculate approximations and boundary of this union
+	 * @param roughSetCalculator dominance-based rough set calculator used to calculate approximations of this union
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidTypeException if any of the attributes contributing to given limiting decision is not an evaluation attribute
@@ -111,10 +111,10 @@ public class UnionWithSingleLimitingDecision extends Union {
 	 * belonging to this union and neutral objects. Stores given information table and given rough set calculator. Takes into account the flag concerning inclusion of objects
 	 * having decision equal to the limiting decision of this union. 
 	 * 
-	 * @param unionType see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param limitingDecision see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param informationTable see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param roughSetCalculator see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param unionType see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param limitingDecision see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param informationTable see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param roughSetCalculator see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
 	 * @param includeLimitingDecision tells if objects having decision equal to the limiting decision of this union should be included in this union
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
@@ -140,9 +140,9 @@ public class UnionWithSingleLimitingDecision extends Union {
 	 * providing limited functionality. In particular, this constructor does not calculate objects belonging to this union (nor neutral objects),
 	 * which is a time consuming process. Moreover, it does not set rough set calculator.
 	 * 
-	 * @param unionType see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param limitingDecision see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param informationTable see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param unionType see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param limitingDecision see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param informationTable see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidTypeException see {@link #validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}
@@ -215,7 +215,7 @@ public class UnionWithSingleLimitingDecision extends Union {
 	
 	/**
 	 * Calculates complementary union of decision classes that complements this union w.r.t. set of all objects U.
-	 * Calculated union has the same limiting decision, but does not include objects with that decision. Moreover, it has opposite union type.
+	 * Calculated union has opposite union type, the same limiting decision, and does not include objects with that decision.
 	 * 
 	 * @return complementary union of decision classes
 	 */
@@ -235,17 +235,27 @@ public class UnionWithSingleLimitingDecision extends Union {
 	}
 	
 	/**
+	 * {@inheritDoc}
+	 * This method overrides superclass method to specialize return type.
+	 * 
+	 * @return complementary union of decision classes
+	 */
+	public UnionWithSingleLimitingDecision getComplementaryUnion() {
+		return (UnionWithSingleLimitingDecision)super.getComplementaryUnion();
+	}
+	
+	/**
 	 * Tests if this union is concordant with given decision. In case of an upward union, returns:<br>
 	 * - {@link TernaryLogicValue#TRUE} if limiting decision of this union is at most as good as the given decision
-	 *   (strictly worse if {@link #isIncludeLimitingDecision() == false),<br>
+	 *   (strictly worse if {@link #isIncludeLimitingDecision()} == false),<br>
 	 * - {@link TernaryLogicValue#FALSE} if limiting decision of this union	is strictly better than the given decision
-	 *   (strictly better or equal if {@link #isIncludeLimitingDecision() == false),<br>
+	 *   (strictly better or equal if {@link #isIncludeLimitingDecision()} == false),<br>
 	 * - {@link TernaryLogicValue#UNCOMPARABLE} otherwise.<br> 
 	 * In case of a downward union, returns:<br>
 	 * - {@link TernaryLogicValue#TRUE} if limiting decision of this union is at least as good as the given decision
-	 *   (strictly better if {@link #isIncludeLimitingDecision() == false),<br>
+	 *   (strictly better if {@link #isIncludeLimitingDecision()} == false),<br>
 	 * - {@link TernaryLogicValue#FALSE} if limiting decision of this union	is strictly worse than the given decision,
-	 *   (strictly worse or equal if {@link #isIncludeLimitingDecision() == false)<br>
+	 *   (strictly worse or equal if {@link #isIncludeLimitingDecision()} == false)<br>
 	 * - {@link TernaryLogicValue#UNCOMPARABLE} otherwise.
 	 * 
 	 * @param decision decision that limiting decision of this union should be compared with
@@ -329,7 +339,7 @@ public class UnionWithSingleLimitingDecision extends Union {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @throws ClassCastException if given approximated set is not of type {@link Union}
+	 * @throws ClassCastException if given approximated set is not of type {@link UnionWithSingleLimitingDecision}
 	 */
 	@Override
 	public boolean includes(ApproximatedSet approximatedSet) {

@@ -54,20 +54,21 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
 //TODO: extract common code blocks into separate method
+//TODO: extract tests related to methods already implemented in type Union to class UnionTest
 /**
- * Tests for {@link Union}.
+ * Tests for {@link UnionWithSingleLimitingDecision}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-class UnionTest {
+class UnionWithSingleLimitingDecisionTest {
 	
 	/**
 	 * Configures mock of information table referenced in given union.
 	 * 
 	 * @param union union referencing information table mock that should be configured
 	 */
-	private void configureInformationTableMock(Union union) {
+	private void configureInformationTableMock(UnionWithSingleLimitingDecision union) {
 		SimpleDecision limitingDecision = (SimpleDecision)union.getLimitingDecision();
 		int limitingDecisionValue = ((IntegerField)limitingDecision.getEvaluation()).getValue();
 		AttributePreferenceType attributePreferenceType = ((IntegerField)limitingDecision.getEvaluation()).getPreferenceType();
@@ -94,11 +95,11 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#findObjects()}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#findObjects()}.
 	 */
 	@Test
 	void testFindObjects01() {
-		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		UnionWithSingleLimitingDecision union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
 		this.configureInformationTableMock(union);
 		
 		union.findObjects();
@@ -128,11 +129,11 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#findObjects()}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#findObjects()}.
 	 */
 	@Test
 	void testFindObjects02() {
-		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		UnionWithSingleLimitingDecision union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
 		this.configureInformationTableMock(union);
 		
 		union.findObjects();
@@ -415,7 +416,7 @@ class UnionTest {
 	}
 
 	/**
-	 * Test method for {@link Union#isConcordantWithDecision(Decision)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#isConcordantWithDecision(Decision)}.
 	 */
 	@Test
 	void testIsConcordantWithDecision01() {
@@ -468,7 +469,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#isConcordantWithDecision(Decision)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#isConcordantWithDecision(Decision)}.
 	 * Tests union "at most".
 	 */
 	@Test
@@ -526,7 +527,7 @@ class UnionTest {
 	 */
 	@Test
 	void testGetComplementarySetSize01() {
-		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		UnionWithSingleLimitingDecision union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
 		this.configureInformationTableMock(union);
 		union.findObjects();
 		
@@ -538,7 +539,7 @@ class UnionTest {
 	 */
 	@Test
 	void testGetComplementarySetSize02() {
-		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		UnionWithSingleLimitingDecision union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
 		this.configureInformationTableMock(union);
 		union.findObjects();
 		
@@ -546,7 +547,7 @@ class UnionTest {
 	}
 
 	/**
-	 * Test method for {@link Union#Union(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}.
 	 */
 	@Test
 	void testUnionUnion01() {
@@ -556,7 +557,7 @@ class UnionTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		try {
-			new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock);
+			new UnionWithSingleLimitingDecision(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock);
 			fail("Should not construct union with null union type.");
 		} catch (NullPointerException exception) {
 			//OK
@@ -564,7 +565,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#Union(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}.
 	 */
 	@Test
 	void testUnionUnion02() {
@@ -579,7 +580,7 @@ class UnionTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		try {
-			new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock);
+			new UnionWithSingleLimitingDecision(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock);
 			fail("Should not create union for limiting decision having contribution from an attribute which is not an evaluation attribute.");
 		} catch (InvalidTypeException exception) {
 			//OK
@@ -587,7 +588,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#Union(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}.
 	 */
 	@Test
 	void testUnionUnion03() {
@@ -604,7 +605,7 @@ class UnionTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		try {
-			new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock);
+			new UnionWithSingleLimitingDecision(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock);
 			fail("Should not create union for limiting decision having contribution from an attribute which is not active.");
 		} catch (InvalidValueException exception) {
 			//OK
@@ -612,7 +613,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#Union(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}.
 	 */
 	@Test
 	void testUnionUnion04() {
@@ -629,7 +630,7 @@ class UnionTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		try {
-			new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock);
+			new UnionWithSingleLimitingDecision(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock);
 			fail("Should not create union for limiting decision having contribution from an attribute which is not decision one.");
 		} catch (InvalidValueException exception) {
 			//OK
@@ -637,7 +638,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#Union(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}.
 	 */
 	@Test
 	void testUnionUnion05() {
@@ -655,7 +656,7 @@ class UnionTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		try {
-			new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock);
+			new UnionWithSingleLimitingDecision(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock);
 			fail("Should not create union if none of the attributes contributing to union's limiting decision is ordinal.");
 		} catch (InvalidValueException exception) {
 			//OK
@@ -663,7 +664,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#Union(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}.
 	 */
 	@Test
 	void testUnionUnion06() {
@@ -681,7 +682,7 @@ class UnionTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		try {
-			Union union = new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock);
+			UnionWithSingleLimitingDecision union = new UnionWithSingleLimitingDecision(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock);
 			assertEquals(union.getUnionType(), unionType);
 			assertEquals(union.getLimitingDecision(), limitingDecision);
 			assertEquals(union.getInformationTable(), informationTableMock);
@@ -692,7 +693,7 @@ class UnionTest {
 	}
 
 	/**
-	 * Test method for {@link Union#Union(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator, boolean)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator, boolean)}.
 	 */
 	@Test
 	void testUnionUnionBoolean01() {
@@ -702,7 +703,7 @@ class UnionTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		try {
-			new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, false);
+			new UnionWithSingleLimitingDecision(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, false);
 			fail("Should not construct union with null union type.");
 		} catch (NullPointerException exception) {
 			//OK
@@ -710,7 +711,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#Union(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator, boolean)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator, boolean)}.
 	 */
 	@Test
 	void testUnionUnionBoolean02() {
@@ -725,7 +726,7 @@ class UnionTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		try {
-			new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, false);
+			new UnionWithSingleLimitingDecision(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, false);
 			fail("Should not create union for limiting decision having contribution from an attribute which is not an evaluation attribute.");
 		} catch (InvalidTypeException exception) {
 			//OK
@@ -733,7 +734,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#Union(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator, boolean)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator, boolean)}.
 	 */
 	@Test
 	void testUnionUnionBoolean03() {
@@ -750,7 +751,7 @@ class UnionTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		try {
-			new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, false);
+			new UnionWithSingleLimitingDecision(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, false);
 			fail("Should not create union for limiting decision having contribution from an attribute which is not active.");
 		} catch (InvalidValueException exception) {
 			//OK
@@ -758,7 +759,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#Union(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator, boolean)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator, boolean)}.
 	 */
 	@Test
 	void testUnionUnionBoolean04() {
@@ -775,7 +776,7 @@ class UnionTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		try {
-			new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, false);
+			new UnionWithSingleLimitingDecision(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, false);
 			fail("Should not create union for limiting decision having contribution from an attribute which is not decision one.");
 		} catch (InvalidValueException exception) {
 			//OK
@@ -783,7 +784,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#Union(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator, boolean)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator, boolean)}.
 	 */
 	@Test
 	void testUnionUnionBoolean05() {
@@ -801,7 +802,7 @@ class UnionTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		try {
-			new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, false);
+			new UnionWithSingleLimitingDecision(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, false);
 			fail("Should not create union if none of the attributes contributing to union's limiting decision is ordinal.");
 		} catch (InvalidValueException exception) {
 			//OK
@@ -809,7 +810,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#Union(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator, boolean)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(Union.UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator, boolean)}.
 	 */
 	@Test
 	void testUnionUnionBoolean06() {
@@ -827,7 +828,7 @@ class UnionTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		try {
-			Union union = new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, false);
+			UnionWithSingleLimitingDecision union = new UnionWithSingleLimitingDecision(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, false);
 			assertEquals(union.getUnionType(), unionType);
 			assertEquals(union.getLimitingDecision(), limitingDecision);
 			assertEquals(union.getInformationTable(), informationTableMock);
@@ -845,7 +846,7 @@ class UnionTest {
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	private class UnionWithConstructorParameters {
-		private Union union;
+		private UnionWithSingleLimitingDecision union;
 		private UnionType unionType;
 		private Decision limitingDecision;
 		private InformationTableWithDecisionDistributions informationTable;
@@ -860,7 +861,7 @@ class UnionTest {
 		 * @param informationTable information table for which union has been constructed
 		 * @param roughSetCalculator rough set calculator used to construct union
 		 */
-		private UnionWithConstructorParameters(Union union, UnionType unionType, Decision limitingDecision,
+		private UnionWithConstructorParameters(UnionWithSingleLimitingDecision union, UnionType unionType, Decision limitingDecision,
 				InformationTableWithDecisionDistributions informationTable,
 				DominanceBasedRoughSetCalculator roughSetCalculator) {
 			super();
@@ -899,7 +900,7 @@ class UnionTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		return new UnionWithConstructorParameters(
-				new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, includeLimitingDecision),
+				new UnionWithSingleLimitingDecision(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, includeLimitingDecision),
 				unionType,
 				limitingDecision,
 				informationTableMock,
@@ -932,7 +933,7 @@ class UnionTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		return new UnionWithConstructorParameters(
-				new Union(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, includeLimitingDecision),
+				new UnionWithSingleLimitingDecision(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, includeLimitingDecision),
 				unionType,
 				limitingDecision,
 				informationTableMock,
@@ -940,7 +941,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
 	 * Tests {@link CompositeDecision} decision.
 	 */
 	@Test
@@ -969,7 +970,7 @@ class UnionTest {
 		IdentificationAttribute attributeMock2 = Mockito.mock(IdentificationAttribute.class); //!
 		Mockito.when(informationTableMock.getAttribute(attributeIndex2)).thenReturn(attributeMock2);
 		
-		Union union = Mockito.mock(Union.class);
+		UnionWithSingleLimitingDecision union = Mockito.mock(UnionWithSingleLimitingDecision.class);
 		Mockito.when(union.validateLimitingDecision(limitingDecision, informationTableMock)).thenCallRealMethod();
 		
 		try {
@@ -981,7 +982,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
 	 * Tests {@link CompositeDecision} decision.
 	 */
 	@Test
@@ -1012,7 +1013,7 @@ class UnionTest {
 		Mockito.when(attributeMock2.getType()).thenReturn(AttributeType.DECISION);
 		Mockito.when(informationTableMock.getAttribute(attributeIndex2)).thenReturn(attributeMock2);
 		
-		Union union = Mockito.mock(Union.class);
+		UnionWithSingleLimitingDecision union = Mockito.mock(UnionWithSingleLimitingDecision.class);
 		Mockito.when(union.validateLimitingDecision(limitingDecision, informationTableMock)).thenCallRealMethod();
 		
 		try {
@@ -1024,7 +1025,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
 	 * Tests {@link CompositeDecision} decision.
 	 */
 	@Test
@@ -1055,7 +1056,7 @@ class UnionTest {
 		Mockito.when(attributeMock2.getType()).thenReturn(AttributeType.CONDITION);
 		Mockito.when(informationTableMock.getAttribute(attributeIndex2)).thenReturn(attributeMock2);
 		
-		Union union = Mockito.mock(Union.class);
+		UnionWithSingleLimitingDecision union = Mockito.mock(UnionWithSingleLimitingDecision.class);
 		Mockito.when(union.validateLimitingDecision(limitingDecision, informationTableMock)).thenCallRealMethod();
 		
 		try {
@@ -1067,7 +1068,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
 	 * Tests {@link CompositeDecision} decision.
 	 */
 	@Test
@@ -1099,7 +1100,7 @@ class UnionTest {
 		Mockito.when(attributeMock2.getPreferenceType()).thenReturn(AttributePreferenceType.NONE);
 		Mockito.when(informationTableMock.getAttribute(attributeIndex2)).thenReturn(attributeMock2);
 		
-		Union union = Mockito.mock(Union.class);
+		UnionWithSingleLimitingDecision union = Mockito.mock(UnionWithSingleLimitingDecision.class);
 		Mockito.when(union.validateLimitingDecision(limitingDecision, informationTableMock)).thenCallRealMethod();
 		
 		try {
@@ -1111,7 +1112,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}.
 	 * Tests {@link CompositeDecision} decision.
 	 */
 	@Test
@@ -1143,7 +1144,7 @@ class UnionTest {
 		Mockito.when(attributeMock2.getPreferenceType()).thenReturn(AttributePreferenceType.COST);
 		Mockito.when(informationTableMock.getAttribute(attributeIndex2)).thenReturn(attributeMock2);
 		
-		Union union = Mockito.mock(Union.class);
+		UnionWithSingleLimitingDecision union = Mockito.mock(UnionWithSingleLimitingDecision.class);
 		Mockito.when(union.validateLimitingDecision(limitingDecision, informationTableMock)).thenCallRealMethod();
 		
 		try {
@@ -1191,7 +1192,7 @@ class UnionTest {
 	@Test
 	void testGetComplementaryUnion01() {
 		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
-		Union complementaryUnion = Mockito.mock(Union.class);
+		Union complementaryUnion = Mockito.mock(UnionWithSingleLimitingDecision.class);
 		union.setComplementaryUnion(complementaryUnion);
 		
 		assertEquals(union.complementaryUnion, complementaryUnion);
@@ -1199,14 +1200,14 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#getComplementaryUnion()}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#getComplementaryUnion()}.
 	 */
 	@Test
 	void testGetComplementaryUnion02() {
 		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true);
-		Union union = unionWithConstructorParameters.union;
+		UnionWithSingleLimitingDecision union = unionWithConstructorParameters.union;
 		assertEquals(union.complementaryUnion, null);
-		Union complementaryUnion = union.getComplementaryUnion();
+		UnionWithSingleLimitingDecision complementaryUnion = union.getComplementaryUnion();
 		assertNotNull(complementaryUnion); //tests if complementary union is calculated on demand
 		assertEquals(complementaryUnion.getLimitingDecision(), union.getLimitingDecision());
 		assertEquals(complementaryUnion.getUnionType(), UnionType.AT_MOST);
@@ -1214,14 +1215,14 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#getComplementaryUnion()}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#getComplementaryUnion()}.
 	 */
 	@Test
 	void testGetComplementaryUnion03() {
 		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.COST, true);
-		Union union = unionWithConstructorParameters.union;
+		UnionWithSingleLimitingDecision union = unionWithConstructorParameters.union;
 		assertEquals(union.complementaryUnion, null);
-		Union complementaryUnion = union.getComplementaryUnion();
+		UnionWithSingleLimitingDecision complementaryUnion = union.getComplementaryUnion();
 		assertNotNull(complementaryUnion); //tests if complementary union is calculated on demand
 		assertEquals(complementaryUnion.getLimitingDecision(), union.getLimitingDecision());
 		assertEquals(complementaryUnion.getUnionType(), UnionType.AT_LEAST);
@@ -1254,7 +1255,7 @@ class UnionTest {
 	}
 	
 	/**
-	 * Test method for {@link Union#getLimitingDecision()}.
+	 * Test method for {@link UnionWithSingleLimitingDecision#getLimitingDecision()}.
 	 * This method is inherited from superclass.
 	 */
 	@Test
@@ -1417,11 +1418,11 @@ class UnionTest {
 			
 			Decision uncomparableDecision = new SimpleDecision(new UnknownSimpleFieldMV15(), attributeIndex); //take missing value of type mv_{1.5} for tested decision
 	
-			assertTrue(Union.isDecisionPositive(equalDecision, unionType, limitingDecision, informationTableMock));
-			assertTrue(Union.isDecisionPositive(betterDecision, unionType, limitingDecision, informationTableMock));
-			assertFalse(Union.isDecisionPositive(worseDecision, unionType, limitingDecision, informationTableMock));
-			assertTrue(Union.isDecisionPositive(comparableDecision, unionType, limitingDecision, informationTableMock));
-			assertFalse(Union.isDecisionPositive(uncomparableDecision, unionType, limitingDecision, informationTableMock));
+			assertTrue(UnionWithSingleLimitingDecision.isDecisionPositive(equalDecision, unionType, limitingDecision, informationTableMock));
+			assertTrue(UnionWithSingleLimitingDecision.isDecisionPositive(betterDecision, unionType, limitingDecision, informationTableMock));
+			assertFalse(UnionWithSingleLimitingDecision.isDecisionPositive(worseDecision, unionType, limitingDecision, informationTableMock));
+			assertTrue(UnionWithSingleLimitingDecision.isDecisionPositive(comparableDecision, unionType, limitingDecision, informationTableMock));
+			assertFalse(UnionWithSingleLimitingDecision.isDecisionPositive(uncomparableDecision, unionType, limitingDecision, informationTableMock));
 		}
 	}
 	
@@ -1462,11 +1463,11 @@ class UnionTest {
 			
 			Decision uncomparableDecision = new SimpleDecision(new UnknownSimpleFieldMV15(), attributeIndex); //take missing value of type mv_{1.5} for tested decision
 			
-			assertTrue(Union.isDecisionPositive(equalDecision, unionType, limitingDecision, informationTableMock));
-			assertFalse(Union.isDecisionPositive(betterDecision, unionType, limitingDecision, informationTableMock));
-			assertTrue(Union.isDecisionPositive(worseDecision, unionType, limitingDecision, informationTableMock));
-			assertTrue(Union.isDecisionPositive(comparableDecision, unionType, limitingDecision, informationTableMock));
-			assertFalse(Union.isDecisionPositive(uncomparableDecision, unionType, limitingDecision, informationTableMock));
+			assertTrue(UnionWithSingleLimitingDecision.isDecisionPositive(equalDecision, unionType, limitingDecision, informationTableMock));
+			assertFalse(UnionWithSingleLimitingDecision.isDecisionPositive(betterDecision, unionType, limitingDecision, informationTableMock));
+			assertTrue(UnionWithSingleLimitingDecision.isDecisionPositive(worseDecision, unionType, limitingDecision, informationTableMock));
+			assertTrue(UnionWithSingleLimitingDecision.isDecisionPositive(comparableDecision, unionType, limitingDecision, informationTableMock));
+			assertFalse(UnionWithSingleLimitingDecision.isDecisionPositive(uncomparableDecision, unionType, limitingDecision, informationTableMock));
 		}
 	}
 
@@ -1700,7 +1701,7 @@ class UnionTest {
 	 */
 	@Test
 	void testIsObjectPositive01() {
-		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		UnionWithSingleLimitingDecision union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
 		this.configureInformationTableMock(union);
 		union.findObjects();
 		
@@ -1718,7 +1719,7 @@ class UnionTest {
 	 */
 	@Test
 	void testIsObjectPositive02() {
-		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		UnionWithSingleLimitingDecision union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
 		this.configureInformationTableMock(union);
 		union.findObjects();
 		
@@ -1736,7 +1737,7 @@ class UnionTest {
 	 */
 	@Test
 	void testIsObjectNeutral01() {
-		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		UnionWithSingleLimitingDecision union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
 		this.configureInformationTableMock(union);
 		union.findObjects();
 		
@@ -1754,7 +1755,7 @@ class UnionTest {
 	 */
 	@Test
 	void testIsObjectNeutral02() {
-		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		UnionWithSingleLimitingDecision union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
 		this.configureInformationTableMock(union);
 		union.findObjects();
 		
@@ -1772,7 +1773,7 @@ class UnionTest {
 	 */
 	@Test
 	void testIsObjectNegative01() {
-		Union union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		UnionWithSingleLimitingDecision union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
 		this.configureInformationTableMock(union);
 		union.findObjects();
 		
@@ -1790,7 +1791,7 @@ class UnionTest {
 	 */
 	@Test
 	void testIsObjectNegative02() {
-		Union union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		UnionWithSingleLimitingDecision union = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
 		this.configureInformationTableMock(union);
 		union.findObjects();
 		

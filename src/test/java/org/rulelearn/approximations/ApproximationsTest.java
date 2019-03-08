@@ -60,7 +60,7 @@ class ApproximationsTest {
 						assertEquals(546, informationTable.getNumberOfObjects());
 						assertTrue(informationTable.getDecisions() != null);
 						// calculate unions
-						Unions unions = new Unions(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
+						Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
 						Union[] downwardUnions = unions.getDownwardUnions(true);
 						Union[] upwardUnions = unions.getUpwardUnions(true);
 						// test downward unions size and lower approximations size 
@@ -119,7 +119,7 @@ class ApproximationsTest {
 						assertEquals(546, informationTable.getNumberOfObjects());
 						assertTrue(informationTable.getDecisions() != null);
 						// calculate unions
-						Unions unions = new Unions(new InformationTableWithDecisionDistributions(informationTable), new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), 0.1));
+						Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), 0.1));
 						Union[] downwardUnions = unions.getDownwardUnions(true);
 						Union[] upwardUnions = unions.getUpwardUnions(true);
 						// test downward unions size and lower approximations size 
@@ -178,7 +178,7 @@ class ApproximationsTest {
 						assertEquals(50, informationTable.getNumberOfObjects());
 						assertTrue(informationTable.getDecisions() != null);
 						// calculate unions
-						Unions unions = new Unions(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
+						Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
 						Union[] downwardUnions = unions.getDownwardUnions(true);
 						Union[] upwardUnions = unions.getUpwardUnions(true);
 						// print them out

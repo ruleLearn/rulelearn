@@ -33,8 +33,10 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSets;
 
 /**
- * Union of decision classes, concerning set of objects belonging to either of the considered decision classes.
- * TODO
+ * Union (sum) of decision classes, concerning set of objects belonging to either of the considered decision classes (these objects are called positive objects).
+ * This union is approximated using dominance cones.
+ * Each union is assumed to have a complementary union of decision classes. Objects belonging to the complementary union are called, from the perspective of this union, negative objects.
+ * Remaining objects from the information table are called neutral objects.
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -87,8 +89,8 @@ public abstract class Union extends ApproximatedSet {
 	 * providing limited functionality. In particular, this constructor does not calculate objects belonging to this union (nor neutral objects),
 	 * which is a time consuming process. Moreover, it does not set rough set calculator.
 	 * 
-	 * @param unionType see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param informationTable see {@link #Union(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param unionType see {@link UnionType}
+	 * @param informationTable information table with considered objects, some of which belong to this union
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
@@ -100,10 +102,13 @@ public abstract class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * TODO
-	 * @param unionType
-	 * @param informationTable
-	 * @param roughSetCalculator
+	 * Constructs union of given type (at least or at most). Stores given information table and given rough set calculator.
+	 * 
+	 * @param unionType see {@link UnionType}
+	 * @param informationTable information table with considered objects, some of which belong to this union
+	 * @param roughSetCalculator rough set calculator used to calculate approximations of this union
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	Union(UnionType unionType, InformationTableWithDecisionDistributions informationTable, DominanceBasedRoughSetCalculator roughSetCalculator) {
 		super(informationTable, roughSetCalculator);
@@ -235,9 +240,7 @@ public abstract class Union extends ApproximatedSet {
 
 	
 	/**
-	 * TODO
-	 * Tells if given decision is positive with respect to this union, i.e., in case of an upward union - limiting decision of this union is at most as good as the given decision,
-	 * and in case of a downward union - limiting decision of this union is at least as good as the given decision.
+	 * Tells if given decision is positive with respect to this union, i.e., if an object having given decision belongs to this union (is a positive object).
 	 * 
 	 * @param decision decision to verify for being positive with respect to this union
 	 * @return {@code true} if given decision is positive with respect to this union,
@@ -253,9 +256,7 @@ public abstract class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * TODO
-	 * Tells if given decision is negative with respect to this union, i.e., in case of an upward union - limiting decision of this union is strictly better than the given decision,
-	 * and in case of a downward union - limiting decision of this union is strictly worse than the given decision.
+	 * Tells if given decision is negative with respect to this union, i.e., if an object having given decision belongs to the complementary union (is a negative object).
 	 * 
 	 * @param decision decision to verify for being negative with respect to this union
 	 * @return {@code true} if given decision is negative with respect to this union,
@@ -271,8 +272,8 @@ public abstract class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * TODO
-	 * Tells if given decision is neutral with respect to this union, i.e., limiting decision of this union is neither at most as good as the given decision nor at least as good as the given decision.
+	 * Tells if given decision is neutral with respect to this union, i.e., if an object having given decision neither belongs to this union (neither is a positive object),
+	 * nor belongs to the complementary union (nor is a negative object).
 	 * 
 	 * @param decision decision to verify for being neutral with respect to this union
 	 * @return {@code true} if given decision is neutral with respect to this union,
@@ -375,8 +376,8 @@ public abstract class Union extends ApproximatedSet {
 	
 	/**
 	 * Calculates positive region of this union, using the given lower approximation.
-	 * This region is composed of objects belonging to the lower approximation of this union plus
-	 * objects belonging to dominance cones defined with respect to the objects from the lower approximation.
+	 * This region is composed of objects belonging to the given lower approximation of this union plus
+	 * objects belonging to dominance cones defined with respect to the objects from the given lower approximation.
 	 * 
 	 * @return set of indices of objects belonging to the positive region of this union, calculated using given lower approximation
 	 * @throws NullPointerException if given lower approximation is {@code null}
@@ -411,11 +412,11 @@ public abstract class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * Gets the size of the set of objects that is complementary to the set of objects belonging to this union.
+	 * Gets the size of the set of objects that is complementary to the set of objects belonging to this union (i.e., the size of the complementary union).
 	 * The result is calculated as the number of all objects in the information tables minus number of objects belonging to this union,
 	 * and minus number of objects that are neutral with respect to this union.
 	 * 
-	 * @return the size of the set of objects that is complementary to the set of (positive) objects belonging to this union
+	 * @return the size of the set of objects that is complementary to the set of (positive) objects belonging to this union (i.e., the size of the complementary union)
 	 */
 	public int getComplementarySetSize() {
 		return this.informationTable.getNumberOfObjects() - this.size() - this.neutralObjects.size();

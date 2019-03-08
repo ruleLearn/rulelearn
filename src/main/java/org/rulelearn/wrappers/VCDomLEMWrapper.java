@@ -19,6 +19,7 @@ package org.rulelearn.wrappers;
 import org.rulelearn.approximations.ClassicalDominanceBasedRoughSetCalculator;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
+import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.data.InformationTable;
@@ -28,7 +29,7 @@ import org.rulelearn.rules.ApproximatedSetProvider;
 import org.rulelearn.rules.ApproximatedSetRuleDecisionsProvider;
 import org.rulelearn.rules.RuleSet;
 import org.rulelearn.rules.UnionProvider;
-import org.rulelearn.rules.UnionRuleDecisionsProvider;
+import org.rulelearn.rules.UnionWithSingleLimitingDecisionRuleDecisionsProvider;
 import org.rulelearn.rules.VCDomLEM;
 import org.rulelearn.rules.VCDomLEMParameters;
 
@@ -55,10 +56,10 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	public RuleSet induceRules(InformationTable informationTable) {
 		if (this.rules == null) {
 			VCDomLEMParameters vcDomLEMParameters = VCDomLEMParameters.builder().build();
-			ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionRuleDecisionsProvider();
-			Unions unions = new Unions(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
+			Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
 			ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
 			ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
+			ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 			
 			RuleSet upwardRules = (new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtLeastProvider, unionRuleDecisionsProvider);
 			RuleSet downwardRules = (new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtMostProvider, unionRuleDecisionsProvider);
@@ -79,11 +80,11 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	public RuleSet induceRules(InformationTable informationTable, double consistencyThreshold) {
 		if (this.rules == null) {
 			VCDomLEMParameters vcDomLEMParameters = VCDomLEMParameters.builder().consistencyThreshold(consistencyThreshold).build();
-			ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionRuleDecisionsProvider();
-			Unions unions = new Unions(new InformationTableWithDecisionDistributions(informationTable), 
+			Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), 
 									   new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold));
 			ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
 			ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
+			ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 			
 			RuleSet upwardRules = (new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtLeastProvider, unionRuleDecisionsProvider);
 			RuleSet downwardRules = (new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtMostProvider, unionRuleDecisionsProvider);
