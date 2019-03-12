@@ -16,7 +16,9 @@
 
 package org.rulelearn.approximations;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,8 +38,9 @@ import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
 
+//TODO: extract tests related to methods already implemented in type Unions to class UnionsTest
 /**
- * Tests for {@link Unions}.
+ * Tests for {@link UnionsWithSingleLimitingDecision}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -53,7 +56,7 @@ class UnionsTest {
 	}
 
 	/**
-	 * Test method for {@link Unions#Unions(org.rulelearn.data.InformationTableWithDecisionDistributions, org.rulelearn.approximations.DominanceBasedRoughSetCalculator)}.
+	 * Test method for {@link UnionsWithSingleLimitingDecision#UnionsWithSingleLimitingDecision(InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}.
 	 * Tests if {@link NullPointerException} is thrown when one of the constructor parameters is {@code null}.
 	 */
 	@Test
@@ -62,12 +65,12 @@ class UnionsTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
 		
 		assertThrows(NullPointerException.class, () -> {
-			new Unions(informationTableMock, roughSetCalculatorMock);
+			new UnionsWithSingleLimitingDecision(informationTableMock, roughSetCalculatorMock);
 		}); 
 	}
 	
 	/**
-	 * Test method for {@link Unions#Unions(org.rulelearn.data.InformationTableWithDecisionDistributions, org.rulelearn.approximations.DominanceBasedRoughSetCalculator)}.
+	 * Test method for {@link UnionsWithSingleLimitingDecision#UnionsWithSingleLimitingDecision(InformationTableWithDecisionDistributions, approximations.DominanceBasedRoughSetCalculator)}.
 	 * Tests if {@link NullPointerException} is thrown when one of the constructor parameters is {@code null}.
 	 */
 	@Test
@@ -76,7 +79,7 @@ class UnionsTest {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = null;
 		
 		assertThrows(NullPointerException.class, () -> {
-			new Unions(informationTableMock, roughSetCalculatorMock);
+			new UnionsWithSingleLimitingDecision(informationTableMock, roughSetCalculatorMock);
 		}); 
 	}
 	
@@ -168,33 +171,33 @@ class UnionsTest {
 	}
 	
 	/**
-	 * Test method for {@link Unions#Unions(org.rulelearn.data.InformationTableWithDecisionDistributions, org.rulelearn.approximations.DominanceBasedRoughSetCalculator)}.
+	 * Test method for {@link UnionsWithSingleLimitingDecision#UnionsWithSingleLimitingDecision(InformationTableWithDecisionDistributions, approximations.DominanceBasedRoughSetCalculator)}.
 	 * Tests if object is constructed when parameters are not {@code null}.
 	 */
 	@Test
 	void testUnions03() {
 		try {
-			new Unions(this.getInformationTableMock01(), this.getRoughSetCalculatorMock());
+			new UnionsWithSingleLimitingDecision(this.getInformationTableMock01(), this.getRoughSetCalculatorMock());
 		} catch (Throwable throwable) {
 			fail("Could not construct unions for correct parameters.");
 		}
 	}
 	
 	/**
-	 * Test method for {@link Unions#Unions(org.rulelearn.data.InformationTableWithDecisionDistributions, org.rulelearn.approximations.DominanceBasedRoughSetCalculator)}.
+	 * Test method for {@link UnionsWithSingleLimitingDecision#UnionsWithSingleLimitingDecision(InformationTableWithDecisionDistributions, approximations.DominanceBasedRoughSetCalculator)}.
 	 * Tests if object is constructed when parameters are not {@code null}.
 	 */
 	@Test
 	void testUnions04() {
 		try {
-			new Unions(this.getInformationTableMock02(), this.getRoughSetCalculatorMock());
+			new UnionsWithSingleLimitingDecision(this.getInformationTableMock02(), this.getRoughSetCalculatorMock());
 		} catch (Throwable throwable) {
 			fail("Could not construct unions for correct parameters.");
 		}
 	}
 
 	/**
-	 * Test method for {@link Unions#calculateUpwardUnions()}.
+	 * Test method for {@link UnionsWithSingleLimitingDecision#calculateUpwardUnions()}.
 	 */
 	@Test
 	void testCalculateUpwardUnions() {
@@ -202,7 +205,7 @@ class UnionsTest {
 	}
 
 	/**
-	 * Test method for {@link Unions#calculateDownwardUnions()}.
+	 * Test method for {@link UnionsWithSingleLimitingDecision#calculateDownwardUnions()}.
 	 */
 	@Test
 	void testCalculateDownwardUnions() {
@@ -215,7 +218,7 @@ class UnionsTest {
 	@Test
 	void testGetInformationTable() {
 		InformationTableWithDecisionDistributions informationTableMock = this.getInformationTableMock01();
-		Unions unions = new Unions(informationTableMock, this.getRoughSetCalculatorMock());
+		Unions unions = new UnionsWithSingleLimitingDecision(informationTableMock, this.getRoughSetCalculatorMock());
 		
 		assertEquals(unions.getInformationTable(), informationTableMock);
 	}
@@ -226,7 +229,7 @@ class UnionsTest {
 	@Test
 	void testGetRoughSetCalculator() {
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = this.getRoughSetCalculatorMock();
-		Unions unions = new Unions(this.getInformationTableMock01(), roughSetCalculatorMock);
+		Unions unions = new UnionsWithSingleLimitingDecision(this.getInformationTableMock01(), roughSetCalculatorMock);
 		
 		assertEquals(unions.getRoughSetCalculator(), roughSetCalculatorMock);
 	}
@@ -264,7 +267,7 @@ class UnionsTest {
 	}
 
 	/**
-	 * Test method for {@link Unions#getLimitingDecisions()}.
+	 * Test method for {@link UnionsWithSingleLimitingDecision#getLimitingDecisions()}.
 	 */
 	@Test
 	void testGetLimitingDecisions() {
@@ -272,7 +275,7 @@ class UnionsTest {
 	}
 
 	/**
-	 * Test method for {@link Unions#getLimitingDecisions(boolean)}.
+	 * Test method for {@link UnionsWithSingleLimitingDecision#getLimitingDecisions(boolean)}.
 	 */
 	@Test
 	void testGetLimitingDecisionsBoolean() {
@@ -280,7 +283,7 @@ class UnionsTest {
 	}
 
 	/**
-	 * Test method for {@link Unions#getUnion(org.rulelearn.approximations.Union.UnionType, org.rulelearn.data.Decision)}.
+	 * Test method for {@link UnionsWithSingleLimitingDecision#getUnion(Union.UnionType, Decision)}.
 	 */
 	@Test
 	void testGetUnion() {

@@ -51,7 +51,7 @@ public class VCDominanceBasedRoughSetCalculator implements ExtendedDominanceBase
 	protected double lowerApproximationConsistencyThreshold;
 	
 	/**
-	 * Constructs calculator for specified consistency measure and threshold value used to limit consitency of objects included in 
+	 * Constructs calculator for specified consistency measure and threshold value used to limit consistency of objects included in 
 	 * extended lower approximation of a union of decision classes. 
 	 * 
 	 * @param lowerApproximationConsistencyMeasure consistency measure applied when calculating lower approximation
