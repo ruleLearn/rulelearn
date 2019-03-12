@@ -95,5 +95,5 @@ public class VCDomLEMParameters {
 	
 	@NonNull
 	@Builder.Default
-	AllowedObjectsType allowedObjectsType = AllowedObjectsType.POSITIVE_REGION;
+	AllowedNegativeObjectsType allowedNegativeObjectsType = AllowedNegativeObjectsType.POSITIVE_REGION;
 }
