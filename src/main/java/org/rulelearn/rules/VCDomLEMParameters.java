@@ -52,18 +52,22 @@ public class VCDomLEMParameters {
 	
 	@NonNull
 	@Singular("consistencyThreshold")
+	// TODO remove as redundant
 	private List<Double> consistencyThresholds;
  	
 	@NonNull
 	@Builder.Default
+	// TODO remove as redundant
 	private ConditionAdditionEvaluator[] conditionAdditionEvaluators = DEFAULT_CONDITION_ADDITION_EVALUATORS;
 	
 	@NonNull
 	@Builder.Default
+	// TODO remove as redundant
 	private ConditionRemovalEvaluator[] conditionRemovalEvaluators = new ConditionRemovalEvaluator[] {EpsilonConsistencyMeasure.getInstance()}; //not used in default rule conditions pruner
 	
 	@NonNull
 	@Builder.Default
+	// TODO remove as redundant
 	private RuleConditionsEvaluator[] ruleConditionsEvaluators = DEFAULT_RULE_CONDITIONS_EVALUATORS;
 	
 	@NonNull

@@ -133,5 +133,52 @@ class ObjectParserTest {
 			System.out.println(ex.toString());
 		}
 	}
+	
+	/**
+	 * Test method for {@link ObjectParser#parseObjects(java.io.Reader, boolean)}.
+	 */
+	@Test
+	void testConstructionOfInformationTableBuilderWithMissingValues() {
+		Attribute [] attributes = null;
+		
+		AttributeParser attributeParser = new AttributeParser();
+		try (FileReader attributesReader = new FileReader("src/test/resources/data/csv/windsor.json")) {
+			attributes = attributeParser.parseAttributes(attributesReader);
+			if (attributes != null) {
+				ObjectParser objectParser = new ObjectParser.Builder(attributes).header(false).separator('\t').build();
+				InformationTable informationTable = null;
+				try (FileReader objectsReader = new FileReader("src/test/resources/data/csv/windsor-mv.csv")) {
+					informationTable = objectParser.parseObjects(objectsReader);
+					if (informationTable != null) {
+						UnknownSimpleFieldMV2 missingValue = new UnknownSimpleFieldMV2();
+						assertEquals(546, informationTable.getNumberOfObjects());
+						// check whether the first values (of the first object) is a missing value
+						assertEquals (missingValue, informationTable.getField(0, 0));
+						// check whether two first values (of the first object) are the same (they are missing values)
+						assertEquals(informationTable.getField(0, 0), informationTable.getField(0, 1));
+						assertEquals (missingValue, informationTable.getField(11, 0));
+					}
+					else {
+						fail("Unable to load CSV test file with definition of objects");
+					}
+				}
+				catch (FileNotFoundException ex) {
+					System.out.println(ex.toString());
+				}
+				catch (IOException ex) {
+					System.out.println(ex.toString());
+				}
+			}
+			else {
+				fail("Unable to load JSON test file with definition of attributes");
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		catch (IOException ex) {
+			System.out.println(ex.toString());
+		}
+	}
 
 }
