@@ -42,10 +42,20 @@ import org.rulelearn.rules.VCDomLEMParameters;
 public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	
 	/**
+	 * Default consistency threshold for DRSA rules when {@link EpsilonConsistencyMeasure} is used
+	 */
+	public static final double DEFAULT_CONSISTENCY_TRESHOLD = 0.0;
+	
+	/**
 	 * Induced set of rules.
 	 */
 	RuleSet rules = null;
 
+	/**
+	 * Consistency threshold for which rules were induced (provided that they were already).
+	 */
+	double consistencyThreshold  = 0.0;
+	
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -54,7 +64,8 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 */
 	@Override
 	public RuleSet induceRules(InformationTable informationTable) {
-		if (this.rules == null) {
+		// rules were not already computed for the most restrictive value of consistency threshold
+		if ((this.rules == null) || (this.consistencyThreshold != DEFAULT_CONSISTENCY_TRESHOLD)) {
 			VCDomLEMParameters vcDomLEMParameters = VCDomLEMParameters.builder().build();
 			Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
 			ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
@@ -65,6 +76,7 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 			RuleSet downwardRules = (new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtMostProvider, unionRuleDecisionsProvider);
 			
 			this.rules = RuleSet.join(upwardRules, downwardRules);
+			this.consistencyThreshold = 0.0;
 		}
 		
 		return this.rules;
@@ -78,7 +90,8 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 */
 	@Override
 	public RuleSet induceRules(InformationTable informationTable, double consistencyThreshold) {
-		if (this.rules == null) {
+		// rules were not already computed for the provided value of consistency threshold
+		if ((this.rules == null) || (this.consistencyThreshold != consistencyThreshold)) {
 			VCDomLEMParameters vcDomLEMParameters = VCDomLEMParameters.builder().consistencyThreshold(consistencyThreshold).build();
 			Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), 
 									   new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold));
@@ -90,6 +103,7 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 			RuleSet downwardRules = (new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtMostProvider, unionRuleDecisionsProvider);
 			
 			this.rules = RuleSet.join(upwardRules, downwardRules);
+			this.consistencyThreshold = consistencyThreshold;
 		}
 		
 		return this.rules;
