@@ -57,7 +57,7 @@ public class PossibleTypeRuleInductionParameters extends RuleInductionParameters
 		
 		private RuleType ruleType = RuleType.POSSIBLE;
 		
-		private AllowedObjectsType allowedObjectsType = AllowedObjectsType.ANY_REGION;
+		private AllowedNegativeObjectsType allowedNegativeObjectsType = AllowedNegativeObjectsType.APPROXIMATION;
 		
 		@Override
 		public Builder conditionGenerator(ConditionGenerator conditionGenerator) {
@@ -141,8 +141,8 @@ public class PossibleTypeRuleInductionParameters extends RuleInductionParameters
 		}
 		
 		@Override
-		public AllowedObjectsType allowedObjectsType() {
-			return this.allowedObjectsType;
+		public AllowedNegativeObjectsType allowedNegativeObjectsType() {
+			return this.allowedNegativeObjectsType;
 		}
 		
 		@Override

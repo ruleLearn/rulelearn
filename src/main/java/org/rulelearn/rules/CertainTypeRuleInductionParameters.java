@@ -57,7 +57,7 @@ public class CertainTypeRuleInductionParameters extends RuleInductionParameters 
 		
 		private RuleType ruleType = RuleType.CERTAIN;
 		
-		private AllowedObjectsType allowedObjectsType = AllowedObjectsType.POSITIVE_REGION;
+		private AllowedNegativeObjectsType allowedObjectsType = AllowedNegativeObjectsType.POSITIVE_REGION;
 		
 		@Override
 		public Builder conditionGenerator(ConditionGenerator conditionGenerator) {
@@ -105,7 +105,7 @@ public class CertainTypeRuleInductionParameters extends RuleInductionParameters 
 			return this;
 		}
 		
-		public Builder allowedObjectsType(AllowedObjectsType allowedObjectsType) {
+		public Builder allowedObjectsType(AllowedNegativeObjectsType allowedObjectsType) {
 			this.allowedObjectsType = allowedObjectsType;
 			return this;
 		}
@@ -146,7 +146,7 @@ public class CertainTypeRuleInductionParameters extends RuleInductionParameters 
 		}
 		
 		@Override
-		public AllowedObjectsType allowedObjectsType() {
+		public AllowedNegativeObjectsType allowedNegativeObjectsType() {
 			return this.allowedObjectsType;
 		}
 		

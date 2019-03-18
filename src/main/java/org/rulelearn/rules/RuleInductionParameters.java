@@ -38,7 +38,7 @@ public abstract class RuleInductionParameters {
 	
 	private final RuleType ruleType;
 	
-	private final AllowedObjectsType allowedObjectsType;
+	private final AllowedNegativeObjectsType allowedNegativeObjectsType;
 	
 	public interface Builder {
 		
@@ -70,7 +70,7 @@ public abstract class RuleInductionParameters {
 		
 		public RuleType ruleType();
 		
-		public AllowedObjectsType allowedObjectsType ();
+		public AllowedNegativeObjectsType allowedNegativeObjectsType ();
 		
 		public RuleInductionParameters build();
 		
@@ -84,7 +84,7 @@ public abstract class RuleInductionParameters {
 		this.ruleConditionsSetPruner = builder.ruleConditionsSetPruner();
 		this.ruleMinimalityChecker = builder.ruleMinimalityChecker();
 		this.ruleType = builder.ruleType();
-		this.allowedObjectsType = builder.allowedObjectsType();
+		this.allowedNegativeObjectsType = builder.allowedNegativeObjectsType();
 	}
 
 	/**
@@ -139,8 +139,8 @@ public abstract class RuleInductionParameters {
 	/**
 	 * @return the allowedObjectsType
 	 */
-	public AllowedObjectsType getAllowedObjectsType() {
-		return allowedObjectsType;
+	public AllowedNegativeObjectsType getAllowedObjectsType() {
+		return allowedNegativeObjectsType;
 	}
 	
 }

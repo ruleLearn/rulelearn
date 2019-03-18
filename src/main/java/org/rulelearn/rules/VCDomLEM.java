@@ -19,6 +19,7 @@ package org.rulelearn.rules;
 import java.util.List;
 
 import org.rulelearn.approximations.ApproximatedSet;
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -68,7 +69,7 @@ public class VCDomLEM {
 		
 		for (int i = 0; i < approximatedSetsCount; i++) {
 			approximatedSet = approximatedSetProvider.getApproximatedSet(i);
-			approximatedSetRuleConditions = calculateApproximatedSetRuleConditionsList(approximatedSet, vcDomLEMParameters.getRuleType(), vcDomLEMParameters.getAllowedObjectsType(),
+			approximatedSetRuleConditions = calculateApproximatedSetRuleConditions(approximatedSet, vcDomLEMParameters.getRuleType(), vcDomLEMParameters.getAllowedNegativeObjectsType(),
 					approximatedSetRuleDecisionsProvider);
 			
 			verifiedRuleConditionsWithApproximatedSet = new ObjectArrayList<RuleConditionsWithApproximatedSet>();
@@ -97,8 +98,20 @@ public class VCDomLEM {
 		return new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true); //TODO: second version of VCDomLEM returning just decision rules
 	}
 	
-	//TODO: write javadoc
-	private List<RuleConditions> calculateApproximatedSetRuleConditionsList(ApproximatedSet approximatedSet, RuleType ruleType, AllowedObjectsType allowedObjectsType,
+	/**
+	 * Generates a set of rule conditions for a single approximated set.
+	 *  
+	 * @param approximatedSet considered approximated set
+	 * @param ruleType type of decision rules whose condition parts are going to be calculated
+	 * @param allowedCertainRulesCoveredNegativeObjectsType type of negative objects {@link AllowedNegativeObjectsType} allowed to be covered by generated rule conditions of certain decision rules;
+	 *        in case of calculating possible rules, this parameter is not used and may be {@code null} or equal to {@link AllowedNegativeObjectsType#APPROXIMATION}
+	 * @param approximatedSetRuleDecisionsProvider provider of rule decisions used to calculate semantics of a decision rule concerning given approximated set;
+	 *        see {@link ApproximatedSetRuleDecisionsProvider#getRuleSemantics(ApproximatedSet)}
+	 *        
+	 * @return collection of rule conditions {@link RuleConditions} generated for given parameters
+	 * @throws InvalidValueException if conditions of certain rules should be generated but type of negative objects allowed to be covered by certain rules is not set 
+	 */
+	private List<RuleConditions> calculateApproximatedSetRuleConditions(ApproximatedSet approximatedSet, RuleType ruleType, AllowedNegativeObjectsType allowedCertainRulesCoveredNegativeObjectsType,
 			ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider) {
 		List<RuleConditions> approximatedSetRuleConditions = new ObjectArrayList<RuleConditions>(); //the result
 		
@@ -117,15 +130,17 @@ public class VCDomLEM {
 		
 		IntSet indicesOfObjectsThatCanBeCovered = null; //indices of objects that are allowed to be covered
 		if (ruleType == RuleType.CERTAIN) {
-			switch (allowedObjectsType) {
+			switch (allowedCertainRulesCoveredNegativeObjectsType) {
 			case POSITIVE_REGION:
 				indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(); //TODO: give expected
-				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getPositiveRegion());
+				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getObjects()); //positive objects
+				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getPositiveRegion()); //positive objects from lower approximation (again) + negative objects in their dominance cones
 				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
 				break;
 			case POSITIVE_AND_BOUNDARY_REGIONS:
 				indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(); //TODO: give expected
-				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getPositiveRegion());
+				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getObjects()); //positive objects
+				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getPositiveRegion()); //positive objects from lower approximation (again) + negative objects in their dominance cones
 				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getBoundaryRegion());
 				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
 				break;
@@ -136,7 +151,9 @@ public class VCDomLEM {
 					indicesOfObjectsThatCanBeCovered.add(i);
 				}
 				break;
-			}
+			default:
+				throw new InvalidValueException("Type of negative objects allowed to be covered by certain rules is not set.");
+			} //switch
 		} else { //possible/approximate rule
 			indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(); //TODO: give expected
 			indicesOfObjectsThatCanBeCovered.addAll(indicesOfApproximationObjects);
