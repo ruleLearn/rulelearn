@@ -149,9 +149,10 @@ class VCDomLEMTest {
 	 * 
 	 * @return information table with decision distributions for "windsor" data set
 	 */
-	private InformationTableWithDecisionDistributions getInformationTableWindsor(String dataPath) {
+	private InformationTableWithDecisionDistributions getInformationTableWindsor(String metadataPath, String dataPath) {
 		InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = null;
-		try (FileReader attributesReader = new FileReader("src/test/resources/data/csv/windsor.json")) {
+		//try (FileReader attributesReader = new FileReader("src/test/resources/data/csv/windsor.json")) {
+		try (FileReader attributesReader = new FileReader(metadataPath)) {
 			Attribute [] attributes = null;
 			AttributeParser attributeParser = new AttributeParser();
 			attributes = attributeParser.parseAttributes(attributesReader);
@@ -164,7 +165,7 @@ class VCDomLEMTest {
 						informationTableWithDecisionDistributions = new InformationTableWithDecisionDistributions(informationTable);
 					}
 					else {
-						fail("Unable to load CSV test file with definition of windsor objects.");
+						fail("Unable to load CSV file with definition of windsor objects.");
 					}
 				}
 				catch (FileNotFoundException ex) {
@@ -561,6 +562,7 @@ class VCDomLEMTest {
 				ruleConditionsSetPruner(new EvaluationsAndOrderRuleConditionsSetPruner(RULE_CONDITIONS_EVALUATORS)).
 				ruleMinimalityChecker(new SingleEvaluationRuleMinimalityChecker(RelativeCoverageOutsideApproximationMeasure.getInstance())).
 				ruleType(RuleType.POSSIBLE).
+				allowedNegativeObjectsType(AllowedNegativeObjectsType.APPROXIMATION).
 				build();
 		
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
@@ -749,6 +751,7 @@ class VCDomLEMTest {
 				ruleConditionsSetPruner(new EvaluationsAndOrderRuleConditionsSetPruner(RULE_CONDITIONS_EVALUATORS)).
 				ruleMinimalityChecker(new SingleEvaluationRuleMinimalityChecker(RelativeCoverageOutsideApproximationMeasure.getInstance())).
 				ruleType(RuleType.POSSIBLE).
+				allowedNegativeObjectsType(AllowedNegativeObjectsType.APPROXIMATION).
 				build();
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_MOST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
@@ -796,7 +799,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorUpwardUnionsCertainRulesDRSADummy() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
 		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
@@ -1023,7 +1026,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorUpwardUnionsCertainRulesDRSAPruning() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
 		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).build();
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
@@ -1140,7 +1143,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorUpwardUnionsCertainRulesVCDRSADummy() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
 		final double consistencyThreshold = 0.1;
 		
@@ -1485,7 +1488,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorUpwardUnionsCertainRulesVCDRSAPruning() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
 		final double consistencyThreshold = 0.1;
 		
@@ -1593,7 +1596,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorUpwardUnionsPossibleRulesDRSADummy() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
 		//TODO: is it possibly to simplify construction of VC-DomLEM parameters for possible rules? 
 		final ConditionAdditionEvaluator[] CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {RelativeCoverageOutsideApproximationMeasure.getInstance(), 
@@ -1616,6 +1619,7 @@ class VCDomLEMTest {
 				//ruleConditionsSetPruner(new EvaluationsAndOrderRuleConditionsSetPruner(RULE_CONDITIONS_EVALUATORS)).
 				//ruleMinimalityChecker(new SingleEvaluationRuleMinimalityChecker(RelativeCoverageOutsideApproximationMeasure.getInstance())).
 				ruleType(RuleType.POSSIBLE).
+				allowedNegativeObjectsType(AllowedNegativeObjectsType.APPROXIMATION).
 				build();
 
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
@@ -1859,7 +1863,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorUpwardUnionsPossibleRulesDRSAPruning() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
 		//TODO: is it possibly to simplify construction of VC-DomLEM parameters for possible rules? 
 		final ConditionAdditionEvaluator[] CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {RelativeCoverageOutsideApproximationMeasure.getInstance(), 
@@ -1879,6 +1883,7 @@ class VCDomLEMTest {
 				ruleConditionsSetPruner(new EvaluationsAndOrderRuleConditionsSetPruner(RULE_CONDITIONS_EVALUATORS)).
 				ruleMinimalityChecker(new SingleEvaluationRuleMinimalityChecker(RelativeCoverageOutsideApproximationMeasure.getInstance())).
 				ruleType(RuleType.POSSIBLE).
+				allowedNegativeObjectsType(AllowedNegativeObjectsType.APPROXIMATION).
 				build();
 
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
@@ -1965,7 +1970,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorDownwardUnionsCertainRulesDRSADummy() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
 		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
@@ -2141,7 +2146,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorDownwardUnionsCertainRulesDRSAPruning() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
 		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).build();
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_MOST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
@@ -2219,7 +2224,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorDownwardUnionsCertainRulesVCDRSADummy() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
 		final double consistencyThreshold = 0.1;
 		
@@ -2582,7 +2587,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorDownwardUnionsCertainRulesVCDRSAPruning() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
 		final double consistencyThreshold = 0.1;
 		
@@ -2696,7 +2701,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorDownwardUnionsPossibleRulesDRSADummy() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
 		//TODO: is it possibly to simplify construction of VC-DomLEM parameters for possible rules? 
 		final ConditionAdditionEvaluator[] CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {RelativeCoverageOutsideApproximationMeasure.getInstance(), 
@@ -2719,6 +2724,7 @@ class VCDomLEMTest {
 				//ruleConditionsSetPruner(new EvaluationsAndOrderRuleConditionsSetPruner(RULE_CONDITIONS_EVALUATORS)).
 				//ruleMinimalityChecker(new SingleEvaluationRuleMinimalityChecker(RelativeCoverageOutsideApproximationMeasure.getInstance())).
 				ruleType(RuleType.POSSIBLE).
+				allowedNegativeObjectsType(AllowedNegativeObjectsType.APPROXIMATION).
 				build();
 
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_MOST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
@@ -3033,7 +3039,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorDownwardUnionsPossibleRulesDRSAPruning() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
 		//TODO: is it possibly to simplify construction of VC-DomLEM parameters for possible rules? 
 		final ConditionAdditionEvaluator[] CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {RelativeCoverageOutsideApproximationMeasure.getInstance(), 
@@ -3053,6 +3059,7 @@ class VCDomLEMTest {
 				ruleConditionsSetPruner(new EvaluationsAndOrderRuleConditionsSetPruner(RULE_CONDITIONS_EVALUATORS)).
 				ruleMinimalityChecker(new SingleEvaluationRuleMinimalityChecker(RelativeCoverageOutsideApproximationMeasure.getInstance())).
 				ruleType(RuleType.POSSIBLE).
+				allowedNegativeObjectsType(AllowedNegativeObjectsType.APPROXIMATION).
 				build();
 
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_MOST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
@@ -3141,7 +3148,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorMVUpwardUnionsCertainRulesDRSADummy() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor-mv.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor-mv.csv");
 		
 		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
@@ -3356,7 +3363,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorMVUpwardUnionsCertainRulesDRSAPruning() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor-mv.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor-mv.csv");
 		
 		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).build();
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
@@ -3463,7 +3470,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorMVUpwardUnionsCertainRulesVCDRSADummy() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor-mv.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor-mv.csv");
 		
 		final double consistencyThreshold = 0.1;
 		
@@ -3841,7 +3848,7 @@ class VCDomLEMTest {
 	@Test
 	@Tag("integration")
 	public void testWindsorMVUpwardUnionsCertainRulesVCDRSAPruning() {
-		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor-mv.csv");
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor-mv.csv");
 		
 		final double consistencyThreshold = 0.1;
 		
@@ -3937,4 +3944,62 @@ class VCDomLEMTest {
 		}
 	}
 	
+	/**
+	 * Tests upward unions and possible rules for "windsor" data set with missing values of type mv_{1.5}.
+	 * Employs DRSA.
+	 * Uses dummy pruners and dummy rule minimality checker.
+	 */
+	@Test
+	@Tag("integration")
+	public void testWindsorMVUpwardUnionsPossibleRulesDRSADummy() {
+		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor-mv1.5.json", "src/test/resources/data/csv/windsor-mv.csv");
+		
+		//TODO: is it possibly to simplify construction of VC-DomLEM parameters for possible rules? 
+		final ConditionAdditionEvaluator[] CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {RelativeCoverageOutsideApproximationMeasure.getInstance(), 
+				CoverageInApproximationMeasure.getInstance()};
+		final RuleConditionsEvaluator[] RULE_CONDITIONS_EVALUATORS = new RuleConditionsEvaluator[] {CoverageInApproximationMeasure.getInstance(), 
+				RelativeCoverageOutsideApproximationMeasure.getInstance()};
+		final RuleInductionStoppingConditionChecker STOPPING_CONDITION_CHECKER =
+				new EvaluationAndCoverageStoppingConditionChecker(RelativeCoverageOutsideApproximationMeasure.getInstance(), 0);
+
+		VCDomLEMParameters vcDomLEMParameters = (new VCDomLEMParameters.VCDomLEMParametersBuilder()).
+				ruleConditionsPruner(new DummyRuleConditionsPruner()).
+				ruleConditionsSetPruner(new DummyRuleConditionsSetPruner()).
+				ruleMinimalityChecker(new DummyRuleMinimalityChecker()).
+				conditionAdditionEvaluators(CONDITION_ADDITION_EVALUATORS).
+				//conditionRemovalEvaluators(new ConditionRemovalEvaluator[] {RelativeCoverageOutsideApproximationMeasure.getInstance()}).
+				ruleConditionsEvaluators(RULE_CONDITIONS_EVALUATORS).
+				conditionGenerator(new M4OptimizedConditionGenerator((MonotonicConditionAdditionEvaluator[])CONDITION_ADDITION_EVALUATORS)).
+				ruleInductionStoppingConditionChecker(STOPPING_CONDITION_CHECKER).
+				//ruleConditionsPruner(new AttributeOrderRuleConditionsPruner(STOPPING_CONDITION_CHECKER)).
+				//ruleConditionsSetPruner(new EvaluationsAndOrderRuleConditionsSetPruner(RULE_CONDITIONS_EVALUATORS)).
+				//ruleMinimalityChecker(new SingleEvaluationRuleMinimalityChecker(RelativeCoverageOutsideApproximationMeasure.getInstance())).
+				ruleType(RuleType.POSSIBLE).
+				allowedNegativeObjectsType(AllowedNegativeObjectsType.APPROXIMATION).
+				build();
+
+		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
+		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
+
+		RuleSet ruleSet = (new VCDomLEM(vcDomLEMParameters)).generateRules(approximatedSetProvider, approximatedSetRuleDecisionsProvider);
+		
+//		String[] expectedRules = {
+//				
+//		};
+		
+		System.out.println("Possible at least rules induced with VC-DomLEM for windsor-mv data set (DRSA; missing values of type mv_{1.5}), without pruning:"); //DEL
+		for (int i = 0; i < ruleSet.size(); i++) {
+			//System.out.println(ruleSet.getRule(i).toString(true));
+			System.out.println(ruleSet.getRule(i).toString());
+		}
+		
+		//TODO: add assertions
+		
+//		assertEquals(ruleSet.size(), expectedRules.length); //
+//		
+//		for (int i = 0; i < expectedRules.length; i++) {
+//			assertEquals(ruleSet.getRule(i).toString(), expectedRules[i]);
+//		}
+	}
+
 }

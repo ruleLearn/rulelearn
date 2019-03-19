@@ -694,4 +694,22 @@ public class RuleConditions {
 		return true;
 	}
 	
+	/**
+	 * Gets text representation of these rule conditions.
+	 * 
+	 * @return text representation of these rule conditions, enumerating all elementary conditions in order of their addition
+	 */
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		int i = 0;
+		for (Condition<? extends EvaluationField> condition : conditions) {
+			sb.append(condition);
+			if (i < conditions.size() - 1) {
+				sb.append(" & ");
+			}
+			i++;
+		}
+		return sb.toString();
+	}
+	
 }

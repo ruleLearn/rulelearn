@@ -138,7 +138,7 @@ public class ObjectParser {
 		/**
 		 * Sets separator of fields in parsed CSV files.
 		 * 
-		 * @param value string representation of encoding
+		 * @param value string representation of separator
 		 * @return this builder 
 		 */
 		public Builder separator (char value) {

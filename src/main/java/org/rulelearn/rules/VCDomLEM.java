@@ -21,6 +21,7 @@ import java.util.List;
 import org.rulelearn.approximations.ApproximatedSet;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -45,7 +46,10 @@ public class VCDomLEM {
 	VCDomLEMParameters vcDomLEMParameters; 
 	
 	/**
-	 * Constructs this rule induction algorithm.
+	 * Constructs this rule induction algorithm, employing given parameters.<br>
+	 * <br>
+	 * This algorithm is not suitable for induction of possible rules if learning data contain missing attribute values
+	 * that cause non-transitivity of dominance relation, like {@link UnknownSimpleFieldMV2}.
 	 * 
 	 * @param vcDomLEMParameters parameters used for rule induction
 	 * @throws NullPointerException if given object is {@code null} 
@@ -55,9 +59,23 @@ public class VCDomLEM {
 		this.vcDomLEMParameters = vcDomLEMParameters;
 	}
 	
-	//TODO: write javadoc
+	/**
+	 * Generates a minimal set of decision rules by VC-DomLEM algorithm. If certain rules are considered, rule conditions are generated using evaluations of objects from lower approximations.
+	 * If possible rules are considered, rule conditions are generated using evaluations of objects from upper approximations.
+	 * 
+	 * @param approximatedSetProvider provides subsequent approximated sets to be processed; these sets are fetched using {@link ApproximatedSetProvider#getApproximatedSet(int)},
+	 *        starting from index 0
+	 * @param approximatedSetRuleDecisionsProvider provides rule decisions {@link Rule.RuleDecisions} that can be put on the right-hand side of a certain/possible decision rule
+	 *        generated with respect to a considered approximated set
+	 * @return set of induced decision rules
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 */
 	public RuleSet generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider) {
-		//TODO: validate method parameters (also checking number of thresholds w.r.t. the number of approximated sets)
+		Precondition.notNull(approximatedSetProvider, "VC-DomLEM approximated set provider is null.");
+		Precondition.notNull(approximatedSetRuleDecisionsProvider, "VC-DomLEM approximated set provider is null.");
+		
+		//TODO: check number of thresholds (stopping condition checkers) w.r.t. the number of approximated sets
 		
 		List<RuleConditionsWithApproximatedSet> minimalRuleConditionsWithApproximatedSets = new ObjectArrayList<RuleConditionsWithApproximatedSet>(); //rule conditions for approximated sets considered so far
 		List<RuleConditions> approximatedSetRuleConditions; //rule conditions for current approximated set
@@ -103,15 +121,19 @@ public class VCDomLEM {
 	 *  
 	 * @param approximatedSet considered approximated set
 	 * @param ruleType type of decision rules whose condition parts are going to be calculated
-	 * @param allowedCertainRulesCoveredNegativeObjectsType type of negative objects {@link AllowedNegativeObjectsType} allowed to be covered by generated rule conditions of certain decision rules;
-	 *        in case of calculating possible rules, this parameter is not used and may be {@code null} or equal to {@link AllowedNegativeObjectsType#APPROXIMATION}
+	 * @param allowedCoveredNegativeObjectsType type of negative objects {@link AllowedNegativeObjectsType} allowed to be covered by generated rule conditions
+	 *        (obviously apart from positive objects, and apart from neutral objects);
+	 *        in case of calculating possible rules, this parameter should be equal to {@link AllowedNegativeObjectsType#APPROXIMATION}
 	 * @param approximatedSetRuleDecisionsProvider provider of rule decisions used to calculate semantics of a decision rule concerning given approximated set;
 	 *        see {@link ApproximatedSetRuleDecisionsProvider#getRuleSemantics(ApproximatedSet)}
 	 *        
 	 * @return collection of rule conditions {@link RuleConditions} generated for given parameters
-	 * @throws InvalidValueException if conditions of certain rules should be generated but type of negative objects allowed to be covered by certain rules is not set 
+	 * @throws InvalidValueException if {@code allowedCoveredNegativeObjectsType} is not set properly; for certain decision rules it should be set to 
+	 *         {@link AllowedNegativeObjectsType#POSITIVE_REGION}, {@link AllowedNegativeObjectsType#POSITIVE_AND_BOUNDARY_REGIONS}, or
+	 *         {@link AllowedNegativeObjectsType#ANY_REGION};
+	 *         for possible decision rules it should be set to {@link AllowedNegativeObjectsType#APPROXIMATION}
 	 */
-	private List<RuleConditions> calculateApproximatedSetRuleConditions(ApproximatedSet approximatedSet, RuleType ruleType, AllowedNegativeObjectsType allowedCertainRulesCoveredNegativeObjectsType,
+	private List<RuleConditions> calculateApproximatedSetRuleConditions(ApproximatedSet approximatedSet, RuleType ruleType, AllowedNegativeObjectsType allowedCoveredNegativeObjectsType,
 			ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider) {
 		List<RuleConditions> approximatedSetRuleConditions = new ObjectArrayList<RuleConditions>(); //the result
 		
@@ -130,15 +152,15 @@ public class VCDomLEM {
 		
 		IntSet indicesOfObjectsThatCanBeCovered = null; //indices of objects that are allowed to be covered
 		if (ruleType == RuleType.CERTAIN) {
-			switch (allowedCertainRulesCoveredNegativeObjectsType) {
+			switch (allowedCoveredNegativeObjectsType) {
 			case POSITIVE_REGION:
-				indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(); //TODO: give expected
+				indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(approximatedSet.size());
 				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getObjects()); //positive objects
 				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getPositiveRegion()); //positive objects from lower approximation (again) + negative objects in their dominance cones
 				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
 				break;
 			case POSITIVE_AND_BOUNDARY_REGIONS:
-				indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(); //TODO: give expected
+				indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(approximatedSet.size());
 				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getObjects()); //positive objects
 				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getPositiveRegion()); //positive objects from lower approximation (again) + negative objects in their dominance cones
 				indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getBoundaryRegion());
@@ -152,10 +174,14 @@ public class VCDomLEM {
 				}
 				break;
 			default:
-				throw new InvalidValueException("Type of negative objects allowed to be covered by certain rules is not set.");
+				throw new InvalidValueException("Type of negative objects allowed to be covered by certain rules is not properly set.");
 			} //switch
 		} else { //possible/approximate rule
-			indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(); //TODO: give expected
+			if (ruleType == RuleType.POSSIBLE && allowedCoveredNegativeObjectsType != AllowedNegativeObjectsType.APPROXIMATION) {
+				throw new InvalidValueException("Type of negative objects allowed to be covered by possible rules is not properly set.");
+			}
+			
+			indicesOfObjectsThatCanBeCovered = new IntOpenHashSet(indicesOfApproximationObjects.size());
 			indicesOfObjectsThatCanBeCovered.addAll(indicesOfApproximationObjects);
 			indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
 		}
@@ -188,7 +214,11 @@ public class VCDomLEM {
 		return vcDomLEMParameters.getRuleConditionsSetPruner().prune(approximatedSetRuleConditions, indicesOfApproximationObjects); //remove redundant rules, but keep covered all objects from lower/upper approximation
 	}
 	
-	//TODO: write javadoc
+	/**
+	 * Gets parameters used during induction of decision rules by VC-DomLEMalgorithm.
+	 *  
+	 * @return parameters used during induction of decision rules
+	 */
 	public VCDomLEMParameters getParameters() {
 		return this.vcDomLEMParameters;
 	}
