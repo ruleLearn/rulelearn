@@ -57,7 +57,16 @@ public abstract class Union extends ApproximatedSet {
 		/**
 		 * Type of an downward union of decision classes.
 		 */
-		AT_MOST
+		AT_MOST;
+		
+		/**
+		 * Gets text representation of this union type.
+		 * 
+		 * @return text representation of this union type
+		 */
+		public String toString() {
+			return this == AT_LEAST ? "at-least" : "at-most";
+		}
 	}
 	
 	/**
