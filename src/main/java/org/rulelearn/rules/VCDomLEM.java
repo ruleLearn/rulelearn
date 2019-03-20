@@ -33,8 +33,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 /**
  * VC-DomLEM sequential rule induction algorithm described in:
  * J. Błaszczyński, R. Słowiński, M. Szeląg, Sequential Covering Rule Induction Algorithm for Variable Consistency Rough Set Approaches.
- * Information Sciences, 181, 2011, pp. 987-1002.
- *
+ * Information Sciences, 181, 2011, pp. 987-1002.<br>
+ * <br>
+ * [DISCLAIMER]<br>
+ * This algorithm is not suitable for induction of possible rules if learning data contain missing attribute values
+ * that cause non-transitivity of dominance relation, for example of type {@link UnknownSimpleFieldMV2}.
+ * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
@@ -46,10 +50,7 @@ public class VCDomLEM {
 	VCDomLEMParameters vcDomLEMParameters; 
 	
 	/**
-	 * Constructs this rule induction algorithm, employing given parameters.<br>
-	 * <br>
-	 * This algorithm is not suitable for induction of possible rules if learning data contain missing attribute values
-	 * that cause non-transitivity of dominance relation, like {@link UnknownSimpleFieldMV2}.
+	 * Constructs this rule induction algorithm, employing given parameters.
 	 * 
 	 * @param vcDomLEMParameters parameters used for rule induction
 	 * @throws NullPointerException if given object is {@code null} 
