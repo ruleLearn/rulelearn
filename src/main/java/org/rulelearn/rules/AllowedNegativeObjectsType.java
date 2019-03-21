@@ -24,22 +24,26 @@ package org.rulelearn.rules;
  */
 public enum AllowedNegativeObjectsType {
 	/**
-	 * Allowed negative objects type used when {@link RuleConditions}, apart from covering positive objects, is also allowed to cover negative objects from the positive region of considered approximated set.
+	 * Allowed negative objects type used when rule conditions {@link RuleConditions}, apart from covering positive objects,
+	 * are also allowed to cover negative objects from the positive region of considered approximated set.
 	 * This type concerns certain decision rules only.
 	 */
 	POSITIVE_REGION,
 	/**
-	 * Allowed negative objects type used when {@link RuleConditions}, apart from covering positive objects, is also allowed to cover negative objects from the positive and boundary regions of considered approximated set.
+	 * Allowed negative objects type used when rule conditions {@link RuleConditions}, apart from covering positive objects,
+	 * are also allowed to cover negative objects from the positive and boundary regions of considered approximated set.
 	 * This type concerns certain decision rules only.
 	 */
 	POSITIVE_AND_BOUNDARY_REGIONS,
 	/**
-	 * Allowed negative objects type used when {@link RuleConditions}, apart from covering positive objects, is also allowed to cover any negative objects from considered learning information table.
+	 * Allowed negative objects type used when rule conditions {@link RuleConditions}, apart from covering positive objects,
+	 * are also allowed to cover any negative object from considered learning information table.
 	 * This type concerns certain decision rules only.
 	 */
 	ANY_REGION,
 	/**
-	 * Allowed negative objects type used when {@link RuleConditions}, apart from covering positive objects, is also allowed to cover negative objects from considered approximation.
+	 * Allowed negative objects type used when rule conditions {@link RuleConditions}, apart from covering positive objects,
+	 * are also allowed to cover negative objects from considered (upper) approximation.
 	 * This type concerns possible decision rules only.
 	 */
 	APPROXIMATION

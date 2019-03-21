@@ -35,5 +35,23 @@ public enum RuleType {
 	/**
 	 * Type of an approximate rule. Approximate rule is constructed based on objects belonging to a boundary.
 	 */
-	APPROXIMATE
+	APPROXIMATE;
+	
+	/**
+	 * Gets text representation of this rule type.
+	 * 
+	 * @return text representation of this rule type
+	 */
+	public String toString() {
+		switch (this) {
+		case CERTAIN:
+			return "certain";
+		case POSSIBLE:
+			return "possible";
+		case APPROXIMATE:
+			return "approximate";
+		default:
+			return null;
+		}
+	}
 }

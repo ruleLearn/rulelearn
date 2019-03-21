@@ -300,7 +300,7 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		} //for
 		
 		if (bestConditionWithEvaluations.condition == null) {
-			throw new ElementaryConditionNotFoundException("Could not find any new elementary conditon to be added to constructed rule conditions.");
+			throw new ElementaryConditionNotFoundException("Could not find any new elementary conditon to be added to constructed rule conditions: "+ruleConditions);
 		} else {
 			return bestConditionWithEvaluations.condition;
 		}

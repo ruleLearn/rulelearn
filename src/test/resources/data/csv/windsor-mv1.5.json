@@ -1,0 +1,100 @@
+[
+    {
+	"name": "lot_size",
+	"active": true,
+	"type": "condition",
+	"valueType": "real",
+  "missingValueType": "mv1.5",
+	"preferenceType": "gain"
+    },
+    {
+	"name": "nbed",
+	"active": true,
+	"type": "condition",
+	"valueType": "enumeration",
+	"domain": ["1", "2", "3", "4", "5", "6"],
+  "missingValueType": "mv1.5",
+	"preferenceType": "gain"
+    },
+    {
+	"name": "nbath",
+	"active": true,
+	"type": "condition",
+	"valueType": "enumeration",
+	"domain": ["1", "2", "3", "4"],
+  "missingValueType": "mv1.5",
+	"preferenceType": "gain"
+    },
+    {
+	"name": "nstoreys",
+	"active": true,
+	"type": "condition",
+	"valueType": "enumeration",
+	"domain": ["1", "2", "3", "4"],
+  "missingValueType": "mv1.5",
+	"preferenceType": "gain"
+    },
+    {
+	"name": "drive",
+	"active": true,
+	"type": "condition",
+	"valueType": "enumeration",
+	"domain": ["0", "1"],
+  "missingValueType": "mv1.5",
+	"preferenceType": "gain"
+    },
+    {
+	"name": "rec_room",
+	"active": true,
+	"type": "condition",
+	"valueType": "enumeration",
+	"domain": ["0", "1"],
+  "missingValueType": "mv1.5",
+	"preferenceType": "gain"
+    },
+    {
+	"name": "basement",
+	"active": true,
+	"type": "condition",
+	"valueType": "enumeration",
+	"domain": ["0", "1"],
+  "missingValueType": "mv1.5",
+	"preferenceType": "gain"
+    },
+    {
+	"name": "air_cond",
+	"active": true,
+	"type": "condition",
+	"valueType": "enumeration",
+	"domain": ["0", "1"],
+  "missingValueType": "mv1.5",
+	"preferenceType": "gain"
+    },
+    {
+	"name": "ngarage",
+	"active": true,
+	"type": "condition",
+	"valueType": "enumeration",
+	"domain": ["0", "1", "2", "3"],
+  "missingValueType": "mv1.5",
+	"preferenceType": "gain"
+    },
+    {
+	"name": "desire_loc",
+	"active": true,
+	"type": "condition",
+	"valueType": "enumeration",
+	"domain": ["0", "1"],
+  "missingValueType": "mv1.5",
+	"preferenceType": "gain"
+    },
+    {
+	"name": "sale_price",
+	"active": true,
+	"type": "decision",
+	"valueType": "enumeration",
+	"domain": ["0", "1", "2", "3"],
+  "missingValueType": "mv1.5",
+	"preferenceType": "gain"
+    }
+]

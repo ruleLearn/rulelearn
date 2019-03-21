@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 class RelativeCoverageOutsideApproximationMeasureTest {
 
 	@Mock 
-	private RuleConditions ruleConditionsMock2;
+	private RuleConditions ruleConditionsMock;
 	
 	@Mock
 	private Condition<EvaluationField> conditionMock;
@@ -53,54 +53,54 @@ class RelativeCoverageOutsideApproximationMeasureTest {
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
 		
-		when(this.ruleConditionsMock2.getIndicesOfCoveredObjects()).thenReturn(new IntArrayList(new int [] {0, 1, 3, 4, 6, 7, 9, 11, 13, 14}));
-		when(this.ruleConditionsMock2.getIndicesOfCoveredObjectsWithCondition(this.conditionMock)).thenReturn(new IntArrayList(new int [] {0, 1, 3, 7, 9, 11, 14}));
-		when(this.ruleConditionsMock2.getIndicesOfCoveredObjectsWithoutCondition(0)).thenReturn(new IntArrayList(new int [] {0, 1, 3, 4, 6, 7, 9, 10, 11, 12, 13, 14, 15}));
-		when(this.ruleConditionsMock2.getIndicesOfApproximationObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {0, 2, 4, 5, 7, 8, 12}));
-		when(this.ruleConditionsMock2.getIndicesOfPositiveObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {0, 2, 4, 5, 7, 8, 12, 16, 17, 18, 19})); //!
-		when(this.ruleConditionsMock2.getIndicesOfNeutralObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {1, 6, 10, 14}));
+		when(this.ruleConditionsMock.getIndicesOfCoveredObjects()).thenReturn(new IntArrayList(new int [] {0, 1, 3, 4, 6, 7, 9, 11, 13, 14}));
+		when(this.ruleConditionsMock.getIndicesOfCoveredObjectsWithCondition(this.conditionMock)).thenReturn(new IntArrayList(new int [] {0, 1, 3, 7, 9, 11, 14}));
+		when(this.ruleConditionsMock.getIndicesOfCoveredObjectsWithoutCondition(0)).thenReturn(new IntArrayList(new int [] {0, 1, 3, 4, 6, 7, 9, 10, 11, 12, 13, 14, 15}));
+		when(this.ruleConditionsMock.getIndicesOfApproximationObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {0, 2, 4, 5, 7, 8, 12}));
+		when(this.ruleConditionsMock.getIndicesOfPositiveObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {0, 2, 4, 5, 7, 8, 12, 16, 17, 18, 19})); //!
+		when(this.ruleConditionsMock.getIndicesOfNeutralObjects()).thenReturn(new IntLinkedOpenHashSet(new int [] {1, 6, 10, 14}));
 		when(this.informationTableMock.getNumberOfObjects()).thenReturn(20);
-		when(this.ruleConditionsMock2.getLearningInformationTable()).thenReturn(informationTableMock);		
+		when(this.ruleConditionsMock.getLearningInformationTable()).thenReturn(informationTableMock);		
 	}
 	
 	/**
 	 * Test for method {@link RelativeCoverageOutsideApproximationMeasure#evaluate(RuleConditions)}.
 	 */
 	@Test
-	void testMock2Evaluate() {
+	void testMockEvaluate() {
 		RelativeCoverageOutsideApproximationMeasure relativeCoverageOutsideApproximationMeasure = RelativeCoverageOutsideApproximationMeasure.getInstance();
 		
-		assertEquals((double)4 / 5, relativeCoverageOutsideApproximationMeasure.evaluate(this.ruleConditionsMock2));
+		assertEquals((double)4 / 5, relativeCoverageOutsideApproximationMeasure.evaluate(this.ruleConditionsMock));
 	}
 	
 	/**
 	 * Test for method {@link RelativeCoverageOutsideApproximationMeasure#evaluateWithCondition(RuleConditions, Condition)}.
 	 */
 	@Test
-	void testMock2EvaluateWithCondition01() {
+	void testMockEvaluateWithCondition01() {
 		RelativeCoverageOutsideApproximationMeasure relativeCoverageOutsideApproximationMeasure = RelativeCoverageOutsideApproximationMeasure.getInstance();
 		
-		assertEquals((double)3 / 5, relativeCoverageOutsideApproximationMeasure.evaluateWithCondition(this.ruleConditionsMock2, this.conditionMock));
+		assertEquals((double)3 / 5, relativeCoverageOutsideApproximationMeasure.evaluateWithCondition(this.ruleConditionsMock, this.conditionMock));
 	}
 	
 	/**
 	 * Test for method {@link RelativeCoverageOutsideApproximationMeasure#evaluateWithCondition(RuleConditions, Condition)}.
 	 */
 	@Test
-	void testMock2EvaluateWithCondition02() {
+	void testMockEvaluateWithCondition02() {
 		RelativeCoverageOutsideApproximationMeasure relativeCoverageOutsideApproximationMeasure = RelativeCoverageOutsideApproximationMeasure.getInstance();
 		
-		assertEquals(Double.MAX_VALUE, relativeCoverageOutsideApproximationMeasure.evaluateWithCondition(this.ruleConditionsMock2, null));
+		assertEquals(Double.MAX_VALUE, relativeCoverageOutsideApproximationMeasure.evaluateWithCondition(this.ruleConditionsMock, null));
 	}
 	
 	/**
 	 * Test for method {@link RelativeCoverageOutsideApproximationMeasure#evaluateWithoutCondition(RuleConditions, int)}.
 	 */
 	@Test
-	void testMock2EvaluateWithoutCondition() {
+	void testMockEvaluateWithoutCondition() {
 		RelativeCoverageOutsideApproximationMeasure relativeCoverageOutsideApproximationMeasure = RelativeCoverageOutsideApproximationMeasure.getInstance();
 		
-		assertEquals((double)5 / 5, relativeCoverageOutsideApproximationMeasure.evaluateWithoutCondition(this.ruleConditionsMock2, 0));
+		assertEquals((double)5 / 5, relativeCoverageOutsideApproximationMeasure.evaluateWithoutCondition(this.ruleConditionsMock, 0));
 	}
 	
 	/**
