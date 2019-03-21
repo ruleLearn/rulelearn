@@ -16,6 +16,7 @@
 
 package org.rulelearn.rules;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.rulelearn.approximations.ApproximatedSet;
@@ -61,6 +62,25 @@ public class VCDomLEM {
 	}
 	
 	/**
+	 * Wrapper for {{@link #generateRules(ApproximatedSetProvider, ApproximatedSetRuleDecisionsProvider, double[])}, using given rule consistency threshold to build
+	 * an array of identical thresholds, one for each provided approximated set.
+	 * 
+	 * @param approximatedSetProvider see {@link #generateRules(ApproximatedSetProvider, ApproximatedSetRuleDecisionsProvider, double[])}
+	 * @param approximatedSetRuleDecisionsProvider see {@link #generateRules(ApproximatedSetProvider, ApproximatedSetRuleDecisionsProvider, double[])}
+	 * @param ruleConsistencyThreshold thresholds reflecting consistency of generated decision rules - this threshold is used for all provided approximated sets
+	 * @return see {@link #generateRules(ApproximatedSetProvider, ApproximatedSetRuleDecisionsProvider, double[])}
+	 * 
+	 * @throws NullPointerException NullPointerException if any of the parameters is {@code null}
+	 */
+	public RuleSet generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider, double ruleConsistencyThreshold) {
+		Precondition.notNull(approximatedSetProvider, "VC-DomLEM approximated set provider is null.");
+		
+		double[] evaluationThresholds = new double[approximatedSetProvider.getCount()];
+		Arrays.fill(evaluationThresholds, ruleConsistencyThreshold);
+		return this.generateRules(approximatedSetProvider, approximatedSetRuleDecisionsProvider, evaluationThresholds);
+	}
+	
+	/**
 	 * Generates a minimal set of decision rules by VC-DomLEM algorithm. If certain rules are considered, rule conditions are generated using evaluations of objects from lower approximations.
 	 * If possible rules are considered, rule conditions are generated using evaluations of objects from upper approximations.
 	 * 
@@ -68,16 +88,21 @@ public class VCDomLEM {
 	 *        starting from index 0
 	 * @param approximatedSetRuleDecisionsProvider provides rule decisions {@link Rule.RuleDecisions} that can be put on the right-hand side of a certain/possible decision rule
 	 *        generated with respect to a considered approximated set
+	 * @param ruleConsistencyThresholds array with thresholds reflecting consistency of generated decision rules - one threshold for each provided approximated set 
 	 * @return set of induced decision rules
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws InvalidValueException if the number of given rule consistency thresholds is different than the number of provided approximated sets (see {@link ApproximatedSetProvider#getCount()})
 	 */
-	public RuleSet generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider) {
+	public RuleSet generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider, double[] ruleConsistencyThresholds) {
 		Precondition.notNull(approximatedSetProvider, "VC-DomLEM approximated set provider is null.");
 		Precondition.notNull(approximatedSetRuleDecisionsProvider, "VC-DomLEM approximated set provider is null.");
+		Precondition.notNull(ruleConsistencyThresholds, "VC-DomLEM rule consistency thresholds are null.");
 		
-		//TODO: check number of thresholds (stopping condition checkers) w.r.t. the number of approximated sets
-		
+		if (approximatedSetProvider.getCount() != ruleConsistencyThresholds.length) {
+			throw new InvalidValueException("Different number of provided approximated sets and rule consistency thresholds in VC-DomLEM algorithm.");
+		}
+
 		List<RuleConditionsWithApproximatedSet> minimalRuleConditionsWithApproximatedSets = new ObjectArrayList<RuleConditionsWithApproximatedSet>(); //rule conditions for approximated sets considered so far
 		List<RuleConditions> approximatedSetRuleConditions; //rule conditions for current approximated set
 		List<RuleConditionsWithApproximatedSet> verifiedRuleConditionsWithApproximatedSet; //minimal rule conditions for current approximated set
@@ -114,7 +139,7 @@ public class VCDomLEM {
 			ruleIndex++;
 		}
 		
-		return new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true); //TODO: second version of VCDomLEM returning just decision rules
+		return new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true); //TODO: second version of VCDomLEM returning just decision rules, without characteristics
 	}
 	
 	/**
