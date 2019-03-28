@@ -36,6 +36,14 @@ public class FIFORuleConditionsPruner extends AbstractRuleConditionsPruner {
 		super(stoppingConditionChecker);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.rulelearn.rules.AbstractRuleConditionsPruner#copyWithNewStoppingConditionChecker(org.rulelearn.rules.RuleInductionStoppingConditionChecker)
+	 */
+	@Override
+	public AbstractRuleConditionsPruner copyWithNewStoppingConditionChecker(RuleInductionStoppingConditionChecker stoppingConditionChecker) {
+		return new FIFORuleConditionsPruner(stoppingConditionChecker);
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 * 

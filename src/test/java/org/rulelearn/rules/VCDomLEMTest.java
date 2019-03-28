@@ -220,6 +220,12 @@ class VCDomLEMTest {
 			public RuleConditions prune(RuleConditions ruleConditions) {
 				return null;
 			}
+
+			@Override
+			public AbstractRuleConditionsPruner copyWithNewStoppingConditionChecker(
+					RuleInductionStoppingConditionChecker stoppingConditionChecker) {
+				return null;
+			}
 		};
 		//---
 		RuleConditionsSetPruner ruleConditionsSetPruner = new EvaluationsAndOrderRuleConditionsSetPruner(ruleConditionsEvaluators);
