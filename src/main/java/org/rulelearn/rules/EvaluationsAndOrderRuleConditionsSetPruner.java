@@ -136,7 +136,7 @@ public class EvaluationsAndOrderRuleConditionsSetPruner extends AbstractRuleCond
 		for (int observedObject : observedObjects) {
 			ruleCount = 0;
 			for (int ruleIndex = 0; ruleIndex < rules.size(); ruleIndex++) {
-				if (rules.get(ruleIndex).covers(observedObject)) {
+				if (rules.get(ruleIndex).covers(observedObject)) { //TODO: make this check efficient (as rule conditions already know indices of covered objects)
 					observedObjectToRuleCount.put(observedObject, ++ruleCount); //increases rule count!
 					ruleToObservedObjects.get(ruleIndex).add(observedObject); //remember that currently considered rule covers currently considered observed object
 				}

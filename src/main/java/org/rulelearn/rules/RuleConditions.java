@@ -168,7 +168,7 @@ public class RuleConditions {
 	 */
 	public boolean covers(int objectIndex) { //TODO: try to optimize response using indicesOfCoveredObjects (if changed to hash set)
 		int conditionsCount = this.conditions.size();
-		for (int i = 0; i < conditionsCount; i++) {
+		for (int i = conditionsCount - 1; i >= 0; i--) { //go from the latest (newest) conditions
 			if (!this.conditions.get(i).satisfiedBy(objectIndex, this.learningInformationTable)) {
 				return false;
 			}
@@ -254,9 +254,11 @@ public class RuleConditions {
 		
 		this.conditions = new ObjectArrayList<Condition<? extends EvaluationField>>();
 		this.attributeIndex2ConditionIndices = new Int2ObjectOpenHashMap<IntList>();
-		this.indicesOfCoveredObjects = new IntArrayList();
 		
 		int objectsCount = learningInformationTable.getNumberOfObjects();
+		
+		this.indicesOfCoveredObjects = new IntArrayList(objectsCount); //give capacity to spare multiple grows of the list
+		
 		for (int objectIndex = 0; objectIndex < objectsCount; objectIndex++) {
 			this.indicesOfCoveredObjects.add(objectIndex); //initially all objects are covered
 		}
@@ -475,7 +477,7 @@ public class RuleConditions {
 					if (!condition.satisfiedBy(objectIndex, this.learningInformationTable)) { //dropped condition eliminated current object
 						this.notCoveringConditionsCounts[objectIndex] = --count;
 						if (count == 0) {
-							indicesOfCoveredObjects.add(objectIndex);
+							indicesOfCoveredObjects.add(objectIndex); //can break order of indices
 						}
 					}
 				}
@@ -485,7 +487,7 @@ public class RuleConditions {
 			for (int objectIndex = 0; objectIndex < numberOfObjects; objectIndex++) {
 				if (this.notCoveringConditionsCounts[objectIndex] == 1) { //something can change
 					if (!condition.satisfiedBy(objectIndex, this.learningInformationTable)) { //dropped condition eliminated current object
-						indicesOfCoveredObjects.add(objectIndex);
+						indicesOfCoveredObjects.add(objectIndex); //can break order of indices
 					}
 				}
 			}
@@ -624,7 +626,7 @@ public class RuleConditions {
 	 * @see RuleCoverageInformation
 	 */
 	public RuleCoverageInformation getRuleCoverageInformation() {
-		return new RuleCoverageInformation(this.indicesOfPositiveObjects, this.indicesOfNeutralObjects, this.indicesOfCoveredObjects,
+		return new RuleCoverageInformation(this.indicesOfPositiveObjects, this.indicesOfNeutralObjects, this.getIndicesOfCoveredObjects(),
 				this.learningInformationTable.getNumberOfObjects());
 	}
 	

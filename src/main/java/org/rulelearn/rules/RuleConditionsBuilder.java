@@ -105,7 +105,7 @@ public class RuleConditionsBuilder {
 		RuleConditions ruleConditions = new RuleConditions(learningInformationTable, indicesOfPositiveObjects, indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, indicesOfNeutralObjects,
 				ruleType, ruleSemantics);
 		Condition<EvaluationField> bestCondition;
-		IntList indicesOfCoveredObjects;
+//		IntList indicesOfCoveredObjects;
 		IntSet indicesOfNoLongerCoveredObjects;
 		
 		while (!ruleInductionStoppingConditionChecker.isStoppingConditionSatisified(ruleConditions)) {
@@ -119,10 +119,11 @@ public class RuleConditionsBuilder {
 				}
 				
 				//update indices of considered objects
-				indicesOfCoveredObjects = ruleConditions.getIndicesOfCoveredObjects();
+//				indicesOfCoveredObjects = ruleConditions.getIndicesOfCoveredObjects();
 				indicesOfNoLongerCoveredObjects = new IntOpenHashSet();
 				for (int previouslyCoveredObjectIndex : indicesOfConsideredObjects) {
-					if (!indicesOfCoveredObjects.contains(previouslyCoveredObjectIndex)) { //previously covered object is no longer covered //TODO: more efficient implementation
+//					if (!indicesOfCoveredObjects.contains(previouslyCoveredObjectIndex)) { //previously covered object is no longer covered //TODO: more efficient implementation
+					if (!ruleConditions.covers(previouslyCoveredObjectIndex)) {
 						indicesOfNoLongerCoveredObjects.add(previouslyCoveredObjectIndex);
 					}
 				}

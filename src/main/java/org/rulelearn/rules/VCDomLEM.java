@@ -28,6 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -212,7 +213,6 @@ public class VCDomLEM {
 			indicesOfObjectsThatCanBeCovered.addAll(approximatedSet.getNeutralObjects());
 		}
 		
-		//TODO: test order of elements!
 		IntList setB = new IntArrayList(indicesOfApproximationObjects); //lower/upper approximation objects not already covered by rule conditions induced so far (set B from algorithm description)
 		RuleConditions ruleConditions;
 		RuleConditionsBuilder ruleConditionsBuilder;
@@ -223,7 +223,7 @@ public class VCDomLEM {
 			
 			ruleConditionsBuilder = new RuleConditionsBuilder(
 					indicesOfConsideredObjects, approximatedSet.getInformationTable(),
-					approximatedSet.getObjects(), indicesOfApproximationObjects, indicesOfObjectsThatCanBeCovered, approximatedSet.getNeutralObjects(),
+					approximatedSet.getObjects(), indicesOfApproximationObjects, IntSets.unmodifiable(indicesOfObjectsThatCanBeCovered), approximatedSet.getNeutralObjects(),
 					ruleType, approximatedSetRuleDecisionsProvider.getRuleSemantics(approximatedSet),
 					vcDomLEMParameters.getConditionGenerator(), vcDomLEMParameters.getRuleInductionStoppingConditionChecker(), vcDomLEMParameters.getConditionSeparator());
 			ruleConditions = ruleConditionsBuilder.build(); //build rule conditions

@@ -16,10 +16,17 @@
 
 package org.rulelearn.rules;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Tests for {@link ComputableRuleCharacteristics}.
@@ -28,61 +35,134 @@ import org.mockito.Mockito;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 class ComputableRuleCharacteristicsTest {
+	
+	private static ComputableRuleCharacteristics computableRuleCharacteristics01;
+	private static ComputableRuleCharacteristics computableRuleCharacteristics02;
+	
+	@BeforeAll
+	static void setUp() {
+		IntSet indicesOfPositiveObjects = new IntLinkedOpenHashSet(new int[] {0, 2, 3, 7, 10, 12});
+		IntSet indicesOfNeutralObjects = new IntLinkedOpenHashSet(new int[] {1, 8, 11});
+		IntList indicesOfCoveredObjects = new IntArrayList(new int[] {0, 1, 3, 5, 7, 8, 9, 11, 12});
+		int allObjectsCount = 13;
+		
+		computableRuleCharacteristics01 = new ComputableRuleCharacteristics(
+				new RuleCoverageInformation(indicesOfPositiveObjects, indicesOfNeutralObjects, indicesOfCoveredObjects, allObjectsCount));
+		
+		//-----
+		
+		indicesOfPositiveObjects = new IntLinkedOpenHashSet(new int[] {0, 3, 6, 7, 9, 12, 14, 15});
+		indicesOfNeutralObjects = new IntLinkedOpenHashSet(new int[] {1, 4, 10, 16});
+		indicesOfCoveredObjects = new IntArrayList(new int[] {0, 1, 2, 3, 4, 5, 7, 9, 10, 11, 12, 13, 15});
+		allObjectsCount = 18;
+		
+		computableRuleCharacteristics02 = new ComputableRuleCharacteristics(
+				new RuleCoverageInformation(indicesOfPositiveObjects, indicesOfNeutralObjects, indicesOfCoveredObjects, allObjectsCount));
+	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getSupport()}.
 	 */
 	@Test
-	void testGetSupport() {
-		//TODO: implement test
+	void testGetSupport01() {
+		assertEquals(computableRuleCharacteristics01.getSupport(), 4);
+	}
+	/**
+	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getSupport()}.
+	 */
+	@Test
+	void testGetSupport02() {
+		assertEquals(computableRuleCharacteristics02.getSupport(), 6);
 	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getStrength()}.
 	 */
 	@Test
-	void testGetStrength() {
-		//TODO: implement test
+	void testGetStrength01() {
+		assertEquals(computableRuleCharacteristics01.getStrength(), (double)4 / (double)13);
+	}
+	/**
+	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getStrength()}.
+	 */
+	@Test
+	void testGetStrength02() {
+		assertEquals(computableRuleCharacteristics02.getStrength(), (double)6 / (double)18);
 	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getConfidence()}.
 	 */
 	@Test
-	void testGetConfidence() {
-		//TODO: implement test
+	void testGetConfidence01() {
+		assertEquals(computableRuleCharacteristics01.getConfidence(), (double)4 / (double)6);
+	}
+	/**
+	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getConfidence()}.
+	 */
+	@Test
+	void testGetConfidence02() {
+		assertEquals(computableRuleCharacteristics02.getConfidence(), (double)6 / (double)10);
 	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getCoverageFactor()}.
 	 */
 	@Test
-	void testGetCoverageFactor() {
-		//TODO: implement test
+	void testGetCoverageFactor01() {
+		assertEquals(computableRuleCharacteristics01.getCoverageFactor(), (double)4 / (double)6);
+	}
+	/**
+	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getCoverageFactor()}.
+	 */
+	@Test
+	void testGetCoverageFactor02() {
+		assertEquals(computableRuleCharacteristics02.getCoverageFactor(), (double)6 / (double)8);
 	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getCoverage()}.
 	 */
 	@Test
-	void testGetCoverage() {
-		//TODO: implement test
+	void testGetCoverage01() {
+		assertEquals(computableRuleCharacteristics01.getCoverage(), 9);
+	}
+	/**
+	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getCoverage()}.
+	 */
+	@Test
+	void testGetCoverage02() {
+		assertEquals(computableRuleCharacteristics02.getCoverage(), 13);
 	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getNegativeCoverage()}.
 	 */
 	@Test
-	void testGetNegativeCoverage() {
-		//TODO: implement test
+	void testGetNegativeCoverage01() {
+		assertEquals(computableRuleCharacteristics01.getNegativeCoverage(), 2);
+	}
+	/**
+	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getNegativeCoverage()}.
+	 */
+	@Test
+	void testGetNegativeCoverage02() {
+		assertEquals(computableRuleCharacteristics02.getNegativeCoverage(), 4);
 	}
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getEpsilon()}.
 	 */
 	@Test
-	void testGetEpsilon() {
-		//TODO: implement test
+	void testGetEpsilon01() {
+		assertEquals(computableRuleCharacteristics01.getEpsilon(), (double)2 / (double)4);
+	}
+	/**
+	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getEpsilon()}.
+	 */
+	@Test
+	void testGetEpsilon02() {
+		assertEquals(computableRuleCharacteristics02.getEpsilon(), (double)4 / (double)6);
 	}
 
 	/**

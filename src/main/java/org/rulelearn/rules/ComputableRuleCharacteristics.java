@@ -18,6 +18,8 @@ package org.rulelearn.rules;
 
 import static org.rulelearn.core.Precondition.notNull;
 
+import org.rulelearn.core.OperationsOnCollections;
+
 /**
  * Characteristics of a decision rule, calculated using rule coverage information {@link RuleCoverageInformation}. This class extends {@link RuleCharacteristics}
  * by ensuring that if any characteristic is not stored explicitly, it will be calculated on demand.
@@ -65,7 +67,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	
 	/**
 	 * Gets value of given rule evaluator.
-	 * TODO: caching?
+	 * TODO: use caching?
 	 * 
 	 * @param ruleEvaluator rule evaluator
 	 * @return value of given rule evaluator
@@ -74,7 +76,6 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 		return ruleEvaluator.evaluate(ruleCoverageInformation);
 	}
 	
-	//TODO: override getters throwing an exception, to compute required characteristic on demand
 	//TODO: use additional supplementary fields: positiveNotCoveredObjectsCount, negativeNotCoveredObjectsCount
 	
 	/**
@@ -95,7 +96,8 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public int getSupport() {
 		if (support == UNKNOWN_INT_VALUE) {
-			//TODO: calculate measure
+			support = OperationsOnCollections.getNumberOfElementsFromListInSet(
+					ruleCoverageInformation.getIndicesOfCoveredObjects(), ruleCoverageInformation.getIndicesOfPositiveObjects());
 		}
 		return support;
 	}
@@ -108,7 +110,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public double getStrength() {
 		if (strength == UNKNOWN_DOUBLE_VALUE) {
-			//TODO: calculate measure
+			strength = (double)getSupport() / (double)ruleCoverageInformation.getAllObjectsCount(); 
 		}
 		return strength;
 	}
@@ -121,7 +123,13 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public double getConfidence() {
 		if (confidence == UNKNOWN_DOUBLE_VALUE) {
-			//TODO: calculate measure
+			int notNeutralCoveredObjectsCount = OperationsOnCollections.getNumberOfElementsFromListNotPresentInSet(
+					ruleCoverageInformation.getIndicesOfCoveredObjects(), ruleCoverageInformation.getIndicesOfNeutralObjects());
+			if (notNeutralCoveredObjectsCount > 0) {
+				confidence = (double)getSupport() / (double)(notNeutralCoveredObjectsCount);
+			} else {
+				confidence = 0;
+			}
 		}
 		return confidence;
 	}
@@ -134,7 +142,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public double getCoverageFactor() {
 		if (coverageFactor == UNKNOWN_DOUBLE_VALUE) {
-			//TODO: calculate measure
+			coverageFactor = (double)getSupport() / (double)ruleCoverageInformation.getIndicesOfPositiveObjects().size();
 		}
 		return coverageFactor;
 	}
@@ -147,7 +155,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public int getCoverage() {
 		if (coverage == UNKNOWN_INT_VALUE) {
-			//TODO: calculate measure
+			coverage = ruleCoverageInformation.getIndicesOfCoveredObjects().size();
 		}
 		return coverage;
 	}
@@ -161,7 +169,9 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public int getNegativeCoverage() {
 		if (negativeCoverage == UNKNOWN_INT_VALUE) {
-			//TODO: calculate measure
+			negativeCoverage = OperationsOnCollections.getNumberOfElementsFromListNotPresentInSets(
+					ruleCoverageInformation.getIndicesOfCoveredObjects(),
+					ruleCoverageInformation.getIndicesOfPositiveObjects(), ruleCoverageInformation.getIndicesOfNeutralObjects());
 		}
 		return negativeCoverage;
 	}
@@ -174,7 +184,10 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public double getEpsilon() {
 		if (epsilon == UNKNOWN_DOUBLE_VALUE) {
-			//TODO: calculate measure
+			epsilon = (double)getNegativeCoverage() /
+					(double)(ruleCoverageInformation.getAllObjectsCount()
+							- ruleCoverageInformation.getIndicesOfPositiveObjects().size()
+							- ruleCoverageInformation.getIndicesOfNeutralObjects().size());
 		}
 		return epsilon;
 	}
