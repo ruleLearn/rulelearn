@@ -24,6 +24,7 @@ import java.util.Set;
 import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
+import org.rulelearn.data.CompositeDecision;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
@@ -45,6 +46,13 @@ import org.rulelearn.data.InformationTableWithDecisionDistributions;
  * <li>{@link #getDownwardUnions()}[0] yields union "class 1 and worse",</li>
  * <li>{@link #getDownwardUnions()}[1] yields union "class 2 and worse".</li>
  * </ul>
+ * If information table contains more than one active decision attribute, then each object is assigned a composite decision
+ * (i.e., {@link InformationTable#getDecision(int)} returns {@link CompositeDecision}. In such case, some decisions may be incomparable (mutually non-dominated).
+ *  Consequently, unions having incomparable limiting decisions are also incomparable. The order of incomparable unions is arbitrary (i.e., any of the two unions may be
+ *  first, followed by the other union).<br>
+ *  <br>
+ *  Upward/downward unions returned by this union container are defined only for such limiting decisions, that are fully determined (i.e., do not involve a missing attribute
+ *  value).
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
