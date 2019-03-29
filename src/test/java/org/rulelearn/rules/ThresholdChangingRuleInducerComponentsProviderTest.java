@@ -36,9 +36,9 @@ class ThresholdChangingRuleInducerComponentsProviderTest {
 		ThresholdChangingRuleInducerComponentsProvider componentsProvider = new ThresholdChangingRuleInducerComponentsProvider(new CertainRuleInducerComponents.Builder(), 
 				CertainRuleInducerComponents.DEFAULT_STOPPING_CONDITION_CHECKER, CertainRuleInducerComponents.DEFAULT_RULE_CONDITIONS_PRUNER);
 		RuleInducerComponents components = componentsProvider.provide(0.9);
-		assertEquals(0.9, ((RuleInductionStoppinConditionCheckerWithThreshold)components.getRuleInductionStoppingConditionChecker()).getThreshold());
+		assertEquals(0.9, ((RuleInductionStoppingConditionCheckerWithThreshold)components.getRuleInductionStoppingConditionChecker()).getThreshold());
 		components = componentsProvider.provide(0.8);
-		assertEquals(0.8, ((RuleInductionStoppinConditionCheckerWithThreshold)components.getRuleInductionStoppingConditionChecker()).getThreshold());
+		assertEquals(0.8, ((RuleInductionStoppingConditionCheckerWithThreshold)components.getRuleInductionStoppingConditionChecker()).getThreshold());
 	}
 	
 	/**
@@ -49,9 +49,9 @@ class ThresholdChangingRuleInducerComponentsProviderTest {
 		ThresholdChangingRuleInducerComponentsProvider componentsProvider = new ThresholdChangingRuleInducerComponentsProvider(new PossibleRuleInducerComponents.Builder(), 
 				PossibleRuleInducerComponents.DEFAULT_STOPPING_CONDITION_CHECKER, PossibleRuleInducerComponents.DEFAULT_RULE_CONDITIONS_PRUNER);
 		RuleInducerComponents components = componentsProvider.provide(0.9);
-		assertEquals(0.9, ((RuleInductionStoppinConditionCheckerWithThreshold)components.getRuleInductionStoppingConditionChecker()).getThreshold());
+		assertEquals(0.9, ((RuleInductionStoppingConditionCheckerWithThreshold)components.getRuleInductionStoppingConditionChecker()).getThreshold());
 		components = componentsProvider.provide(0.8);
-		assertEquals(0.8, ((RuleInductionStoppinConditionCheckerWithThreshold)components.getRuleInductionStoppingConditionChecker()).getThreshold());
+		assertEquals(0.8, ((RuleInductionStoppingConditionCheckerWithThreshold)components.getRuleInductionStoppingConditionChecker()).getThreshold());
 	}
 
 }

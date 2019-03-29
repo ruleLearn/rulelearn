@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class EvaluationAndCoverageStoppingConditionChecker implements RuleInductionStoppinConditionCheckerWithThreshold {
+public class EvaluationAndCoverageStoppingConditionChecker implements RuleInductionStoppingConditionCheckerWithThreshold {
 	
 	/**
 	 * Evaluator applied to rule conditions when verifying if they meet stopping conditions.
@@ -129,7 +129,7 @@ public class EvaluationAndCoverageStoppingConditionChecker implements RuleInduct
 	 * @see org.rulelearn.rules.RuleInductionStoppinConditionCheckerWithThreshold#copyWithNewThreshold(double)
 	 */
 	@Override
-	public RuleInductionStoppinConditionCheckerWithThreshold copyWithNewThreshold(double evaluationThreshold) {
+	public RuleInductionStoppingConditionCheckerWithThreshold copyWithNewThreshold(double evaluationThreshold) {
 		return new EvaluationAndCoverageStoppingConditionChecker(this.ruleConditionsEvaluator, evaluationThreshold);
 	}
 	

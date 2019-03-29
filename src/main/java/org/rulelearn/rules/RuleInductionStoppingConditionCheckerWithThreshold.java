@@ -23,7 +23,7 @@ package org.rulelearn.rules;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface RuleInductionStoppinConditionCheckerWithThreshold extends RuleInductionStoppingConditionChecker {
+public interface RuleInductionStoppingConditionCheckerWithThreshold extends RuleInductionStoppingConditionChecker {
 
 	/**
 	 * Makes a copy of stopping condition checker with defined value of evaluation threshold.
@@ -31,7 +31,7 @@ public interface RuleInductionStoppinConditionCheckerWithThreshold extends RuleI
 	 * @param evaluationThreshold value of evaluation threshold
 	 * @return copy of stopping condition checker with defined value of evaluation threshold.
 	 */
-	public RuleInductionStoppinConditionCheckerWithThreshold copyWithNewThreshold(double evaluationThreshold);
+	public RuleInductionStoppingConditionCheckerWithThreshold copyWithNewThreshold(double evaluationThreshold);
 	
 	/**
 	 * Gets value of evaluation threshold.

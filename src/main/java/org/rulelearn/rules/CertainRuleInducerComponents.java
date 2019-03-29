@@ -55,7 +55,7 @@ public class CertainRuleInducerComponents extends RuleInducerComponents {
 	/**
 	 * Default checker used to determine occurrence of stopping condition of rule induction process {@link RuleInductionStoppingConditionChecker}.
 	 */
-	public static final RuleInductionStoppinConditionCheckerWithThreshold DEFAULT_STOPPING_CONDITION_CHECKER = 
+	public static final RuleInductionStoppingConditionCheckerWithThreshold DEFAULT_STOPPING_CONDITION_CHECKER = 
 			new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), DEFAULT_CONSISTENCY_TRESHOLD);
 	
 	/**
