@@ -267,6 +267,40 @@ public final class Precondition {
 	}
 	
 	/**
+	 * Verifies if given numbers are equal.
+	 * 
+	 * @param number1 first number to verify
+	 * @param number2 second number to verify
+	 * @param errorMsg error message of the thrown {@link InvalidValueException}, used when given numbers are not equal
+	 * @return the equal number provided that both numbers are equal
+	 * 
+	 * @throws InvalidValueException if given numbers are not equal
+	 */
+	public static int equal(int number1, int number2, String errorMsg) {
+		if (number1 != number2) {
+			throw new InvalidValueException(errorMsg);
+		}
+		return number1;
+	}
+	
+	/**
+	 * Verifies if given numbers are equal.
+	 * 
+	 * @param number1 first number to verify
+	 * @param number2 second number to verify
+	 * @param errorMsg error message of the thrown {@link InvalidValueException}, used when given numbers are not equal
+	 * @return the equal number provided that both numbers are equal
+	 * 
+	 * @throws InvalidValueException if given numbers are not equal
+	 */
+	public static double equal(double number1, double number2, String errorMsg) {
+		if (number1 != number2) {
+			throw new InvalidValueException(errorMsg);
+		}
+		return number1;
+	}
+	
+	/**
 	 * Constructor preventing object creation.
 	 */
 	private Precondition() {
