@@ -28,6 +28,8 @@ import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
 import org.rulelearn.rules.ApproximatedSetProvider;
 import org.rulelearn.rules.ApproximatedSetRuleDecisionsProvider;
 import org.rulelearn.rules.RuleSet;
+import org.rulelearn.rules.RuleSetWithCharacteristics;
+import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
 import org.rulelearn.rules.UnionProvider;
 import org.rulelearn.rules.UnionWithSingleLimitingDecisionRuleDecisionsProvider;
 import org.rulelearn.rules.VCDomLEM;
@@ -45,6 +47,11 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 * Induced set of rules.
 	 */
 	RuleSet rules = null;
+	
+	/**
+	 * Induced set of rules with characteristics.
+	 */
+	RuleSetWithCharacteristics rulesWithCharacteristics = null;
 
 	/**
 	 * {@inheritDoc}
@@ -68,6 +75,34 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 		}
 		
 		return this.rules;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * @throws InvalidValueException InvalidValueException when informationTable does not contain decision attribute/attributes
+	 */
+	@Override
+	public RuleSetWithCharacteristics induceRulesWithCharacteristics(InformationTable informationTable) {
+		if (this.rulesWithCharacteristics == null) {
+			VCDomLEMParameters vcDomLEMParameters = VCDomLEMParameters.builder().build();
+			Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
+			ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
+			ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
+			ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
+			
+			RuleSetWithComputableCharacteristics upwardRules = (RuleSetWithComputableCharacteristics)(new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtLeastProvider, unionRuleDecisionsProvider, VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
+			RuleSetWithComputableCharacteristics downwardRules = (RuleSetWithComputableCharacteristics)(new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtMostProvider, unionRuleDecisionsProvider, VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
+			
+			this.rulesWithCharacteristics = RuleSetWithCharacteristics.join(upwardRules, downwardRules);
+			// calculate strength so that it can be stored
+			for (int i = 0; i < this.rulesWithCharacteristics.size(); i++) {
+				this.rulesWithCharacteristics.getRuleCharacteristics(i).getStrength();
+			}
+		}
+		
+		return this.rulesWithCharacteristics;
 	}
 
 	/**
@@ -93,6 +128,35 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 		}
 		
 		return this.rules;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * @throws InvalidValueException when informationTable does not contain decision attribute/attributes
+	 */
+	@Override
+	public RuleSetWithCharacteristics induceRulesWithCharacteristics(InformationTable informationTable, double consistencyThreshold) {
+		if (this.rulesWithCharacteristics == null) {
+			VCDomLEMParameters vcDomLEMParameters = VCDomLEMParameters.builder().consistencyThreshold(consistencyThreshold).build();
+			Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), 
+									   new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold));
+			ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
+			ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
+			ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
+			
+			RuleSetWithComputableCharacteristics upwardRules = (RuleSetWithComputableCharacteristics)(new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtLeastProvider, unionRuleDecisionsProvider, consistencyThreshold);
+			RuleSetWithComputableCharacteristics downwardRules = (RuleSetWithComputableCharacteristics)(new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtMostProvider, unionRuleDecisionsProvider, consistencyThreshold);
+			
+			this.rulesWithCharacteristics = RuleSetWithCharacteristics.join(upwardRules, downwardRules);
+			// calculate strength so that it can be stored
+			for (int i = 0; i < this.rulesWithCharacteristics.size(); i++) {
+				this.rulesWithCharacteristics.getRuleCharacteristics(i).getStrength();
+			}
+		}
+		
+		return this.rulesWithCharacteristics;
 	}
 
 }

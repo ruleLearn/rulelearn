@@ -19,6 +19,7 @@ package org.rulelearn.wrappers;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.measures.ConsistencyMeasure;
 import org.rulelearn.rules.RuleSet;
+import org.rulelearn.rules.RuleSetWithCharacteristics;
 
 /**
  * Wraps a variable consistency rule induction algorithm.
@@ -38,4 +39,13 @@ public interface VariableConsistencyRuleInducerWrapper extends RuleInducerWrappe
 	 */
 	public RuleSet induceRules(InformationTable informationTable, double consistencyThreshold);
 	
+	/**
+	 * Induces a set of rules, satisfying a threshold with respect to a consistency measure, covering objects from an information table and provides characteristics for these rules.
+	 * 
+	 * @param informationTable an information table {@link InformationTable}
+	 * @param consistencyThreshold threshold on a consistency measure {@link ConsistencyMeasure}
+	 * 
+	 * @return induced rules with characteristics in {@link RuleSetWithCharacteristics}
+	 */
+	public RuleSetWithCharacteristics induceRulesWithCharacteristics (InformationTable informationTable, double consistencyThreshold);
 }

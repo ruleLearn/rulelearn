@@ -18,6 +18,7 @@ package org.rulelearn.wrappers;
 
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.RuleSet;
+import org.rulelearn.rules.RuleSetWithCharacteristics;
 
 /**
  * Wraps an rule induction algorithm.
@@ -35,5 +36,14 @@ public interface RuleInducerWrapper {
 	 * @return induced rules in {@link RuleSet}
 	 */
 	public RuleSet induceRules (InformationTable informationTable);
+	
+	/**
+	 * Induces a set of rules covering objects from an information table and provides characteristics for these rules.
+	 * 
+	 * @param informationTable an information table {@link InformationTable}
+	 * 
+	 * @return induced rules with characteristics in {@link RuleSetWithCharacteristics}
+	 */
+	public RuleSetWithCharacteristics induceRulesWithCharacteristics (InformationTable informationTable);
 	
 }

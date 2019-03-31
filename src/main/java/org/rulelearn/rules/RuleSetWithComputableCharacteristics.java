@@ -91,5 +91,5 @@ public class RuleSetWithComputableCharacteristics extends RuleSetWithCharacteris
 		
 		return (ComputableRuleCharacteristics)this.ruleCharacteristics[ruleIndex];
 	}
-
+	
 }

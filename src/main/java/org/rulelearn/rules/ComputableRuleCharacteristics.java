@@ -73,7 +73,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	 * @return value of given rule evaluator
 	 */
 	public double getCharacteristic(RuleEvaluator ruleEvaluator) {
-		return ruleEvaluator.evaluate(ruleCoverageInformation);
+		return ruleEvaluator.evaluate(this.ruleCoverageInformation);
 	}
 	
 	//TODO: use additional supplementary fields: positiveNotCoveredObjectsCount, negativeNotCoveredObjectsCount
@@ -97,7 +97,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	public int getSupport() {
 		if (support == UNKNOWN_INT_VALUE) {
 			support = OperationsOnCollections.getNumberOfElementsFromListInSet(
-					ruleCoverageInformation.getIndicesOfCoveredObjects(), ruleCoverageInformation.getIndicesOfPositiveObjects());
+					this.ruleCoverageInformation.getIndicesOfCoveredObjects(), this.ruleCoverageInformation.getIndicesOfPositiveObjects());
 		}
 		return support;
 	}
@@ -110,7 +110,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public double getStrength() {
 		if (strength == UNKNOWN_DOUBLE_VALUE) {
-			strength = (double)getSupport() / (double)ruleCoverageInformation.getAllObjectsCount(); 
+			strength = ((double)getSupport()) / ((double)this.ruleCoverageInformation.getAllObjectsCount()); 
 		}
 		return strength;
 	}
@@ -124,9 +124,9 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	public double getConfidence() {
 		if (confidence == UNKNOWN_DOUBLE_VALUE) {
 			int notNeutralCoveredObjectsCount = OperationsOnCollections.getNumberOfElementsFromListNotPresentInSet(
-					ruleCoverageInformation.getIndicesOfCoveredObjects(), ruleCoverageInformation.getIndicesOfNeutralObjects());
+					this.ruleCoverageInformation.getIndicesOfCoveredObjects(), this.ruleCoverageInformation.getIndicesOfNeutralObjects());
 			if (notNeutralCoveredObjectsCount > 0) {
-				confidence = (double)getSupport() / (double)(notNeutralCoveredObjectsCount);
+				confidence = ((double)getSupport()) / ((double)(notNeutralCoveredObjectsCount));
 			} else {
 				confidence = 0;
 			}
@@ -142,7 +142,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public double getCoverageFactor() {
 		if (coverageFactor == UNKNOWN_DOUBLE_VALUE) {
-			coverageFactor = (double)getSupport() / (double)ruleCoverageInformation.getIndicesOfPositiveObjects().size();
+			coverageFactor = ((double)getSupport()) / ((double)this.ruleCoverageInformation.getIndicesOfPositiveObjects().size());
 		}
 		return coverageFactor;
 	}
@@ -155,7 +155,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public int getCoverage() {
 		if (coverage == UNKNOWN_INT_VALUE) {
-			coverage = ruleCoverageInformation.getIndicesOfCoveredObjects().size();
+			coverage = this.ruleCoverageInformation.getIndicesOfCoveredObjects().size();
 		}
 		return coverage;
 	}
@@ -170,8 +170,8 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	public int getNegativeCoverage() {
 		if (negativeCoverage == UNKNOWN_INT_VALUE) {
 			negativeCoverage = OperationsOnCollections.getNumberOfElementsFromListNotPresentInSets(
-					ruleCoverageInformation.getIndicesOfCoveredObjects(),
-					ruleCoverageInformation.getIndicesOfPositiveObjects(), ruleCoverageInformation.getIndicesOfNeutralObjects());
+					this.ruleCoverageInformation.getIndicesOfCoveredObjects(),
+					this.ruleCoverageInformation.getIndicesOfPositiveObjects(), this.ruleCoverageInformation.getIndicesOfNeutralObjects());
 		}
 		return negativeCoverage;
 	}
@@ -184,10 +184,10 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public double getEpsilon() {
 		if (epsilon == UNKNOWN_DOUBLE_VALUE) {
-			epsilon = (double)getNegativeCoverage() /
-					(double)(ruleCoverageInformation.getAllObjectsCount()
-							- ruleCoverageInformation.getIndicesOfPositiveObjects().size()
-							- ruleCoverageInformation.getIndicesOfNeutralObjects().size());
+			epsilon = ((double)getNegativeCoverage()) /
+					((double)(this.ruleCoverageInformation.getAllObjectsCount()
+							- this.ruleCoverageInformation.getIndicesOfPositiveObjects().size()
+							- this.ruleCoverageInformation.getIndicesOfNeutralObjects().size()));
 		}
 		return epsilon;
 	}

@@ -19,6 +19,7 @@ package org.rulelearn.rules;
 import static org.rulelearn.core.Precondition.notNull;
 
 import org.rulelearn.core.InvalidSizeException;
+import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 
@@ -105,5 +106,41 @@ public class RuleSetWithCharacteristics extends RuleSet {
 	 */
 	public RuleCharacteristics getRuleCharacteristics(int ruleIndex) {
 		return this.ruleCharacteristics[ruleIndex];
+	}
+	
+	/**
+	 * Gets a new rule set with characteristics by joining given two rule sets (with characteristics).
+	 * 
+	 * @param ruleSet1 first rule set (with characteristics) to join
+	 * @param ruleSet2 second rule set (with characteristics) to join
+	 * @return a new rule set (with characteristics) composing of rules from the two given rule sets
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 */
+	public static RuleSetWithCharacteristics join(RuleSetWithCharacteristics ruleSet1, RuleSetWithCharacteristics ruleSet2) {
+		Precondition.notNull(ruleSet1, "First rule set to join is null.");
+		Precondition.notNull(ruleSet2, "Second rule set to join is null.");
+		
+		// join rules
+		Rule[] rules = new Rule[ruleSet1.size() + ruleSet2.size()];
+		for (int i = 0; i < ruleSet1.size(); i++) {
+			rules[i] = ruleSet1.getRule(i);
+		}
+		int shift = ruleSet1.size();
+		for (int i = 0; i < ruleSet2.size(); i++) {
+			rules[shift + i] = ruleSet2.getRule(i);
+		}
+		
+		// join characteristics
+		RuleCharacteristics[] characteristics = new RuleCharacteristics[ruleSet1.size() + ruleSet2.size()];
+		for (int i = 0; i < ruleSet1.size(); i++) {
+			characteristics[i] = ruleSet1.getRuleCharacteristics(i);
+		}
+		shift = ruleSet1.size();
+		for (int i = 0; i < ruleSet2.size(); i++) {
+			characteristics[shift + i] = ruleSet2.getRuleCharacteristics(i);
+		}
+		
+		return new RuleSetWithCharacteristics(rules, characteristics, true);
 	}
 }
