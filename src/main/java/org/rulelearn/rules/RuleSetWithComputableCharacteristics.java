@@ -95,7 +95,7 @@ public class RuleSetWithComputableCharacteristics extends RuleSetWithCharacteris
 	/**
 	 * Ensures that all values of all rule characteristics are calculated.
 	 */
-	public void calculateAllCharactericstis() {
+	public void calculateAllCharacteristics() {
 		for (int i = 0; i < rules.length; i++) {
 			getRuleCharacteristics(i).calculateAllCharacteristics();
 		}

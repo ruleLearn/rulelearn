@@ -284,7 +284,8 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	}
 	
 	/**
-	 * Ensures that all values of rule characteristics are calculated.
+	 * Enforces that values of all rule characteristics are calculated instantly and remembered, so each subsequent call to any getter
+	 * will return requested characteristic at once, without additional calculations.
 	 */
 	public void calculateAllCharacteristics() {
 		this.getAConfirmation();
@@ -297,7 +298,6 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 		this.getFConfirmation();
 		this.getLConfirmation();
 		this.getNegativeCoverage();
-		this.getRuleCoverageInformation();
 		this.getSConfirmation();
 		this.getStrength();
 		this.getSupport();
