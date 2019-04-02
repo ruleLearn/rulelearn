@@ -19,7 +19,8 @@ package org.rulelearn.rules;
 import static org.rulelearn.core.Precondition.notNull;
 
 /**
- * Provider of rule inducer components {@link RuleInducerComponents} with stopping condition checkers {@link RuleInductionStoppingConditionCheckerWithThreshold} able to handle different values of evaluation threshold.
+ * Provider of rule inducer components {@link RuleInducerComponents} with stopping condition checkers {@link RuleInductionStoppingConditionCheckerWithThreshold}
+ * able to handle different values of evaluation threshold.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -32,8 +33,8 @@ public class ThresholdChangingRuleInducerComponentsProvider implements RuleInduc
 	RuleInducerComponents.Builder builder;
 
 	/**
-	 * Indication whether pruner {@link AbstractRuleConditionsPruner} used by the builder is associated with stopping condition checker {@link RuleInductionStoppingConditionCheckerWithThreshold}
-	 * and consequently needs to be updated when stopping condition checker is updated.
+	 * Indication whether pruner {@link AbstractRuleConditionsPruner} used by the builder is associated with a stopping condition checker {@link RuleInductionStoppingConditionCheckerWithThreshold}
+	 * and consequently needs to be updated when the stopping condition checker gets updated.
 	 */
 	boolean updatePruner = false;
 	
@@ -49,6 +50,7 @@ public class ThresholdChangingRuleInducerComponentsProvider implements RuleInduc
 		this.builder = notNull(builder, "Provdided rule components builder is null.");
 		// set stopping condition checker
 		this.builder = this.builder.ruleInductionStoppingConditionChecker(notNull(stoppingCondtionChecker, "Provided rule induction stopping condition checker is null."));
+		this.updatePruner = false; //be straightforward
 	}
 	
 	/**
@@ -56,16 +58,27 @@ public class ThresholdChangingRuleInducerComponentsProvider implements RuleInduc
 	 * 
 	 * @param builder builder of rule inducer components {@link RuleInducerComponents}
 	 * @param stoppingCondtionChecker stopping condition checker {@link RuleInductionStoppingConditionCheckerWithThreshold} able to handle different values of evaluation threshold
-	 * @param pruner rule conditions pruner associated with the stopping condition checker (it will be updated every time stopping condition checker is modified) 
+	 * @param pruner rule conditions pruner associated with the stopping condition checker (it will be updated every time stopping condition checker is modified)
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public ThresholdChangingRuleInducerComponentsProvider(RuleInducerComponents.Builder builder, RuleInductionStoppingConditionCheckerWithThreshold stoppingCondtionChecker, AbstractRuleConditionsPruner pruner) {
 		this.builder = notNull(builder, "Provdided rule components builder is null.");
 		// set stopping condition checker
-		this.builder = this.builder.ruleInductionStoppingConditionChecker(notNull(stoppingCondtionChecker, "Provided rule induction stopping condition checker is null."));
+		this.builder.ruleInductionStoppingConditionChecker(notNull(stoppingCondtionChecker, "Provided rule induction stopping condition checker is null."));
+		
 		notNull(pruner, "Provided rule conditions pruner is null.");
 		// set pruner
-		this.builder = this.builder.ruleConditionsPruner(pruner.copyWithNewStoppingConditionChecker(this.builder.ruleInductionStoppingConditionChecker()));
+		this.builder.ruleConditionsPruner(pruner.copyWithNewStoppingConditionChecker(this.builder.ruleInductionStoppingConditionChecker()));
 		this.updatePruner = true;
+	}
+	
+	private RuleInductionStoppingConditionCheckerWithThreshold getBuilderRuleInductionStoppingConditionChecker() {
+		return (RuleInductionStoppingConditionCheckerWithThreshold)this.builder.ruleInductionStoppingConditionChecker(); //cast internally
+	}
+	
+	private AbstractRuleConditionsPruner getBuilderRuleConditionsPruner() {
+		return (AbstractRuleConditionsPruner)this.builder.ruleConditionsPruner(); //cast internally
 	}
 	
 	/**
@@ -85,9 +98,9 @@ public class ThresholdChangingRuleInducerComponentsProvider implements RuleInduc
 	 * @return rule inducer components {@link RuleInducerComponents}
 	 */
 	public RuleInducerComponents provide(double evaluationThreshold) {
-		this.builder = this.builder.ruleInductionStoppingConditionChecker(((RuleInductionStoppingConditionCheckerWithThreshold)this.builder.ruleInductionStoppingConditionChecker()).copyWithNewThreshold(evaluationThreshold));
-		if (this.updatePruner) {
-			this.builder = this.builder.ruleConditionsPruner(((AbstractRuleConditionsPruner)this.builder.ruleConditionsPruner()).copyWithNewStoppingConditionChecker(this.builder.ruleInductionStoppingConditionChecker()));
+		this.builder.ruleInductionStoppingConditionChecker(getBuilderRuleInductionStoppingConditionChecker().copyWithNewThreshold(evaluationThreshold)); //update builder's checker first
+		if (this.updatePruner) { //pruner depends on checker
+			this.builder.ruleConditionsPruner(getBuilderRuleConditionsPruner().copyWithNewStoppingConditionChecker(getBuilderRuleInductionStoppingConditionChecker())); //update builder's pruner too
 		}
 		return this.builder.build();
 	}

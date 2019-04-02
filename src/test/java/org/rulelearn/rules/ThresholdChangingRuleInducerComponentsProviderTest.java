@@ -16,7 +16,7 @@
 
 package org.rulelearn.rules;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,10 +29,10 @@ import org.junit.jupiter.api.Test;
 class ThresholdChangingRuleInducerComponentsProviderTest {
 
 	/**
-	 * Test construction and simple usage ({@link ThresholdChangingRuleInducerComponentsProvider#provide(double)} of provider.
+	 * Test construction and simple usage of {@link ThresholdChangingRuleInducerComponentsProvider#provide(double)} provider.
 	 */
 	@Test
-	void testConstructionOfCertainTypeComponents() {
+	void testConstructionOfCertainRuleInducerComponents() {
 		ThresholdChangingRuleInducerComponentsProvider componentsProvider = new ThresholdChangingRuleInducerComponentsProvider(new CertainRuleInducerComponents.Builder(), 
 				CertainRuleInducerComponents.DEFAULT_STOPPING_CONDITION_CHECKER, CertainRuleInducerComponents.DEFAULT_RULE_CONDITIONS_PRUNER);
 		RuleInducerComponents components = componentsProvider.provide(0.9);
@@ -42,10 +42,10 @@ class ThresholdChangingRuleInducerComponentsProviderTest {
 	}
 	
 	/**
-	 * Test construction and simple usage ({@link ThresholdChangingRuleInducerComponentsProvider#provide(double)} of provider.
+	 * Test construction and simple usage of {@link ThresholdChangingRuleInducerComponentsProvider#provide(double)} provider.
 	 */
 	@Test
-	void testConstructionOfPossibleTypeComponents() {
+	void testConstructionOfPossibleRuleInducerComponents() {
 		ThresholdChangingRuleInducerComponentsProvider componentsProvider = new ThresholdChangingRuleInducerComponentsProvider(new PossibleRuleInducerComponents.Builder(), 
 				PossibleRuleInducerComponents.DEFAULT_STOPPING_CONDITION_CHECKER, PossibleRuleInducerComponents.DEFAULT_RULE_CONDITIONS_PRUNER);
 		RuleInducerComponents components = componentsProvider.provide(0.9);

@@ -17,7 +17,7 @@
 package org.rulelearn.rules;
 
 /**
- * Contract of a checker verifying rule conditions {@link RuleConditions} against different stopping conditions, which involve an evaluation threshold,
+ * Contract of a checker verifying rule conditions {@link RuleConditions} against different stopping conditions involving an evaluation threshold,
  * like, e.g., satisfying consistency measure threshold. 
  * Other stopping conditions like reaching a given number of conditions may also be taken into account.
  *
@@ -27,10 +27,10 @@ package org.rulelearn.rules;
 public interface RuleInductionStoppingConditionCheckerWithThreshold extends RuleInductionStoppingConditionChecker {
 
 	/**
-	 * Makes a copy of this stopping condition checker with defined value of evaluation threshold.
+	 * Makes a copy of this stopping condition checker with given value of evaluation threshold.
 	 * 
 	 * @param evaluationThreshold value of evaluation threshold
-	 * @return copy of stopping condition checker with defined value of evaluation threshold
+	 * @return copy of stopping condition checker with given value of evaluation threshold
 	 */
 	public RuleInductionStoppingConditionCheckerWithThreshold copyWithNewThreshold(double evaluationThreshold);
 	
