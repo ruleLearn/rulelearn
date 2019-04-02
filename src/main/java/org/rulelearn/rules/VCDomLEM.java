@@ -73,7 +73,7 @@ public class VCDomLEM {
 	 * 
 	 * @throws NullPointerException NullPointerException if any of the parameters is {@code null}
 	 */
-	public RuleSetWithCharacteristics generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider, double ruleConsistencyThreshold) {
+	public RuleSetWithComputableCharacteristics generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider, double ruleConsistencyThreshold) {
 		Precondition.notNull(approximatedSetProvider, "VC-DomLEM approximated set provider is null.");
 		
 		double[] evaluationThresholds = new double[approximatedSetProvider.getCount()];
@@ -90,12 +90,12 @@ public class VCDomLEM {
 	 * @param approximatedSetRuleDecisionsProvider provides rule decisions {@link Rule.RuleDecisions} that can be put on the right-hand side of a certain/possible decision rule
 	 *        generated with respect to a considered approximated set
 	 * @param ruleConsistencyThresholds array with thresholds reflecting consistency of generated decision rules - one threshold for each provided approximated set 
-	 * @return set of induced decision rules
+	 * @return set of induced decision rules with computable characteristics {@link RuleSetWithComputableCharacteristics}
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidValueException if the number of given rule consistency thresholds is different than the number of provided approximated sets (see {@link ApproximatedSetProvider#getCount()})
 	 */
-	public RuleSetWithCharacteristics generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider, double[] ruleConsistencyThresholds) {
+	public RuleSetWithComputableCharacteristics generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider, double[] ruleConsistencyThresholds) {
 		Precondition.notNull(approximatedSetProvider, "VC-DomLEM approximated set provider is null.");
 		Precondition.notNull(approximatedSetRuleDecisionsProvider, "VC-DomLEM approximated set provider is null.");
 		Precondition.notNull(ruleConsistencyThresholds, "VC-DomLEM rule consistency thresholds are null.");
