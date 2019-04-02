@@ -49,50 +49,50 @@ public abstract class RuleInducerComponents {
 	public interface Builder {
 		
 		/**
-		 * Gets condition generator {@link ConditionGenerator} used in rule induction process.
+		 * Sets condition generator {@link ConditionGenerator} used in rule induction process.
 		 * 
 		 * @param conditionGenerator a condition generator
-		 * @return the builder
+		 * @return this builder
 		 */
 		public Builder conditionGenerator(ConditionGenerator conditionGenerator);
 		
 		/**
-		 * Gets checker used to determine occurrence of stopping condition of rule induction process {@link RuleInductionStoppingConditionChecker}.
+		 * Sets checker used to determine occurrence of stopping condition of rule induction process {@link RuleInductionStoppingConditionChecker}.
 		 * 
 		 * @param ruleInductionStoppingConditionChecker a checker of stopping condition of rule induction process
-		 * @return the builder
+		 * @return this builder
 		 */
 		public Builder ruleInductionStoppingConditionChecker(RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker);
 		
 		/**
-		 * Gets the condition separator {@link ConditionSeparator} used to transform conditions constructed on composite fields into conditions expressed in terms of simple fields. 
+		 * Sets the condition separator {@link ConditionSeparator} used to transform conditions constructed on composite fields into conditions expressed in terms of simple fields. 
 		 * 
 		 * @param conditionSeparator a condition separator
-		 * @return the builder
+		 * @return this builder
 		 */
 		public Builder conditionSeparator(ConditionSeparator conditionSeparator);
 		
 		/**
-		 * Gets pruner of rule conditions {@link RuleConditionsPruner} used to remove redundant conditions from rule conditions.
+		 * Sets pruner of rule conditions {@link RuleConditionsPruner} used to remove redundant conditions from rule conditions.
 		 * 
 		 * @param ruleConditionsPruner a rule conditions pruner
-		 * @return the builder
+		 * @return this builder
 		 */
 		public Builder ruleConditionsPruner(RuleConditionsPruner ruleConditionsPruner);
 		
 		/**
-		 * Gets pruner of rule conditions set {@link RuleConditionsSetPruner} used to remove redundant rules from rule conditions set.
+		 * Sets pruner of rule conditions set {@link RuleConditionsSetPruner} used to remove redundant rules from rule conditions set.
 		 * 
 		 * @param ruleConditionsSetPruner a rule conditions set pruner
-		 * @return the builder
+		 * @return this builder
 		 */
 		public Builder ruleConditionsSetPruner(RuleConditionsSetPruner ruleConditionsSetPruner);
 		
 		/**
-		 * Gets the rule minimality checker {@link RuleMinimalityChecker} used to induce rules.
+		 * Sets the rule minimality checker {@link RuleMinimalityChecker} used to induce rules.
 		 * 
 		 * @param ruleMinimalityChecker a rule minimality checker
-		 * @return the builder
+		 * @return this builder
 		 */
 		public Builder ruleMinimalityChecker(RuleMinimalityChecker ruleMinimalityChecker); 
 		
@@ -100,7 +100,7 @@ public abstract class RuleInducerComponents {
 		 * Sets type of decision rule, i.e., type of rules to be induced.
 		 * 
 		 * @param ruleType type of decision rule
-		 * @return the builder
+		 * @return this builder
 		 */
 		public Builder ruleType(RuleType ruleType);
 		
@@ -249,7 +249,7 @@ public abstract class RuleInducerComponents {
 	}
 	
 	/**
-	 * Gets type of negative objects allowed to be covered {@link AllowedNegativeObjectsType} by rule conditions {@link RuleConditions}. 
+	 * Gets type of negative objects allowed to be covered {@link AllowedNegativeObjectsType} by rule conditions {@link RuleConditions}.
 	 * 
 	 * @return the type of negative objects allowed to be covered
 	 */

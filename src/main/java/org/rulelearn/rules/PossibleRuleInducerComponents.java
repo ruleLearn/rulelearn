@@ -20,7 +20,6 @@ import static org.rulelearn.core.Precondition.notNull;
 
 import org.rulelearn.measures.CoverageInApproximationMeasure;
 import org.rulelearn.measures.RelativeCoverageOutsideApproximationMeasure;
-import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
 
 /**
  * Stores and provides components and parameters associated with induction of possible decision rules with sequential covering algorithms.<br>
@@ -34,10 +33,10 @@ import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
  */
 public class PossibleRuleInducerComponents extends RuleInducerComponents {
 	
-	/**
-	 * Default consistency threshold for epsilon consistency measure {@link EpsilonConsistencyMeasure}.
-	 */
-	public static final double DEFAULT_COVERAGE_TRESHOLD = 0.0;
+//	/**
+//	 * Default consistency threshold for epsilon consistency measure {@link EpsilonConsistencyMeasure}.
+//	 */
+//	public static final double DEFAULT_COVERAGE_TRESHOLD = 0.0;
 	
 	/**
 	 * Default evaluator of rule conditions.
@@ -56,12 +55,12 @@ public class PossibleRuleInducerComponents extends RuleInducerComponents {
 	 * Default checker used to determine occurrence of stopping condition of rule induction process {@link RuleInductionStoppingConditionChecker}.
 	 */
 	public static final RuleInductionStoppingConditionCheckerWithThreshold DEFAULT_STOPPING_CONDITION_CHECKER = 
-			new EvaluationAndCoverageStoppingConditionChecker(RelativeCoverageOutsideApproximationMeasure.getInstance(), DEFAULT_COVERAGE_TRESHOLD);
+			new EvaluationAndCoverageStoppingConditionChecker(RelativeCoverageOutsideApproximationMeasure.getInstance(), 0.0); //TODO: change?
 	
 	/**
 	 * Default rule conditions pruner.
 	 */
-	public static final AbstractRuleConditionsPruner DEFAULT_RULE_CONDITIONS_PRUNER = new AttributeOrderRuleConditionsPruner(DEFAULT_STOPPING_CONDITION_CHECKER);
+	public static final AbstractRuleConditionsPruner DEFAULT_RULE_CONDITIONS_PRUNER = new AttributeOrderRuleConditionsPruner(DEFAULT_STOPPING_CONDITION_CHECKER); //TODO: change?
 	
 	/**
 	 * Contract of a builder of possible rule inducer components {@link PossibleRuleInducerComponents}.
@@ -92,6 +91,7 @@ public class PossibleRuleInducerComponents extends RuleInducerComponents {
 		 * 
 		 * @param conditionGenerator {@inheritDoc}
 		 * @return {@inheritDoc}
+		 * @throws NullPointerException if given parameter is {@code null}
 		 */
 		@Override
 		public Builder conditionGenerator(ConditionGenerator conditionGenerator) {
@@ -104,6 +104,7 @@ public class PossibleRuleInducerComponents extends RuleInducerComponents {
 		 * 
 		 * @param ruleInductionStoppingConditionChecker {@inheritDoc}
 		 * @return {@inheritDoc}
+		 * @throws NullPointerException if given parameter is {@code null}
 		 */
 		@Override
 		public Builder ruleInductionStoppingConditionChecker(RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker) {
@@ -128,6 +129,7 @@ public class PossibleRuleInducerComponents extends RuleInducerComponents {
 		 * 
 		 * @param ruleConditionsPruner {@inheritDoc}
 		 * @return {@inheritDoc}
+		 * @throws NullPointerException if given parameter is {@code null}
 		 */
 		@Override
 		public Builder ruleConditionsPruner(RuleConditionsPruner ruleConditionsPruner) {
@@ -140,6 +142,7 @@ public class PossibleRuleInducerComponents extends RuleInducerComponents {
 		 * 
 		 * @param ruleConditionsSetPruner {@inheritDoc}
 		 * @return {@inheritDoc}
+		 * @throws NullPointerException if given parameter is {@code null}
 		 */
 		@Override
 		public Builder ruleConditionsSetPruner(RuleConditionsSetPruner ruleConditionsSetPruner) {
@@ -152,6 +155,7 @@ public class PossibleRuleInducerComponents extends RuleInducerComponents {
 		 * 
 		 * @param ruleMinimalityChecker {@inheritDoc}
 		 * @return {@inheritDoc}
+		 * @throws NullPointerException if given parameter is {@code null}
 		 */
 		@Override
 		public Builder ruleMinimalityChecker(RuleMinimalityChecker ruleMinimalityChecker) {
@@ -167,7 +171,7 @@ public class PossibleRuleInducerComponents extends RuleInducerComponents {
 		 */
 		@Override
 		public Builder ruleType(RuleType ruleType) {
-			this.ruleType = ruleType;
+			this.ruleType = notNull(ruleType, "Provided rule type is null.");
 			return this;
 		}
 		

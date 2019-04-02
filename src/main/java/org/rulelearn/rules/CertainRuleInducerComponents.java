@@ -33,10 +33,10 @@ import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
  */
 public class CertainRuleInducerComponents extends RuleInducerComponents {
 	
-	/**
-	 * Default consistency threshold for epsilon consistency measure {@link EpsilonConsistencyMeasure}.
-	 */
-	public static final double DEFAULT_CONSISTENCY_TRESHOLD = 0.0;
+//	/**
+//	 * Default consistency threshold for epsilon consistency measure {@link EpsilonConsistencyMeasure}.
+//	 */
+//	public static final double DEFAULT_CONSISTENCY_TRESHOLD = 0.0;
 	
 	/**
 	 * Default evaluator of rule conditions.
@@ -56,12 +56,12 @@ public class CertainRuleInducerComponents extends RuleInducerComponents {
 	 * Default checker used to determine occurrence of stopping condition of rule induction process {@link RuleInductionStoppingConditionChecker}.
 	 */
 	public static final RuleInductionStoppingConditionCheckerWithThreshold DEFAULT_STOPPING_CONDITION_CHECKER = 
-			new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), DEFAULT_CONSISTENCY_TRESHOLD);
+			new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), 0.0); //TODO: change?
 	
 	/**
 	 * Default rule conditions pruner.
 	 */
-	public static final AbstractRuleConditionsPruner DEFAULT_RULE_CONDITIONS_PRUNER = new AttributeOrderRuleConditionsPruner(DEFAULT_STOPPING_CONDITION_CHECKER);
+	public static final AbstractRuleConditionsPruner DEFAULT_RULE_CONDITIONS_PRUNER = new AttributeOrderRuleConditionsPruner(DEFAULT_STOPPING_CONDITION_CHECKER); //TODO: change?
 	
 	/**
 	 * Contract of a builder of certain rule inducer components {@link CertainRuleInducerComponents}.
@@ -92,6 +92,7 @@ public class CertainRuleInducerComponents extends RuleInducerComponents {
 		 * 
 		 * @param conditionGenerator {@inheritDoc}
 		 * @return {@inheritDoc}
+		 * @throws NullPointerException if given parameter is {@code null}
 		 */
 		@Override
 		public Builder conditionGenerator(ConditionGenerator conditionGenerator) {
@@ -104,6 +105,7 @@ public class CertainRuleInducerComponents extends RuleInducerComponents {
 		 * 
 		 * @param ruleInductionStoppingConditionChecker {@inheritDoc}
 		 * @return {@inheritDoc}
+		 * @throws NullPointerException if given parameter is {@code null}
 		 */
 		@Override
 		public Builder ruleInductionStoppingConditionChecker(RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker) {
@@ -128,6 +130,7 @@ public class CertainRuleInducerComponents extends RuleInducerComponents {
 		 * 
 		 * @param ruleConditionsPruner {@inheritDoc}
 		 * @return {@inheritDoc}
+		 * @throws NullPointerException if given parameter is {@code null}
 		 */
 		@Override
 		public Builder ruleConditionsPruner(RuleConditionsPruner ruleConditionsPruner) {
@@ -140,6 +143,7 @@ public class CertainRuleInducerComponents extends RuleInducerComponents {
 		 * 
 		 * @param ruleConditionsSetPruner {@inheritDoc}
 		 * @return {@inheritDoc}
+		 * @throws NullPointerException if given parameter is {@code null}
 		 */
 		@Override
 		public Builder ruleConditionsSetPruner(RuleConditionsSetPruner ruleConditionsSetPruner) {
@@ -152,6 +156,7 @@ public class CertainRuleInducerComponents extends RuleInducerComponents {
 		 * 
 		 * @param ruleMinimalityChecker {@inheritDoc}
 		 * @return {@inheritDoc}
+		 * @throws NullPointerException if given parameter is {@code null}
 		 */
 		@Override
 		public Builder ruleMinimalityChecker(RuleMinimalityChecker ruleMinimalityChecker) {
@@ -164,10 +169,11 @@ public class CertainRuleInducerComponents extends RuleInducerComponents {
 		 * 
 		 * @param ruleType {@inheritDoc}
 		 * @return {@inheritDoc}
+		 * @throws NullPointerException if given parameter is {@code null}
 		 */
 		@Override
 		public Builder ruleType(RuleType ruleType) {
-			this.ruleType = ruleType;
+			this.ruleType = notNull(ruleType, "Provided rule type is null.");
 			return this;
 		}
 		
@@ -176,9 +182,10 @@ public class CertainRuleInducerComponents extends RuleInducerComponents {
 		 * 
 		 * @param allowedObjectsType the type of negative objects allowed to be covered
 		 * @return the builder
+		 * @throws NullPointerException if given parameter is {@code null}
 		 */
 		public Builder allowedNegativeObjectsType(AllowedNegativeObjectsType allowedObjectsType) {
-			this.allowedObjectsType = allowedObjectsType;
+			this.allowedObjectsType = notNull(allowedObjectsType, "Provided allowed objects type is null.");
 			return this;
 		}
 		
