@@ -73,7 +73,7 @@ public class VCDomLEM {
 	 * 
 	 * @throws NullPointerException NullPointerException if any of the parameters is {@code null}
 	 */
-	public RuleSet generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider, double ruleConsistencyThreshold) {
+	public RuleSetWithCharacteristics generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider, double ruleConsistencyThreshold) {
 		Precondition.notNull(approximatedSetProvider, "VC-DomLEM approximated set provider is null.");
 		
 		double[] evaluationThresholds = new double[approximatedSetProvider.getCount()];
@@ -95,7 +95,7 @@ public class VCDomLEM {
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidValueException if the number of given rule consistency thresholds is different than the number of provided approximated sets (see {@link ApproximatedSetProvider#getCount()})
 	 */
-	public RuleSet generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider, double[] ruleConsistencyThresholds) {
+	public RuleSetWithCharacteristics generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider, double[] ruleConsistencyThresholds) {
 		Precondition.notNull(approximatedSetProvider, "VC-DomLEM approximated set provider is null.");
 		Precondition.notNull(approximatedSetRuleDecisionsProvider, "VC-DomLEM approximated set provider is null.");
 		Precondition.notNull(ruleConsistencyThresholds, "VC-DomLEM rule consistency thresholds are null.");
@@ -140,7 +140,7 @@ public class VCDomLEM {
 			ruleIndex++;
 		}
 		
-		return new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true); //TODO: second version of VCDomLEM returning just decision rules, without characteristics
+		return new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true);
 	}
 	
 	/**
