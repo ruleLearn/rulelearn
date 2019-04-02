@@ -283,4 +283,24 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 		return sConfirmation;
 	}
 	
+	/**
+	 * Ensures that all values of rule characteristics are calculated.
+	 */
+	public void calculateAllCharacteristics() {
+		this.getAConfirmation();
+		this.getC1Confirmation();
+		this.getConfidence();
+		this.getCoverage();
+		this.getCoverageFactor();
+		this.getEpsilon();
+		this.getEpsilonPrime();
+		this.getFConfirmation();
+		this.getLConfirmation();
+		this.getNegativeCoverage();
+		this.getRuleCoverageInformation();
+		this.getSConfirmation();
+		this.getStrength();
+		this.getSupport();
+		this.getZConfirmation();
+	}
 }

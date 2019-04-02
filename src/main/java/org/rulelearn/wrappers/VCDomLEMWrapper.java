@@ -44,16 +44,6 @@ import org.rulelearn.rules.VCDomLEMParameters;
 public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	
 	/**
-	 * Induced set of rules.
-	 */
-	RuleSet rules = null;
-	
-	/**
-	 * Induced set of rules with characteristics.
-	 */
-	RuleSetWithCharacteristics rulesWithCharacteristics = null;
-
-	/**
 	 * {@inheritDoc}
 	 * 
 	 * @return {@inheritDoc}
@@ -61,20 +51,20 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 */
 	@Override
 	public RuleSet induceRules(InformationTable informationTable) {
-		if (this.rules == null) {
-			VCDomLEMParameters vcDomLEMParameters = VCDomLEMParameters.builder().build();
-			Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
-			ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
-			ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
-			ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
-			
-			RuleSet upwardRules = (new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtLeastProvider, unionRuleDecisionsProvider, VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
-			RuleSet downwardRules = (new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtMostProvider, unionRuleDecisionsProvider, VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
-			
-			this.rules = RuleSet.join(upwardRules, downwardRules);
-		}
+		RuleSet rules;
 		
-		return this.rules;
+		VCDomLEMParameters vcDomLEMParameters = VCDomLEMParameters.builder().build();
+		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
+		ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
+		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
+		ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
+		
+		RuleSet upwardRules = (new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtLeastProvider, unionRuleDecisionsProvider, VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
+		RuleSet downwardRules = (new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtMostProvider, unionRuleDecisionsProvider, VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
+		
+		rules = RuleSet.join(upwardRules, downwardRules);
+		
+		return rules;
 	}
 	
 	/**
@@ -85,24 +75,21 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 */
 	@Override
 	public RuleSetWithCharacteristics induceRulesWithCharacteristics(InformationTable informationTable) {
-		if (this.rulesWithCharacteristics == null) {
-			VCDomLEMParameters vcDomLEMParameters = VCDomLEMParameters.builder().build();
-			Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
-			ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
-			ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
-			ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
-			
-			RuleSetWithComputableCharacteristics upwardRules = (RuleSetWithComputableCharacteristics)(new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtLeastProvider, unionRuleDecisionsProvider, VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
-			RuleSetWithComputableCharacteristics downwardRules = (RuleSetWithComputableCharacteristics)(new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtMostProvider, unionRuleDecisionsProvider, VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
-			
-			this.rulesWithCharacteristics = RuleSetWithCharacteristics.join(upwardRules, downwardRules);
-			// calculate strength so that it can be stored
-			for (int i = 0; i < this.rulesWithCharacteristics.size(); i++) {
-				this.rulesWithCharacteristics.getRuleCharacteristics(i).getStrength();
-			}
-		}
+		RuleSetWithCharacteristics rulesWithCharacteristics;
 		
-		return this.rulesWithCharacteristics;
+		VCDomLEMParameters vcDomLEMParameters = VCDomLEMParameters.builder().build();
+		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
+		ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
+		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
+		ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
+		
+		RuleSetWithComputableCharacteristics upwardRules = (RuleSetWithComputableCharacteristics)(new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtLeastProvider, unionRuleDecisionsProvider, VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
+		upwardRules.calculateAllCharactericstis();
+		RuleSetWithComputableCharacteristics downwardRules = (RuleSetWithComputableCharacteristics)(new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtMostProvider, unionRuleDecisionsProvider, VCDomLEMParameters.DEFAULT_CONSISTENCY_TRESHOLD);
+		
+		rulesWithCharacteristics = RuleSetWithCharacteristics.join(upwardRules, downwardRules);
+		
+		return rulesWithCharacteristics;
 	}
 
 	/**
@@ -113,21 +100,22 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 */
 	@Override
 	public RuleSet induceRules(InformationTable informationTable, double consistencyThreshold) {
-		if (this.rules == null) {
-			VCDomLEMParameters vcDomLEMParameters = VCDomLEMParameters.builder().consistencyThreshold(consistencyThreshold).build();
-			Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), 
-									   new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold));
-			ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
-			ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
-			ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
-			
-			RuleSet upwardRules = (new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtLeastProvider, unionRuleDecisionsProvider, consistencyThreshold);
-			RuleSet downwardRules = (new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtMostProvider, unionRuleDecisionsProvider, consistencyThreshold);
-			
-			this.rules = RuleSet.join(upwardRules, downwardRules);
-		}
+		RuleSet rules;
 		
-		return this.rules;
+		// TODO not only threshold should be changed (pruner and checker should be changed as well) - in fact RuleInducerComponents should be used instead
+		VCDomLEMParameters vcDomLEMParameters = VCDomLEMParameters.builder().consistencyThreshold(consistencyThreshold).build();
+		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), 
+								   new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold));
+		ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
+		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
+		ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
+		
+		RuleSet upwardRules = (new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtLeastProvider, unionRuleDecisionsProvider, consistencyThreshold);
+		RuleSet downwardRules = (new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtMostProvider, unionRuleDecisionsProvider, consistencyThreshold);
+		
+		rules = RuleSet.join(upwardRules, downwardRules);
+		
+		return rules;
 	}
 
 	/**
@@ -138,25 +126,24 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 */
 	@Override
 	public RuleSetWithCharacteristics induceRulesWithCharacteristics(InformationTable informationTable, double consistencyThreshold) {
-		if (this.rulesWithCharacteristics == null) {
-			VCDomLEMParameters vcDomLEMParameters = VCDomLEMParameters.builder().consistencyThreshold(consistencyThreshold).build();
-			Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), 
-									   new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold));
-			ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
-			ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
-			ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
-			
-			RuleSetWithComputableCharacteristics upwardRules = (RuleSetWithComputableCharacteristics)(new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtLeastProvider, unionRuleDecisionsProvider, consistencyThreshold);
-			RuleSetWithComputableCharacteristics downwardRules = (RuleSetWithComputableCharacteristics)(new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtMostProvider, unionRuleDecisionsProvider, consistencyThreshold);
-			
-			this.rulesWithCharacteristics = RuleSetWithCharacteristics.join(upwardRules, downwardRules);
-			// calculate strength so that it can be stored
-			for (int i = 0; i < this.rulesWithCharacteristics.size(); i++) {
-				this.rulesWithCharacteristics.getRuleCharacteristics(i).getStrength();
-			}
-		}
+		RuleSetWithCharacteristics rulesWithCharacteristics;
 		
-		return this.rulesWithCharacteristics;
+		// TODO not only threshold should be changed (pruner and checker should be changed as well) - in fact RuleInducerComponents should be used instead
+		VCDomLEMParameters vcDomLEMParameters = VCDomLEMParameters.builder().consistencyThreshold(consistencyThreshold).build();
+		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), 
+								   new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold));
+		ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
+		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
+		ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
+		
+		RuleSetWithComputableCharacteristics upwardRules = (RuleSetWithComputableCharacteristics)(new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtLeastProvider, unionRuleDecisionsProvider, consistencyThreshold);
+		upwardRules.calculateAllCharactericstis();
+		RuleSetWithComputableCharacteristics downwardRules = (RuleSetWithComputableCharacteristics)(new VCDomLEM(vcDomLEMParameters)).generateRules(unionAtMostProvider, unionRuleDecisionsProvider, consistencyThreshold);
+		downwardRules.calculateAllCharactericstis();
+		
+		rulesWithCharacteristics = RuleSetWithCharacteristics.join(upwardRules, downwardRules);
+		
+		return rulesWithCharacteristics;
 	}
 
 }
