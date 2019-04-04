@@ -23,12 +23,18 @@ package org.rulelearn.rules;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public interface RuleInducerComponentsProvider {
-	
+		
 	/**
-	 * Provides rule inducer components {@link RuleInducerComponents}.
+	 * TODO Provides rule inducer components {@link RuleInducerComponents}.
 	 * 
 	 * @return rule inducer components {@link RuleInducerComponents}
 	 */
-	public RuleInducerComponents provide();
+	public RuleInducerComponents provide(int i);
 	
+	/**
+	 * TODO Gets number of approximated sets that this provider has to offer.
+	 * 
+	 * @return number of approximated sets offered by this provider
+	 */
+	public int getCount();
 }

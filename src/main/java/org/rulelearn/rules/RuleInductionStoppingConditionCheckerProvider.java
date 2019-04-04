@@ -16,27 +16,23 @@
 
 package org.rulelearn.rules;
 
-import org.rulelearn.approximations.ApproximatedSet;
-
 /**
- * Contract for a provider of approximated sets {@link ApproximatedSet}. Each set is identified by its number on a list.
- * Each implementing class should ensure that the set of objects belonging to the approximated set obtained by {@code getApproximatedSet(i)}
- * does not include the set of objects belonging to the approximated set obtained by {@code getApproximatedSet(i+j)}, with j &gt; 0. 
+ * TODO RuleInductionStoppingConditionCheckerProvider
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface ApproximatedSetProvider {
-
+public interface RuleInductionStoppingConditionCheckerProvider {
+	
 	/**
-	 * Gets number of approximated sets that this provider has to offer.
+	 * TODO Gets number of approximated sets that this provider has to offer.
 	 * 
 	 * @return number of approximated sets offered by this provider
 	 */
 	public int getCount();
 	
 	/**
-	 * Gets i-th approximated set.
+	 * TODO Gets i-th approximated set.
 	 * 
 	 * @param i index of requested approximated set
 	 * @return i-th approximated set
@@ -44,6 +40,6 @@ public interface ApproximatedSetProvider {
 	 * @throws IndexOutOfBoundsException if given index is less than zero or
 	 *         greater or equal to the number of available approximated sets
 	 */
-	public ApproximatedSet getApproximatedSet(int i);
-	
+	public RuleInductionStoppingConditionChecker getStoppingConditionChecker(int i);
+
 }

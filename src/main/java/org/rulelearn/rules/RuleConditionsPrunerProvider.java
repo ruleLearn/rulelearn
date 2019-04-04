@@ -17,28 +17,29 @@
 package org.rulelearn.rules;
 
 /**
- * Contract of a checker verifying rule conditions {@link RuleConditions} against different stopping conditions involving an evaluation threshold,
- * like, e.g., satisfying consistency measure threshold. 
- * Other stopping conditions like reaching a given number of conditions may also be taken into account.
+ * TODO RuleConditionsPrunerProvider
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface RuleInductionStoppingConditionCheckerWithThreshold extends RuleInductionStoppingConditionChecker {
+public interface RuleConditionsPrunerProvider {
 
 	/**
-	 * Makes a copy of this stopping condition checker with given value of evaluation threshold.
+	 * TODO Gets number of approximated sets that this provider has to offer.
 	 * 
-	 * @param evaluationThreshold value of evaluation threshold
-	 * @return copy of stopping condition checker with given value of evaluation threshold
+	 * @return number of approximated sets offered by this provider
 	 */
-	public RuleInductionStoppingConditionCheckerWithThreshold copyWithNewThreshold(double evaluationThreshold);
+	public int getCount();
 	
 	/**
-	 * Gets value of evaluation threshold.
+	 * TODO Gets i-th approximated set.
 	 * 
-	 * @return value of evaluation threshold
+	 * @param i index of requested approximated set
+	 * @return i-th approximated set
+	 * 
+	 * @throws IndexOutOfBoundsException if given index is less than zero or
+	 *         greater or equal to the number of available approximated sets
 	 */
-	public double getThreshold();
+	public RuleConditionsPruner getRuleConditionsPruner(int i);
 	
 }

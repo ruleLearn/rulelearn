@@ -54,13 +54,13 @@ public class PossibleRuleInducerComponents extends RuleInducerComponents {
 	/**
 	 * Default checker used to determine occurrence of stopping condition of rule induction process {@link RuleInductionStoppingConditionChecker}.
 	 */
-	public static final RuleInductionStoppingConditionCheckerWithThreshold DEFAULT_STOPPING_CONDITION_CHECKER = 
-			new EvaluationAndCoverageStoppingConditionChecker(RelativeCoverageOutsideApproximationMeasure.getInstance(), 0.0); //TODO: change?
+	public static final RuleInductionStoppingConditionChecker DEFAULT_STOPPING_CONDITION_CHECKER = 
+			new EvaluationAndCoverageStoppingConditionChecker(RelativeCoverageOutsideApproximationMeasure.getInstance(), 0.0);
 	
 	/**
 	 * Default rule conditions pruner.
 	 */
-	public static final AbstractRuleConditionsPruner DEFAULT_RULE_CONDITIONS_PRUNER = new AttributeOrderRuleConditionsPruner(DEFAULT_STOPPING_CONDITION_CHECKER); //TODO: change?
+	public static final RuleConditionsPruner DEFAULT_RULE_CONDITIONS_PRUNER = new AttributeOrderRuleConditionsPruner(DEFAULT_STOPPING_CONDITION_CHECKER);
 	
 	/**
 	 * Contract of a builder of possible rule inducer components {@link PossibleRuleInducerComponents}.

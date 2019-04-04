@@ -47,42 +47,94 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 public class VCDomLEM {
 	
 	/**
-	 * VC-DomLEM parameters used for rule induction (private copy).
+	 * TODO
 	 */
-	VCDomLEMParameters vcDomLEMParameters; 
+	RuleInducerComponentsProvider ruleInducerComponentsProvider;
 	
 	/**
-	 * Constructs this rule induction algorithm, employing given parameters.
-	 * 
-	 * @param vcDomLEMParameters parameters used for rule induction
-	 * @throws NullPointerException if given object is {@code null} 
+	 * TODO
 	 */
-	public VCDomLEM(VCDomLEMParameters vcDomLEMParameters) {
-		Precondition.notNull(vcDomLEMParameters, "VC-DomLEM parameters are null.");
-		this.vcDomLEMParameters = vcDomLEMParameters;
-	}
+	ApproximatedSetProvider approximatedSetProvider;
 	
 	/**
-	 * Wrapper for {{@link #generateRules(ApproximatedSetProvider, ApproximatedSetRuleDecisionsProvider, double[])}, using given rule consistency threshold to build
-	 * an array of identical thresholds, one for each provided approximated set.
-	 * 
-	 * @param approximatedSetProvider see {@link #generateRules(ApproximatedSetProvider, ApproximatedSetRuleDecisionsProvider, double[])}
-	 * @param approximatedSetRuleDecisionsProvider see {@link #generateRules(ApproximatedSetProvider, ApproximatedSetRuleDecisionsProvider, double[])}
-	 * @param ruleConsistencyThreshold thresholds reflecting consistency of generated decision rules - this threshold is used for all provided approximated sets
-	 * @return see {@link #generateRules(ApproximatedSetProvider, ApproximatedSetRuleDecisionsProvider, double[])}
-	 * 
-	 * @throws NullPointerException NullPointerException if any of the parameters is {@code null}
+	 * TODO
 	 */
-	public RuleSet generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider, double ruleConsistencyThreshold) {
-		Precondition.notNull(approximatedSetProvider, "VC-DomLEM approximated set provider is null.");
+	ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider;
+	
+	/**
+	 * TODO
+	 * DummyRuleInducerComponentsProvider
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	private class DummyRuleInducerComponentsProvider implements RuleInducerComponentsProvider {
 		
-		double[] evaluationThresholds = new double[approximatedSetProvider.getCount()];
-		Arrays.fill(evaluationThresholds, ruleConsistencyThreshold);
-		return this.generateRules(approximatedSetProvider, approximatedSetRuleDecisionsProvider, evaluationThresholds);
+		private RuleInducerComponents components;
+		private int count;
+		
+		private DummyRuleInducerComponentsProvider(RuleInducerComponents components, int count) {
+			this.components = components;
+			this.count = count;
+		}
+
+		/* TODO (non-Javadoc)
+		 * @see org.rulelearn.rules.RuleInducerComponentsProvider#provide(int)
+		 */
+		@Override
+		public RuleInducerComponents provide(int i) {
+			if ((i >= 0) && (i < count)) {
+				return components;
+			}
+			else {
+				throw new IndexOutOfBoundsException("Requested rule inducer components do not exist at index: " + i + ".");
+			}
+		}
+
+		/* TODO (non-Javadoc)
+		 * @see org.rulelearn.rules.RuleInducerComponentsProvider#getCount()
+		 */
+		@Override
+		public int getCount() {
+			return count;
+		}
+		
 	}
 	
 	/**
-	 * Generates a minimal set of decision rules by VC-DomLEM algorithm. If certain rules are considered, rule conditions are generated using evaluations of objects from lower approximations.
+	 * TODO
+	 * @param componentsProvider
+	 * @param approximatedSetProvider
+	 * @param approximatedSetRuleDecisionsProvider
+	 * 
+	 * @throws NullPointerException TODO
+	 */
+	public VCDomLEM(RuleInducerComponentsProvider ruleInducerComponentsProvider, ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider) {
+		this.ruleInducerComponentsProvider = Precondition.notNull(ruleInducerComponentsProvider, "VC-DomLEM's components provider is null.");
+		this.approximatedSetProvider = Precondition.notNull(approximatedSetProvider, "VC-DomLEM's approximated set provider is null.");
+		this.approximatedSetRuleDecisionsProvider = Precondition.notNull(approximatedSetRuleDecisionsProvider, "VC-DomLEM's approximated set rule decisions provider is null.");
+		
+		if (ruleInducerComponentsProvider.getCount() != approximatedSetProvider.getCount()) {
+			throw new InvalidValueException("Different number of provided VC-DOMLEM's components and approximated sets.");
+		}
+	}
+	
+	/**
+	 * TODO
+	 * @param componentsProvider
+	 * @param approximatedSetProvider
+	 * @param approximatedSetRuleDecisionsProvider
+	 * 
+	 * @throws NullPointerException TODO
+	 */
+	public VCDomLEM(RuleInducerComponents ruleInducerComponentsProvider, ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider) {
+		this.ruleInducerComponentsProvider = new DummyRuleInducerComponentsProvider(ruleInducerComponentsProvider, approximatedSetProvider.getCount());
+		this.approximatedSetProvider = Precondition.notNull(approximatedSetProvider, "VC-DomLEM's approximated set provider is null.");
+		this.approximatedSetRuleDecisionsProvider = Precondition.notNull(approximatedSetRuleDecisionsProvider, "VC-DomLEM's approximated set rule decisions provider is null.");
+	}
+		
+	/**
+	 * TODO Generates a minimal set of decision rules by VC-DomLEM algorithm. If certain rules are considered, rule conditions are generated using evaluations of objects from lower approximations.
 	 * If possible rules are considered, rule conditions are generated using evaluations of objects from upper approximations.
 	 * 
 	 * @param approximatedSetProvider provides subsequent approximated sets to be processed; these sets are fetched using {@link ApproximatedSetProvider#getApproximatedSet(int)},
@@ -95,15 +147,7 @@ public class VCDomLEM {
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidValueException if the number of given rule consistency thresholds is different than the number of provided approximated sets (see {@link ApproximatedSetProvider#getCount()})
 	 */
-	public RuleSet generateRules(ApproximatedSetProvider approximatedSetProvider, ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider, double[] ruleConsistencyThresholds) {
-		Precondition.notNull(approximatedSetProvider, "VC-DomLEM approximated set provider is null.");
-		Precondition.notNull(approximatedSetRuleDecisionsProvider, "VC-DomLEM approximated set provider is null.");
-		Precondition.notNull(ruleConsistencyThresholds, "VC-DomLEM rule consistency thresholds are null.");
-		
-		if (approximatedSetProvider.getCount() != ruleConsistencyThresholds.length) {
-			throw new InvalidValueException("Different number of provided approximated sets and rule consistency thresholds in VC-DomLEM algorithm.");
-		}
-
+	public RuleSet generateRules() {		
 		List<RuleConditionsWithApproximatedSet> minimalRuleConditionsWithApproximatedSets = new ObjectArrayList<RuleConditionsWithApproximatedSet>(); //rule conditions for approximated sets considered so far
 		List<RuleConditions> approximatedSetRuleConditions; //rule conditions for current approximated set
 		List<RuleConditionsWithApproximatedSet> verifiedRuleConditionsWithApproximatedSet; //minimal rule conditions for current approximated set
@@ -111,16 +155,17 @@ public class VCDomLEM {
 		
 		int approximatedSetsCount = approximatedSetProvider.getCount(); //supplementary variable
 		ApproximatedSet approximatedSet; //supplementary variable
+		RuleInducerComponents ruleInducerComponents;
 		
 		for (int i = 0; i < approximatedSetsCount; i++) {
+			ruleInducerComponents = ruleInducerComponentsProvider.provide(i);
 			approximatedSet = approximatedSetProvider.getApproximatedSet(i);
-			approximatedSetRuleConditions = calculateApproximatedSetRuleConditions(approximatedSet, vcDomLEMParameters.getRuleType(), vcDomLEMParameters.getAllowedNegativeObjectsType(),
-					approximatedSetRuleDecisionsProvider);
+			approximatedSetRuleConditions = calculateApproximatedSetRuleConditions(ruleInducerComponents, approximatedSet);
 			
 			verifiedRuleConditionsWithApproximatedSet = new ObjectArrayList<RuleConditionsWithApproximatedSet>();
 			for (RuleConditions ruleConditions : approximatedSetRuleConditions) { //verify minimality of each rule conditions
 				ruleConditionsWithApproximatedSet = new RuleConditionsWithApproximatedSet(ruleConditions, approximatedSet); 
-				if (vcDomLEMParameters.getRuleMinimalityChecker().check(minimalRuleConditionsWithApproximatedSets, ruleConditionsWithApproximatedSet)) {
+				if (ruleInducerComponents.getRuleMinimalityChecker().check(minimalRuleConditionsWithApproximatedSets, ruleConditionsWithApproximatedSet)) {
 					verifiedRuleConditionsWithApproximatedSet.add(ruleConditionsWithApproximatedSet);
 				}
 			}
@@ -133,7 +178,7 @@ public class VCDomLEM {
 		int ruleIndex = 0;
 		
 		for (RuleConditionsWithApproximatedSet minimalRuleConditionsWithApproximatedSet : minimalRuleConditionsWithApproximatedSets ) {
-			rules[ruleIndex] = new Rule(vcDomLEMParameters.getRuleType(), approximatedSetRuleDecisionsProvider.getRuleSemantics(minimalRuleConditionsWithApproximatedSet.getApproximatedSet()),
+			rules[ruleIndex] = new Rule(minimalRuleConditionsWithApproximatedSet.getRuleConditions().getRuleType(), approximatedSetRuleDecisionsProvider.getRuleSemantics(minimalRuleConditionsWithApproximatedSet.getApproximatedSet()),
 					minimalRuleConditionsWithApproximatedSet.getRuleConditions(),
 					approximatedSetRuleDecisionsProvider.getRuleDecisions(minimalRuleConditionsWithApproximatedSet.getApproximatedSet()));
 			ruleCoverageInformationArray[ruleIndex] = minimalRuleConditionsWithApproximatedSet.getRuleConditions().getRuleCoverageInformation();
@@ -144,7 +189,7 @@ public class VCDomLEM {
 	}
 	
 	/**
-	 * Generates a set of rule conditions for a single approximated set.
+	 * TODO Generates a set of rule conditions for a single approximated set.
 	 *  
 	 * @param approximatedSet considered approximated set
 	 * @param ruleType type of decision rules whose condition parts are going to be calculated
@@ -160,11 +205,13 @@ public class VCDomLEM {
 	 *         {@link AllowedNegativeObjectsType#ANY_REGION};
 	 *         for possible decision rules it should be set to {@link AllowedNegativeObjectsType#APPROXIMATION}
 	 */
-	private List<RuleConditions> calculateApproximatedSetRuleConditions(ApproximatedSet approximatedSet, RuleType ruleType, AllowedNegativeObjectsType allowedCoveredNegativeObjectsType,
-			ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider) {
+	private List<RuleConditions> calculateApproximatedSetRuleConditions(RuleInducerComponents ruleInducerComponents, ApproximatedSet approximatedSet) {
 		List<RuleConditions> approximatedSetRuleConditions = new ObjectArrayList<RuleConditions>(); //the result
 		
 		IntSortedSet indicesOfApproximationObjects = null; //set of objects that need to be covered (each object by at least one rule conditions)
+		RuleType ruleType = ruleInducerComponents.getRuleType();
+		AllowedNegativeObjectsType allowedCoveredNegativeObjectsType = ruleInducerComponents.getAllowedNegativeObjectsType();
+		
 		switch (ruleType) {
 		case CERTAIN:
 			indicesOfApproximationObjects = approximatedSet.getLowerApproximation();
@@ -225,10 +272,10 @@ public class VCDomLEM {
 					indicesOfConsideredObjects, approximatedSet.getInformationTable(),
 					approximatedSet.getObjects(), indicesOfApproximationObjects, IntSets.unmodifiable(indicesOfObjectsThatCanBeCovered), approximatedSet.getNeutralObjects(),
 					ruleType, approximatedSetRuleDecisionsProvider.getRuleSemantics(approximatedSet),
-					vcDomLEMParameters.getConditionGenerator(), vcDomLEMParameters.getRuleInductionStoppingConditionChecker(), vcDomLEMParameters.getConditionSeparator());
+					ruleInducerComponents.getConditionGenerator(), ruleInducerComponents.getRuleInductionStoppingConditionChecker(), ruleInducerComponents.getConditionSeparator());
 			ruleConditions = ruleConditionsBuilder.build(); //build rule conditions
 			
-			ruleConditions = vcDomLEMParameters.getRuleConditionsPruner().prune(ruleConditions); //prune built rule conditions by removing redundant elementary conditions
+			ruleConditions = ruleInducerComponents.getRuleConditionsPruner().prune(ruleConditions); //prune built rule conditions by removing redundant elementary conditions
 			approximatedSetRuleConditions.add(ruleConditions);
 			
 			//remove objects covered by the new rule conditions
@@ -237,16 +284,17 @@ public class VCDomLEM {
 			setB.removeAll(setOfIndicesOfCoveredObjects);
 		}
 	
-		return vcDomLEMParameters.getRuleConditionsSetPruner().prune(approximatedSetRuleConditions, indicesOfApproximationObjects); //remove redundant rules, but keep covered all objects from lower/upper approximation
+		return ruleInducerComponents.getRuleConditionsSetPruner().prune(approximatedSetRuleConditions, indicesOfApproximationObjects); //remove redundant rules, but keep covered all objects from lower/upper approximation
 	}
 	
 	/**
+	 * TODO
 	 * Gets parameters used during induction of decision rules by VC-DomLEMalgorithm.
 	 *  
 	 * @return parameters used during induction of decision rules
 	 */
-	public VCDomLEMParameters getParameters() {
-		return this.vcDomLEMParameters;
+	public RuleInducerComponentsProvider getRuleInducerComponentsProvider() {
+		return this.ruleInducerComponentsProvider;
 	}
 
 }
