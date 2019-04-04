@@ -17,7 +17,8 @@
 package org.rulelearn.rules;
 
 /**
- * Type of negative objects allowed to be covered by rule conditions {@link RuleConditions}, apart from positive objects, determining the way of construction of these rule conditions.
+ * Type of negative objects allowed to be covered by {@link RuleConditions rule conditions}, apart from positive objects, and apart from neutral objects,
+ * determining the way of construction of the rule conditions.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
