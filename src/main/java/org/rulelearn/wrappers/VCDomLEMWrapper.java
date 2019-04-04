@@ -22,6 +22,7 @@ import org.rulelearn.approximations.Unions;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator;
 import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.Precondition;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
@@ -38,7 +39,7 @@ import org.rulelearn.rules.UnionWithSingleLimitingDecisionRuleDecisionsProvider;
 import org.rulelearn.rules.VCDomLEM;
 
 /**
- * Wraps VC-DomLEM rule induction algorithm.
+ * Wraps VC-DomLEM rule induction algorithm. TODO: more information
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -50,9 +51,12 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 * 
 	 * @return {@inheritDoc}
 	 * @throws InvalidValueException InvalidValueException when informationTable does not contain decision attribute/attributes
+	 * @throws NullPointerException if given information table is {@code null}
 	 */
 	@Override
 	public RuleSet induceRules(InformationTable informationTable) {
+		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper is null.");
+		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().build();
 		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
 		ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
@@ -71,9 +75,12 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 * 
 	 * @return {@inheritDoc}
 	 * @throws InvalidValueException when informationTable does not contain decision attribute/attributes
+	 * @throws NullPointerException if given information table is {@code null}
 	 */
 	@Override
 	public RuleSet induceRules(InformationTable informationTable, double consistencyThreshold) {
+		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper employing consistency threshold is null.");
+		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
 				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);	
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
