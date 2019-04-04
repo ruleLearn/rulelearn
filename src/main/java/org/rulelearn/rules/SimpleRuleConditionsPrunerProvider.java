@@ -16,35 +16,54 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.Precondition;
 
 /**
- * TODO SimpleRuleConditionsPrunerProvider
+ * Simple rule conditions pruner provider, constructed using and array of {@link RuleConditionsPruner rule conditions pruners},
+ * and capable of providing any of these pruners, by its index.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class SimpleRuleConditionsPrunerProvider implements RuleConditionsPrunerProvider {
 
+	/**
+	 * Provided {@link RuleConditionsPruner rule condition pruners}.
+	 */
 	RuleConditionsPruner[] ruleCondtionPruners;
 	
 	/**
-	 * TODO 
+	 * Constructor storing given array of {@link RuleConditionsPruner rule condition pruners}.
+	 * 
+	 * @param ruleCondtionPruners array of rule condition pruners to be stored in this provider
+	 * 
+	 * @throws NullPointerException if given array is {@code null}
+	 * @throws NullPointerException if any of the elements of the given array is {@code null}
+	 * @throws InvalidSizeException if given array is empty
 	 */
 	public SimpleRuleConditionsPrunerProvider(RuleConditionsPruner[] ruleCondtionPruners) {
-		this.ruleCondtionPruners = Precondition.notNullWithContents(ruleCondtionPruners, "Provided rule conditions pruners are null.", "Provided rule conditions pruner %i is null.");
+		this.ruleCondtionPruners = Precondition.nonEmpty(Precondition.notNullWithContents(ruleCondtionPruners,
+				"Provided rule conditions pruners are null.",
+				"Provided rule conditions pruner is null at index %i."), "Array with rule conditions pruners is empty.");
 	}
 	
-	/* TODO (non-Javadoc)
-	 * @see org.rulelearn.rules.RuleConditionsPrunerProvider#getCount()
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
 	 */
 	@Override
 	public int getCount() {
 		return ruleCondtionPruners.length;
 	}
 
-	/* TODO (non-Javadoc)
-	 * @see org.rulelearn.rules.RuleConditionsPrunerProvider#getRuleConditionsPruner(int)
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param i {@inheritDoc}
+	 * @return {@inheritDoc}
+	 * @throws IndexOutOfBoundsException {@inheritDoc}
 	 */
 	@Override
 	public RuleConditionsPruner getRuleConditionsPruner(int i) {

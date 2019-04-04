@@ -17,7 +17,7 @@
 package org.rulelearn.rules;
 
 /**
- * TODO RuleConditionsPrunerProvider
+ * Provider of {@link RuleConditionsPruner rule conditions pruners}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -25,20 +25,20 @@ package org.rulelearn.rules;
 public interface RuleConditionsPrunerProvider {
 
 	/**
-	 * TODO Gets number of approximated sets that this provider has to offer.
+	 * Gets number of rule conditions pruners that this provider has to offer.
 	 * 
-	 * @return number of approximated sets offered by this provider
+	 * @return number of rule conditions pruners offered by this provider
 	 */
 	public int getCount();
 	
 	/**
-	 * TODO Gets i-th approximated set.
+	 * Gets i-th rule conditions pruner.
 	 * 
-	 * @param i index of requested approximated set
-	 * @return i-th approximated set
+	 * @param i index of requested rule conditions pruners
+	 * @return i-th rule conditions pruners
 	 * 
 	 * @throws IndexOutOfBoundsException if given index is less than zero or
-	 *         greater or equal to the number of available approximated sets
+	 *         greater or equal to the number of available rule conditions pruners
 	 */
 	public RuleConditionsPruner getRuleConditionsPruner(int i);
 	

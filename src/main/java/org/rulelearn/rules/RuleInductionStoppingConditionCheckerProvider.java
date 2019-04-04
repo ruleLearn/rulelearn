@@ -17,7 +17,7 @@
 package org.rulelearn.rules;
 
 /**
- * TODO RuleInductionStoppingConditionCheckerProvider
+ * Contract of a provider of {@link RuleInductionStoppingConditionChecker rule induction stopping condition checkers}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -25,20 +25,20 @@ package org.rulelearn.rules;
 public interface RuleInductionStoppingConditionCheckerProvider {
 	
 	/**
-	 * TODO Gets number of approximated sets that this provider has to offer.
+	 * Gets number of {@link RuleInductionStoppingConditionChecker rule induction stopping condition checkers} that this provider has to offer.
 	 * 
-	 * @return number of approximated sets offered by this provider
+	 * @return number of stopping condition checkers offered by this provider
 	 */
 	public int getCount();
 	
 	/**
-	 * TODO Gets i-th approximated set.
+	 * Gets i-th {@link RuleInductionStoppingConditionChecker rule induction stopping condition checker}.
 	 * 
-	 * @param i index of requested approximated set
-	 * @return i-th approximated set
+	 * @param i index of requested stopping condition checker
+	 * @return i-th stopping condition checker
 	 * 
 	 * @throws IndexOutOfBoundsException if given index is less than zero or
-	 *         greater or equal to the number of available approximated sets
+	 *         greater or equal to the number of available stopping condition checkers
 	 */
 	public RuleInductionStoppingConditionChecker getStoppingConditionChecker(int i);
 

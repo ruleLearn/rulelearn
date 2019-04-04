@@ -16,10 +16,12 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.Precondition;
 
 /**
- * TODO SimpleRuleInductionStoppingConditionCheckerProvider
+ * Simple rule induction stopping condition checker provider, constructed using and array of {@link RuleInductionStoppingConditionChecker rule induction stopping condition checkers},
+ * and capable of providing any of these checkers, by its index.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -27,27 +29,41 @@ import org.rulelearn.core.Precondition;
 public class SimpleRuleInductionStoppingConditionCheckerProvider implements RuleInductionStoppingConditionCheckerProvider {
 
 	/**
-	 * TODO
+	 * Provided {@link RuleInductionStoppingConditionChecker rule induction stopping condition checkers}.
 	 */
 	RuleInductionStoppingConditionChecker[] stoppingConditionCheckers;
 	
 	/**
-	 * TODO
+	 * Constructor storing given array of {@link RuleInductionStoppingConditionChecker rule induction stopping condition checkers}.
+	 * 
+	 * @param stoppingConditionCheckers array of rule induction stopping condition checkers to be stored in this provider
+	 * 
+	 * @throws NullPointerException if given array is {@code null}
+	 * @throws NullPointerException if any of the elements of the given array is {@code null}
+	 * @throws InvalidSizeException if given array is empty
 	 */
 	public SimpleRuleInductionStoppingConditionCheckerProvider(RuleInductionStoppingConditionChecker[] stoppingConditionCheckers) {
-		this.stoppingConditionCheckers = Precondition.notNullWithContents(stoppingConditionCheckers, "Provided stopping condition checkers are null.", "Provided stopping condition checker %i is null.");
+		this.stoppingConditionCheckers = Precondition.nonEmpty(Precondition.notNullWithContents(stoppingConditionCheckers,
+				"Provided stopping condition checkers are null.",
+				"Provided stopping condition checker is null at index %i."), "Array with rule induction stopping condition checkers is empty.");
 	}
 	
-	/* TODO (non-Javadoc)
-	 * @see org.rulelearn.rules.RuleInductionStoppingConditionCheckerProvider#getCount()
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
 	 */
 	@Override
 	public int getCount() {
 		return stoppingConditionCheckers.length;
 	}
 
-	/* TODO (non-Javadoc)
-	 * @see org.rulelearn.rules.RuleInductionStoppingConditionCheckerProvider#getStoppingConditionChecker(int)
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param i {@inheritDoc}
+	 * @return {@inheritDoc}
+	 * @throws IndexOutOfBoundsException {@inheritDoc}
 	 */
 	@Override
 	public RuleInductionStoppingConditionChecker getStoppingConditionChecker(int i) {

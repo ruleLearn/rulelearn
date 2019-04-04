@@ -17,7 +17,7 @@
 package org.rulelearn.rules;
 
 /**
- * Contract of a provider of rule inducer components {@link RuleInducerComponents}.
+ * Contract of a provider of {@link RuleInducerComponents rule inducer components}.
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -25,16 +25,16 @@ package org.rulelearn.rules;
 public interface RuleInducerComponentsProvider {
 		
 	/**
-	 * TODO Provides rule inducer components {@link RuleInducerComponents}.
+	 * Provides i-th {@link RuleInducerComponents rule inducer components}.
 	 * 
-	 * @return rule inducer components {@link RuleInducerComponents}
+	 * @return {@link RuleInducerComponents rule inducer components}
 	 */
 	public RuleInducerComponents provide(int i);
 	
 	/**
-	 * TODO Gets number of approximated sets that this provider has to offer.
+	 * Gets number of {@link RuleInducerComponents rule inducer components} that this provider has to offer.
 	 * 
-	 * @return number of approximated sets offered by this provider
+	 * @return number of {@link RuleInducerComponents rule inducer components} offered by this provider
 	 */
 	public int getCount();
 }
