@@ -36,7 +36,7 @@ public class ThresholdChangingRuleInducerComponentsProvider implements RuleInduc
 	 * Indication whether pruner {@link AbstractRuleConditionsPruner} used by the builder is associated with a stopping condition checker {@link RuleInductionStoppingConditionCheckerWithThreshold}
 	 * and consequently needs to be updated when the stopping condition checker gets updated.
 	 */
-	boolean updatePruner = false;
+	boolean updatePruner;
 	
 	/**
 	 * Constructs provider with stopping condition checker {@link RuleInductionStoppingConditionCheckerWithThreshold} defined for different values of evaluation threshold. 
@@ -73,14 +73,6 @@ public class ThresholdChangingRuleInducerComponentsProvider implements RuleInduc
 		this.updatePruner = true;
 	}
 	
-	private RuleInductionStoppingConditionCheckerWithThreshold getBuilderRuleInductionStoppingConditionChecker() {
-		return (RuleInductionStoppingConditionCheckerWithThreshold)this.builder.ruleInductionStoppingConditionChecker(); //cast internally
-	}
-	
-	private AbstractRuleConditionsPruner getBuilderRuleConditionsPruner() {
-		return (AbstractRuleConditionsPruner)this.builder.ruleConditionsPruner(); //cast internally
-	}
-	
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -88,7 +80,7 @@ public class ThresholdChangingRuleInducerComponentsProvider implements RuleInduc
 	 */
 	@Override
 	public RuleInducerComponents provide() {
-		return this.builder.build();
+		return builder.build();
 	}
 	
 	/**
@@ -98,11 +90,15 @@ public class ThresholdChangingRuleInducerComponentsProvider implements RuleInduc
 	 * @return rule inducer components {@link RuleInducerComponents}
 	 */
 	public RuleInducerComponents provide(double evaluationThreshold) {
-		this.builder.ruleInductionStoppingConditionChecker(getBuilderRuleInductionStoppingConditionChecker().copyWithNewThreshold(evaluationThreshold)); //update builder's checker first
-		if (this.updatePruner) { //pruner depends on checker
-			this.builder.ruleConditionsPruner(getBuilderRuleConditionsPruner().copyWithNewStoppingConditionChecker(getBuilderRuleInductionStoppingConditionChecker())); //update builder's pruner too
+		RuleInductionStoppingConditionCheckerWithThreshold stoppingConditionCheckerWithThreshold = (RuleInductionStoppingConditionCheckerWithThreshold)builder.ruleInductionStoppingConditionChecker();
+		//update builder's checker first
+		builder.ruleInductionStoppingConditionChecker(stoppingConditionCheckerWithThreshold.copyWithNewThreshold(evaluationThreshold)); 
+		if (updatePruner) { //check if pruner depends on checker
+			AbstractRuleConditionsPruner ruleConditionsPruner = (AbstractRuleConditionsPruner)builder.ruleConditionsPruner();
+			//then update builder's pruner too
+			builder.ruleConditionsPruner(ruleConditionsPruner.copyWithNewStoppingConditionChecker(builder.ruleInductionStoppingConditionChecker())); 
 		}
-		return this.builder.build();
+		return builder.build();
 	}
 	
 }
