@@ -21,7 +21,8 @@ import static org.rulelearn.core.Precondition.notNull;
 import org.rulelearn.core.InvalidValueException;
 
 /**
- * Provider of rule inducer components {@link RuleInducerComponents} with stopping condition checkers {@link RuleInductionStoppingConditionCheckerWithThreshold}
+ * TODO
+ * Provider of {@link RuleInducerComponents rule inducer components} with {@link RuleInductionStoppingConditionChecker stopping condition checkers}
  * able to handle different values of evaluation threshold.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
@@ -30,7 +31,7 @@ import org.rulelearn.core.InvalidValueException;
 public class StoppingConditionsChangingRuleInducerComponentsProvider implements RuleInducerComponentsProvider {
 
 	/**
-	 * Builder used to provide rule inducer components {@link RuleInducerComponents}.
+	 * Builder used to provide {@link RuleInducerComponents rule inducer components}.
 	 */
 	RuleInducerComponents.Builder builder;
 	
@@ -45,12 +46,15 @@ public class StoppingConditionsChangingRuleInducerComponentsProvider implements 
 	RuleConditionsPrunerProvider ruleConditionsPrunerProvider;
 	
 	/**
-	 * TODO Constructs provider with stopping condition checker {@link RuleInductionStoppingConditionCheckerWithThreshold} defined for different values of evaluation threshold. 
+	 * TODO
+	 * Constructs provider with stopping condition checker defined for different values of evaluation threshold. 
 	 * It is assumed that other parts of rule induction process are not dependent on modification of value of evaluation threshold in stopping condition checker. 
 	 * In case when this is not true, different constructor should be used.  
 	 * 
-	 * @param builder builder of rule inducer components {@link RuleInducerComponents}
-	 * @param stoppingCondtionChecker stopping condition checker {@link RuleInductionStoppingConditionCheckerWithThreshold} able to handle different values of evaluation threshold
+	 * @param builder builder of {@link RuleInducerComponents rule inducer components}
+	 * @param stoppingCondtionCheckerProvider stopping condition checker provider TODO
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public StoppingConditionsChangingRuleInducerComponentsProvider(RuleInducerComponents.Builder builder, RuleInductionStoppingConditionCheckerProvider stoppingCondtionCheckerProvider) {
 		this.builder = notNull(builder, "Provdided rule components builder is null.");
@@ -60,16 +64,19 @@ public class StoppingConditionsChangingRuleInducerComponentsProvider implements 
 	}
 	
 	/**
-	 * TODO Constructs provider with stopping condition checker {@link RuleInductionStoppingConditionCheckerWithThreshold} defined for different values of evaluation threshold, and rule conditions pruner associated with the checker.
+	 * TODO
+	 * Constructs provider with stopping condition checker defined for different values of evaluation threshold,
+	 * and rule conditions pruner associated with the checker.
 	 * 
-	 * @param builder builder of rule inducer components {@link RuleInducerComponents}
-	 * @param stoppingCondtionChecker stopping condition checker {@link RuleInductionStoppingConditionCheckerWithThreshold} able to handle different values of evaluation threshold
-	 * @param pruner rule conditions pruner associated with the stopping condition checker (it will be updated every time stopping condition checker is modified)
+	 * @param builder builder of {@link RuleInducerComponents rule inducer components}
+	 * @param stoppingCondtionCheckerProvider stopping condition checker provider TODO
+	 * @param ruleConditionsPrunerProvider rule conditions pruner provider TODO
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidValueException TODO
 	 */
-	public StoppingConditionsChangingRuleInducerComponentsProvider(RuleInducerComponents.Builder builder, RuleInductionStoppingConditionCheckerProvider stoppingCondtionCheckerProvider, RuleConditionsPrunerProvider ruleConditionsPrunerProvider) {
+	public StoppingConditionsChangingRuleInducerComponentsProvider(RuleInducerComponents.Builder builder, RuleInductionStoppingConditionCheckerProvider stoppingCondtionCheckerProvider,
+			RuleConditionsPrunerProvider ruleConditionsPrunerProvider) {
 		this.builder = notNull(builder, "Provdided rule components builder is null.");
 		// set stopping condition checker provider
 		this.stoppingCondtionCheckerProvider = notNull(stoppingCondtionCheckerProvider, "Provided rule induction stopping condition checker provider is null.");
@@ -80,8 +87,10 @@ public class StoppingConditionsChangingRuleInducerComponentsProvider implements 
 		}
 	}
 	
-	/* TODO (non-Javadoc)
-	 * @see org.rulelearn.rules.RuleInducerComponentsProvider#provide(int)
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param i {@inheritDoc}
 	 */
 	@Override
 	public RuleInducerComponents provide(int i) {
@@ -94,8 +103,10 @@ public class StoppingConditionsChangingRuleInducerComponentsProvider implements 
 		return builder.build();
 	}
 
-	/* TODO (non-Javadoc)
-	 * @see org.rulelearn.rules.RuleInducerComponentsProvider#getCount()
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
 	 */
 	@Override
 	public int getCount() {

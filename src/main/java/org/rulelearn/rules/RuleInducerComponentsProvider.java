@@ -27,6 +27,7 @@ public interface RuleInducerComponentsProvider {
 	/**
 	 * Provides i-th {@link RuleInducerComponents rule inducer components}.
 	 * 
+	 * @param i index of rule inducer components to be provided
 	 * @return {@link RuleInducerComponents rule inducer components}
 	 */
 	public RuleInducerComponents provide(int i);

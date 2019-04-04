@@ -20,7 +20,7 @@ import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.RuleSet;
 
 /**
- * Wraps an rule induction algorithm.
+ * Wraps a rule induction algorithm.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

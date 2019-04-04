@@ -50,7 +50,7 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 * {@inheritDoc}
 	 * 
 	 * @return {@inheritDoc}
-	 * @throws InvalidValueException InvalidValueException when informationTable does not contain decision attribute/attributes
+	 * @throws InvalidValueException InvalidValueException when informationTable does not contain decision attribute/attributes TODO: verify if this exception can be thrown
 	 * @throws NullPointerException if given information table is {@code null}
 	 */
 	@Override
@@ -74,7 +74,7 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 * {@inheritDoc}
 	 * 
 	 * @return {@inheritDoc}
-	 * @throws InvalidValueException when informationTable does not contain decision attribute/attributes
+	 * @throws InvalidValueException when informationTable does not contain decision attribute/attributes TODO: verify if this exception can be thrown
 	 * @throws NullPointerException if given information table is {@code null}
 	 */
 	@Override
