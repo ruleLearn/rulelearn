@@ -37,7 +37,7 @@ public interface VariableConsistencyRuleInducerWrapper extends RuleInducerWrappe
 	 * 
 	 * @return induced {@link RuleSet rules}
 	 * @throws InvalidValueException InvalidValueException when informationTable does not contain decision attribute/attributes - see
-	 * 		{@link InformationTableWithDecisionDistributions#InformationTableWithDecisionDistributions(InformationTable)}
+	 * 		{@link org.rulelearn.data.InformationTableWithDecisionDistributions#InformationTableWithDecisionDistributions(InformationTable)}
 	 * @throws NullPointerException if given information table is {@code null}
 	 */
 	public RuleSet induceRules(InformationTable informationTable, double consistencyThreshold);

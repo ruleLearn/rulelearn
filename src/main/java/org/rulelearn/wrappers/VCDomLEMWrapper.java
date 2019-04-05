@@ -39,7 +39,11 @@ import org.rulelearn.rules.UnionWithSingleLimitingDecisionRuleDecisionsProvider;
 import org.rulelearn.rules.VCDomLEM;
 
 /**
- * Wraps {@link VCDomLEM VC-DomLEM rule induction algorithm}.
+ * Wraps {@link VCDomLEM VC-DomLEM rule induction algorithm}.<br>
+ * <br>
+ * For a given information table, induces only certain decision rules (both "at least" and "at most" ones), according to the Dominance-based Rough Set Approach (DRSA),
+ * or according to the Variable Consistency Dominance-based Rough Set Approach (VC-DRSA). In the latter case, employs
+ * epsilon consistency measure and single consistency threshold used for all upward/downward unions of decision classes.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
