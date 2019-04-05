@@ -52,8 +52,8 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 * @param informationTable {@inheritDoc}
 	 * 
 	 * @return {@inheritDoc}
-	 * @throws InvalidValueException InvalidValueException when informationTable does not contain decision attribute/attributes TODO: verify if this exception can be thrown
-	 * @throws NullPointerException if given information table is {@code null}
+	 * @throws InvalidValueException {@inheritDoc}
+	 * @throws NullPointerException {@inheritDoc}
 	 */
 	@Override
 	public RuleSet induceRules(InformationTable informationTable) {
@@ -78,8 +78,8 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 * @param consistencyThreshold {@inheritDoc} 
 	 * 
 	 * @return {@inheritDoc}
-	 * @throws InvalidValueException when informationTable does not contain decision attribute/attributes TODO: verify if this exception can be thrown
-	 * @throws NullPointerException if given information table is {@code null}
+	 * @throws InvalidValueException {@inheritDoc}
+	 * @throws NullPointerException {@inheritDoc}
 	 */
 	@Override
 	public RuleSet induceRules(InformationTable informationTable, double consistencyThreshold) {

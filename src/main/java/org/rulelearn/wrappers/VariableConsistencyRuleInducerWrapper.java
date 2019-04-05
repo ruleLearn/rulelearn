@@ -36,7 +36,8 @@ public interface VariableConsistencyRuleInducerWrapper extends RuleInducerWrappe
 	 * @param consistencyThreshold threshold on a {@link ConsistencyMeasure consistency measure}
 	 * 
 	 * @return induced {@link RuleSet rules}
-	 * @throws InvalidValueException InvalidValueException when informationTable does not contain decision attribute/attributes TODO: verify if this exception can be thrown
+	 * @throws InvalidValueException InvalidValueException when informationTable does not contain decision attribute/attributes - see
+	 * 		{@link InformationTableWithDecisionDistributions#InformationTableWithDecisionDistributions(InformationTable)}
 	 * @throws NullPointerException if given information table is {@code null}
 	 */
 	public RuleSet induceRules(InformationTable informationTable, double consistencyThreshold);
