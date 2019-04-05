@@ -20,6 +20,7 @@ import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.measures.ConsistencyMeasure;
 import org.rulelearn.rules.RuleSet;
+import org.rulelearn.rules.RuleSetWithCharacteristics;
 
 /**
  * Contract of a wrapper of a variable consistency rule induction algorithm.
@@ -33,13 +34,32 @@ public interface VariableConsistencyRuleInducerWrapper extends RuleInducerWrappe
 	 * Induces a set of rules, satisfying a threshold with respect to a consistency measure, covering objects from an information table.
 	 * 
 	 * @param informationTable an {@link InformationTable information table}
-	 * @param consistencyThreshold threshold on a {@link ConsistencyMeasure consistency measure}
+	 * @param consistencyThreshold threshold concerning considered {@link ConsistencyMeasure consistency measure} which has to be reached
+	 *        by an object from an information table to be assigned to the lower approximation of an approximated set considered
+	 *        during induction of decision rules
 	 * 
 	 * @return induced {@link RuleSet rules}
-	 * @throws InvalidValueException InvalidValueException when informationTable does not contain decision attribute/attributes - see
-	 * 		{@link org.rulelearn.data.InformationTableWithDecisionDistributions#InformationTableWithDecisionDistributions(InformationTable)}
+	 * 
+	 * @throws InvalidValueException InvalidValueException when the information table does not contain decision attribute/attributes - see
+	 * 		   {@link org.rulelearn.data.InformationTableWithDecisionDistributions#InformationTableWithDecisionDistributions(InformationTable)}
 	 * @throws NullPointerException if given information table is {@code null}
 	 */
 	public RuleSet induceRules(InformationTable informationTable, double consistencyThreshold);
 	
+	/**
+	 * Induces a set of rules, satisfying a threshold with respect to a consistency measure, covering objects from an information table,
+	 * and provides characteristics for these rules.
+	 * 
+	 * @param informationTable an {@link InformationTable information table}
+	 * @param consistencyThreshold threshold concerning considered {@link ConsistencyMeasure consistency measure} which has to be reached
+	 *        by an object from an information table to be assigned to the lower approximation of an approximated set considered
+	 *        during induction of decision rules
+	 * 
+	 * @return induced {@link RuleSetWithCharacteristics rules with characteristics}
+	 * 
+	 * @throws InvalidValueException InvalidValueException when the information table does not contain decision attribute/attributes - see
+	 * 		   {@link org.rulelearn.data.InformationTableWithDecisionDistributions#InformationTableWithDecisionDistributions(InformationTable)}
+	 * @throws NullPointerException if given information table is {@code null}
+	 */
+	public RuleSetWithCharacteristics induceRulesWithCharacteristics (InformationTable informationTable, double consistencyThreshold);
 }

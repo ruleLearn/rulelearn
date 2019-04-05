@@ -135,7 +135,7 @@ public class VCDomLEM {
 		this.approximatedSetRuleDecisionsProvider = Precondition.notNull(approximatedSetRuleDecisionsProvider, "VC-DomLEM's approximated set rule decisions provider is null.");
 		
 		if (ruleInducerComponentsProvider.getCount() != approximatedSetProvider.getCount()) {
-			throw new InvalidValueException("Different number of rule inducer components and approximated sets provided to VC-DOMLEM algorithm.");
+			throw new InvalidValueException("Different number of rule inducer components and approximated sets provided to VC-DomLEM algorithm.");
 		}
 	}
 	
@@ -158,7 +158,7 @@ public class VCDomLEM {
 	 * Generates a minimal set of decision rules by VC-DomLEM algorithm. If certain rules are considered, rule conditions are generated using evaluations of objects from lower approximations.
 	 * If possible rules are considered, rule conditions are generated using evaluations of objects from upper approximations.
 	 * 
-	 * @return set of induced decision rules
+	 * @return set of induced decision rules with computable characteristics {@link RuleSetWithComputableCharacteristics}
 	 */
 	public RuleSetWithComputableCharacteristics generateRules() {	
 		List<RuleConditionsWithApproximatedSet> minimalRuleConditionsWithApproximatedSets = new ObjectArrayList<RuleConditionsWithApproximatedSet>(); //rule conditions for approximated sets considered so far
@@ -207,9 +207,9 @@ public class VCDomLEM {
 	 * Generates a set of rule conditions for a single approximated set.
 	 *  
 	 * @param ruleInducerComponents {@link RuleInducerComponents rule inducer components} determining set of rule conditions induced for the given approximated set
-	 * @param approximatedSet considered approximated set
+	 * @param approximatedSet considered {@link ApproximatedSet approximated set}
 	 *        
-	 * @return list of rule conditions {@link RuleConditions} generated for considered components and approximated set
+	 * @return list of {@link RuleConditions rule conditions} generated for considered components and approximated set
 	 */
 	private List<RuleConditions> calculateApproximatedSetRuleConditions(RuleInducerComponents ruleInducerComponents, ApproximatedSet approximatedSet) {
 		List<RuleConditions> approximatedSetRuleConditions = new ObjectArrayList<RuleConditions>(); //the result
