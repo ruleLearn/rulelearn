@@ -71,9 +71,10 @@ public class VCDomLEM {
 	private class DummyRuleInducerComponentsProvider implements RuleInducerComponentsProvider {
 		
 		/**
-		 * Constant rule inducer components.
+		 * Constant rule inducer components (i.e., the only rule inducer components which are provided).
 		 */
 		private RuleInducerComponents ruleInducerComponents;
+		
 		/**
 		 * Number of provided components.
 		 */

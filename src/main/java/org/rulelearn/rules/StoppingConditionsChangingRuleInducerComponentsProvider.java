@@ -21,9 +21,7 @@ import static org.rulelearn.core.Precondition.notNull;
 import org.rulelearn.core.InvalidValueException;
 
 /**
- * TODO
- * Provider of {@link RuleInducerComponents rule inducer components} with {@link RuleInductionStoppingConditionChecker stopping condition checkers}
- * able to handle different values of evaluation threshold.
+ * Provider of {@link RuleInducerComponents rule inducer components} with different {@link RuleInductionStoppingConditionChecker stopping condition checkers}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -36,23 +34,24 @@ public class StoppingConditionsChangingRuleInducerComponentsProvider implements 
 	RuleInducerComponents.Builder builder;
 	
 	/**
-	 * TODO
+	 * Provider of {@link RuleInductionStoppingConditionChecker rule induction stopping condition checkers}.
 	 */
 	RuleInductionStoppingConditionCheckerProvider stoppingCondtionCheckerProvider;
 	
 	/**
-	 * TODO
+	 * Provider of {@link RuleConditionsPruner rule conditions pruners}.
 	 */
 	RuleConditionsPrunerProvider ruleConditionsPrunerProvider;
 	
 	/**
-	 * TODO
-	 * Constructs provider with stopping condition checker defined for different values of evaluation threshold. 
-	 * It is assumed that other parts of rule induction process are not dependent on modification of value of evaluation threshold in stopping condition checker. 
-	 * In case when this is not true, different constructor should be used.  
+	 * Constructs this provider of rule inducer components with a given {@link RuleInductionStoppingConditionCheckerProvider rule induction stopping condition checker provider}.<br>
+	 * It is assumed that other rule inducer components, which are provided by this provider, are not dependent on {@link RuleInductionStoppingConditionChecker rule induction stopping condition checkers} 
+	 * provided by the given rule induction stopping condition checker provider.<br>
+	 *   
+	 * In case when this is not true, different a constructor should be used.<br>  
 	 * 
 	 * @param builder builder of {@link RuleInducerComponents rule inducer components}
-	 * @param stoppingCondtionCheckerProvider stopping condition checker provider TODO
+	 * @param stoppingCondtionCheckerProvider provider of {@link RuleInductionStoppingConditionChecker rule induction stopping condition checkers}
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
@@ -64,16 +63,17 @@ public class StoppingConditionsChangingRuleInducerComponentsProvider implements 
 	}
 	
 	/**
-	 * TODO
-	 * Constructs provider with stopping condition checker defined for different values of evaluation threshold,
-	 * and rule conditions pruner associated with the checker.
+	 * Constructs this provider of rule inducer components with a given {@link RuleInductionStoppingConditionCheckerProvider rule induction stopping condition checker provider}, 
+	 * and a given {@link RuleConditionsPrunerProvider rule conditions pruner provider}.<br> 
+	 * It is assumed that {@link RuleConditionsPruner rule condition pruners} are dependent on {@link RuleInductionStoppingConditionChecker rule induction stopping condition checkers}. 
+	 * Both needs to be defined explicitly while constructing this rule inducer components provider.<br>
 	 * 
 	 * @param builder builder of {@link RuleInducerComponents rule inducer components}
-	 * @param stoppingCondtionCheckerProvider stopping condition checker provider TODO
-	 * @param ruleConditionsPrunerProvider rule conditions pruner provider TODO
+	 * @param stoppingCondtionCheckerProvider provider of {@link RuleInductionStoppingConditionChecker rule induction stopping condition checkers}
+	 * @param ruleConditionsPrunerProvider provider of {@link RuleConditionsPruner rule condition pruners}
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
-	 * @throws InvalidValueException TODO
+	 * @throws InvalidValueException if the number of stopping condition checkers and the number rule conditions pruners specified by providers differ
 	 */
 	public StoppingConditionsChangingRuleInducerComponentsProvider(RuleInducerComponents.Builder builder, RuleInductionStoppingConditionCheckerProvider stoppingCondtionCheckerProvider,
 			RuleConditionsPrunerProvider ruleConditionsPrunerProvider) {
@@ -83,7 +83,7 @@ public class StoppingConditionsChangingRuleInducerComponentsProvider implements 
 		// set pruner provider
 		this.ruleConditionsPrunerProvider = notNull(ruleConditionsPrunerProvider, "Provided rule conditions pruner provider is null.");
 		if (this.stoppingCondtionCheckerProvider.getCount() != this.ruleConditionsPrunerProvider.getCount()) {
-			throw new InvalidValueException("Different number of stopping condition checkers and rule conditions pruners.");
+			throw new InvalidValueException("Different number of stopping condition checkers and rule conditions pruners in providers.");
 		}
 	}
 	
@@ -91,6 +91,10 @@ public class StoppingConditionsChangingRuleInducerComponentsProvider implements 
 	 * {@inheritDoc}
 	 * 
 	 * @param i {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * @throws IndexOutOfBoundsException if given index is less than zero or
+	 *         greater or equal to the number of available stopping condition checkers
 	 */
 	@Override
 	public RuleInducerComponents provide(int i) {

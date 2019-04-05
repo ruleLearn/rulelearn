@@ -17,7 +17,7 @@
 package org.rulelearn.rules;
 
 /**
- * Provider of {@link RuleConditionsPruner rule conditions pruners}.
+ * Contract of a provider of {@link RuleConditionsPruner rule conditions pruners}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
