@@ -44,9 +44,11 @@ import org.rulelearn.rules.VCDomLEM;
 /**
  * Wraps {@link VCDomLEM VC-DomLEM rule induction algorithm}.<br>
  * <br>
- * For a given information table, induces only certain decision rules (both "at least" and "at most" ones), according to the Dominance-based Rough Set Approach (DRSA),
- * or according to the Variable Consistency Dominance-based Rough Set Approach (VC-DRSA). In the former case, induces rules using default {@link CertainRuleInducerComponents
- * certain rule inducer components}. In the latter case, employs:
+ * For a given information table, induces certain decision rules (more precisely, both types of decision rules: "at least" and "at most").
+ * These certain decision rules are induced according to the Dominance-based Rough Set Approach (DRSA), 
+ * or according to the Variable Consistency Dominance-based Rough Set Approach (VC-DRSA). 
+ * In the former case, this wrapper induces rules using default {@link CertainRuleInducerComponents certain rule inducer components}. 
+ * In the latter case, it employs:
  * <ul>
  * <li>{@link EpsilonConsistencyMeasure epsilon consistency measure}, both for calculating lower approximations
  * of {@link UnionsWithSingleLimitingDecision unions of ordered decision classes} and for evaluating {@link RuleConditions rule conditions}
