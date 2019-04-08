@@ -38,6 +38,17 @@ public class AttributeOrderRuleConditionsPruner extends AbstractRuleConditionsPr
 	public AttributeOrderRuleConditionsPruner(RuleInductionStoppingConditionChecker stoppingConditionChecker) {
 		super(stoppingConditionChecker);
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param stoppingConditionChecker {@inheritDoc}
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public AbstractRuleConditionsPruner copyWithNewStoppingConditionChecker(RuleInductionStoppingConditionChecker stoppingConditionChecker) {
+		return new AttributeOrderRuleConditionsPruner(stoppingConditionChecker);
+	}
 
 	/**
 	 * {@inheritDoc}

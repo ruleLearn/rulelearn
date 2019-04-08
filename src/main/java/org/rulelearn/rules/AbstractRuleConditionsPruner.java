@@ -42,4 +42,12 @@ public abstract class AbstractRuleConditionsPruner implements RuleConditionsPrun
 		this.stoppingConditionChecker = Precondition.notNull(stoppingConditionChecker, "Rule induction stopping condition checker is null.");
 	}
 	
+	/**
+	 * Makes a copy of rule conditions pruner with provided stopping condition checker.
+	 * 
+	 * @param stoppingConditionChecker stopping condition checker {@link RuleInductionStoppingConditionChecker} stored in pruner
+	 * @return a copy of rule conditions pruner with provided stopping condition checker
+	 */
+	public abstract AbstractRuleConditionsPruner copyWithNewStoppingConditionChecker(RuleInductionStoppingConditionChecker stoppingConditionChecker);
+	
 }

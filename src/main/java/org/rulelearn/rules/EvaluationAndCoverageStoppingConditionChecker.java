@@ -116,5 +116,5 @@ public class EvaluationAndCoverageStoppingConditionChecker implements RuleInduct
 			return true;
 		}
 	}
-
+	
 }

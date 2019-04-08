@@ -41,6 +41,7 @@ public abstract class AbstractRuleConditionsPrunerWithEvaluators extends Abstrac
 	 *        these evaluators are to be considered lexicographically
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws NullPointerException if any of the elements of given array is {@code null}
 	 * @throws InvalidSizeException if given array of evaluators is empty
 	 */
 	public AbstractRuleConditionsPrunerWithEvaluators(RuleInductionStoppingConditionChecker stoppingConditionChecker, ConditionRemovalEvaluator[] conditionRemovalEvaluators) {

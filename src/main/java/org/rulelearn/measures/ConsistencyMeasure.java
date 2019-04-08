@@ -19,7 +19,7 @@ package org.rulelearn.measures;
 import org.rulelearn.approximations.ApproximatedSet;
 
 /**
- * Contract for all classes representing consistency measures.
+ * Contract for all classes representing consistency measures, measuring consistency of an object with respect to an {@link ApproximatedSet approximated set}.
  * 
  * @param <T> type of approximated set for which the consistency measure can be calculated
  *
