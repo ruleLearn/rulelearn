@@ -23,6 +23,8 @@ import org.rulelearn.core.OperationsOnCollections;
 /**
  * Characteristics of a decision rule, calculated using rule coverage information {@link RuleCoverageInformation}. This class extends {@link RuleCharacteristics}
  * by ensuring that if any characteristic is not stored explicitly, it will be calculated on demand.
+ * This class also offers caching of rule characteristics, i.e., each referenced characteristic will be calculated only once and stored, and all subsequent
+ * calls will return the stored value.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -184,10 +186,21 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public double getEpsilon() {
 		if (epsilon == UNKNOWN_DOUBLE_VALUE) {
-			epsilon = ((double)getNegativeCoverage()) /
-					((double)(this.ruleCoverageInformation.getAllObjectsCount()
-							- this.ruleCoverageInformation.getIndicesOfPositiveObjects().size()
-							- this.ruleCoverageInformation.getIndicesOfNeutralObjects().size()));
+			int negativeCoverage = getNegativeCoverage();
+			
+			if (negativeCoverage == 0) {
+				epsilon = 0;
+			} else {
+				int negativeObjectsCount = this.ruleCoverageInformation.getAllObjectsCount()
+						- this.ruleCoverageInformation.getIndicesOfPositiveObjects().size()
+						- this.ruleCoverageInformation.getIndicesOfNeutralObjects().size();
+				
+				if (negativeObjectsCount == 0) {
+					epsilon = 0;
+				} else {
+					epsilon = ((double)negativeCoverage) / ((double)negativeObjectsCount);
+				}
+			}
 		}
 		return epsilon;
 	}

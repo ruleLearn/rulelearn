@@ -69,13 +69,10 @@ public class RelativeCoverageOutsideApproximationMeasure implements CostTypeMeas
 	@Override
 	public double evaluate(RuleConditions ruleConditions) {
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
-		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjects();
-		IntSet approximationObjects = ruleConditions.getIndicesOfApproximationObjects();
-		IntSet positiveObjects = ruleConditions.getIndicesOfPositiveObjects();
-		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
 		
-		return (double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, approximationObjects, neutralObjects) / 
-				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - positiveObjects.size() - neutralObjects.size());
+		return calculateConsistency(ruleConditions.getIndicesOfCoveredObjects(),
+				ruleConditions.getIndicesOfApproximationObjects(), ruleConditions.getIndicesOfPositiveObjects(), ruleConditions.getIndicesOfNeutralObjects(),
+				ruleConditions.getLearningInformationTable().getNumberOfObjects());
 	}
 	
 	/** 
@@ -92,13 +89,9 @@ public class RelativeCoverageOutsideApproximationMeasure implements CostTypeMeas
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
 		
 		if (condition != null) {
-			IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithCondition(condition);
-			IntSet approximationObjects = ruleConditions.getIndicesOfApproximationObjects();
-			IntSet positiveObjects = ruleConditions.getIndicesOfPositiveObjects();
-			IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
-			
-			return (double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, approximationObjects, neutralObjects) /
-					(ruleConditions.getLearningInformationTable().getNumberOfObjects() - positiveObjects.size() - neutralObjects.size());
+			return calculateConsistency(ruleConditions.getIndicesOfCoveredObjectsWithCondition(condition),
+					ruleConditions.getIndicesOfApproximationObjects(), ruleConditions.getIndicesOfPositiveObjects(), ruleConditions.getIndicesOfNeutralObjects(),
+					ruleConditions.getLearningInformationTable().getNumberOfObjects());
 		}
 		else {
 			return Double.MAX_VALUE;
@@ -119,13 +112,37 @@ public class RelativeCoverageOutsideApproximationMeasure implements CostTypeMeas
 	@Override
 	public double evaluateWithoutCondition(RuleConditions ruleConditions, int conditionIndex) {
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
-		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithoutCondition(conditionIndex);
-		IntSet approximationObjects = ruleConditions.getIndicesOfApproximationObjects();
-		IntSet positiveObjects = ruleConditions.getIndicesOfPositiveObjects();
-		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
 		
-		return (double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, approximationObjects, neutralObjects) / 
-				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - positiveObjects.size() - neutralObjects.size());
+		return calculateConsistency(ruleConditions.getIndicesOfCoveredObjectsWithoutCondition(conditionIndex),
+				ruleConditions.getIndicesOfApproximationObjects(), ruleConditions.getIndicesOfPositiveObjects(), ruleConditions.getIndicesOfNeutralObjects(),
+				ruleConditions.getLearningInformationTable().getNumberOfObjects());
+	}
+	
+	/**
+	 * Calculates value of relative coverage outside approximation measure, avoiding unnecessary calculations and division by zero.
+	 * 
+	 * @param coveredObjects list of objects covered by rule conditions
+	 * @param approximationObjects list of objects in the approximation
+	 * @param positiveObjects set of positive objects
+	 * @param neutralObjects set of neutral objects
+	 * @param allObjectsCount number of all objects
+	 * 
+	 * @return value of relative coverage outside approximation measure
+	 */
+	private double calculateConsistency(IntList coveredObjects, IntSet approximationObjects, IntSet positiveObjects, IntSet neutralObjects, int allObjectsCount) {
+		int negativeCoverage = getNumberOfElementsFromListNotPresentInSets(coveredObjects, approximationObjects, neutralObjects);
+		
+		if (negativeCoverage == 0) { //no negative object is covered
+			return 0.0;
+		} else {
+			int negativeObjectsCount = allObjectsCount - positiveObjects.size() - neutralObjects.size();
+			
+			if (negativeObjectsCount == 0) { //prevent division by zero
+				return 0.0;
+			} else {
+				return ((double)negativeCoverage) / ((double)negativeObjectsCount);
+			}
+		}
 	}
 
 	/**

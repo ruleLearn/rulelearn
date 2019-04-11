@@ -102,9 +102,19 @@ public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMe
 					negativeCount += dominanceCDD.getNegativeDConeDecisionClassDistribution(objectIndex).getCount(decision);
 				}
 			}
-		} 
+		}
 		
-		return (((double)negativeCount) / union.getComplementarySetSize());
+		if (negativeCount == 0) { //no negative object is covered
+			return 0;
+		} else {
+			int complementarySetSize = union.getComplementarySetSize();
+			
+			if (complementarySetSize == 0) { //prevent division by zero
+				return 0;
+			} else {
+				return ((double)negativeCount) / ((double)complementarySetSize);
+			}
+		}
 	}
 	
 	/** 
@@ -118,12 +128,10 @@ public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMe
 	@Override
 	public double evaluate(RuleConditions ruleConditions) {
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
-		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjects();
-		IntSet positiveObjects = ruleConditions.getIndicesOfPositiveObjects();
-		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
 		
-		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, positiveObjects, neutralObjects) /
-				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - positiveObjects.size() - neutralObjects.size()));
+		return calculateConsistency(ruleConditions.getIndicesOfCoveredObjects(),
+				ruleConditions.getIndicesOfPositiveObjects(), ruleConditions.getIndicesOfNeutralObjects(),
+				ruleConditions.getLearningInformationTable().getNumberOfObjects());
 	}
 
 	/** 
@@ -139,13 +147,10 @@ public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMe
 	public double evaluateWithCondition(RuleConditions ruleConditions, Condition<EvaluationField> condition) {
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
 		
-		if (condition != null) { 
-			IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithCondition(condition);
-			IntSet positiveObjects = ruleConditions.getIndicesOfPositiveObjects();
-			IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
-			
-			return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, positiveObjects, neutralObjects) /
-					(ruleConditions.getLearningInformationTable().getNumberOfObjects() - positiveObjects.size() - neutralObjects.size()));
+		if (condition != null) {
+			return calculateConsistency(ruleConditions.getIndicesOfCoveredObjectsWithCondition(condition),
+					ruleConditions.getIndicesOfPositiveObjects(), ruleConditions.getIndicesOfNeutralObjects(),
+					ruleConditions.getLearningInformationTable().getNumberOfObjects());
 		}
 		else {
 			return Double.MAX_VALUE;
@@ -166,31 +171,53 @@ public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMe
 	@Override
 	public double evaluateWithoutCondition(RuleConditions ruleConditions, int conditionIndex) {
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
-		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithoutCondition(conditionIndex);
-		IntSet positiveObjects = ruleConditions.getIndicesOfPositiveObjects();
-		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
 		
-		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, positiveObjects, neutralObjects) /
-				(ruleConditions.getLearningInformationTable().getNumberOfObjects() - positiveObjects.size() - neutralObjects.size()));
+		return calculateConsistency(ruleConditions.getIndicesOfCoveredObjectsWithoutCondition(conditionIndex),
+				ruleConditions.getIndicesOfPositiveObjects(), ruleConditions.getIndicesOfNeutralObjects(),
+				ruleConditions.getLearningInformationTable().getNumberOfObjects());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @param ruleCoverageInformation {@inheritDoc}
+	 * @param ruleCoverageInfo {@inheritDoc}
 	 * 
 	 * @return {@inheritDoc}
 	 * @throws NullPointerException {@inheritDoc}
 	 */
 	@Override
-	public double evaluate(RuleCoverageInformation ruleCoverageInformation) {
-		notNull(ruleCoverageInformation, "Rule coverage information for which evaluation is made is null.");
-		IntList coveredObjects = ruleCoverageInformation.getIndicesOfCoveredObjects();
-		IntSet positiveObjects = ruleCoverageInformation.getIndicesOfPositiveObjects();
-		IntSet neutralObjects = ruleCoverageInformation.getIndicesOfNeutralObjects();
+	public double evaluate(RuleCoverageInformation ruleCoverageInfo) {
+		notNull(ruleCoverageInfo, "Rule coverage information for which evaluation is made is null.");
 		
-		return ((double)getNumberOfElementsFromListNotPresentInSets(coveredObjects, positiveObjects, neutralObjects)) /
-				(ruleCoverageInformation.getAllObjectsCount() - positiveObjects.size() - neutralObjects.size());
+		return calculateConsistency(ruleCoverageInfo.getIndicesOfCoveredObjects(),
+				ruleCoverageInfo.getIndicesOfPositiveObjects(), ruleCoverageInfo.getIndicesOfNeutralObjects(),
+				ruleCoverageInfo.getAllObjectsCount());
+	}
+	
+	/**
+	 * Calculates value of epsilon measure, avoiding unnecessary calculations and division by zero.
+	 * 
+	 * @param coveredObjects list of objects covered by rule conditions
+	 * @param positiveObjects set of positive objects
+	 * @param neutralObjects set of neutral objects
+	 * @param allObjectsCount number of all objects
+	 * 
+	 * @return value of epsilon measure
+	 */
+	private double calculateConsistency(IntList coveredObjects, IntSet positiveObjects, IntSet neutralObjects, int allObjectsCount) {
+		int negativeCoverage = getNumberOfElementsFromListNotPresentInSets(coveredObjects, positiveObjects, neutralObjects);
+		
+		if (negativeCoverage == 0) { //no negative object is covered
+			return 0.0;
+		} else {
+			int negativeObjectsCount = allObjectsCount - positiveObjects.size() - neutralObjects.size();
+			
+			if (negativeObjectsCount == 0) { //prevent division by zero
+				return 0.0;
+			} else {
+				return ((double)negativeCoverage) / ((double)negativeObjectsCount);
+			}
+		}
 	}
 	
 	/**
