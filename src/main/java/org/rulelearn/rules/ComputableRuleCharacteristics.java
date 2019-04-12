@@ -19,6 +19,9 @@ package org.rulelearn.rules;
 import static org.rulelearn.core.Precondition.notNull;
 
 import org.rulelearn.core.OperationsOnCollections;
+import org.rulelearn.measures.SupportMeasure;
+import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
+import org.rulelearn.measures.dominance.RoughMembershipMeasure;
 
 /**
  * Characteristics of a decision rule, calculated using rule coverage information {@link RuleCoverageInformation}. This class extends {@link RuleCharacteristics}
@@ -98,8 +101,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public int getSupport() {
 		if (support == UNKNOWN_INT_VALUE) {
-			support = OperationsOnCollections.getNumberOfElementsFromListInSet(
-					this.ruleCoverageInformation.getIndicesOfCoveredObjects(), this.ruleCoverageInformation.getIndicesOfPositiveObjects());
+			support = (int)SupportMeasure.getInstance().evaluate(this.ruleCoverageInformation); //should be an integer, so casting should be safe
 		}
 		return support;
 	}
@@ -125,13 +127,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public double getConfidence() {
 		if (confidence == UNKNOWN_DOUBLE_VALUE) {
-			int notNeutralCoveredObjectsCount = OperationsOnCollections.getNumberOfElementsFromListNotPresentInSet(
-					this.ruleCoverageInformation.getIndicesOfCoveredObjects(), this.ruleCoverageInformation.getIndicesOfNeutralObjects());
-			if (notNeutralCoveredObjectsCount > 0) {
-				confidence = ((double)getSupport()) / ((double)(notNeutralCoveredObjectsCount));
-			} else {
-				confidence = 0;
-			}
+			confidence = RoughMembershipMeasure.getInstance().evaluate(this.ruleCoverageInformation);
 		}
 		return confidence;
 	}
@@ -186,21 +182,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public double getEpsilon() {
 		if (epsilon == UNKNOWN_DOUBLE_VALUE) {
-			int negativeCoverage = getNegativeCoverage();
-			
-			if (negativeCoverage == 0) {
-				epsilon = 0;
-			} else {
-				int negativeObjectsCount = this.ruleCoverageInformation.getAllObjectsCount()
-						- this.ruleCoverageInformation.getIndicesOfPositiveObjects().size()
-						- this.ruleCoverageInformation.getIndicesOfNeutralObjects().size();
-				
-				if (negativeObjectsCount == 0) {
-					epsilon = 0;
-				} else {
-					epsilon = ((double)negativeCoverage) / ((double)negativeObjectsCount);
-				}
-			}
+			epsilon = EpsilonConsistencyMeasure.getInstance().evaluate(this.ruleCoverageInformation);
 		}
 		return epsilon;
 	}
