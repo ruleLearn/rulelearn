@@ -34,28 +34,29 @@ import org.rulelearn.measures.Measure;
  */
 class RuleConditionsEvaluatorTest {
 	
-	private int conditionIndex;
 	private double threshold;
 	
 	@Mock
 	RuleConditionsEvaluator ruleConditionsEvaluatorMock;
 	@Mock
 	RuleConditions ruleConditionsMock;
+	@Mock
+	RuleConditions ruleConditionsMock2;
 	
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		this.conditionIndex = 0;
 		this.threshold = 0.0;
 		when(ruleConditionsEvaluatorMock.evaluationSatisfiesThreshold(this.ruleConditionsMock, this.threshold)).thenCallRealMethod();
-		when(ruleConditionsEvaluatorMock.evaluationSatisfiesThresholdWithoutCondition(this.ruleConditionsMock, this.threshold, this.conditionIndex)).thenCallRealMethod();
+		when(ruleConditionsEvaluatorMock.confront(ruleConditionsMock, ruleConditionsMock2)).thenCallRealMethod();
+		when(ruleConditionsEvaluatorMock.confront(ruleConditionsMock2, ruleConditionsMock)).thenCallRealMethod();
 	}
 	
 	/**
 	 * Test for method {@link RuleConditionsEvaluator#evaluationSatisfiesThreshold(RuleConditions, double)}.
 	 */
 	@Test
-	void testEvaluationSatisfiesThresholdForGainTypeEvaluator () {
+	void testEvaluationSatisfiesThresholdForGainTypeEvaluator() {
 		when(this.ruleConditionsEvaluatorMock.getType()).thenReturn(Measure.MeasureType.GAIN);
 		// test the same value as threshold
 		when(this.ruleConditionsEvaluatorMock.evaluate(this.ruleConditionsMock)).thenReturn(this.threshold);
@@ -72,7 +73,7 @@ class RuleConditionsEvaluatorTest {
 	 * Test for method {@link RuleConditionsEvaluator#evaluationSatisfiesThreshold(RuleConditions, double)}.
 	 */
 	@Test
-	void testEvaluationSatisfiesThresholdForCostTypeEvaluator () {
+	void testEvaluationSatisfiesThresholdForCostTypeEvaluator() {
 		when(this.ruleConditionsEvaluatorMock.getType()).thenReturn(Measure.MeasureType.COST);
 		// test the same value as threshold
 		when(this.ruleConditionsEvaluatorMock.evaluate(this.ruleConditionsMock)).thenReturn(this.threshold);
@@ -86,36 +87,32 @@ class RuleConditionsEvaluatorTest {
 	}
 	
 	/**
-	 * Test for method {@link RuleConditionsEvaluator#evaluationSatisfiesThresholdWithoutCondition(RuleConditions, double, int)}.
+	 * Test for method {@link RuleConditionsEvaluator#confront(RuleConditions, RuleConditions)}.
 	 */
 	@Test
-	void testEvaluationSatisfiesThresholdWithoutConditionForGainTypeEvaluator () {
+	void testConfrontForGainTypeEvaluator() {
 		when(this.ruleConditionsEvaluatorMock.getType()).thenReturn(Measure.MeasureType.GAIN);
-		// test the same value as threshold
-		when(this.ruleConditionsEvaluatorMock.evaluateWithoutCondition(this.ruleConditionsMock, this.conditionIndex)).thenReturn(this.threshold);
-		assertTrue(this.ruleConditionsEvaluatorMock.evaluationSatisfiesThresholdWithoutCondition(this.ruleConditionsMock, this.threshold, this.conditionIndex));
-		// test lower value than threshold
-		when(this.ruleConditionsEvaluatorMock.evaluateWithoutCondition(this.ruleConditionsMock, this.conditionIndex)).thenReturn(this.threshold - 0.5);
-		assertFalse(this.ruleConditionsEvaluatorMock.evaluationSatisfiesThresholdWithoutCondition(this.ruleConditionsMock, this.threshold, this.conditionIndex));
-		// test higher value than threshold
-		when(this.ruleConditionsEvaluatorMock.evaluateWithoutCondition(this.ruleConditionsMock, this.conditionIndex)).thenReturn(this.threshold + 0.5);
-		assertTrue(this.ruleConditionsEvaluatorMock.evaluationSatisfiesThresholdWithoutCondition(this.ruleConditionsMock, this.threshold, this.conditionIndex));
+		when(this.ruleConditionsEvaluatorMock.evaluate(this.ruleConditionsMock)).thenReturn(0.2);
+		when(this.ruleConditionsEvaluatorMock.evaluate(this.ruleConditionsMock2)).thenReturn(0.0);
+		
+		assertTrue(this.ruleConditionsEvaluatorMock.confront(this.ruleConditionsMock, this.ruleConditionsMock2) > 0);
+		assertFalse(this.ruleConditionsEvaluatorMock.confront(this.ruleConditionsMock, this.ruleConditionsMock2) < 0);
+		assertTrue(this.ruleConditionsEvaluatorMock.confront(this.ruleConditionsMock2, this.ruleConditionsMock) < 0);
+		assertFalse(this.ruleConditionsEvaluatorMock.confront(this.ruleConditionsMock2, this.ruleConditionsMock) > 0);
 	}
 	
 	/**
-	 * Test for method {@link RuleConditionsEvaluator#evaluationSatisfiesThresholdWithoutCondition(RuleConditions, double, int)}.
+	 * Test for method {@link RuleConditionsEvaluator#confront(RuleConditions, RuleConditions)}.
 	 */
 	@Test
-	void testEvaluationSatisfiesThresholdWithoutConditionForCostTypeEvaluator () {
+	void testConfrontForCostTypeEvaluator() {
 		when(this.ruleConditionsEvaluatorMock.getType()).thenReturn(Measure.MeasureType.COST);
-		// test the same value as threshold
-		when(this.ruleConditionsEvaluatorMock.evaluateWithoutCondition(this.ruleConditionsMock, this.conditionIndex)).thenReturn(this.threshold);
-		assertTrue(this.ruleConditionsEvaluatorMock.evaluationSatisfiesThresholdWithoutCondition(this.ruleConditionsMock, this.threshold, this.conditionIndex));
-		// test lower value than threshold
-		when(this.ruleConditionsEvaluatorMock.evaluateWithoutCondition(this.ruleConditionsMock, this.conditionIndex)).thenReturn(this.threshold - 0.5);
-		assertTrue(this.ruleConditionsEvaluatorMock.evaluationSatisfiesThresholdWithoutCondition(this.ruleConditionsMock, this.threshold, this.conditionIndex));
-		// test higher value than threshold
-		when(this.ruleConditionsEvaluatorMock.evaluateWithoutCondition(this.ruleConditionsMock, this.conditionIndex)).thenReturn(this.threshold + 0.5);
-		assertFalse(this.ruleConditionsEvaluatorMock.evaluationSatisfiesThresholdWithoutCondition(this.ruleConditionsMock, this.threshold, this.conditionIndex));
+		when(this.ruleConditionsEvaluatorMock.evaluate(this.ruleConditionsMock)).thenReturn(0.0);
+		when(this.ruleConditionsEvaluatorMock.evaluate(this.ruleConditionsMock2)).thenReturn(0.2);
+		
+		assertTrue(this.ruleConditionsEvaluatorMock.confront(this.ruleConditionsMock, this.ruleConditionsMock2) > 0);
+		assertFalse(this.ruleConditionsEvaluatorMock.confront(this.ruleConditionsMock, this.ruleConditionsMock2) < 0);
+		assertTrue(this.ruleConditionsEvaluatorMock.confront(this.ruleConditionsMock2, this.ruleConditionsMock) < 0);
+		assertFalse(this.ruleConditionsEvaluatorMock.confront(this.ruleConditionsMock2, this.ruleConditionsMock) > 0);
 	}
 }

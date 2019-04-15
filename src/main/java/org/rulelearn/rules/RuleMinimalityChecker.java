@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.Precondition;
+import org.rulelearn.core.ReadOnlyArrayReference;
+import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 
 /**
  * Checks if given rule is minimal in the context of a given set of rules. Rule minimality is understood as in:<br>
@@ -71,5 +73,27 @@ public abstract class RuleMinimalityChecker implements RuleChecker {
 	 */
 	@Override
 	public abstract boolean check(List<RuleConditionsWithApproximatedSet> ruleSet, RuleConditionsWithApproximatedSet rule);
+
+	/**
+	 * Gets array with {@link RuleConditionsEvaluator rule conditions evaluators} for which this checker has been constructed.
+	 * 
+	 * @return array with {@link RuleConditionsEvaluator rule conditions evaluators} for which this checker has been constructed
+	 */
+	public RuleConditionsEvaluator[] getRuleConditionsEvaluators() {
+		return  this.getRuleConditionsEvaluators(false);
+	}
+	
+	/**
+	 * Gets array with {@link RuleConditionsEvaluator rule conditions evaluators} for which this checker has been constructed.
+	 * 
+	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
+	 *        at the cost of returning a read-only array, or should return a safe array (that can be
+	 *        modified outside this object), at the cost of returning the result slower
+	 * @return array with {@link RuleConditionsEvaluator rule conditions evaluators} for which this checker has been constructed
+	 */
+	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
+	public RuleConditionsEvaluator[] getRuleConditionsEvaluators(boolean accelerateByReadOnlyResult) {
+		return accelerateByReadOnlyResult ? this.ruleConditionsEvaluators : this.ruleConditionsEvaluators.clone(); //evaluators should not be null at this point (the array is verified in constructor)
+	}
 
 }

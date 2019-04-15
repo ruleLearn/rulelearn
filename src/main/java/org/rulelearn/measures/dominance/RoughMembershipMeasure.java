@@ -18,10 +18,14 @@ package org.rulelearn.measures.dominance;
 
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Union.UnionType;
+import org.rulelearn.core.OperationsOnCollections;
 import org.rulelearn.data.Decision;
 import org.rulelearn.dominance.DominanceConesDecisionDistributions;
 import org.rulelearn.measures.ConsistencyMeasure;
 import org.rulelearn.measures.GainTypeMeasure;
+import org.rulelearn.measures.SupportMeasure;
+import org.rulelearn.rules.RuleCoverageInformation;
+import org.rulelearn.rules.RuleEvaluator;
 
 /**
  * Rough membership consistency measure defined with respect to union of decision classes in Błaszczyński, J., Greco, S., Słowiński, R., Szeląg, M.: 
@@ -35,7 +39,7 @@ import org.rulelearn.measures.GainTypeMeasure;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class RoughMembershipMeasure implements GainTypeMeasure, ConsistencyMeasure<Union> {
+public class RoughMembershipMeasure implements GainTypeMeasure, ConsistencyMeasure<Union>, RuleEvaluator {
 	
 	protected final static double BEST_VALUE = 1.0;
 	protected final static double WORST_VALUE = 0.0;
@@ -95,6 +99,25 @@ public class RoughMembershipMeasure implements GainTypeMeasure, ConsistencyMeasu
 		} 
 		
 		return (((double)positiveCount) / count);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param ruleCoverageInformation {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * @throws NullPointerException {@inheritDoc}
+	 */
+	@Override
+	public double evaluate(RuleCoverageInformation ruleCoverageInformation) {
+		int notNeutralCoveredObjectsCount = OperationsOnCollections.getNumberOfElementsFromListNotPresentInSet(
+				ruleCoverageInformation.getIndicesOfCoveredObjects(), ruleCoverageInformation.getIndicesOfNeutralObjects());
+		if (notNeutralCoveredObjectsCount > 0) {
+			return SupportMeasure.getInstance().evaluate(ruleCoverageInformation) / ((double)(notNeutralCoveredObjectsCount));
+		} else {
+			return 0;
+		}
 	}
 
 }

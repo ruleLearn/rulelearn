@@ -16,12 +16,14 @@
 
 package org.rulelearn.wrappers;
 
+
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.RuleSet;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 
 /**
- * Wraps an rule induction algorithm.
+ * Contract of a wrapper of a rule induction algorithm.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -31,18 +33,26 @@ public interface RuleInducerWrapper {
 	/**
 	 * Induces a set of rules covering objects from an information table.
 	 * 
-	 * @param informationTable an information table {@link InformationTable}
+	 * @param informationTable an {@link InformationTable information table}
 	 * 
-	 * @return induced rules in {@link RuleSet}
+	 * @return induced {@link RuleSet rules}
+	 * 
+	 * @throws InvalidValueException InvalidValueException when the information table does not contain decision attribute/attributes - see
+	 * 		   {@link org.rulelearn.data.InformationTableWithDecisionDistributions#InformationTableWithDecisionDistributions(InformationTable)}
+	 * @throws NullPointerException if given information table is {@code null}
 	 */
-	public RuleSet induceRules (InformationTable informationTable);
+	public RuleSet induceRules(InformationTable informationTable);
 	
 	/**
 	 * Induces a set of rules covering objects from an information table and provides characteristics for these rules.
 	 * 
-	 * @param informationTable an information table {@link InformationTable}
+	 * @param informationTable an {@link InformationTable information table}
 	 * 
-	 * @return induced rules with characteristics in {@link RuleSetWithCharacteristics}
+	 * @return induced {@link RuleSetWithCharacteristics rules with characteristics}
+	 * 
+	 * @throws InvalidValueException InvalidValueException when the information table does not contain decision attribute/attributes - see
+	 * 		   {@link org.rulelearn.data.InformationTableWithDecisionDistributions#InformationTableWithDecisionDistributions(InformationTable)}
+	 * @throws NullPointerException if given information table is {@code null}
 	 */
 	public RuleSetWithCharacteristics induceRulesWithCharacteristics (InformationTable informationTable);
 	

@@ -19,10 +19,15 @@ package org.rulelearn.rules;
 import static org.rulelearn.core.Precondition.notNull;
 
 import org.rulelearn.core.OperationsOnCollections;
+import org.rulelearn.measures.SupportMeasure;
+import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
+import org.rulelearn.measures.dominance.RoughMembershipMeasure;
 
 /**
  * Characteristics of a decision rule, calculated using rule coverage information {@link RuleCoverageInformation}. This class extends {@link RuleCharacteristics}
  * by ensuring that if any characteristic is not stored explicitly, it will be calculated on demand.
+ * This class also offers caching of rule characteristics, i.e., each referenced characteristic will be calculated only once and stored, and all subsequent
+ * calls will return the stored value.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -96,8 +101,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public int getSupport() {
 		if (support == UNKNOWN_INT_VALUE) {
-			support = OperationsOnCollections.getNumberOfElementsFromListInSet(
-					this.ruleCoverageInformation.getIndicesOfCoveredObjects(), this.ruleCoverageInformation.getIndicesOfPositiveObjects());
+			support = (int)SupportMeasure.getInstance().evaluate(this.ruleCoverageInformation); //should be an integer, so casting should be safe
 		}
 		return support;
 	}
@@ -123,13 +127,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public double getConfidence() {
 		if (confidence == UNKNOWN_DOUBLE_VALUE) {
-			int notNeutralCoveredObjectsCount = OperationsOnCollections.getNumberOfElementsFromListNotPresentInSet(
-					this.ruleCoverageInformation.getIndicesOfCoveredObjects(), this.ruleCoverageInformation.getIndicesOfNeutralObjects());
-			if (notNeutralCoveredObjectsCount > 0) {
-				confidence = ((double)getSupport()) / ((double)(notNeutralCoveredObjectsCount));
-			} else {
-				confidence = 0;
-			}
+			confidence = RoughMembershipMeasure.getInstance().evaluate(this.ruleCoverageInformation);
 		}
 		return confidence;
 	}
@@ -184,10 +182,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public double getEpsilon() {
 		if (epsilon == UNKNOWN_DOUBLE_VALUE) {
-			epsilon = ((double)getNegativeCoverage()) /
-					((double)(this.ruleCoverageInformation.getAllObjectsCount()
-							- this.ruleCoverageInformation.getIndicesOfPositiveObjects().size()
-							- this.ruleCoverageInformation.getIndicesOfNeutralObjects().size()));
+			epsilon = EpsilonConsistencyMeasure.getInstance().evaluate(this.ruleCoverageInformation);
 		}
 		return epsilon;
 	}
@@ -283,4 +278,24 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 		return sConfirmation;
 	}
 	
+	/**
+	 * Enforces that values of all rule characteristics are calculated instantly and remembered, so each subsequent call to any getter
+	 * will return requested characteristic at once, without additional calculations.
+	 */
+	public void calculateAllCharacteristics() {
+		this.getAConfirmation();
+		this.getC1Confirmation();
+		this.getConfidence();
+		this.getCoverage();
+		this.getCoverageFactor();
+		this.getEpsilon();
+		this.getEpsilonPrime();
+		this.getFConfirmation();
+		this.getLConfirmation();
+		this.getNegativeCoverage();
+		this.getSConfirmation();
+		this.getStrength();
+		this.getSupport();
+		this.getZConfirmation();
+	}
 }

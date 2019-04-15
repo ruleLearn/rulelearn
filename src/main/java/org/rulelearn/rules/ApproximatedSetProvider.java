@@ -34,6 +34,7 @@ public interface ApproximatedSetProvider {
 	 * @return number of approximated sets offered by this provider
 	 */
 	public int getCount();
+	
 	/**
 	 * Gets i-th approximated set.
 	 * 

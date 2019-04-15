@@ -16,24 +16,26 @@
 
 package org.rulelearn.rules;
 
-import org.rulelearn.measures.Measure;
-
 /**
- * Contract of an evaluator of a {@link Rule decision rule} using {@link RuleCoverageInformation rule coverage information}.
- *
+ * Contract of a provider of {@link RuleInducerComponents rule inducer components}.
+ * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface RuleEvaluator extends Measure {
+public interface RuleInducerComponentsProvider {
+		
+	/**
+	 * Provides i-th {@link RuleInducerComponents rule inducer components}.
+	 * 
+	 * @param i index of rule inducer components to be provided
+	 * @return {@link RuleInducerComponents rule inducer components}
+	 */
+	public RuleInducerComponents provide(int i);
 	
 	/**
-	 * Evaluates given decision rule in the context of rule coverage information.
+	 * Gets number of {@link RuleInducerComponents rule inducer components} that this provider has to offer.
 	 * 
-	 * @param ruleCoverageInfo rule coverage information concerning considered decision rule
-	 * 
-	 * @return evaluation of the given rule in the context of the given rule coverage information
-	 * @throws NullPointerException if given parameter is {@code null}
+	 * @return number of {@link RuleInducerComponents rule inducer components} offered by this provider
 	 */
-	public double evaluate(RuleCoverageInformation ruleCoverageInfo);
-	
+	public int getCount();
 }

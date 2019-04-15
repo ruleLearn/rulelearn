@@ -19,6 +19,7 @@ package org.rulelearn.measures;
 import static org.rulelearn.core.OperationsOnCollections.getNumberOfElementsFromListNotPresentInSets;
 import static org.rulelearn.core.Precondition.notNull;
 
+import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.ConditionRemovalEvaluator;
 import org.rulelearn.rules.MonotonicConditionAdditionEvaluator;
@@ -30,31 +31,31 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * Relative coverage outside approximation measure. It calculates the ratio of
- * the number of objects which are covered by rule conditions but neither belong to the considered approximation nor are neutral 
- * and the number of objects that neither belong to the considered approximation nor are neutral.
+ * Coverage outside approximated set measure, calculated to check the number of objects that neither belong to the considered approximated set nor are neutral with respect to that set
+ * but are covered by rule conditions. This measure relate to measure {@link EpsilonConsistencyMeasure}, but does not divide by the size of the complement of considered approximated set.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class RelativeCoverageOutsideApproximationMeasure implements CostTypeMeasure, RuleConditionsEvaluator, MonotonicConditionAdditionEvaluator, ConditionRemovalEvaluator {
+public class CoverageOutsideApproximatedSetMeasure implements CostTypeMeasure, MonotonicConditionAdditionEvaluator, RuleConditionsEvaluator, ConditionRemovalEvaluator {
+	
 	/**
 	 * The only instance of this measure (singleton).
 	 */
-	private static final RelativeCoverageOutsideApproximationMeasure INSTANCE = new RelativeCoverageOutsideApproximationMeasure();
+	private static final CoverageOutsideApproximatedSetMeasure INSTANCE = new CoverageOutsideApproximatedSetMeasure();
 	
 	/**
 	 * Sole constructor. Ensures adherence to singleton design pattern.
 	 */
-	private RelativeCoverageOutsideApproximationMeasure () {
+	private CoverageOutsideApproximatedSetMeasure () {
 	}
 	
 	/**
-	 * Returns reference to singleton instance of relative coverage outside approximation measure.
+	 * Returns reference to singleton instance of coverage outside approximated set measure.
 	 * 
-	 * @return reference to singleton instance of relative coverage outside approximation measure
+	 * @return reference to singleton instance of coverage outside approximated set measure
 	 */
-	public static RelativeCoverageOutsideApproximationMeasure getInstance() { 
+	public static CoverageOutsideApproximatedSetMeasure getInstance() {
 		return INSTANCE; 
 	}
 	
@@ -69,10 +70,8 @@ public class RelativeCoverageOutsideApproximationMeasure implements CostTypeMeas
 	@Override
 	public double evaluate(RuleConditions ruleConditions) {
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
-		
 		return calculateConsistency(ruleConditions.getIndicesOfCoveredObjects(),
-				ruleConditions.getIndicesOfApproximationObjects(), ruleConditions.getIndicesOfPositiveObjects(), ruleConditions.getIndicesOfNeutralObjects(),
-				ruleConditions.getLearningInformationTable().getNumberOfObjects());
+				ruleConditions.getIndicesOfPositiveObjects(), ruleConditions.getIndicesOfNeutralObjects());
 	}
 	
 	/** 
@@ -90,11 +89,10 @@ public class RelativeCoverageOutsideApproximationMeasure implements CostTypeMeas
 		
 		if (condition != null) {
 			return calculateConsistency(ruleConditions.getIndicesOfCoveredObjectsWithCondition(condition),
-					ruleConditions.getIndicesOfApproximationObjects(), ruleConditions.getIndicesOfPositiveObjects(), ruleConditions.getIndicesOfNeutralObjects(),
-					ruleConditions.getLearningInformationTable().getNumberOfObjects());
+					ruleConditions.getIndicesOfPositiveObjects(), ruleConditions.getIndicesOfNeutralObjects());
 		}
 		else {
-			return Double.MAX_VALUE;
+			return Double.MAX_VALUE; 
 		}
 	}
 
@@ -112,37 +110,21 @@ public class RelativeCoverageOutsideApproximationMeasure implements CostTypeMeas
 	@Override
 	public double evaluateWithoutCondition(RuleConditions ruleConditions, int conditionIndex) {
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
-		
 		return calculateConsistency(ruleConditions.getIndicesOfCoveredObjectsWithoutCondition(conditionIndex),
-				ruleConditions.getIndicesOfApproximationObjects(), ruleConditions.getIndicesOfPositiveObjects(), ruleConditions.getIndicesOfNeutralObjects(),
-				ruleConditions.getLearningInformationTable().getNumberOfObjects());
+				ruleConditions.getIndicesOfPositiveObjects(), ruleConditions.getIndicesOfNeutralObjects());
 	}
 	
 	/**
-	 * Calculates value of relative coverage outside approximation measure, avoiding unnecessary calculations and division by zero.
+	 * Calculates number of objects covered by rule conditions that are neither positive nor neutral (i.e., are negative).
 	 * 
 	 * @param coveredObjects list of objects covered by rule conditions
-	 * @param approximationObjects list of objects in the approximation
 	 * @param positiveObjects set of positive objects
 	 * @param neutralObjects set of neutral objects
-	 * @param allObjectsCount number of all objects
 	 * 
-	 * @return value of relative coverage outside approximation measure
+	 * @return number of objects covered by rule conditions that are neither positive nor neutral (i.e., are negative)
 	 */
-	private double calculateConsistency(IntList coveredObjects, IntSet approximationObjects, IntSet positiveObjects, IntSet neutralObjects, int allObjectsCount) {
-		int negativeCoverage = getNumberOfElementsFromListNotPresentInSets(coveredObjects, approximationObjects, neutralObjects);
-		
-		if (negativeCoverage == 0) { //no negative object is covered
-			return 0.0;
-		} else {
-			int negativeObjectsCount = allObjectsCount - positiveObjects.size() - neutralObjects.size();
-			
-			if (negativeObjectsCount == 0) { //prevent division by zero
-				return 0.0;
-			} else {
-				return ((double)negativeCoverage) / ((double)negativeObjectsCount);
-			}
-		}
+	int calculateConsistency(IntList coveredObjects, IntSet positiveObjects, IntSet neutralObjects) {
+		return getNumberOfElementsFromListNotPresentInSets(coveredObjects, positiveObjects, neutralObjects);
 	}
 
 	/**
