@@ -33,11 +33,6 @@ import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
  */
 public class CertainRuleInducerComponents extends RuleInducerComponents {
 	
-//	/**
-//	 * Default consistency threshold for epsilon consistency measure {@link EpsilonConsistencyMeasure}.
-//	 */
-//	public static final double DEFAULT_CONSISTENCY_TRESHOLD = 0.0;
-	
 	/**
 	 * Default evaluator of rule conditions.
 	 */
@@ -56,7 +51,7 @@ public class CertainRuleInducerComponents extends RuleInducerComponents {
 	 * Default checker used to determine occurrence of stopping condition of rule induction process {@link RuleInductionStoppingConditionChecker}.
 	 */
 	public static final RuleInductionStoppingConditionChecker DEFAULT_STOPPING_CONDITION_CHECKER = 
-			new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), 0.0);
+			new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), 0.0);
 	
 	/**
 	 * Default rule conditions pruner.

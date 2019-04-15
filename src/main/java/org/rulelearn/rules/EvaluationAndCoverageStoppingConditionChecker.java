@@ -33,12 +33,17 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 public class EvaluationAndCoverageStoppingConditionChecker implements RuleInductionStoppingConditionChecker {
 	
 	/**
-	 * Evaluator applied to rule conditions when verifying if they meet stopping conditions.
+	 * Evaluator applied to {@link RuleConditions rule conditions} when verifying if they meet stopping conditions verified by this checker.
 	 */
 	RuleConditionsEvaluator ruleConditionsEvaluator;
 	
 	/**
-	 * Evaluation threshold used when verifying if rule conditions meet stopping conditions.
+	 * Evaluator applied to evaluate {@link RuleConditions rule conditions} after removing a single condition.
+	 */
+	ConditionRemovalEvaluator conditionRemovalEvaluator;
+	
+	/**
+	 * Evaluation threshold used when verifying if {@link RuleConditions rule conditions} meet stopping conditions verified by this checker.
 	 */
 	double evaluationThreshold;
 
@@ -46,12 +51,14 @@ public class EvaluationAndCoverageStoppingConditionChecker implements RuleInduct
 	 * Constructs this stopping condition checker.
 	 * 
 	 * @param ruleConditionsEvaluator evaluator applied to rule conditions when verifying if they meet stopping conditions
+	 * @param conditionRemovalEvaluator evaluator applied to rule conditions when verifying if they would still meet stopping conditions after removal of some condition
 	 * @param evaluationThreshold threshold to be compared with the evaluation of rule conditions calculated by the given evaluator
 	 * 
-	 * @throws NullPointerException if rule conditions evaluator is {@code null}
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public EvaluationAndCoverageStoppingConditionChecker(RuleConditionsEvaluator ruleConditionsEvaluator, double evaluationThreshold) {
+	public EvaluationAndCoverageStoppingConditionChecker(RuleConditionsEvaluator ruleConditionsEvaluator, ConditionRemovalEvaluator conditionRemovalEvaluator, double evaluationThreshold) {
 		this.ruleConditionsEvaluator = Precondition.notNull(ruleConditionsEvaluator, "Rule conditions evaluator is null.");
+		this.conditionRemovalEvaluator = Precondition.notNull(conditionRemovalEvaluator, "Condition removal evaluator is null.");
 		this.evaluationThreshold = evaluationThreshold;
 	}
 	
@@ -99,7 +106,7 @@ public class EvaluationAndCoverageStoppingConditionChecker implements RuleInduct
 	public boolean isStoppingConditionSatisifiedWithoutCondition(RuleConditions ruleConditions, int conditionIndex) {
 		Precondition.notNull(ruleConditions, "Rule conditions for stopping condition checker are null.");
 		
-		if (!ruleConditionsEvaluator.evaluationSatisfiesThresholdWithoutCondition(ruleConditions, evaluationThreshold, conditionIndex)) {
+		if (!conditionRemovalEvaluator.evaluationSatisfiesThresholdWithoutCondition(ruleConditions, evaluationThreshold, conditionIndex)) {
 			return false;
 		} else {
 			IntSet indicesOfObjectsThatCanBeCovered = ruleConditions.getIndicesOfObjectsThatCanBeCovered();
@@ -115,6 +122,35 @@ public class EvaluationAndCoverageStoppingConditionChecker implements RuleInduct
 			
 			return true;
 		}
+	}
+
+	/**
+	 * Gets {@link RuleConditionsEvaluator rule conditions evaluator} used by this checker to evaluate {@link RuleConditions rule conditions}
+	 * when verifying if they meet stopping conditions.
+	 * 
+	 * @return {@link RuleConditionsEvaluator rule conditions evaluator} used by this checker
+	 */
+	public RuleConditionsEvaluator getRuleConditionsEvaluator() {
+		return ruleConditionsEvaluator;
+	}
+	
+	/**
+	 * Gets {@link ConditionRemovalEvaluator condition removal evaluator} used by this checker to evaluate {@link RuleConditions rule conditions}
+	 * when verifying if they would still meet stopping conditions after removing a single condition.
+	 * 
+	 * @return {@link ConditionRemovalEvaluator condition removal evaluator} used by this checker
+	 */
+	public ConditionRemovalEvaluator getConditionRemovalEvaluator() {
+		return conditionRemovalEvaluator;
+	}
+
+	/**
+	 * Evaluation threshold used when verifying if {@link RuleConditions rule conditions} meet stopping conditions.
+	 * 
+	 * @return Evaluation threshold used by this checker
+	 */
+	public double getEvaluationThreshold() {
+		return evaluationThreshold;
 	}
 	
 }

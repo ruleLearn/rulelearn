@@ -18,9 +18,12 @@ package org.rulelearn.rules;
 
 import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.Precondition;
+import org.rulelearn.core.ReadOnlyArrayReference;
+import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 
 /**
- * Abstract rule conditions pruner, storing rule induction stopping condition checker {@link RuleInductionStoppingConditionChecker} as well as array of condition removal evaluators {@link ConditionRemovalEvaluator},
+ * Abstract rule conditions pruner, storing rule induction stopping condition checker {@link RuleInductionStoppingConditionChecker}
+ * as well as an array of {@link ConditionRemovalEvaluator condition removal evaluators},
  * and implementing {@link RuleConditionsPruner} interface.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
@@ -49,6 +52,28 @@ public abstract class AbstractRuleConditionsPrunerWithEvaluators extends Abstrac
 		this.conditionRemovalEvaluators = Precondition.nonEmpty(Precondition.notNullWithContents(conditionRemovalEvaluators,
 				"Condition removal evaluators are null.",
 				"Condition removal evaluator is null at index %i."), "Array with condition removal evaluators is empty.");
+	}
+
+	/**
+	 * Gets array with {@link ConditionRemovalEvaluator condition removal evaluators} for which this pruner has been constructed.
+	 * 
+	 * @return array with {@link ConditionRemovalEvaluator condition removal evaluators} for which this pruner has been constructed
+	 */
+	public ConditionRemovalEvaluator[] getConditionRemovalEvaluators() {
+		return getConditionRemovalEvaluators(false);
+	}
+	
+	/**
+	 * Gets array with {@link ConditionRemovalEvaluator condition removal evaluators} for which this pruner has been constructed.
+	 * 
+	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
+	 *        at the cost of returning a read-only array, or should return a safe array (that can be
+	 *        modified outside this object), at the cost of returning the result slower
+	 * @return array with {@link ConditionRemovalEvaluator condition removal evaluators} for which this pruner has been constructed
+	 */
+	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
+	public ConditionRemovalEvaluator[] getConditionRemovalEvaluators(boolean accelerateByReadOnlyResult) {
+		return accelerateByReadOnlyResult ? this.conditionRemovalEvaluators : this.conditionRemovalEvaluators.clone(); //evaluators should not be null at this point (the array is verified in constructor)
 	}
 
 }

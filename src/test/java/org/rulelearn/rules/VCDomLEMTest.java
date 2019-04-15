@@ -44,6 +44,7 @@ import org.rulelearn.data.InformationTableTestConfiguration;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.data.csv.ObjectParser;
 import org.rulelearn.data.json.AttributeParser;
+import org.rulelearn.measures.SupportMeasure;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
@@ -199,13 +200,14 @@ class VCDomLEMTest {
 		double consistencyThreshold = 0.0;
 		
 		RuleConditionsEvaluator ruleConditionsEvaluator = consistencyMeasure;
-		MonotonicConditionAdditionEvaluator[] conditionAdditionEvaluators = {consistencyMeasure}; //TODO: use more evaluators, as in jRS! (see page 11 of the VC-DomLEM article)
+		ConditionRemovalEvaluator conditionRemovalEvaluator = consistencyMeasure;
+		MonotonicConditionAdditionEvaluator[] conditionAdditionEvaluators = {consistencyMeasure, SupportMeasure.getInstance()};  //see page 11 of the VC-DomLEM article
 		ConditionRemovalEvaluator[] conditionRemovalEvaluators = {consistencyMeasure};
-		RuleConditionsEvaluator[] ruleConditionsEvaluators = {consistencyMeasure}; //TODO: use more evaluators, as in jRS! (see page 12 of the VC-DomLEM article)
+		RuleConditionsEvaluator[] ruleConditionsEvaluators = {SupportMeasure.getInstance(), consistencyMeasure}; //see page 12 of the VC-DomLEM article
 		//RuleEvaluator ruleEvaluator = consistencyMeasure; //just single evaluator, for rule minimality checker taking into account just single evaluation
 		
 		ConditionGenerator conditionGenerator = new M4OptimizedConditionGenerator(conditionAdditionEvaluators);
-		RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker = new EvaluationAndCoverageStoppingConditionChecker(ruleConditionsEvaluator, consistencyThreshold);
+		RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker = new EvaluationAndCoverageStoppingConditionChecker(ruleConditionsEvaluator, conditionRemovalEvaluator, consistencyThreshold);
 		
 		ConditionSeparator conditionSeparator = null; //no separation required - all conditions concern limiting evaluations of type SimpleField
 		
@@ -422,7 +424,7 @@ class VCDomLEMTest {
 		
 		double consistencyThreshold = (double)1 / (double)10;
 		final RuleInductionStoppingConditionChecker STOPPING_CONDITION_CHECKER =
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 				
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(STOPPING_CONDITION_CHECKER).
@@ -642,7 +644,7 @@ class VCDomLEMTest {
 		
 		double consistencyThreshold = (double)2 / (double)7;
 		final RuleInductionStoppingConditionChecker STOPPING_CONDITION_CHECKER =
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 				
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(STOPPING_CONDITION_CHECKER).
@@ -1110,7 +1112,7 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
@@ -1453,7 +1455,7 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(stoppingConditionChecker).
@@ -2149,7 +2151,7 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
@@ -2510,7 +2512,7 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(stoppingConditionChecker).
@@ -3353,7 +3355,7 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
@@ -3729,7 +3731,7 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(stoppingConditionChecker).
@@ -3909,7 +3911,7 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
@@ -3955,7 +3957,7 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(stoppingConditionChecker).

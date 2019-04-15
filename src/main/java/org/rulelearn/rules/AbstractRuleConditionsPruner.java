@@ -27,7 +27,7 @@ import org.rulelearn.core.Precondition;
 public abstract class AbstractRuleConditionsPruner implements RuleConditionsPruner {
 	
 	/**
-	 * Stopping condition checker.
+	 * Stopping condition checker consulted for checking correctness of pruning of rule conditions.
 	 */
 	RuleInductionStoppingConditionChecker stoppingConditionChecker;
 
@@ -48,6 +48,15 @@ public abstract class AbstractRuleConditionsPruner implements RuleConditionsPrun
 	 * @param stoppingConditionChecker stopping condition checker {@link RuleInductionStoppingConditionChecker} stored in pruner
 	 * @return a copy of rule conditions pruner with provided stopping condition checker
 	 */
-	public abstract AbstractRuleConditionsPruner copyWithNewStoppingConditionChecker(RuleInductionStoppingConditionChecker stoppingConditionChecker);
+	public abstract AbstractRuleConditionsPruner copyWithNewStoppingConditionChecker(RuleInductionStoppingConditionChecker stoppingConditionChecker); //TODO: remove this method?
+
+	/**
+	 * Gets the stopping condition checker for which this pruner has been constructed.
+	 * 
+	 * @return the stopping condition checker for which this pruner has been constructed
+	 */
+	public RuleInductionStoppingConditionChecker getStoppingConditionChecker() {
+		return this.stoppingConditionChecker;
+	}
 	
 }

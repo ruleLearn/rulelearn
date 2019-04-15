@@ -132,7 +132,7 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper employing consistency threshold is null.");
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(stoppingConditionChecker).
@@ -167,7 +167,7 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper employing consistency threshold is null.");
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(stoppingConditionChecker).

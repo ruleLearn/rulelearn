@@ -49,7 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMeasure<Union>, MonotonicConditionAdditionEvaluator, ConditionRemovalEvaluator, RuleConditionsEvaluator, RuleEvaluator {
+public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMeasure<Union>, MonotonicConditionAdditionEvaluator, RuleConditionsEvaluator, ConditionRemovalEvaluator, RuleEvaluator {
 
 	protected final static double BEST_VALUE = 0.0;
 	protected final static double WORST_VALUE = 1.0;
@@ -204,7 +204,7 @@ public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMe
 	 * 
 	 * @return value of epsilon measure
 	 */
-	private double calculateConsistency(IntList coveredObjects, IntSet positiveObjects, IntSet neutralObjects, int allObjectsCount) {
+	double calculateConsistency(IntList coveredObjects, IntSet positiveObjects, IntSet neutralObjects, int allObjectsCount) {
 		int negativeCoverage = getNumberOfElementsFromListNotPresentInSets(coveredObjects, positiveObjects, neutralObjects);
 		
 		if (negativeCoverage == 0) { //no negative object is covered

@@ -18,6 +18,8 @@ package org.rulelearn.rules;
 
 import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.Precondition;
+import org.rulelearn.core.ReadOnlyArrayReference;
+import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 
 /**
  * Abstract rule conditions set pruner, storing array of rule conditions evaluators and implementing {@link RuleConditionsSetPruner} interface.
@@ -45,6 +47,28 @@ public abstract class AbstractRuleConditionsSetPrunerWithEvaluators implements R
 		this.ruleConditionsEvaluators = Precondition.nonEmpty(Precondition.notNullWithContents(ruleConditionsEvaluators,
 				"Rule conditions evaluators are null.",
 				"Rule conditions evaluator is null at index %i."), "Array of rule conditions evaluators is empty.");
+	}
+
+	/**
+	 * Gets array with {@link RuleConditionsEvaluator rules conditions evaluators} for which this pruner has been constructed.
+	 * 
+	 * @return array with {@link RuleConditionsEvaluator rules conditions evaluators} for which this pruner has been constructed
+	 */
+	public RuleConditionsEvaluator[] getRuleConditionsEvaluators() {
+		return this.getRuleConditionsEvaluators(false);
+	}
+	
+	/**
+	 * Gets array with {@link RuleConditionsEvaluator rules conditions evaluators} for which this pruner has been constructed.
+	 * 
+	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
+	 *        at the cost of returning a read-only array, or should return a safe array (that can be
+	 *        modified outside this object), at the cost of returning the result slower
+	 * @return array with {@link RuleConditionsEvaluator rules conditions evaluators} for which this pruner has been constructed
+	 */
+	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
+	public RuleConditionsEvaluator[] getRuleConditionsEvaluators(boolean accelerateByReadOnlyResult) {
+		return accelerateByReadOnlyResult ? this.ruleConditionsEvaluators : this.ruleConditionsEvaluators.clone(); //evaluators should not be null at this point (the array is verified in constructor)
 	}
 
 }

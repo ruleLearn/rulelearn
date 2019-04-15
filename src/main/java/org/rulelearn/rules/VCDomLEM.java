@@ -294,8 +294,10 @@ public class VCDomLEM {
 			IntSet setOfIndicesOfCoveredObjects = new IntOpenHashSet(ruleConditions.getIndicesOfCoveredObjects()); //translate list to hash set to accelerate subsequent removeAll method execution
 			setB.removeAll(setOfIndicesOfCoveredObjects);
 		}
+		
+		RuleConditionsSetPruner ruleConditionsSetPruner = ruleInducerComponents.getRuleConditionsSetPruner();
 	
-		return ruleInducerComponents.getRuleConditionsSetPruner().prune(approximatedSetRuleConditions, indicesOfApproximationObjects); //remove redundant rules, but keep covered all objects from lower/upper approximation
+		return ruleConditionsSetPruner.prune(approximatedSetRuleConditions, indicesOfApproximationObjects); //remove redundant rules, but keep covered all objects from lower/upper approximation
 	}
 	
 	/**
