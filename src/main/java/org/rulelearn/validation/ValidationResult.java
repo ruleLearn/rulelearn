@@ -25,21 +25,21 @@ package org.rulelearn.validation;
 public interface ValidationResult {
 
 	/**
-	 * Gets number of assignments which were correct.
+	 * Gets number of assignments which are correct.
 	 * 
 	 * @return number of correct assignments
 	 */
 	public int getNumberOfCorrectAssignments();
 	
 	/**
-	 * Gets number of assignments which were incorrect.
+	 * Gets number of assignments which are incorrect.
 	 * 
 	 * @return number of incorrect assignments
 	 */
 	public int getNumberOfIncorrectAssignments();
 	
 	/**
-	 * Gets number of times no assignment was made.
+	 * Gets number of times no assignment are made.
 	 * 
 	 * @return number of no (unknown) assignments
 	 */
