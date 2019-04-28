@@ -29,20 +29,20 @@ public interface ValidationResult {
 	 * 
 	 * @return number of correct assignments
 	 */
-	public int getNumberOfCorrectAssignments();
+	public double getNumberOfCorrectAssignments();
 	
 	/**
 	 * Gets number of assignments which are incorrect.
 	 * 
 	 * @return number of incorrect assignments
 	 */
-	public int getNumberOfIncorrectAssignments();
+	public double getNumberOfIncorrectAssignments();
 	
 	/**
 	 * Gets number of times no assignment are made.
 	 * 
 	 * @return number of no (unknown) assignments
 	 */
-	public int getNumberOfUnknownAssignments();
+	public double getNumberOfUnknownAssignments();
 	
 }

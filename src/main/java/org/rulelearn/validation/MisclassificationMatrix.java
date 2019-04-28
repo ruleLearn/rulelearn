@@ -16,42 +16,43 @@
 
 package org.rulelearn.validation;
 
+import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.data.Decision;
+
 /**
- * Representation of validation results in form of a misclassification matrix (sometimes also called confusion matrix or an error matrix). 
+ * Contract for validation results of classification in a form of a misclassification matrix (sometimes also called confusion matrix or an error matrix). 
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class MisclassificationMatrix implements ValidationResult {
+public interface MisclassificationMatrix extends ValidationResult {
 
-	/** {@inheritDoc}
+	/**
+	 * Gets value from misclassification matrix, which corresponds to a given original decision and assigned decision both passed as parameters.
 	 * 
-	 * @return {@inheritDoc}
-	 */
-	@Override
-	public int getNumberOfCorrectAssignments() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	/** {@inheritDoc}
+	 * @param originalDecision original {@link Decision decision}
+	 * @param assignedDecision assigned {@link Decision decision}
+	 * @return value from misclassification matrix, which corresponds to a given original decision and assigned decision
 	 * 
-	 * @return {@inheritDoc}
+	 * @throws NullPointerException when any of parameters is null 
+	 * @throws InvalidValueException when size of the array with original decisions and size of the array assignments differ
 	 */
-	@Override
-	public int getNumberOfIncorrectAssignments() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	/** {@inheritDoc}
+	public double getValue(Decision originalDecision, Decision assignedDecision);
+	
+	/**
+	 * Gets number of unknown assignments for a given original {@link Decision decision} passed as a parameter.
 	 * 
-	 * @return {@inheritDoc}
+	 * @param originalDecision original {@link Decision decision}
+	 * @return number of unknown assignments for a given original {@link Decision decision}
 	 */
-	@Override
-	public int getNumberOfUnknownAssignments() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
+	public double getNumberOfUnknownAssignments(Decision originalDecision);
+	
+	/**
+	 * Gets number of unknown original decisions for a given assigned {@link Decision decision} passed as a parameter.
+	 * 
+	 * @param assignedDecision assigned {@link Decision decision}
+	 * @return number of unknown original decisions for a given assigned {@link Decision decision}
+	 */
+	public double getNumberOfUnknownOriginalDecisions(Decision assignedDecision);
+	
 }

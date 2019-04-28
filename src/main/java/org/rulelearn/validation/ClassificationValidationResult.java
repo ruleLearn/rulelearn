@@ -25,7 +25,7 @@ import org.rulelearn.data.Decision;
 /**
  * Representation of results of validation of a batch of classified objects.<br>
  * 
- *Validation takes into account:<br>
+ * Validation takes into account:<br>
  *
  * 1. {@link ClassificationResult#isConsistentWith(Decision) consistency} of {@link ClassificationResult suggested assignment} 
  * with respect to {@link Decision original decision},<br>
@@ -149,7 +149,7 @@ public class ClassificationValidationResult implements ValidationResult {
 	 * @return {@inheritDoc}
 	 */
 	@Override
-	public int getNumberOfCorrectAssignments() {
+	public double getNumberOfCorrectAssignments() {
 		return this.numberOfCorrectAssignments;
 	}
 
@@ -158,7 +158,7 @@ public class ClassificationValidationResult implements ValidationResult {
 	 * @return {@inheritDoc}
 	 */
 	@Override
-	public int getNumberOfIncorrectAssignments() {
+	public double getNumberOfIncorrectAssignments() {
 		return this.numberOfIncorrectAssignments;
 	}
 
@@ -167,7 +167,7 @@ public class ClassificationValidationResult implements ValidationResult {
 	 * @return {@inheritDoc}
 	 */
 	@Override
-	public int getNumberOfUnknownAssignments() {
+	public double getNumberOfUnknownAssignments() {
 		return this.numberOfUnknownAssignemnets;
 	}
 
@@ -176,7 +176,7 @@ public class ClassificationValidationResult implements ValidationResult {
 	 * 
 	 * @return number of consistent assignments
 	 */
-	public int getNumberOfConsistentAssignments() {
+	public double getNumberOfConsistentAssignments() {
 		return numberOfConsistentAssignments;
 	}
 
@@ -185,7 +185,7 @@ public class ClassificationValidationResult implements ValidationResult {
 	 * 
 	 * @return number of inconsistent assignments
 	 */
-	public int getNumberOfInconsistentAssignments() {
+	public double getNumberOfInconsistentAssignments() {
 		return numberOfInconsistentAssignments;
 	}
 
@@ -194,7 +194,7 @@ public class ClassificationValidationResult implements ValidationResult {
 	 * 
 	 * @return number of uncomparable assignments
 	 */
-	public int getNumberOfUncomparableAssignments() {
+	public double getNumberOfUncomparableAssignments() {
 		return numberOfUncomparableAssignments;
 	}
 	
