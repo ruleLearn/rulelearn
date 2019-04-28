@@ -42,7 +42,7 @@ import org.rulelearn.rules.UnionWithSingleLimitingDecisionRuleDecisionsProvider;
 import org.rulelearn.rules.VCDomLEM;
 
 /**
- * Wraps {@link VCDomLEM VC-DomLEM rule induction algorithm}.<br>
+ * Wraps {@link VCDomLEM VC-DomLEM rule induction algorithm} and allows to induce certain decision rules.<br>
  * <br>
  * For a given information table, induces certain decision rules (more precisely, both types of decision rules: "at least" and "at most").
  * These certain decision rules are induced according to the Dominance-based Rough Set Approach (DRSA), 
@@ -74,7 +74,7 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 */
 	@Override
 	public RuleSet induceRules(InformationTable informationTable) {
-		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper is null.");
+		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper inducting certain decision rules is null.");
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().build();
 		
@@ -99,7 +99,7 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 */
 	@Override
 	public RuleSetWithCharacteristics induceRulesWithCharacteristics(InformationTable informationTable) {
-		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper is null.");
+		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper inducting certain decision rules is null.");
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().build();
 		
