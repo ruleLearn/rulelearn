@@ -157,7 +157,7 @@ public class RuleMLBuilder {
 	    
 	    //conditions part
 		result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 2)).append(RuleMLElements.getBeginningTag(RuleMLElements.getIfKeyword()));
-		Condition<? extends EvaluationField>[] conditions = rule.getConditions();
+		Condition<EvaluationField>[] conditions = rule.getConditions();
 		if (conditions.length > 1) {
 			result.append(RuleMLElements.getTagMultipied(RuleMLElements.getTab(), 3)).append(RuleMLElements.getBeginningTag(RuleMLElements.getAndKeyword()));
 		}

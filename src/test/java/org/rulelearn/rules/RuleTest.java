@@ -263,7 +263,7 @@ class RuleTest {
 	@Test
 	void testGetConditionsBoolean() {
 		Rule rule = getTestRule1();
-		Condition<? extends EvaluationField>[] conditions = rule.getConditions(true);
+		Condition<EvaluationField>[] conditions = rule.getConditions(true);
 		assertEquals(conditions.length, 2);
 		assertEquals(conditions[0], getCondition1());
 		assertEquals(conditions[1], getCondition2());
