@@ -419,7 +419,7 @@ class RuleMLBuilderTest {
 		Condition<? extends EvaluationField>[][] decisions = new Condition<?>[][] {{this.decisionAtLeastMock}};
 		
 		when(this.ruleAtLeastMock.getConditions()).thenReturn((Condition<EvaluationField>[])conditions);
-		when(this.ruleAtLeastMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtLeastMock.getDecisions()).thenReturn((Condition<EvaluationField>[][])decisions);
 		when(this.ruleAtLeastMock.getSemantics()).thenReturn(RuleSemantics.AT_LEAST);
 		when(this.ruleAtLeastMock.getType()).thenReturn(RuleType.CERTAIN);
 		
@@ -461,7 +461,7 @@ class RuleMLBuilderTest {
 		Condition<? extends EvaluationField>[][] decisions = new Condition<?>[][] {{this.decisionAtMostMock}};
 		
 		when(this.ruleAtMostMock.getConditions()).thenReturn((Condition<EvaluationField>[])conditions);
-		when(this.ruleAtMostMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtMostMock.getDecisions()).thenReturn((Condition<EvaluationField>[][])decisions);
 		when(this.ruleAtMostMock.getSemantics()).thenReturn(RuleSemantics.AT_MOST);
 		when(this.ruleAtMostMock.getType()).thenReturn(RuleType.POSSIBLE);
 		
@@ -512,7 +512,7 @@ class RuleMLBuilderTest {
 		Condition<? extends EvaluationField>[][] decisions = new Condition<?>[][] {{this.decisionAtMostMock}};
 		
 		when(this.ruleAtMostMock.getConditions()).thenReturn((Condition<EvaluationField>[])conditions);
-		when(this.ruleAtMostMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtMostMock.getDecisions()).thenReturn((Condition<EvaluationField>[][])decisions);
 		when(this.ruleAtMostMock.getSemantics()).thenReturn(RuleSemantics.AT_MOST);
 		when(this.ruleAtMostMock.getType()).thenReturn(RuleType.POSSIBLE);
 		
@@ -564,7 +564,7 @@ class RuleMLBuilderTest {
 		Condition<? extends EvaluationField>[][] decisions = new Condition<?>[][] {{this.decisionAtLeastMock}};
 		
 		when(this.ruleAtLeastMock.getConditions()).thenReturn((Condition<EvaluationField>[])conditions);
-		when(this.ruleAtLeastMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtLeastMock.getDecisions()).thenReturn((Condition<EvaluationField>[][])decisions);
 		when(this.ruleAtLeastMock.getSemantics()).thenReturn(RuleSemantics.AT_LEAST);
 		when(this.ruleAtLeastMock.getType()).thenReturn(RuleType.CERTAIN);
 		
@@ -573,7 +573,7 @@ class RuleMLBuilderTest {
 		decisions = new Condition<?>[][] {{this.decisionAtMostMock}};
 		
 		when(this.ruleAtMostMock.getConditions()).thenReturn((Condition<EvaluationField>[])conditions);
-		when(this.ruleAtMostMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtMostMock.getDecisions()).thenReturn((Condition<EvaluationField>[][])decisions);
 		when(this.ruleAtMostMock.getSemantics()).thenReturn(RuleSemantics.AT_MOST);
 		when(this.ruleAtMostMock.getType()).thenReturn(RuleType.CERTAIN);
 		
@@ -657,7 +657,7 @@ class RuleMLBuilderTest {
 		Condition<? extends EvaluationField>[][] decisions = new Condition<?>[][] {{this.decisionAtLeastMock}};
 		
 		when(this.ruleAtLeastMock.getConditions()).thenReturn((Condition<EvaluationField>[])conditions);
-		when(this.ruleAtLeastMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtLeastMock.getDecisions()).thenReturn((Condition<EvaluationField>[][])decisions);
 		when(this.ruleAtLeastMock.getSemantics()).thenReturn(RuleSemantics.AT_LEAST);
 		when(this.ruleAtLeastMock.getType()).thenReturn(RuleType.APPROXIMATE);
 				

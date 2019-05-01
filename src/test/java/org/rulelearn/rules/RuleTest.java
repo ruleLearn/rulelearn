@@ -16,8 +16,14 @@
 
 package org.rulelearn.rules;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rulelearn.data.AttributePreferenceType;
@@ -32,8 +38,8 @@ import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.UnknownSimpleFieldMV15;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
+
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link Rule}.
@@ -251,7 +257,7 @@ class RuleTest {
 	@Test
 	void testGetConditions() {
 		Rule rule = getTestRule1();
-		Condition<? extends EvaluationField>[] conditions = rule.getConditions();
+		Condition<EvaluationField>[] conditions = rule.getConditions();
 		assertEquals(conditions.length, 2);
 		assertEquals(conditions[0], getCondition1());
 		assertEquals(conditions[1], getCondition2());
@@ -275,7 +281,7 @@ class RuleTest {
 	@Test
 	void testGetDecisions() {
 		Rule rule = getTestRule1();
-		Condition<? extends EvaluationField>[][] decisions = rule.getDecisions();
+		Condition<EvaluationField>[][] decisions = rule.getDecisions();
 		assertEquals(decisions.length, 1);
 		assertEquals(decisions[0][0], getDecision());
 	}
@@ -286,7 +292,7 @@ class RuleTest {
 	@Test
 	void testGetDecisionsBoolean() {
 		Rule rule = getTestRule1();
-		Condition<? extends EvaluationField>[][] decisions = rule.getDecisions(true);
+		Condition<EvaluationField>[][] decisions = rule.getDecisions(true);
 		assertEquals(decisions.length, 1);
 		assertEquals(decisions.length, 1);
 		assertEquals(decisions[0][0], getDecision());
@@ -298,7 +304,7 @@ class RuleTest {
 	@Test
 	void testGetDecision() {
 		Rule rule = getTestRule1();
-		Condition<? extends EvaluationField> decision = rule.getDecision();
+		Condition<EvaluationField> decision = rule.getDecision();
 		assertEquals(decision, getDecision());
 	}
 	

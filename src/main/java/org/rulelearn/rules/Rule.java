@@ -102,8 +102,9 @@ public class Rule {
 		 * 
 		 * @return underlying elementary decision
 		 */
-		public Condition<? extends EvaluationField> getElementaryDecision() {
-			return elementaryDecision;
+		@SuppressWarnings("unchecked")
+		public Condition<EvaluationField> getElementaryDecision() {
+			return (Condition<EvaluationField>)elementaryDecision; //this cast is safe
 		}
 	}
 	
@@ -611,7 +612,7 @@ public class Rule {
 	 * 
 	 * @return array with decisions of this rule
 	 */
-	public Condition<? extends EvaluationField>[][] getDecisions() {
+	public Condition<EvaluationField>[][] getDecisions() {
 		return this.getDecisions(false);
 	}
 	
@@ -627,16 +628,17 @@ public class Rule {
 	 *        modified outside this object), at the cost of returning the result slower
 	 * @return array with decisions of this rule
 	 */
+	@SuppressWarnings("unchecked")
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
-	public Condition<? extends EvaluationField>[][] getDecisions(boolean accelerateByReadOnlyResult) {
+	public Condition<EvaluationField>[][] getDecisions(boolean accelerateByReadOnlyResult) {
 		if (accelerateByReadOnlyResult) {
-			return this.decisions;
+			return (Condition<EvaluationField>[][])this.decisions; //this cast is safe
 		} else {
 			Condition<?>[][] returnedDecisions = this.decisions.clone();
 			for (int i = 0; i < this.decisions.length; i++) {
 				returnedDecisions[i] = this.decisions[i].clone();
 			}
-			return returnedDecisions;
+			return (Condition<EvaluationField>[][])returnedDecisions; //this cast is safe
 		}
 	}
 	
@@ -645,8 +647,9 @@ public class Rule {
 	 * 
 	 * @return the first (and possibly the only) decision suggested by this rule
 	 */
-	public Condition<? extends EvaluationField> getDecision() {
-		return this.decisions[0][0];
+	@SuppressWarnings("unchecked")
+	public Condition<EvaluationField> getDecision() {
+		return (Condition<EvaluationField>)this.decisions[0][0]; //this cast is safe
 	}
 	
 	/**

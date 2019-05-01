@@ -30,7 +30,10 @@ import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
+import org.rulelearn.types.RealField;
+import org.rulelearn.types.RealFieldFactory;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -228,6 +231,40 @@ class RuleConditionsTest {
 		Mockito.when(conditionMock2.getAttributeWithContext()).thenReturn(attributeWithContextMock2);
 		assertEquals(ruleConditions.addCondition(conditionMock2), 1);
 		assertEquals(ruleConditions.getConditions().size(), 2);
+	}
+	
+	/**
+	 * Test method for {@link RuleConditions#addCondition(Condition)}.
+	 * Tests inner casting to {@code Condition<EvaluationField>}.
+	 */
+	@Test
+	void testAddCondition03() {
+		InformationTable informationTable = Mockito.mock(InformationTable.class);
+		IntSet indicesOfPositiveObjects = Mockito.mock(IntSet.class);
+		
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleType.CERTAIN, RuleSemantics.AT_LEAST);
+		
+		EvaluationAttributeWithContext attributeWithContextMock1 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContextMock1.getAttributeIndex()).thenReturn(1);
+		Mockito.when(attributeWithContextMock1.getAttributeName()).thenReturn("attr1");
+		ConditionAtLeastObjectVSThreshold<IntegerField> condition1 =
+				new ConditionAtLeastObjectVSThreshold<IntegerField>(attributeWithContextMock1, IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN));
+		assertEquals(ruleConditions.addCondition(condition1), 0);
+		assertEquals(ruleConditions.getConditions().size(), 1);
+		
+		EvaluationAttributeWithContext attributeWithContextMock2 = Mockito.mock(EvaluationAttributeWithContext.class);
+		Mockito.when(attributeWithContextMock2.getAttributeIndex()).thenReturn(2);
+		Mockito.when(attributeWithContextMock2.getAttributeName()).thenReturn("attr2");
+		ConditionAtMostObjectVSThreshold<RealField> condition2 =
+				new ConditionAtMostObjectVSThreshold<RealField>(attributeWithContextMock2, RealFieldFactory.getInstance().create(2.0, AttributePreferenceType.COST));
+		assertEquals(ruleConditions.addCondition(condition2), 1);
+		assertEquals(ruleConditions.getConditions().size(), 2);
+		
+		List<Condition<EvaluationField>> conditions = ruleConditions.getConditions();
+		
+		for (Condition<EvaluationField> condition : conditions) {
+			System.out.println(condition);
+		}
 	}
 
 	/**
@@ -453,7 +490,7 @@ class RuleConditionsTest {
 		Mockito.when(condition3.getAttributeWithContext()).thenReturn(attributeWithContext3);
 		ruleConditions.addCondition(condition3);
 		
-		List<Condition<?>> conditions = ruleConditions.getConditions();
+		List<Condition<EvaluationField>> conditions = ruleConditions.getConditions();
 		
 		assertEquals(conditions.size(), 3);
 		assertEquals(conditions.get(0), condition1);

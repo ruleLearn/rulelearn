@@ -79,7 +79,7 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 		int decisionAttributeIndex = -1;
 		
 		// calculate classification interval [downLimit, upLimit]
-		Condition<? extends EvaluationField> decision = null;
+		Condition<EvaluationField> decision = null;
 		EvaluationField upLimit = null, downLimit = null;
 		for (int i = 0; i < this.ruleSet.size(); i++) {
 			if (this.ruleSet.getRule(i).covers(objectIndex, informationTable)) {
