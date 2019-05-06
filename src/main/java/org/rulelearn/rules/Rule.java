@@ -27,6 +27,7 @@ import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
+import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.EvaluationField;
 
@@ -849,49 +850,72 @@ public class Rule {
 		return false; //no alternative is satisfied by the considered object
 	}
 	
-//	public <T extends EvaluationField> boolean decisionsMatchedByHelper(List<T> evaluationFields) {
-//		boolean conjunctionSatisfied;
-//		
-//		//check if at least one alternative is satisfied by the considered object
-//		for (int i = 0; i < this.decisions.length; i++) {
-//			conjunctionSatisfied = true;
-//			for (int j = 0; j < this.decisions[i].length; j++) {
-//				EvaluationField myVar = evaluationFields.get(j);
-//				if (!this.decisions[i][j].satisfiedBy(myVar)) {
-//					conjunctionSatisfied = false;
-//					break; //go the the next alternative
-//				}
-//			}
-//			if (conjunctionSatisfied) {
-//				return true;
-//			}
-//		}
-//		return false; //no alternative is satisfied by the considered object
-//	}
-	
-	@SuppressWarnings("unchecked")
-	private <T extends EvaluationField> T decisionsMatchedByHelper(EvaluationField evaluationField) { //applies wildcard capture
-		return (T)evaluationField; //TODO: test this cast
-	}
-
 	/**
 	 * Verifies if decision part of this rule is verified by given evaluations. TODO
 	 * 
-	 * @param evaluationFields TODO
+	 * @param evaluations TODO
 	 * @return TODO
 	 * 
 	 * @throws NullPointerException TODO
+	 * @throws InvalidSizeException if number of supplied evaluations is smaller than number of AND-connected conditions in decision part of this rule
 	 */
-	public boolean decisionsMatchedBy(List<? extends EvaluationField> evaluationFields) {
+	public boolean decisionsMatchedBy(List<? extends EvaluationField> evaluations) { //TODO: take into account more general configuration of decisions
+		notNull(evaluations, "Evaluations to be matched against rule's decisions are null.");
+		if  (evaluations.size() != decisions[0].length) {
+			throw new InvalidSizeException("Number of supplied evaluations is smaller than number of AND-connected rule's decisions.");
+		}
+		
 		boolean conjunctionSatisfied;
 		
+		Condition<EvaluationField>[][] decisions = getDecisions(true);
+		
 		//check if at least one alternative is satisfied by the considered object
-		for (int i = 0; i < this.decisions.length; i++) {
+		for (int i = 0; i < decisions.length; i++) {
 			conjunctionSatisfied = true;
-			for (int j = 0; j < this.decisions[i].length; j++) {
-				if (!this.decisions[i][j].satisfiedBy(decisionsMatchedByHelper(evaluationFields.get(j)))) {
+			for (int j = 0; j < decisions[i].length; j++) {
+				if (!decisions[i][j].satisfiedBy(evaluations.get(j))) {
 					conjunctionSatisfied = false;
 					break; //go the the next alternative
+				}
+			}
+			if (conjunctionSatisfied) {
+				return true;
+			}
+		}
+		return false; //no alternative is satisfied by the considered object
+	}
+	
+	/**
+	 * Verifies if decision part of this rule is verified by given decision. TODO
+	 * 
+	 * @param decision TODO
+	 * @return TODO
+	 * 
+	 * @throws NullPointerException if given decision is {@code null}
+	 * @throws NullPointerException if given decision does not have an evaluation for some decision attribute considered in this rule
+	 */
+	public boolean decisionsMatchedBy(Decision decision) { //TODO: take into account more general configuration of decisions
+		notNull(decision, "Decision to be matched against rule's decisions is null.");
+		
+		boolean conjunctionSatisfied;
+		
+		Condition<EvaluationField>[][] decisions = getDecisions(true);
+		EvaluationField evaluation;
+		int decisionAttributeIndex;
+		
+		//check if at least one alternative is satisfied by the considered object
+		for (int i = 0; i < decisions.length; i++) {
+			conjunctionSatisfied = true;
+			for (int j = 0; j < decisions[i].length; j++) {
+				decisionAttributeIndex = decisions[i][j].getAttributeWithContext().getAttributeIndex();
+				evaluation = decision.getEvaluation(decisionAttributeIndex); //no evaluation for current decision attribute
+				if (evaluation != null) {
+					if (!decisions[i][j].satisfiedBy(evaluation)) {
+						conjunctionSatisfied = false;
+						break; //go the the next alternative
+					}
+				} else {
+					throw new NullPointerException("Object's decision does not have an evaluation for decision attribute no. " + decisionAttributeIndex);
 				}
 			}
 			if (conjunctionSatisfied) {
