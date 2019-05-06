@@ -816,7 +816,7 @@ public class Rule {
 	}
 
 	/**
-	 * Verifies if decision part of this rule is verified by the object at given index in the given information table.
+	 * Verifies if decision part of this rule is satisfied by the object at given index in the given information table.
 	 * In general, a rule can have several alternative compound decisions. Each of them can be composed of several elementary decisions.
 	 * This method returns {@code true} if at least one compound decision is satisfied, which, in turn, means, that each elementary decision
 	 * contributing to that compound decision, is satisfied. Suppose the following decision part of this rule:<br>
@@ -851,12 +851,14 @@ public class Rule {
 	}
 	
 	/**
-	 * Verifies if decision part of this rule is verified by given evaluations. TODO
+	 * Verifies if decision part of this rule is satisfied by an object from information table having given evaluations on decision attributes
+	 * considered in this rule.
 	 * 
-	 * @param evaluations TODO
-	 * @return TODO
+	 * @param evaluations list of {@link EvaluationField evaluations} of an object from information table on subsequent decision attributes 
+	 * @return {@code true} if decision part of this rule is verified by the object having given evaluations on subsequent decision attributes,
+	 *         {@code false} otherwise
 	 * 
-	 * @throws NullPointerException TODO
+	 * @throws NullPointerException if given list or any of its elements is {@code null}
 	 * @throws InvalidSizeException if number of supplied evaluations is smaller than number of AND-connected conditions in decision part of this rule
 	 */
 	public boolean decisionsMatchedBy(List<? extends EvaluationField> evaluations) { //TODO: take into account more general configuration of decisions
@@ -886,10 +888,11 @@ public class Rule {
 	}
 	
 	/**
-	 * Verifies if decision part of this rule is verified by given decision. TODO
+	 * Verifies if decision part of this rule is satisfied by an object from information table having given decision.
 	 * 
-	 * @param decision TODO
-	 * @return TODO
+	 * @param decision decision of an object from an information table 
+	 * @return {@code true} if decision part of this rule is verified by the object having given decision,
+	 *         {@code false} otherwise
 	 * 
 	 * @throws NullPointerException if given decision is {@code null}
 	 * @throws NullPointerException if given decision does not have an evaluation for some decision attribute considered in this rule
@@ -915,7 +918,7 @@ public class Rule {
 						break; //go the the next alternative
 					}
 				} else {
-					throw new NullPointerException("Object's decision does not have an evaluation for decision attribute no. " + decisionAttributeIndex);
+					throw new NullPointerException("Object's decision does not have an evaluation for decision attribute no. " + decisionAttributeIndex + " considered in decision rule.");
 				}
 			}
 			if (conjunctionSatisfied) {
