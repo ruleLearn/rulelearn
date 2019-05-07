@@ -51,7 +51,7 @@ class RuleTest {
 	
 	private Condition<? extends EvaluationField> getCondition1() {
 		AttributePreferenceType preferenceType1 = AttributePreferenceType.GAIN;
-		return new SimpleConditionAtLeast(
+		return new ConditionAtLeastThresholdVSObject<IntegerField>(
 				new EvaluationAttributeWithContext(
 						new EvaluationAttribute(
 								"attr1",
@@ -66,7 +66,7 @@ class RuleTest {
 	
 	private Condition<? extends EvaluationField> getCondition2() {
 		AttributePreferenceType preferenceType2 = AttributePreferenceType.COST;
-		return new SimpleConditionAtMost(
+		return new ConditionAtMostThresholdVSObject<RealField>(
 				new EvaluationAttributeWithContext(
 						new EvaluationAttribute(
 								"attr3",
@@ -81,7 +81,7 @@ class RuleTest {
 	
 	private Condition<? extends EvaluationField> getDecision() {
 		AttributePreferenceType preferenceTypeDec = AttributePreferenceType.GAIN;
-		return new SimpleConditionAtLeast(
+		return new ConditionAtLeastThresholdVSObject<IntegerField>(
 				new EvaluationAttributeWithContext(
 						new EvaluationAttribute(
 								"dec",
@@ -96,7 +96,7 @@ class RuleTest {
 	
 	private Condition<? extends EvaluationField> getDecisionInv() {
 		AttributePreferenceType preferenceTypeDec = AttributePreferenceType.GAIN;
-		return new SimpleConditionAtMost(
+		return new ConditionAtMostThresholdVSObject<IntegerField>(
 				new EvaluationAttributeWithContext(
 						new EvaluationAttribute(
 								"dec",
@@ -111,7 +111,7 @@ class RuleTest {
 	
 	private Condition<? extends EvaluationField> getDecision2() {
 		AttributePreferenceType preferenceTypeDec = AttributePreferenceType.COST;
-		return new SimpleConditionAtMost(
+		return new ConditionAtMostThresholdVSObject<IntegerField>(
 				new EvaluationAttributeWithContext(
 						new EvaluationAttribute(
 								"dec2",
@@ -126,7 +126,7 @@ class RuleTest {
 	
 	private Condition<? extends EvaluationField> getDecision2Inv() {
 		AttributePreferenceType preferenceTypeDec = AttributePreferenceType.COST;
-		return new SimpleConditionAtLeast(
+		return new ConditionAtLeastThresholdVSObject<IntegerField>(
 				new EvaluationAttributeWithContext(
 						new EvaluationAttribute(
 								"dec2",
@@ -167,7 +167,7 @@ class RuleTest {
 		conditions.add(getCondition2());
 		
 		//create and return rule
-		Rule rule = new Rule(RuleType.CERTAIN, conditions, (SimpleCondition)getDecision());
+		Rule rule = new Rule(RuleType.CERTAIN, conditions, getDecision());
 		return rule;
 	}
 	
@@ -218,11 +218,12 @@ class RuleTest {
 	 */
 	@Test
 	void testGetType() {
-		SimpleConditionAtLeast condition = null;
+		ConditionAtLeastThresholdVSObject<EvaluationField> condition = null;
 		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
 		conditions.add(condition);
 		
-		SimpleConditionAtLeast decision = Mockito.mock(SimpleConditionAtLeast.class);;
+		@SuppressWarnings("unchecked")
+		ConditionAtLeastThresholdVSObject<EvaluationField> decision = Mockito.mock(ConditionAtLeastThresholdVSObject.class);
 		
 		List<List<Condition<? extends EvaluationField>>> decisions = new ObjectArrayList<>();
 		decisions.add(new ObjectArrayList<>());
@@ -237,11 +238,12 @@ class RuleTest {
 	 */
 	@Test
 	void testGetSemantics() {
-		SimpleConditionAtLeast condition = null;
+		ConditionAtLeastThresholdVSObject<EvaluationField> condition = null;
 		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
 		conditions.add(condition);
 		
-		SimpleConditionAtLeast decision = Mockito.mock(SimpleConditionAtLeast.class);;
+		@SuppressWarnings("unchecked")
+		ConditionAtLeastThresholdVSObject<EvaluationField> decision = Mockito.mock(ConditionAtLeastThresholdVSObject.class);;
 		
 		List<List<Condition<? extends EvaluationField>>> decisions = new ObjectArrayList<>();
 		decisions.add(new ObjectArrayList<>());
