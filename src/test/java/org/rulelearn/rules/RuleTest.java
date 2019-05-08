@@ -16,12 +16,21 @@
 
 package org.rulelearn.rules;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
+import org.rulelearn.data.CompositeDecision;
+import org.rulelearn.data.Decision;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTable;
@@ -32,8 +41,8 @@ import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.UnknownSimpleFieldMV15;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
+
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link Rule}.
@@ -45,7 +54,7 @@ class RuleTest {
 	
 	private Condition<? extends EvaluationField> getCondition1() {
 		AttributePreferenceType preferenceType1 = AttributePreferenceType.GAIN;
-		return new SimpleConditionAtLeast(
+		return new ConditionAtLeastThresholdVSObject<IntegerField>(
 				new EvaluationAttributeWithContext(
 						new EvaluationAttribute(
 								"attr1",
@@ -60,7 +69,7 @@ class RuleTest {
 	
 	private Condition<? extends EvaluationField> getCondition2() {
 		AttributePreferenceType preferenceType2 = AttributePreferenceType.COST;
-		return new SimpleConditionAtMost(
+		return new ConditionAtMostThresholdVSObject<RealField>(
 				new EvaluationAttributeWithContext(
 						new EvaluationAttribute(
 								"attr3",
@@ -75,7 +84,7 @@ class RuleTest {
 	
 	private Condition<? extends EvaluationField> getDecision() {
 		AttributePreferenceType preferenceTypeDec = AttributePreferenceType.GAIN;
-		return new SimpleConditionAtLeast(
+		return new ConditionAtLeastThresholdVSObject<IntegerField>(
 				new EvaluationAttributeWithContext(
 						new EvaluationAttribute(
 								"dec",
@@ -90,7 +99,7 @@ class RuleTest {
 	
 	private Condition<? extends EvaluationField> getDecisionInv() {
 		AttributePreferenceType preferenceTypeDec = AttributePreferenceType.GAIN;
-		return new SimpleConditionAtMost(
+		return new ConditionAtMostThresholdVSObject<IntegerField>(
 				new EvaluationAttributeWithContext(
 						new EvaluationAttribute(
 								"dec",
@@ -105,7 +114,7 @@ class RuleTest {
 	
 	private Condition<? extends EvaluationField> getDecision2() {
 		AttributePreferenceType preferenceTypeDec = AttributePreferenceType.COST;
-		return new SimpleConditionAtMost(
+		return new ConditionAtMostThresholdVSObject<IntegerField>(
 				new EvaluationAttributeWithContext(
 						new EvaluationAttribute(
 								"dec2",
@@ -120,7 +129,7 @@ class RuleTest {
 	
 	private Condition<? extends EvaluationField> getDecision2Inv() {
 		AttributePreferenceType preferenceTypeDec = AttributePreferenceType.COST;
-		return new SimpleConditionAtLeast(
+		return new ConditionAtLeastThresholdVSObject<IntegerField>(
 				new EvaluationAttributeWithContext(
 						new EvaluationAttribute(
 								"dec2",
@@ -161,7 +170,7 @@ class RuleTest {
 		conditions.add(getCondition2());
 		
 		//create and return rule
-		Rule rule = new Rule(RuleType.CERTAIN, conditions, (SimpleCondition)getDecision());
+		Rule rule = new Rule(RuleType.CERTAIN, conditions, getDecision());
 		return rule;
 	}
 	
@@ -212,11 +221,12 @@ class RuleTest {
 	 */
 	@Test
 	void testGetType() {
-		SimpleConditionAtLeast condition = null;
+		ConditionAtLeastThresholdVSObject<EvaluationField> condition = null;
 		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
 		conditions.add(condition);
 		
-		SimpleConditionAtLeast decision = Mockito.mock(SimpleConditionAtLeast.class);;
+		@SuppressWarnings("unchecked")
+		ConditionAtLeastThresholdVSObject<EvaluationField> decision = Mockito.mock(ConditionAtLeastThresholdVSObject.class);
 		
 		List<List<Condition<? extends EvaluationField>>> decisions = new ObjectArrayList<>();
 		decisions.add(new ObjectArrayList<>());
@@ -231,11 +241,12 @@ class RuleTest {
 	 */
 	@Test
 	void testGetSemantics() {
-		SimpleConditionAtLeast condition = null;
+		ConditionAtLeastThresholdVSObject<EvaluationField> condition = null;
 		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<>();
 		conditions.add(condition);
 		
-		SimpleConditionAtLeast decision = Mockito.mock(SimpleConditionAtLeast.class);;
+		@SuppressWarnings("unchecked")
+		ConditionAtLeastThresholdVSObject<EvaluationField> decision = Mockito.mock(ConditionAtLeastThresholdVSObject.class);;
 		
 		List<List<Condition<? extends EvaluationField>>> decisions = new ObjectArrayList<>();
 		decisions.add(new ObjectArrayList<>());
@@ -251,7 +262,7 @@ class RuleTest {
 	@Test
 	void testGetConditions() {
 		Rule rule = getTestRule1();
-		Condition<? extends EvaluationField>[] conditions = rule.getConditions();
+		Condition<EvaluationField>[] conditions = rule.getConditions();
 		assertEquals(conditions.length, 2);
 		assertEquals(conditions[0], getCondition1());
 		assertEquals(conditions[1], getCondition2());
@@ -263,7 +274,7 @@ class RuleTest {
 	@Test
 	void testGetConditionsBoolean() {
 		Rule rule = getTestRule1();
-		Condition<? extends EvaluationField>[] conditions = rule.getConditions(true);
+		Condition<EvaluationField>[] conditions = rule.getConditions(true);
 		assertEquals(conditions.length, 2);
 		assertEquals(conditions[0], getCondition1());
 		assertEquals(conditions[1], getCondition2());
@@ -275,7 +286,7 @@ class RuleTest {
 	@Test
 	void testGetDecisions() {
 		Rule rule = getTestRule1();
-		Condition<? extends EvaluationField>[][] decisions = rule.getDecisions();
+		Condition<EvaluationField>[][] decisions = rule.getDecisions();
 		assertEquals(decisions.length, 1);
 		assertEquals(decisions[0][0], getDecision());
 	}
@@ -286,7 +297,7 @@ class RuleTest {
 	@Test
 	void testGetDecisionsBoolean() {
 		Rule rule = getTestRule1();
-		Condition<? extends EvaluationField>[][] decisions = rule.getDecisions(true);
+		Condition<EvaluationField>[][] decisions = rule.getDecisions(true);
 		assertEquals(decisions.length, 1);
 		assertEquals(decisions.length, 1);
 		assertEquals(decisions[0][0], getDecision());
@@ -298,7 +309,7 @@ class RuleTest {
 	@Test
 	void testGetDecision() {
 		Rule rule = getTestRule1();
-		Condition<? extends EvaluationField> decision = rule.getDecision();
+		Condition<EvaluationField> decision = rule.getDecision();
 		assertEquals(decision, getDecision());
 	}
 	
@@ -343,7 +354,7 @@ class RuleTest {
 	}
 
 	/**
-	 * Test method for {@link org.rulelearn.rules.Rule#covers(int, org.rulelearn.data.InformationTable)}.
+	 * Test method for {@link org.rulelearn.rules.Rule#covers(int, InformationTable)}.
 	 */
 	@Test
 	void testCovers_01() {
@@ -356,7 +367,7 @@ class RuleTest {
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.rules.Rule#covers(int, org.rulelearn.data.InformationTable)}.
+	 * Test method for {@link org.rulelearn.rules.Rule#covers(int, InformationTable)}.
 	 */
 	@Test
 	void testCovers_02() {
@@ -369,7 +380,7 @@ class RuleTest {
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.rules.Rule#covers(int, org.rulelearn.data.InformationTable)}.
+	 * Test method for {@link org.rulelearn.rules.Rule#covers(int, InformationTable)}.
 	 */
 	@Test
 	void testCovers_03() {
@@ -382,7 +393,7 @@ class RuleTest {
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.rules.Rule#covers(int, org.rulelearn.data.InformationTable)}.
+	 * Test method for {@link org.rulelearn.rules.Rule#covers(int, InformationTable)}.
 	 */
 	@Test
 	void testCovers_04() {
@@ -396,7 +407,7 @@ class RuleTest {
 
 
 	/**
-	 * Test method for {@link org.rulelearn.rules.Rule#decisionsMatchedBy(int, org.rulelearn.data.InformationTable)}.
+	 * Test method for {@link org.rulelearn.rules.Rule#decisionsMatchedBy(int, InformationTable)}.
 	 */
 	@Test
 	void testDecisionsMatchedBy_01() {
@@ -408,7 +419,7 @@ class RuleTest {
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.rules.Rule#decisionsMatchedBy(int, org.rulelearn.data.InformationTable)}.
+	 * Test method for {@link org.rulelearn.rules.Rule#decisionsMatchedBy(int, InformationTable)}.
 	 */
 	@Test
 	void testDecisionsMatchedBy_02() {
@@ -420,7 +431,7 @@ class RuleTest {
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.rules.Rule#decisionsMatchedBy(int, org.rulelearn.data.InformationTable)}.
+	 * Test method for {@link org.rulelearn.rules.Rule#decisionsMatchedBy(int, InformationTable)}.
 	 */
 	@Test
 	void testDecisionsMatchedBy_03() {
@@ -430,9 +441,93 @@ class RuleTest {
 		when(informationTable.getField(objectIndex, 7)).thenReturn(IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.GAIN));
 		assertFalse(rule.decisionsMatchedBy(objectIndex, informationTable));
 	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Rule#decisionsMatchedBy(List)}.
+	 */
+	@Test
+	void testDecisionsMatchedBy_04() {
+		Rule rule = getTestRule3();
+		
+		List<IntegerField> evaluations = new ObjectArrayList<>();
+		evaluations.add(IntegerFieldFactory.getInstance().create(6, AttributePreferenceType.GAIN));
+		evaluations.add(IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.COST));
+		
+		assertTrue(rule.decisionsMatchedBy(evaluations));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Rule#decisionsMatchedBy(List)}.
+	 */
+	@Test
+	void testDecisionsMatchedBy_05() {
+		Rule rule = getTestRule3();
+		
+		List<IntegerField> evaluations = new ObjectArrayList<>();
+		evaluations.add(IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.GAIN));
+		evaluations.add(IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.COST));
+		
+		assertFalse(rule.decisionsMatchedBy(evaluations));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Rule#decisionsMatchedBy(Decision)}.
+	 */
+	@Test
+	void testDecisionsMatchedBy_06() {
+		Rule rule = getTestRule3();
+		
+		EvaluationField[] evaluations = {
+				IntegerFieldFactory.getInstance().create(6, AttributePreferenceType.GAIN),
+				IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.COST)
+		};
+		
+		Decision decision = new CompositeDecision(evaluations, new int[] {7, 9});
+		
+		assertTrue(rule.decisionsMatchedBy(decision));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Rule#decisionsMatchedBy(Decision)}.
+	 */
+	@Test
+	void testDecisionsMatchedBy_07() {
+		Rule rule = getTestRule3();
+		
+		EvaluationField[] evaluations = {
+				IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.GAIN),
+				IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.COST)
+		};
+		
+		Decision decision = new CompositeDecision(evaluations, new int[] {7, 9});
+		
+		assertFalse(rule.decisionsMatchedBy(decision));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Rule#decisionsMatchedBy(Decision)}.
+	 */
+	@Test
+	void testDecisionsMatchedBy_08() {
+		Rule rule = getTestRule3();
+		
+		EvaluationField[] evaluations = {
+				IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.GAIN),
+				IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.COST)
+		};
+		
+		Decision decision = new CompositeDecision(evaluations, new int[] {7, 10}); //no evaluation for attribute no. 9!
+		
+		try {
+			assertTrue(rule.decisionsMatchedBy(decision));
+			fail("Should fail when decision does not have an evaluation for some decision attribute considered in decision rule.");
+		} catch (NullPointerException exception) {
+			//OK
+		}
+	}
 
 	/**
-	 * Test method for {@link org.rulelearn.rules.Rule#supportedBy(int, org.rulelearn.data.InformationTable)}.
+	 * Test method for {@link org.rulelearn.rules.Rule#supportedBy(int, InformationTable)}.
 	 */
 	@Test
 	void testSupportedBy_01() {
@@ -446,7 +541,7 @@ class RuleTest {
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.rules.Rule#supportedBy(int, org.rulelearn.data.InformationTable)}.
+	 * Test method for {@link org.rulelearn.rules.Rule#supportedBy(int, InformationTable)}.
 	 */
 	@Test
 	void testSupportedBy_02() {
@@ -460,7 +555,7 @@ class RuleTest {
 	}
 	
 	/**
-	 * Test method for {@link org.rulelearn.rules.Rule#supportedBy(int, org.rulelearn.data.InformationTable)}.
+	 * Test method for {@link org.rulelearn.rules.Rule#supportedBy(int, InformationTable)}.
 	 */
 	@Test
 	void testSupportedBy_03() {

@@ -412,13 +412,14 @@ class RuleMLBuilderTest {
 	/**
 	 * Test method for {@link org.rulelearn.rules.ruleml.RuleMLBuilder#toRuleMLString(org.rulelearn.rules.Rule)}.
 	 */
+	@SuppressWarnings("unchecked")
 	@Test
 	void testRuleMLBuilderRule1() {
 		Condition<? extends EvaluationField>[] conditions = new Condition<?>[] {this.conditionAtLeastMock};
 		Condition<? extends EvaluationField>[][] decisions = new Condition<?>[][] {{this.decisionAtLeastMock}};
 		
-		when(this.ruleAtLeastMock.getConditions()).thenReturn(conditions);
-		when(this.ruleAtLeastMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtLeastMock.getConditions()).thenReturn((Condition<EvaluationField>[])conditions);
+		when(this.ruleAtLeastMock.getDecisions()).thenReturn((Condition<EvaluationField>[][])decisions);
 		when(this.ruleAtLeastMock.getSemantics()).thenReturn(RuleSemantics.AT_LEAST);
 		when(this.ruleAtLeastMock.getType()).thenReturn(RuleType.CERTAIN);
 		
@@ -453,13 +454,14 @@ class RuleMLBuilderTest {
 	/**
 	 * Test method for {@link org.rulelearn.rules.ruleml.RuleMLBuilder#toRuleMLString(org.rulelearn.rules.Rule)}.
 	 */
+	@SuppressWarnings("unchecked")
 	@Test
 	void testRuleMLBuilderRule2() {
 		Condition<? extends EvaluationField>[] conditions = new Condition<?>[] {this.conditionAtMostMock, this.conditionEqualMock};
 		Condition<? extends EvaluationField>[][] decisions = new Condition<?>[][] {{this.decisionAtMostMock}};
 		
-		when(this.ruleAtMostMock.getConditions()).thenReturn(conditions);
-		when(this.ruleAtMostMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtMostMock.getConditions()).thenReturn((Condition<EvaluationField>[])conditions);
+		when(this.ruleAtMostMock.getDecisions()).thenReturn((Condition<EvaluationField>[][])decisions);
 		when(this.ruleAtMostMock.getSemantics()).thenReturn(RuleSemantics.AT_MOST);
 		when(this.ruleAtMostMock.getType()).thenReturn(RuleType.POSSIBLE);
 		
@@ -503,13 +505,14 @@ class RuleMLBuilderTest {
 	/**
 	 * Test method for {@link org.rulelearn.rules.ruleml.RuleMLBuilder#toRuleMLString(org.rulelearn.rules.Rule)}.
 	 */
+	@SuppressWarnings("unchecked")
 	@Test
 	void testRuleMLBuilderRule3() {
 		Condition<? extends EvaluationField>[] conditions = new Condition<?>[] {this.conditionAtMostThresholdMock, this.conditionEqualThresholdMock};
 		Condition<? extends EvaluationField>[][] decisions = new Condition<?>[][] {{this.decisionAtMostMock}};
 		
-		when(this.ruleAtMostMock.getConditions()).thenReturn(conditions);
-		when(this.ruleAtMostMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtMostMock.getConditions()).thenReturn((Condition<EvaluationField>[])conditions);
+		when(this.ruleAtMostMock.getDecisions()).thenReturn((Condition<EvaluationField>[][])decisions);
 		when(this.ruleAtMostMock.getSemantics()).thenReturn(RuleSemantics.AT_MOST);
 		when(this.ruleAtMostMock.getType()).thenReturn(RuleType.POSSIBLE);
 		
@@ -553,14 +556,15 @@ class RuleMLBuilderTest {
 	/**
 	 * Test method for {@link org.rulelearn.rules.ruleml.RuleMLBuilder#toRuleMLString(RuleSet, int)}.
 	 */
+	@SuppressWarnings("unchecked")
 	@Test
 	void testRuleMLBuilderRuleSet1() {
 		// first rule
 		Condition<? extends EvaluationField>[] conditions = new Condition<?>[] {this.conditionAtLeastMock};
 		Condition<? extends EvaluationField>[][] decisions = new Condition<?>[][] {{this.decisionAtLeastMock}};
 		
-		when(this.ruleAtLeastMock.getConditions()).thenReturn(conditions);
-		when(this.ruleAtLeastMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtLeastMock.getConditions()).thenReturn((Condition<EvaluationField>[])conditions);
+		when(this.ruleAtLeastMock.getDecisions()).thenReturn((Condition<EvaluationField>[][])decisions);
 		when(this.ruleAtLeastMock.getSemantics()).thenReturn(RuleSemantics.AT_LEAST);
 		when(this.ruleAtLeastMock.getType()).thenReturn(RuleType.CERTAIN);
 		
@@ -568,8 +572,8 @@ class RuleMLBuilderTest {
 		conditions = new Condition<?>[] {this.conditionAtMostMock, this.conditionEqualMock};
 		decisions = new Condition<?>[][] {{this.decisionAtMostMock}};
 		
-		when(this.ruleAtMostMock.getConditions()).thenReturn(conditions);
-		when(this.ruleAtMostMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtMostMock.getConditions()).thenReturn((Condition<EvaluationField>[])conditions);
+		when(this.ruleAtMostMock.getDecisions()).thenReturn((Condition<EvaluationField>[][])decisions);
 		when(this.ruleAtMostMock.getSemantics()).thenReturn(RuleSemantics.AT_MOST);
 		when(this.ruleAtMostMock.getType()).thenReturn(RuleType.CERTAIN);
 		
@@ -646,13 +650,14 @@ class RuleMLBuilderTest {
 	/**
 	 * Test method for {@link org.rulelearn.rules.ruleml.RuleMLBuilder#toRuleMLString(RuleSet, UUID)}.
 	 */
+	@SuppressWarnings("unchecked")
 	@Test
 	void testRuleMLBuilderRuleSet2() {
 		Condition<? extends EvaluationField>[] conditions = new Condition<?>[] {this.conditionAtLeastMock};
 		Condition<? extends EvaluationField>[][] decisions = new Condition<?>[][] {{this.decisionAtLeastMock}};
 		
-		when(this.ruleAtLeastMock.getConditions()).thenReturn(conditions);
-		when(this.ruleAtLeastMock.getDecisions()).thenReturn(decisions);
+		when(this.ruleAtLeastMock.getConditions()).thenReturn((Condition<EvaluationField>[])conditions);
+		when(this.ruleAtLeastMock.getDecisions()).thenReturn((Condition<EvaluationField>[][])decisions);
 		when(this.ruleAtLeastMock.getSemantics()).thenReturn(RuleSemantics.AT_LEAST);
 		when(this.ruleAtLeastMock.getType()).thenReturn(RuleType.APPROXIMATE);
 				
