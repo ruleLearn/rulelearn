@@ -60,7 +60,7 @@ public class PossibleVCDomLEMWrapper implements RuleInducerWrapper {
 	 */
 	@Override
 	public RuleSet induceRules(InformationTable informationTable) {
-		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper inducting possible decision rules is null.");
+		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper inducing possible decision rules is null.");
 		
 		RuleInducerComponents ruleInducerComponents = new PossibleRuleInducerComponents.Builder().build();
 		
@@ -85,7 +85,7 @@ public class PossibleVCDomLEMWrapper implements RuleInducerWrapper {
 	 */
 	@Override
 	public RuleSetWithCharacteristics induceRulesWithCharacteristics(InformationTable informationTable) {
-		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper inducting possible decision rules is null.");
+		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper inducing possible decision rules is null.");
 		
 		RuleInducerComponents ruleInducerComponents = new PossibleRuleInducerComponents.Builder().build();
 		

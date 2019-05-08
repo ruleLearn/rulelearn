@@ -74,7 +74,7 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 */
 	@Override
 	public RuleSet induceRules(InformationTable informationTable) {
-		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper inducting certain decision rules is null.");
+		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper inducing certain decision rules is null.");
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().build();
 		
@@ -99,7 +99,7 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 	 */
 	@Override
 	public RuleSetWithCharacteristics induceRulesWithCharacteristics(InformationTable informationTable) {
-		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper inducting certain decision rules is null.");
+		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper inducing certain decision rules is null.");
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().build();
 		
