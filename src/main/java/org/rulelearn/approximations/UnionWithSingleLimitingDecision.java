@@ -18,7 +18,6 @@ package org.rulelearn.approximations;
 
 import static org.rulelearn.core.Precondition.notNull;
 
-import org.rulelearn.approximations.Union.UnionType;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.TernaryLogicValue;
@@ -367,6 +366,34 @@ public class UnionWithSingleLimitingDecision extends Union {
 			return false;
 		}
 
+	}
+	
+	/**
+	 * Gets textual representation of this union.
+	 * 
+	 * @return textual representation of this union
+	 */
+	@Override
+	public String toString() {
+		final String separator = ",";
+		
+		IntSet attributeIndices = limitingDecision.getAttributeIndices(); //TODO: sort attribute indices if more than one index?
+		
+		StringBuilder sB = new StringBuilder();
+		sB.append(unionType);
+		
+		String prefix = "("; //first prefix
+		for (int attributeIndex : attributeIndices) {
+			sB.append(prefix)
+				.append(this.informationTable.getAttribute(attributeIndex).getName())
+				.append("=")
+				.append(limitingDecision.getEvaluation(attributeIndex));
+			prefix = separator; //next prefix is a separator
+		}
+		
+		sB.append(")");
+		
+		return sB.toString();
 	}
 	
 }
