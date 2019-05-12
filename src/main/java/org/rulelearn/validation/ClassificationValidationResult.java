@@ -79,7 +79,7 @@ public class ClassificationValidationResult implements ValidationResult {
 	 * @param assignments array with {@link ClassificationResult assignments (i.e., results of classification)} which are validated
 	 * 
 	 * @throws NullPointerException when any of arrays (with original decisions or assignments) passed as parameters or their elements is null 
-	 * @throws InvalidValueException when size of the array with original decisions and size of the array assignments differ
+	 * @throws InvalidValueException when size of the array with original decisions and size of the array with assignments differ
 	 */
 	public ClassificationValidationResult(Decision[] originalDecisions, ClassificationResult[] assignments) {
 		Precondition.notNullWithContents(originalDecisions, "Array with original decisions is null.", "Element %i of array with original decisions is null.");
@@ -198,6 +198,4 @@ public class ClassificationValidationResult implements ValidationResult {
 		return numberOfUncomparableAssignments;
 	}
 	
-	
-
 }
