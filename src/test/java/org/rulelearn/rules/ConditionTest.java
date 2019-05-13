@@ -17,6 +17,8 @@
 package org.rulelearn.rules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +30,8 @@ import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerFieldFactory;
+import org.rulelearn.types.PairField;
+import org.rulelearn.types.SimpleField;
 
 /**
  * Tests for {@link Condition}.
@@ -174,6 +178,39 @@ class ConditionTest {
 		condition = createCondition(attributeWithContextMock, limitingEvaluation);
 		
 		assertEquals(condition.getLimitingEvaluation(), limitingEvaluation);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Condition#isDecomposable()}.
+	 */
+	@Test
+	void testIsDecomposable01() {
+		condition = createCondition(attributeWithContextMock, limitingEvaluation);
+		
+		assertFalse(condition.isDecomposable());
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Condition#isDecomposable()}.
+	 */
+	@Test
+	void testIsDecomposable02() {
+		condition = createCondition(attributeWithContextMock, new PairField<SimpleField>(
+				IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN),
+				IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.GAIN)));
+		
+		assertTrue(condition.isDecomposable());
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.Condition#hashCode()}.
+	 */
+	@Test
+	void testHashCode() {
+		condition = createCondition(attributeWithContextMock, limitingEvaluation);
+		Condition<EvaluationField> condition2 = createCondition(attributeWithContextMock, limitingEvaluation);
+		
+		assertEquals(condition.hashCode(), condition2.hashCode());
 	}
 
 }

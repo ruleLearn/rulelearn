@@ -17,8 +17,8 @@
 package org.rulelearn.types;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.security.NoSuchAlgorithmException;
@@ -210,19 +210,19 @@ public class IntegerFieldTest {
 	private void testSelfCloneHelper(IntegerField field) {
 		IntegerField f1 = field.<IntegerField>selfClone();
 		assertEquals(f1.getClass(), field.getClass());
-		assertEquals(f1.getValue(), ((IntegerField)field).getValue());
+		assertEquals(f1.getValue(), field.getValue());
 		
 		Field f2 = field.<IntegerField>selfClone();
 		assertEquals(f2.getClass(), field.getClass());
-		assertEquals(((IntegerField)f2).getValue(), ((IntegerField)field).getValue());
+		assertEquals(((IntegerField)f2).getValue(), field.getValue());
 		
 		IntegerField f3 = field.selfClone();
 		assertEquals(f3.getClass(), field.getClass());
-		assertEquals(f3.getValue(), ((IntegerField)field).getValue());
+		assertEquals(f3.getValue(), field.getValue());
 		
 		Field f4 = field.selfClone();
 		assertEquals(f4.getClass(), field.getClass());
-		assertEquals(((IntegerField)f4).getValue(), ((IntegerField)field).getValue());
+		assertEquals(((IntegerField)f4).getValue(), field.getValue());
 		
 		try {
 			RealField f5 = field.selfClone();

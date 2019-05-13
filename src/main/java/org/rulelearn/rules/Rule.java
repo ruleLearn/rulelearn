@@ -27,6 +27,7 @@ import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
+import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.EvaluationField;
 
@@ -102,8 +103,9 @@ public class Rule {
 		 * 
 		 * @return underlying elementary decision
 		 */
-		public Condition<? extends EvaluationField> getElementaryDecision() {
-			return elementaryDecision;
+		@SuppressWarnings("unchecked")
+		public Condition<EvaluationField> getElementaryDecision() {
+			return (Condition<EvaluationField>)elementaryDecision; //this cast is safe
 		}
 	}
 	
@@ -320,7 +322,7 @@ public class Rule {
      * @throws NullPointerException if any list with elementary decisions is {@code null}, or any elementary decision is {@code null}
      * @throws InvalidSizeException if any list with elementary decisions is empty
      */
-    private void saveDecisions(List<List<Condition<? extends EvaluationField>>> decisions) { //TODO: save decisions in more general way
+    private void saveDecisions(List<? extends List<? extends Condition<? extends EvaluationField>>> decisions) { //TODO: save decisions in more general way
     	nonEmpty(notNull(decisions, "Rule's decisions are null."), "Rule's decisions are empty.");
     	
     	int numberOfAlternativeDecisions = decisions.size();
@@ -343,7 +345,7 @@ public class Rule {
      * @throws NullPointerException if any of the parameters is {@code null}, or any elementary decision from the given list is {@code null}
      * @throws InvalidSizeException if the given list with elementary decisions is empty
      */
-    private void saveDecisions(List<Condition<? extends EvaluationField>> decisions, ConditionConnectiveType decisionConnectiveType) { //TODO: save decisions in more general way
+    private void saveDecisions(List<? extends Condition<? extends EvaluationField>> decisions, ConditionConnectiveType decisionConnectiveType) { //TODO: save decisions in more general way
     	nonEmpty(notNull(decisions, "Rule's decisions are null."), "Rule's decisions are empty.");
     	
     	switch (notNull(decisionConnectiveType, "Decision connective type is null.")) {
@@ -380,10 +382,16 @@ public class Rule {
      * @throws NullPointerException if any of the parameters is {@code null}, or any list with elementary decisions is {@code null}, or any elementary decision is {@code null}
      * @throws InvalidSizeException if any list with elementary decisions is empty
      */
-    public Rule(RuleType type, RuleSemantics semantics, List<Condition<? extends EvaluationField>> conditions, List<List<Condition<? extends EvaluationField>>> decisions) {
+    public Rule(RuleType type, RuleSemantics semantics, List<? extends Condition<? extends EvaluationField>> conditions, List<? extends List<? extends Condition<? extends EvaluationField>>> decisions) {
     	this.type = notNull(type, "Rule's type is null.");
     	this.semantics = notNull(semantics, "Rule's semantics is null.");
-    	this.conditions = notNull(conditions, "Rule's conditions are null.").toArray(new Condition<?>[0]);
+    	this.conditions = notNull(conditions, "Rule's conditions are null.").toArray(new Condition<?>[conditions.size()]);
+    	//see https://www.oreilly.com/library/view/learning-java-4th/9781449372477/ch08s10.html
+    	//see https://medium.com/omnius/wildcards-in-java-generics-part-1-3-dd2ce5b0e59a
+    	//see https://youtu.be/V1vQf4qyMXg?t=22m24s
+    	//see http://www.angelikalanger.com/GenericsFAQ/FAQSections/ParameterizedTypes.html#FAQ006
+    	//see https://www.simplexacode.ch/en/blog/2018/08/the-problem-with-creating-generic-arrays/
+    	//https://softwareengineering.stackexchange.com/questions/257257/suppresswarnings-in-generic-array-declaration
     	
     	saveDecisions(decisions);
     }
@@ -401,11 +409,11 @@ public class Rule {
      * @throws NullPointerException if any of the parameters is {@code null}, or any elementary decision from the given list is {@code null}
      * @throws InvalidSizeException if the given list with elementary decisions is empty
      */
-    public Rule(RuleType type, RuleSemantics semantics, List<Condition<? extends EvaluationField>> conditions, List<Condition<? extends EvaluationField>> decisions,
+    public Rule(RuleType type, RuleSemantics semantics, List<? extends Condition<? extends EvaluationField>> conditions, List<? extends Condition<? extends EvaluationField>> decisions,
     		ConditionConnectiveType decisionConnectiveType) {
     	this.type = notNull(type, "Rule's type is null.");
     	this.semantics = notNull(semantics, "Rule's semantics is null.");
-    	this.conditions = notNull(conditions, "Rule's conditions are null.").toArray(new Condition<?>[0]);
+    	this.conditions = notNull(conditions, "Rule's conditions are null.").toArray(new Condition<?>[conditions.size()]);
 
     	saveDecisions(decisions, decisionConnectiveType);
     }
@@ -420,13 +428,13 @@ public class Rule {
      * @throws NullPointerException if any of the parameters is {@code null}
      * @throws InvalidValueException if semantics of this rule cannot be established using the given decision - see {@link Condition#getRuleSemantics()}
      */
-    public Rule(RuleType type, List<Condition<? extends EvaluationField>> conditions, Condition<? extends EvaluationField> decision) {
+    public Rule(RuleType type, List<? extends Condition<? extends EvaluationField>> conditions, Condition<? extends EvaluationField> decision) {
     	this.type = notNull(type, "Rule's type is null.");
     	
     	notNull(decision, "Rule's decision is null."); //validate decision
     	
     	this.semantics = decision.getRuleSemantics(); //may throw exception
-    	this.conditions = notNull(conditions, "Rule's conditions are null.").toArray(new Condition<?>[0]);
+    	this.conditions = notNull(conditions, "Rule's conditions are null.").toArray(new Condition<?>[conditions.size()]);
     	
     	this.decisions = new Condition<?>[1][1];
     	this.decisions[0][0] = notNull(decision, "Rule's decision is null.");
@@ -445,11 +453,11 @@ public class Rule {
      * @throws NullPointerException if any of the parameters is {@code null}, or any list with elementary decisions is {@code null}, or any elementary decision is {@code null}
      * @throws InvalidSizeException if any list with elementary decisions is empty
      */
-    public Rule(RuleType type, RuleSemantics semantics, RuleConditions ruleConditions, List<List<Condition<? extends EvaluationField>>> decisions) {
+    public Rule(RuleType type, RuleSemantics semantics, RuleConditions ruleConditions, List<? extends List<? extends Condition<? extends EvaluationField>>> decisions) {
     	this.type = notNull(type, "Rule's type is null.");
     	this.semantics = notNull(semantics, "Rule's semantics is null.");
     	
-    	this.conditions = notNull(ruleConditions, "Rule conditions are null.").getConditions().toArray(new Condition<?>[0]);
+    	this.conditions = notNull(ruleConditions, "Rule conditions are null.").getConditions().toArray(new Condition<?>[ruleConditions.size()]);
     	
     	saveDecisions(decisions);
     }
@@ -467,11 +475,11 @@ public class Rule {
      * @throws NullPointerException if any of the parameters is {@code null}, or any elementary decision from the given list is {@code null}
      * @throws InvalidSizeException if the given list with elementary decisions is empty
      */
-    public Rule(RuleType type, RuleSemantics semantics, RuleConditions ruleConditions, List<Condition<? extends EvaluationField>> decisions, ConditionConnectiveType decisionConnectiveType) {
+    public Rule(RuleType type, RuleSemantics semantics, RuleConditions ruleConditions, List<? extends Condition<? extends EvaluationField>> decisions, ConditionConnectiveType decisionConnectiveType) {
     	this.type = notNull(type, "Rule's type is null.");
     	this.semantics = notNull(semantics, "Rule's semantics is null.");
     	
-    	this.conditions = notNull(ruleConditions, "Rule conditions are null.").getConditions().toArray(new Condition<?>[0]);
+    	this.conditions = notNull(ruleConditions, "Rule conditions are null.").getConditions().toArray(new Condition<?>[ruleConditions.size()]);
     	
     	saveDecisions(decisions, decisionConnectiveType);
     }
@@ -491,7 +499,7 @@ public class Rule {
     	this.type = notNull(type, "Rule's type is null.");
     	this.semantics = notNull(semantics, "Rule's semantics is null.");
     	
-    	this.conditions = notNull(ruleConditions, "Rule conditions are null.").getConditions().toArray(new Condition<?>[0]);
+    	this.conditions = notNull(ruleConditions, "Rule conditions are null.").getConditions().toArray(new Condition<?>[ruleConditions.size()]);
     	//this.ruleDecisions = notNull(ruleDecisions, "Rule decisions are null."); //TODO: uncomment once ruleDecisions field is used!
     	
     	//TODO: remove the following code once ruleDecisions field is used!
@@ -560,28 +568,42 @@ public class Rule {
 	public RuleSemantics getSemantics() {
 		return semantics;
 	}
-
+	
 	/**
-	 * Gets array with conditions of this rule (in order in which they were added to this rule).
+	 * Gets an array with conditions of this rule (in order in which they were added to this rule).<br>
+	 * <br>
+	 * This rule stores conditions, due to efficiency, in an array (constructed in class constructor) this way:<br>
+	 * {@code Condition<? extends EvaluationField>[] conditions = new Condition<?>[numberOfConditions]}.<br>
+	 * Because {@link Condition} is a parameterized generic type with the type parameter upper-bounded to {@link EvaluationField},
+	 * we can safely consider each condition being of type {@code Condition<EvaluationField>}.
+	 * Therefore, to avoid wildcard in the return type, we cast the returned array of conditions to
+	 * {@code Condition<EvaluationField>[]}.
 	 * 
 	 * @return the conditions array with conditions of this rule (in order in which they were added to this rule).
 	 */
-	public Condition<? extends EvaluationField>[] getConditions() {
+	public Condition<EvaluationField>[] getConditions() {
 		return this.getConditions(false);
 	}
 	
 	/**
-	 * Gets array with conditions of this rule (in order in which they were added to this rule).
+	 * Gets array with conditions of this rule (in order in which they were added to this rule).<br>
+	 * <br>
+	 * This rule stores conditions, due to efficiency, in an array (constructed in class constructor) this way:<br>
+	 * {@code Condition<? extends EvaluationField>[] conditions = new Condition<?>[numberOfConditions]}.<br>
+	 * Because {@link Condition} is a parameterized generic type with the type parameter upper-bounded to {@link EvaluationField},
+	 * we can safely consider each condition being of type {@code Condition<EvaluationField>}.
+	 * Therefore, to avoid wildcard in the return type, we cast the returned array of conditions to
+	 * {@code Condition<EvaluationField>[]}.
 	 * 
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
 	 *        at the cost of returning a read-only array, or should return a safe array (that can be
 	 *        modified outside this object), at the cost of returning the result slower
 	 * @return the conditions array with conditions of this rule (in order in which they were added to this rule).
-	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
-	public Condition<? extends EvaluationField>[] getConditions(boolean accelerateByReadOnlyResult) {
-		return accelerateByReadOnlyResult ? conditions : conditions.clone();
+	public Condition<EvaluationField>[] getConditions(boolean accelerateByReadOnlyResult) {
+		return (Condition<EvaluationField>[]) (accelerateByReadOnlyResult ? conditions : conditions.clone()); //this cast is safe
 	}	
 
 	/**
@@ -591,7 +613,7 @@ public class Rule {
 	 * 
 	 * @return array with decisions of this rule
 	 */
-	public Condition<? extends EvaluationField>[][] getDecisions() {
+	public Condition<EvaluationField>[][] getDecisions() {
 		return this.getDecisions(false);
 	}
 	
@@ -607,16 +629,17 @@ public class Rule {
 	 *        modified outside this object), at the cost of returning the result slower
 	 * @return array with decisions of this rule
 	 */
+	@SuppressWarnings("unchecked")
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
-	public Condition<? extends EvaluationField>[][] getDecisions(boolean accelerateByReadOnlyResult) {
+	public Condition<EvaluationField>[][] getDecisions(boolean accelerateByReadOnlyResult) {
 		if (accelerateByReadOnlyResult) {
-			return this.decisions;
+			return (Condition<EvaluationField>[][])this.decisions; //this cast is safe
 		} else {
 			Condition<?>[][] returnedDecisions = this.decisions.clone();
 			for (int i = 0; i < this.decisions.length; i++) {
 				returnedDecisions[i] = this.decisions[i].clone();
 			}
-			return returnedDecisions;
+			return (Condition<EvaluationField>[][])returnedDecisions; //this cast is safe
 		}
 	}
 	
@@ -625,8 +648,9 @@ public class Rule {
 	 * 
 	 * @return the first (and possibly the only) decision suggested by this rule
 	 */
-	public Condition<? extends EvaluationField> getDecision() {
-		return this.decisions[0][0];
+	@SuppressWarnings("unchecked")
+	public Condition<EvaluationField> getDecision() {
+		return (Condition<EvaluationField>)this.decisions[0][0]; //this cast is safe
 	}
 	
 	/**
@@ -792,7 +816,7 @@ public class Rule {
 	}
 
 	/**
-	 * Verifies if decision part of this rule is verified by the object at given index in the given information table.
+	 * Verifies if decision part of this rule is satisfied by the object at given index in the given information table.
 	 * In general, a rule can have several alternative compound decisions. Each of them can be composed of several elementary decisions.
 	 * This method returns {@code true} if at least one compound decision is satisfied, which, in turn, means, that each elementary decision
 	 * contributing to that compound decision, is satisfied. Suppose the following decision part of this rule:<br>
@@ -817,6 +841,84 @@ public class Rule {
 				if (!this.decisions[i][j].satisfiedBy(objectIndex, informationTable)) {
 					conjunctionSatisfied = false;
 					break; //go the the next alternative
+				}
+			}
+			if (conjunctionSatisfied) {
+				return true;
+			}
+		}
+		return false; //no alternative is satisfied by the considered object
+	}
+	
+	/**
+	 * Verifies if decision part of this rule is satisfied by an object from information table having given evaluations on decision attributes
+	 * considered in this rule.
+	 * 
+	 * @param evaluations list of {@link EvaluationField evaluations} of an object from information table on subsequent decision attributes 
+	 * @return {@code true} if decision part of this rule is verified by the object having given evaluations on subsequent decision attributes,
+	 *         {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given list or any of its elements is {@code null}
+	 * @throws InvalidSizeException if number of supplied evaluations is smaller than number of AND-connected conditions in decision part of this rule
+	 */
+	public boolean decisionsMatchedBy(List<? extends EvaluationField> evaluations) { //TODO: take into account more general configuration of decisions
+		notNull(evaluations, "Evaluations to be matched against rule's decisions are null.");
+		if  (evaluations.size() != decisions[0].length) {
+			throw new InvalidSizeException("Number of supplied evaluations is smaller than number of AND-connected rule's decisions.");
+		}
+		
+		boolean conjunctionSatisfied;
+		
+		Condition<EvaluationField>[][] decisions = getDecisions(true);
+		
+		//check if at least one alternative is satisfied by the considered object
+		for (int i = 0; i < decisions.length; i++) {
+			conjunctionSatisfied = true;
+			for (int j = 0; j < decisions[i].length; j++) {
+				if (!decisions[i][j].satisfiedBy(evaluations.get(j))) {
+					conjunctionSatisfied = false;
+					break; //go the the next alternative
+				}
+			}
+			if (conjunctionSatisfied) {
+				return true;
+			}
+		}
+		return false; //no alternative is satisfied by the considered object
+	}
+	
+	/**
+	 * Verifies if decision part of this rule is satisfied by an object from information table having given decision.
+	 * 
+	 * @param decision decision of an object from an information table 
+	 * @return {@code true} if decision part of this rule is verified by the object having given decision,
+	 *         {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given decision is {@code null}
+	 * @throws NullPointerException if given decision does not have an evaluation for some decision attribute considered in this rule
+	 */
+	public boolean decisionsMatchedBy(Decision decision) { //TODO: take into account more general configuration of decisions
+		notNull(decision, "Decision to be matched against rule's decisions is null.");
+		
+		boolean conjunctionSatisfied;
+		
+		Condition<EvaluationField>[][] decisions = getDecisions(true);
+		EvaluationField evaluation;
+		int decisionAttributeIndex;
+		
+		//check if at least one alternative is satisfied by the considered object
+		for (int i = 0; i < decisions.length; i++) {
+			conjunctionSatisfied = true;
+			for (int j = 0; j < decisions[i].length; j++) {
+				decisionAttributeIndex = decisions[i][j].getAttributeWithContext().getAttributeIndex();
+				evaluation = decision.getEvaluation(decisionAttributeIndex); //no evaluation for current decision attribute
+				if (evaluation != null) {
+					if (!decisions[i][j].satisfiedBy(evaluation)) {
+						conjunctionSatisfied = false;
+						break; //go the the next alternative
+					}
+				} else {
+					throw new NullPointerException("Object's decision does not have an evaluation for decision attribute no. " + decisionAttributeIndex + " considered in decision rule.");
 				}
 			}
 			if (conjunctionSatisfied) {

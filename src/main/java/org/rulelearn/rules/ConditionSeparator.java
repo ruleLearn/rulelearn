@@ -40,6 +40,6 @@ public interface ConditionSeparator {
 	 * @param compoundCondition "compound" condition that should be split into "simple" conditions
 	 * @return list (array) of "simple" conditions, with limiting evaluations of type {@link SimpleField}
 	 */
-	public Condition<? extends EvaluationField>[] separate(Condition<? extends EvaluationField> compoundCondition);
+	public Condition<EvaluationField>[] separate(Condition<? extends EvaluationField> compoundCondition);
 
 }

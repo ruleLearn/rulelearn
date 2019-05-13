@@ -28,6 +28,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rulelearn.approximations.Union.UnionType;
+import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.TernaryLogicValue;
@@ -883,9 +884,9 @@ class UnionWithSingleLimitingDecisionTest {
 	private UnionWithConstructorParameters getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType preferenceType, boolean includeLimitingDecision) {
 		UnionType unionType = UnionType.AT_LEAST;
 		
-		int value = 10;
+		int attributeValue = 10;
 		int attributeIndex = 1;
-		Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(value, preferenceType), attributeIndex);
+		Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(attributeValue, preferenceType), attributeIndex);
 		
 		InformationTableWithDecisionDistributions informationTableMock = Mockito.mock(InformationTableWithDecisionDistributions.class);
 		
@@ -893,6 +894,7 @@ class UnionWithSingleLimitingDecisionTest {
 		Mockito.when(attributeMock.isActive()).thenReturn(true);
 		Mockito.when(attributeMock.getType()).thenReturn(AttributeType.DECISION);
 		Mockito.when(attributeMock.getPreferenceType()).thenReturn(preferenceType);
+		Mockito.when(attributeMock.getName()).thenReturn("dec");
 		
 		Mockito.when(informationTableMock.getAttribute(attributeIndex)).thenReturn(attributeMock);
 		Mockito.when(informationTableMock.getNumberOfObjects()).thenReturn(0); //avoids looping in findObjects() method
@@ -917,9 +919,9 @@ class UnionWithSingleLimitingDecisionTest {
 	private UnionWithConstructorParameters getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType preferenceType, boolean includeLimitingDecision) {
 		UnionType unionType = UnionType.AT_MOST;
 		
-		int value = 5;
+		int attributeValue = 5;
 		int attributeIndex = 2;
-		Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(value, preferenceType), attributeIndex);
+		Decision limitingDecision = new SimpleDecision(IntegerFieldFactory.getInstance().create(attributeValue, preferenceType), attributeIndex);
 		
 		InformationTableWithDecisionDistributions informationTableMock = Mockito.mock(InformationTableWithDecisionDistributions.class);
 		
@@ -927,7 +929,61 @@ class UnionWithSingleLimitingDecisionTest {
 		Mockito.when(attributeMock.isActive()).thenReturn(true);
 		Mockito.when(attributeMock.getType()).thenReturn(AttributeType.DECISION);
 		Mockito.when(attributeMock.getPreferenceType()).thenReturn(preferenceType);
+		Mockito.when(attributeMock.getName()).thenReturn("dec");
+		
 		Mockito.when(informationTableMock.getAttribute(attributeIndex)).thenReturn(attributeMock);
+		Mockito.when(informationTableMock.getNumberOfObjects()).thenReturn(0); //avoids looping in findObjects() method
+		
+		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
+		
+		return new UnionWithConstructorParameters(
+				new UnionWithSingleLimitingDecision(unionType, limitingDecision, informationTableMock, roughSetCalculatorMock, includeLimitingDecision),
+				unionType,
+				limitingDecision,
+				informationTableMock,
+				roughSetCalculatorMock);
+	}
+	
+	/**
+	 * Gets test "at most" union with {@link CompositeDecision} limiting decision, useful for testing protected methods.
+	 * This decision has two {@link IntegerField} contributing evaluations.
+	 * 
+	 * @param preferenceTypes attribute preference types; each type should be {@link AttributePreferenceType#GAIN} or {@link AttributePreferenceType#COST}
+	 * @return structure holding constructed test union and parameters used to construct that union
+	 * 
+	 * @throws InvalidSizeException if length of preferenceTypes is different than expected (i.e., different than 2)
+	 */
+	private UnionWithConstructorParameters getTestAtMostUnionWithCompositeLimitingDecision(AttributePreferenceType[] preferenceTypes, boolean includeLimitingDecision) {
+		if (preferenceTypes.length != 2) {
+			throw new InvalidSizeException("Should be exactly two preference types.");
+		}
+		
+		UnionType unionType = UnionType.AT_MOST;
+		
+		int[] attributeValues = {10, 11};
+		int[] attributeIndices = {0, 1};
+		String[] attributeNames = {"dec1", "dec2"};
+		EvaluationAttribute[] attributeMocks = new EvaluationAttribute[2];
+		
+		Decision limitingDecision = new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(attributeValues[0], preferenceTypes[0]),
+				IntegerFieldFactory.getInstance().create(attributeValues[1], preferenceTypes[1])}, attributeIndices);
+		
+		InformationTableWithDecisionDistributions informationTableMock = Mockito.mock(InformationTableWithDecisionDistributions.class);
+		
+		attributeMocks[0] = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMocks[0].isActive()).thenReturn(true);
+		Mockito.when(attributeMocks[0].getType()).thenReturn(AttributeType.DECISION);
+		Mockito.when(attributeMocks[0].getPreferenceType()).thenReturn(preferenceTypes[0]);
+		Mockito.when(attributeMocks[0].getName()).thenReturn(attributeNames[0]);
+		Mockito.when(informationTableMock.getAttribute(attributeIndices[0])).thenReturn(attributeMocks[0]);
+		
+		attributeMocks[1] = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMocks[1].isActive()).thenReturn(true);
+		Mockito.when(attributeMocks[1].getType()).thenReturn(AttributeType.DECISION);
+		Mockito.when(attributeMocks[1].getPreferenceType()).thenReturn(preferenceTypes[1]);
+		Mockito.when(attributeMocks[1].getName()).thenReturn(attributeNames[1]);
+		Mockito.when(informationTableMock.getAttribute(attributeIndices[1])).thenReturn(attributeMocks[1]);
+		
 		Mockito.when(informationTableMock.getNumberOfObjects()).thenReturn(0); //avoids looping in findObjects() method
 		
 		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
@@ -1802,6 +1858,29 @@ class UnionWithSingleLimitingDecisionTest {
 		assertFalse(union.isObjectNegative(4));
 		assertFalse(union.isObjectNegative(5));
 		assertFalse(union.isObjectNegative(6));
+	}
+	
+	/**
+	 * Test method for {@link UnionWithSingleLimitingDecision#toString()}.
+	 * Tests textual representation of a union with simple limiting decision.
+	 */
+	@Test
+	void testToString01() {
+		UnionWithSingleLimitingDecision union = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true).union;
+		System.out.println(union); //!
+		assertEquals(union.toString(), "at-least(dec=10)");
+	}
+	
+	/**
+	 * Test method for {@link UnionWithSingleLimitingDecision#toString()}.
+	 * Tests textual representation of a union with composite limiting decision.
+	 */
+	@Test
+	void testToString02() {
+		UnionWithSingleLimitingDecision union = getTestAtMostUnionWithCompositeLimitingDecision(
+				new AttributePreferenceType[] {AttributePreferenceType.GAIN, AttributePreferenceType.COST}, true).union;
+		System.out.println(union); //!
+		assertEquals(union.toString(), "at-most(dec1=10,dec2=11)");
 	}
 
 }

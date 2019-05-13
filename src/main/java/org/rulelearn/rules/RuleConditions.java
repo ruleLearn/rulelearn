@@ -53,7 +53,7 @@ public class RuleConditions {
 	/**
 	 * Elementary conditions, in order of their addition to rule's LHS.
 	 */
-	ObjectList<Condition<? extends EvaluationField>> conditions;
+	ObjectList<Condition<EvaluationField>> conditions;
 	
 	/**
 	 * Indices of all objects that satisfy right-hand side (RHS, decision part) of induced decision rule.
@@ -252,7 +252,7 @@ public class RuleConditions {
 		this.indicesOfObjectsThatCanBeCovered = notNull(indicesOfObjectsThatCanBeCovered, "Set of indices of objects that can be covered is null.");
 		this.indicesOfNeutralObjects = notNull(indicesOfNeutralObjects, "Set of indices of neutral objects is null.");
 		
-		this.conditions = new ObjectArrayList<Condition<? extends EvaluationField>>();
+		this.conditions = new ObjectArrayList<Condition<EvaluationField>>();
 		this.attributeIndex2ConditionIndices = new Int2ObjectOpenHashMap<IntList>();
 		
 		int objectsCount = learningInformationTable.getNumberOfObjects();
@@ -329,7 +329,11 @@ public class RuleConditions {
 	 * @throws NullPointerException if given condition is {@code null}
 	 */
 	public int addCondition(Condition<? extends EvaluationField> condition) {
-		this.conditions.add(notNull(condition, "Condition is null."));
+		@SuppressWarnings("unchecked")
+		//necessary cast to Condition<EvaluationField>, so when conditions are returned by getConditions() method, there is no wildcard in the return type
+		Condition<EvaluationField> newCondition = (Condition<EvaluationField>)(notNull(condition, "Condition is null."));
+		
+		this.conditions.add(newCondition);
 		int addedConditionIndex = this.conditions.size() - 1;
 		
 		int attributeIndex = condition.getAttributeWithContext().getAttributeIndex();
@@ -465,7 +469,7 @@ public class RuleConditions {
 	private void updateCoveredObjectsWithoutCondition(IntList indicesOfCoveredObjects, int conditionIndex, boolean updateNotCoveringConditionsCounts) {
 		Precondition.notNull(indicesOfCoveredObjects, "Indices of covered objects are null.");
 		
-		Condition<? extends EvaluationField> condition = this.getCondition(conditionIndex); //validates given index of condition
+		Condition<EvaluationField> condition = this.getCondition(conditionIndex); //validates given index of condition
 		int numberOfObjects = this.notCoveringConditionsCounts.length;
 		
 		if (updateNotCoveringConditionsCounts) {
@@ -527,7 +531,7 @@ public class RuleConditions {
 	 * @throws IndexOutOfBoundsException if given index does not refer to any stored condition
 	 */
 	public void removeCondition(int conditionIndex) {
-		Condition<? extends EvaluationField> conditionToRemove = getCondition(conditionIndex);
+		Condition<EvaluationField> conditionToRemove = getCondition(conditionIndex);
 		int attributeIndex = conditionToRemove.getAttributeWithContext().getAttributeIndex();
 		
 		//first call method that gets considered condition ...
@@ -546,7 +550,7 @@ public class RuleConditions {
 	 * @return list of elementary conditions building this complex of elementary conditions,
 	 *         in order of their addition
 	 */
-	public List<Condition<? extends EvaluationField>> getConditions() {
+	public List<Condition<EvaluationField>> getConditions() {
 		return ObjectLists.unmodifiable(this.conditions);
 	}
 	
@@ -558,7 +562,7 @@ public class RuleConditions {
 	 * 
 	 * @throws IndexOutOfBoundsException if given index is less than zero or too big concerning number of stored conditions
 	 */
-	public Condition<? extends EvaluationField> getCondition(int conditionIndex) {
+	public Condition<EvaluationField> getCondition(int conditionIndex) {
 		if (conditionIndex < 0 || conditionIndex >= this.conditions.size()) {
 			throw new IndexOutOfBoundsException("Condition index is less than zero or too big concerning number of stored conditions.");
 		}
@@ -659,7 +663,7 @@ public class RuleConditions {
 	 * @throws NullPointerException if the other conditions are {@code null}
 	 */
 	public boolean isLessOrEquallyGeneralAs(RuleConditions otherRuleConditions) {
-		List<Condition<? extends EvaluationField>> otherConditionsList = notNull(otherRuleConditions, "Other rule conditions are null.").getConditions();
+		List<Condition<EvaluationField>> otherConditionsList = notNull(otherRuleConditions, "Other rule conditions are null.").getConditions();
 		
 		int otherAttributeIndex;
 		IntList conditionIndices;
@@ -668,7 +672,7 @@ public class RuleConditions {
 		
 		//no condition for some attribute == the most general condition (covering all objects)
 		
-		for (Condition<? extends EvaluationField> otherCondition : otherConditionsList) {
+		for (Condition<EvaluationField> otherCondition : otherConditionsList) {
 			otherAttributeIndex = otherCondition.getAttributeWithContext().getAttributeIndex();
 			if ((conditionIndices = this.getConditionIndicesForAttribute(otherAttributeIndex)).size() > 0) { //these rule conditions also have condition(s) for the same attribute
 				comparableConditionsCount = 0;
@@ -704,7 +708,7 @@ public class RuleConditions {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		int i = 0;
-		for (Condition<? extends EvaluationField> condition : conditions) {
+		for (Condition<EvaluationField> condition : conditions) {
 			sb.append(condition);
 			if (i < conditions.size() - 1) {
 				sb.append(" & ");
