@@ -276,7 +276,12 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	 * @return accuracy in this misclassification matrix
 	 */
 	public double getAccuracy() {
-		return (((double) numberOfCorrectAssignments) / (numberOfObjectsWithAssignedDecision));
+		if (numberOfObjectsWithAssignedDecision > 0) {
+			return (((double) numberOfCorrectAssignments) / (numberOfObjectsWithAssignedDecision));
+		}
+		else {
+			return 0.0;
+		}
 	}
 	
 	/**

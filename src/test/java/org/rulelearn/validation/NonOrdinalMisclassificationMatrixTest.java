@@ -58,10 +58,113 @@ class NonOrdinalMisclassificationMatrixTest {
 	}
 	
 	/**
-	 * Tests for pair: original decisions = {a, b, ?} and assigned decisions = {a, b, ?}.
+	 * Tests for pair: original decisions = {} and assigned decisions = {}.
+	 */
+	@Test
+	void testAll00() {
+		originalDecisions = new SimpleDecision[] {};
+		assignedDecisions = new SimpleDecision[] {};
+		NonOrdinalMisclassificationMatrix misclassificationMatrix = new NonOrdinalMisclassificationMatrix(originalDecisions, assignedDecisions);
+		
+		assertEquals(0.0, misclassificationMatrix.getNumberOfCorrectAssignments());
+		assertEquals(0.0, misclassificationMatrix.getNumberOfIncorrectAssignments());
+		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignments());
+		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getNumberObjectsWithAssignedDecision());
+		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownOriginalDecisions(simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownOriginalDecisions(simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownOriginalDecisions(simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock1, simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock1, simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock1, simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock2, simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock2, simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock2, simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock3, simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock3, simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock3, simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getTruePositiveRate(simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getTruePositiveRate(simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getTruePositiveRate(simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getAccuracy());
+	}
+	
+	/**
+	 * Tests for pair: original decisions = {a, b, ?} and assigned decisions = {?, ?, ?}.
 	 */
 	@Test
 	void testAll01() {
+		originalDecisions = new SimpleDecision[] {simpleDecisionMock1, simpleDecisionMock2, simpleDecisionMock3};
+		assignedDecisions = new SimpleDecision[] {simpleDecisionMock3, simpleDecisionMock3, simpleDecisionMock3};
+		NonOrdinalMisclassificationMatrix misclassificationMatrix = new NonOrdinalMisclassificationMatrix(originalDecisions, assignedDecisions);
+		
+		assertEquals(0.0, misclassificationMatrix.getNumberOfCorrectAssignments());
+		assertEquals(0.0, misclassificationMatrix.getNumberOfIncorrectAssignments());
+		assertEquals(3.0, misclassificationMatrix.getNumberOfUnknownAssignments());
+		assertEquals(1.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock1));
+		assertEquals(1.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getNumberObjectsWithAssignedDecision());
+		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownOriginalDecisions(simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownOriginalDecisions(simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownOriginalDecisions(simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock1, simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock1, simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock1, simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock2, simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock2, simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock2, simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock3, simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock3, simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock3, simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getTruePositiveRate(simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getTruePositiveRate(simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getTruePositiveRate(simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getAccuracy());
+	}
+	
+	
+	/**
+	 * Tests for pair: original decisions = {?, ?, ?} and assigned decisions = {a, b, ?}.
+	 */
+	@Test
+	void testAll02() {
+		originalDecisions = new SimpleDecision[] {simpleDecisionMock3, simpleDecisionMock3, simpleDecisionMock3};
+		assignedDecisions = new SimpleDecision[] {simpleDecisionMock1, simpleDecisionMock2, simpleDecisionMock3};
+		NonOrdinalMisclassificationMatrix misclassificationMatrix = new NonOrdinalMisclassificationMatrix(originalDecisions, assignedDecisions);
+		
+		assertEquals(0.0, misclassificationMatrix.getNumberOfCorrectAssignments());
+		assertEquals(0.0, misclassificationMatrix.getNumberOfIncorrectAssignments());
+		assertEquals(1.0, misclassificationMatrix.getNumberOfUnknownAssignments());
+		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getNumberObjectsWithAssignedDecision());
+		assertEquals(1.0, misclassificationMatrix.getNumberOfUnknownOriginalDecisions(simpleDecisionMock1));
+		assertEquals(1.0, misclassificationMatrix.getNumberOfUnknownOriginalDecisions(simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownOriginalDecisions(simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock1, simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock1, simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock1, simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock2, simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock2, simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock2, simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock3, simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock3, simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getValue(simpleDecisionMock3, simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getTruePositiveRate(simpleDecisionMock1));
+		assertEquals(0.0, misclassificationMatrix.getTruePositiveRate(simpleDecisionMock2));
+		assertEquals(0.0, misclassificationMatrix.getTruePositiveRate(simpleDecisionMock3));
+		assertEquals(0.0, misclassificationMatrix.getAccuracy());
+	}
+	
+	/**
+	 * Tests for pair: original decisions = {a, b, ?} and assigned decisions = {a, b, ?}.
+	 */
+	@Test
+	void testAll03() {
 		originalDecisions = new SimpleDecision[] {simpleDecisionMock1, simpleDecisionMock2, simpleDecisionMock3};
 		assignedDecisions = new SimpleDecision[] {simpleDecisionMock1, simpleDecisionMock2, simpleDecisionMock3};
 		NonOrdinalMisclassificationMatrix misclassificationMatrix = new NonOrdinalMisclassificationMatrix(originalDecisions, assignedDecisions);
@@ -73,9 +176,6 @@ class NonOrdinalMisclassificationMatrixTest {
 		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock2));
 		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock3));
 		assertEquals(2.0, misclassificationMatrix.getNumberObjectsWithAssignedDecision());
-		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock1));
-		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock2));
-		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock3));
 		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownOriginalDecisions(simpleDecisionMock1));
 		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownOriginalDecisions(simpleDecisionMock2));
 		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownOriginalDecisions(simpleDecisionMock3));
@@ -91,13 +191,14 @@ class NonOrdinalMisclassificationMatrixTest {
 		assertEquals(1.0, misclassificationMatrix.getTruePositiveRate(simpleDecisionMock1));
 		assertEquals(1.0, misclassificationMatrix.getTruePositiveRate(simpleDecisionMock2));
 		assertEquals(0.0, misclassificationMatrix.getTruePositiveRate(simpleDecisionMock3));
+		assertEquals(1.0, misclassificationMatrix.getAccuracy());
 	}
 	
 	/**
 	 * Tests for pair: original decisions = {a, b, a, ?} and assigned decisions = {a, b, b, ?}.
 	 */
 	@Test
-	void testAll02() {
+	void testAll04() {
 		originalDecisions = new SimpleDecision[] {simpleDecisionMock1, simpleDecisionMock2, simpleDecisionMock1, simpleDecisionMock3};
 		assignedDecisions = new SimpleDecision[] {simpleDecisionMock1, simpleDecisionMock2, simpleDecisionMock2, simpleDecisionMock3};
 		NonOrdinalMisclassificationMatrix misclassificationMatrix = new NonOrdinalMisclassificationMatrix(originalDecisions, assignedDecisions);
@@ -109,9 +210,6 @@ class NonOrdinalMisclassificationMatrixTest {
 		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock2));
 		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock3));
 		assertEquals(3.0, misclassificationMatrix.getNumberObjectsWithAssignedDecision());
-		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock1));
-		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock2));
-		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownAssignedDecisions(simpleDecisionMock3));
 		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownOriginalDecisions(simpleDecisionMock1));
 		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownOriginalDecisions(simpleDecisionMock2));
 		assertEquals(0.0, misclassificationMatrix.getNumberOfUnknownOriginalDecisions(simpleDecisionMock3));
@@ -127,6 +225,7 @@ class NonOrdinalMisclassificationMatrixTest {
 		assertEquals(0.5, misclassificationMatrix.getTruePositiveRate(simpleDecisionMock1));
 		assertEquals(1.0, misclassificationMatrix.getTruePositiveRate(simpleDecisionMock2));
 		assertEquals(0.0, misclassificationMatrix.getTruePositiveRate(simpleDecisionMock3));
+		assertEquals(2.0/3, misclassificationMatrix.getAccuracy());
 	}
 
 }
