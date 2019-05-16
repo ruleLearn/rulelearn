@@ -109,7 +109,7 @@ public class ClassificationValidationResult implements ValidationResult {
 	 * {@link ClassificationResult suggested assignment} leads to {@link TernaryLogicValue#UNCOMPARABLE} result.<br> 
 	 * 
 	 * Object is counted as unknown when {@link ClassificationResult#getSuggestedDecision() suggested decision} has 
-	 * {@link Decision#hasNoMissingEvaluation() some missing evaluations}.<br>
+	 * {@link Decision#hasAllMissingEvaluations() all evaluations missing (unknown)}.<br>
 	 * 
 	 * @param originalDecisions array with original {@link Decision decisions} of objects in the batch 
 	 * @param assignments array with {@link ClassificationResult assignments (i.e., results of classification)} which are validated
@@ -118,7 +118,7 @@ public class ClassificationValidationResult implements ValidationResult {
 		TernaryLogicValue comparison = null;
 		for (int i = 0; i < originalDecisions.length; i++) {
 			// check if suggested assignment's decision is correct			
-			if (assignments[i].getSuggestedDecision().hasNoMissingEvaluation()) { // TODO probably it should check whether all evaluations are missing
+			if (!assignments[i].getSuggestedDecision().hasAllMissingEvaluations()) { // at least partially known
 				if (assignments[i].getSuggestedDecision().equals(originalDecisions[i])) {
 					this.numberOfCorrectAssignments++;
 				}
@@ -126,8 +126,7 @@ public class ClassificationValidationResult implements ValidationResult {
 					this.numberOfIncorrectAssignments++;
 				}
 			}
-			else {
-				// unknown
+			else { // unknown with regard to all evaluations
 				this.numberOfUnknownAssignemnets++;
 			}
 			// check if suggested assignment is consistent
@@ -138,8 +137,7 @@ public class ClassificationValidationResult implements ValidationResult {
 			else if (comparison == TernaryLogicValue.FALSE) {
 				this.numberOfInconsistentAssignments++;
 			}
-			else {
-				// uncomparable
+			else { // uncomparable
 				this.numberOfUncomparableAssignments++;
 			}
 		}
