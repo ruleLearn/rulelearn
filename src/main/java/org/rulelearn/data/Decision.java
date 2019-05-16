@@ -19,6 +19,7 @@ package org.rulelearn.data;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.KnownSimpleField;
+import org.rulelearn.types.UnknownSimpleField;
 
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -114,10 +115,17 @@ public abstract class Decision {
     public abstract String toString();
 	
 	/**
-	 * Tells if this decision is fully-determined, i.e., its all contributing evaluations are non-missing (are instances of {@link KnownSimpleField}).
+	 * Tells if this decision is fully-determined, i.e., all its contributing evaluations are non-missing (are instances of {@link KnownSimpleField}).
 	 * 
-	 * @return {@code true} if this decision is fully-determined, i.e., its all contributing evaluations are non-missing (are instances of {@link KnownSimpleField})
+	 * @return {@code true} if this decision is fully-determined, i.e., all its contributing evaluations are non-missing (are instances of {@link KnownSimpleField})
 	 */
 	public abstract boolean hasNoMissingEvaluation();
+	
+	/**
+	 * Tells if this decision is fully-undetermined, i.e., all its contributing evaluations are missing (are instances of {@link UnknownSimpleField}).
+	 * 
+	 * @return {@code true} if this decision is fully-undetermined, i.e., all its contributing evaluations are missing (are instances of {@link UnknownSimpleField})
+	 */
+	public abstract boolean hasAllMissingEvaluations();
 	
 }

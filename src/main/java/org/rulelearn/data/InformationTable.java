@@ -430,18 +430,20 @@ public class InformationTable {
 	
 	/**
 	 * Calculates ordered (from the worst to the best) array of all unique fully-determined decisions assigned to objects of this information table.
-	 * A fully-determined decision {@link Decision} is a decision whose all contributing evaluations are non-missing (are instances of {@link KnownSimpleField}).
+	 * A fully-determined {@link Decision decision} is a decision whose all contributing evaluations are non-missing (are instances of {@link KnownSimpleField}) -
+	 * see {@link Decision#hasNoMissingEvaluation()}.
 	 * For any two decisions from the returned array, {@code decision1.equals(decision2)} should return {@code false}.
-	 * Result can be {@code null}, e.g., if this information table stores evaluations of test objects (for which decisions are unknown).
+	 * If {@link #getDecisions()} returns {@code null}, then result of this method is {@code null}.
+	 * This may be the case if the information table stores evaluations of test objects (for which decisions are unknown).
 	 * 
 	 * @return array with unique fully-determined decisions ordered from the worst to the best,
-	 *         or {@code null} if this information table does not store any decisions
+	 *         or {@code null} if this information table does not store any decisions ({@link #getDecisions()} returns {@code null})
 	 * @see Decision#hasNoMissingEvaluation()
 	 */
 	public Decision[] calculateOrderedUniqueFullyDeterminedDecisions() {
 		Decision[] allDecisions = this.getDecisions(true);
 		
-		if (allDecisions == null || allDecisions.length <= 1) {
+		if (allDecisions == null || allDecisions.length < 1) {
 			return allDecisions;
 		}
 		
