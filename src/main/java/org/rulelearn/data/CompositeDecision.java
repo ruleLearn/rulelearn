@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.function.BiPredicate;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.KnownSimpleField;
+import org.rulelearn.types.UnknownSimpleField;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -251,6 +252,22 @@ public class CompositeDecision extends Decision {
 		}
 		
 		return true; //all evaluations are non-missing
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public boolean hasAllMissingEvaluations() {
+		for (EvaluationField evaluation : attributeIndex2EvaluationMap.values()) {
+			if (!(evaluation instanceof UnknownSimpleField)) {
+				return false; //non-missing evaluation found
+			}
+		}
+		
+		return true; //all evaluations are missing
 	}
 	
 }
