@@ -114,7 +114,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		TernaryLogicValue comparison = null;
 		int previousValue; 
 		for (int i = 0; i < assignedDecisions.length; i++) {
-			if (assignedDecisions[i].hasNoMissingEvaluation()) {
+			if (assignedDecisions[i].hasNoMissingEvaluation()) { // TODO probably it should check whether all evaluations are missing
 				if (originalDecisions[i].hasNoMissingEvaluation()) {
 					numberOfObjectsWithAssignedDecision++;
 					setOfAllOriginalDecisions.add(originalDecisions[i]);

@@ -103,13 +103,13 @@ public class ClassificationValidationResult implements ValidationResult {
 	 * 
 	 * 1. {@link ClassificationResult#isConsistentWith(Decision) consistency} of {@link ClassificationResult suggested assignment} 
 	 * with respect to {@link Decision original decision},<br>
-	 * 2. correctness of {@link ClassificationResult#getSuggestedDecision() suggested decision}.<br>
+	 * 2. correctness (equality) of {@link ClassificationResult#getSuggestedDecision() suggested decision}.<br>
 	 * 
 	 * Object is counted as uncomparable when checking of {@link ClassificationResult#isConsistentWith(Decision) consistency} of 
 	 * {@link ClassificationResult suggested assignment} leads to {@link TernaryLogicValue#UNCOMPARABLE} result.<br> 
 	 * 
-	 * Object is counted as unknown when {@link ClassificationResult#getSuggestedDecision() suggested decision} is {@link TernaryLogicValue#UNCOMPARABLE} 
-	 * with original decision.<br>
+	 * Object is counted as unknown when {@link ClassificationResult#getSuggestedDecision() suggested decision} has 
+	 * {@link Decision#hasNoMissingEvaluation() some missing evaluations}.<br>
 	 * 
 	 * @param originalDecisions array with original {@link Decision decisions} of objects in the batch 
 	 * @param assignments array with {@link ClassificationResult assignments (i.e., results of classification)} which are validated
@@ -117,13 +117,14 @@ public class ClassificationValidationResult implements ValidationResult {
 	void validate(Decision[] originalDecisions, ClassificationResult[] assignments) {
 		TernaryLogicValue comparison = null;
 		for (int i = 0; i < originalDecisions.length; i++) {
-			// check if suggested assignment's decision is correct
-			comparison = assignments[i].getSuggestedDecision().isEqualTo(originalDecisions[i]);
-			if (comparison == TernaryLogicValue.TRUE) {
-				this.numberOfCorrectAssignments++;
-			}
-			else if (comparison == TernaryLogicValue.FALSE) {
-				this.numberOfIncorrectAssignments++;
+			// check if suggested assignment's decision is correct			
+			if (assignments[i].getSuggestedDecision().hasNoMissingEvaluation()) { // TODO probably it should check whether all evaluations are missing
+				if (assignments[i].getSuggestedDecision().equals(originalDecisions[i])) {
+					this.numberOfCorrectAssignments++;
+				}
+				else {
+					this.numberOfIncorrectAssignments++;
+				}
 			}
 			else {
 				// unknown
