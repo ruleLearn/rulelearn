@@ -95,7 +95,6 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	 * @throws NullPointerException when any of arrays (with original decisions or assigned decisions) passed as parameters or their elements is null 
 	 * @throws InvalidValueException when size of the array with original decisions and size of the array with assigned decisions differ
 	 */
-	// TODO consider partially unknown decisions
 	void calculateMisclassificationMatrix(Decision[] originalDecisions, Decision[] assignedDecisions) {
 		Precondition.notNullWithContents(originalDecisions, "Array with original decisions is null.", "Element %i of array with original decisions is null.");
 		Precondition.notNullWithContents(assignedDecisions, "Array with assigned decisions is null.", "Element %i of array with assigned decisions is null.");
@@ -114,8 +113,8 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		TernaryLogicValue comparison = null;
 		int previousValue; 
 		for (int i = 0; i < assignedDecisions.length; i++) {
-			if (assignedDecisions[i].hasNoMissingEvaluation()) { // TODO probably it should check whether all evaluations are missing
-				if (originalDecisions[i].hasNoMissingEvaluation()) {
+			if (!assignedDecisions[i].hasAllMissingEvaluations()) { 
+				if (!originalDecisions[i].hasAllMissingEvaluations()) {
 					numberOfObjectsWithAssignedDecision++;
 					setOfAllOriginalDecisions.add(originalDecisions[i]);
 					// calculate number correct and incorrect assignments
@@ -143,7 +142,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 						assignedDecisions2OriginalDecisionsCount.put(assignedDecisions[i], map);
 					}
 				}
-				else { // assigned decision is known but original is not
+				else { // assigned decision is known (at least partially) but original is not
 					if (unknownOriginalDecisionsCount.containsKey(assignedDecisions[i])) {
 						previousValue = unknownOriginalDecisionsCount.getInt(assignedDecisions[i]);
 						unknownOriginalDecisionsCount.put(assignedDecisions[i], ++previousValue);
@@ -156,7 +155,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 			else {
 				numberOfUnknownAssignemnets++;
 				// set value in matrix
-				if (originalDecisions[i].hasNoMissingEvaluation()) { // original decision is known but assigned is not
+				if (!originalDecisions[i].hasAllMissingEvaluations()) { // original decision is known (at least partially) but assigned is not
 					if (unknownAssignedDecisionsCount.containsKey(originalDecisions[i])) {
 						previousValue = unknownAssignedDecisionsCount.getInt(originalDecisions[i]);
 						unknownAssignedDecisionsCount.put(originalDecisions[i], ++previousValue);

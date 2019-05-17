@@ -74,6 +74,23 @@ class SimpleClassificationValidationResultTest {
 	 */
 	@Test
 	void testAll00() {
+		assignments = new SimpleClassificationResult[] {};
+		originalDecisions = new SimpleDecision[] {};
+		ClassificationValidationResult validationResult = new ClassificationValidationResult(originalDecisions, assignments);
+		assertEquals(0, validationResult.getNumberOfCorrectAssignments());
+		assertEquals(0, validationResult.getNumberOfIncorrectAssignments());
+		assertEquals(0, validationResult.getNumberOfUnknownAssignments());
+		assertEquals(0, validationResult.getNumberOfConsistentAssignments());
+		assertEquals(0, validationResult.getNumberOfInconsistentAssignments());
+		assertEquals(0, validationResult.getNumberOfUncomparableAssignments());
+	}
+	
+	/**
+	 * Test for {@link ClassificationValidationResult#ClassificationValidationResult(org.rulelearn.data.Decision[], org.rulelearn.classification.ClassificationResult[])}, 
+	 * and its resulting values.
+	 */
+	@Test
+	void testAll01() {
 		assignments = new SimpleClassificationResult[] {classificationResult1, classificationResult2, classificationResult3,
 				classificationResult4, classificationResult5};
 		originalDecisions = new SimpleDecision[] {decision1, decision2, decision3, decision4, decision5};
@@ -91,7 +108,7 @@ class SimpleClassificationValidationResultTest {
 	 * and its resulting values.
 	 */
 	@Test
-	void testAll01() {
+	void testAll02() {
 		assignments = new SimpleClassificationResult[] {classificationResult1, classificationResult2, classificationResult3,
 				classificationResult4, classificationResult5};
 		originalDecisions = new SimpleDecision[] {decision1, decision1, decision1, decision1, decision1};
@@ -109,7 +126,7 @@ class SimpleClassificationValidationResultTest {
 	 * and its resulting values.
 	 */
 	@Test
-	void testAll02() {
+	void testAll03() {
 		assignments = new SimpleClassificationResult[] {classificationResult1, classificationResult1, classificationResult1,
 				classificationResult1, classificationResult1};
 		originalDecisions = new SimpleDecision[] {decision1, decision2, decision3, decision4, decision5};
@@ -127,7 +144,7 @@ class SimpleClassificationValidationResultTest {
 	 * and its resulting values.
 	 */
 	@Test
-	void testAll03() {
+	void testAll04() {
 		assignments = new SimpleClassificationResult[] {classificationResult1, classificationResult2, classificationResult3,
 				classificationResult4, classificationResult5};
 		originalDecisions = new SimpleDecision[] {decision4, decision4, decision4, decision4, decision4};
@@ -145,7 +162,7 @@ class SimpleClassificationValidationResultTest {
 	 * and its resulting values.
 	 */
 	@Test
-	void testAll04() {
+	void testAll05() {
 		assignments = new SimpleClassificationResult[] {classificationResult4, classificationResult4, classificationResult4,
 				classificationResult4, classificationResult4};
 		originalDecisions = new SimpleDecision[] {decision1, decision2, decision3, decision4, decision5};
