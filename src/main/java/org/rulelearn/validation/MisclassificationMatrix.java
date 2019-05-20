@@ -340,4 +340,28 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		}
 	}
 	
+	/**
+	 * Calculates geometric mean (G-mean) of true positive rates (i.e., sensitivity and specificity for two dimensional misclassification matrices)
+	 * based on information from this misclassification matrix.
+	 * 
+	 * @return value of geometric mean (G-mean)  
+	 */
+	public double getGmean () {
+		double gmean = 0.0;
+		boolean first = true;
+		
+		for (Decision decision : setOfAllOriginalDecisions) {
+			if (first) {
+				gmean = getTruePositiveRate(decision);
+				first = false;
+			}
+			else {
+				gmean *= getTruePositiveRate(decision);
+			}
+		}
+		gmean = Math.sqrt(gmean);
+		
+		return gmean;
+	}
+	
 }

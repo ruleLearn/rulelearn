@@ -38,6 +38,7 @@ public class NonOrdinalMisclassificationMatrix extends MisclassificationMatrix {
 	 * @throws InvalidValueException when size of the array with original decisions and size of the array with assigned decisions differ
 	 */
 	public NonOrdinalMisclassificationMatrix(Decision[] originalDecisions, Decision[] assignedDecisions) {
+		super();
 		calculateMisclassificationMatrix(originalDecisions, assignedDecisions);
 	}
 
