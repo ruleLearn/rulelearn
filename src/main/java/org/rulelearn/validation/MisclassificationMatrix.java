@@ -18,7 +18,6 @@ package org.rulelearn.validation;
 
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
-import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.Decision;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -49,7 +48,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	/**
 	 * Stores number of both original {@link Decision decisions} and assigned {@link Decision decisions} beeing unknown.
 	 */
-	int bothUknonwCount;
+	int numberOfBothUnknownDecisions;
 	
 	/**
 	 * Maps counts of given assigned {@link Decision decisions} for given original {@link Decision decisions}.
@@ -67,9 +66,14 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	int numberOfIncorrectAssignments;
 	
 	/**
-	 * Number of unknown classification assignments.
+	 * Number of unknown classification assigned decisions.
 	 */
-	int numberOfUnknownAssignemnets;
+	int numberOfUnknownAssignmnets;
+	
+	/**
+	 * Number of unknown classification original decisions.
+	 */
+	int numberOfUnknownOriginalDecisions;
 	
 	/**
 	 * Number of assigned decisions.
@@ -103,14 +107,14 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		assignedDecisions2OriginalDecisionsCount = new Object2ObjectOpenHashMap<Decision, Object2IntMap<Decision>> ();
 		unknownAssignedDecisionsCount = new Object2IntOpenHashMap<Decision>();
 		unknownOriginalDecisionsCount = new Object2IntOpenHashMap<Decision>();
-		bothUknonwCount = 0;
+		numberOfBothUnknownDecisions = 0;
 		numberOfCorrectAssignments = 0;
 		numberOfIncorrectAssignments = 0;
-		numberOfUnknownAssignemnets = 0;
+		numberOfUnknownAssignmnets = 0;
+		numberOfUnknownOriginalDecisions = 0;
 		numberOfObjectsWithAssignedDecision = 0;
 		setOfAllOriginalDecisions = new ObjectOpenHashSet<Decision>();
 		Object2IntMap<Decision> map = null;
-		TernaryLogicValue comparison = null;
 		int previousValue; 
 		for (int i = 0; i < assignedDecisions.length; i++) {
 			if (!assignedDecisions[i].hasAllMissingEvaluations()) { 
@@ -118,11 +122,10 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 					numberOfObjectsWithAssignedDecision++;
 					setOfAllOriginalDecisions.add(originalDecisions[i]);
 					// calculate number correct and incorrect assignments
-					comparison = assignedDecisions[i].isEqualTo(originalDecisions[i]);
-					if (comparison == TernaryLogicValue.TRUE) {
+					if (assignedDecisions[i].equals(originalDecisions[i])) {
 						numberOfCorrectAssignments++;
 					}
-					else if (comparison == TernaryLogicValue.FALSE) {
+					else {
 						numberOfIncorrectAssignments++;
 					}
 					// set value in matrix
@@ -143,6 +146,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 					}
 				}
 				else { // assigned decision is known (at least partially) but original is not
+					numberOfUnknownOriginalDecisions++;
 					if (unknownOriginalDecisionsCount.containsKey(assignedDecisions[i])) {
 						previousValue = unknownOriginalDecisionsCount.getInt(assignedDecisions[i]);
 						unknownOriginalDecisionsCount.put(assignedDecisions[i], ++previousValue);
@@ -153,7 +157,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 				}
 			}
 			else {
-				numberOfUnknownAssignemnets++;
+				numberOfUnknownAssignmnets++;
 				// set value in matrix
 				if (!originalDecisions[i].hasAllMissingEvaluations()) { // original decision is known (at least partially) but assigned is not
 					if (unknownAssignedDecisionsCount.containsKey(originalDecisions[i])) {
@@ -165,7 +169,8 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 					}
 				}
 				else { // both assigned and original decisions are unknown
-					bothUknonwCount++;
+					numberOfUnknownOriginalDecisions++;
+					numberOfBothUnknownDecisions++;
 				}
 			}
 		}
@@ -232,6 +237,26 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		}
 	}
 	
+	/**
+	 * Gets number of unknown original {@link Decision decisions} for all assigned (known or unknown) {@link Decision decisions}.
+	 * 
+	 * @return number of unknown original {@link Decision decisions} for all assigned {@link Decision decisions}
+	 * 
+	 */
+	public double getNumberOfUnknownOriginalDecisions() {
+		return numberOfUnknownOriginalDecisions;
+	}
+	
+	/**
+	 * Gets number of unknown original {@link Decision decisions} for all unknown assigned {@link Decision decisions}.
+	 * 
+	 * @return number of unknown original decisions for all unknown assigned decisions
+	 * 
+	 */
+	public double getNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions() {
+		return numberOfBothUnknownDecisions;
+	}
+	
 	/** {@inheritDoc}
 	 * 
 	 * @return {@inheritDoc}
@@ -256,7 +281,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	 */
 	@Override
 	public double getNumberOfUnknownAssignments() {
-		return numberOfUnknownAssignemnets;
+		return numberOfUnknownAssignmnets;
 	}
 	
 	/**
