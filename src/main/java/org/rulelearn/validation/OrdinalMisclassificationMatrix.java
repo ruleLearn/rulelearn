@@ -71,6 +71,9 @@ public class OrdinalMisclassificationMatrix extends MisclassificationMatrix {
 		if (sum > 0.0) {
 			mae /= sum;
 		}
+		else {
+			mae = 0.0;
+		}
 				
 		return mae;
 	}
@@ -96,6 +99,9 @@ public class OrdinalMisclassificationMatrix extends MisclassificationMatrix {
 		if (sum > 0.0) {
 			rmse /= sum;
 			rmse = Math.sqrt(rmse);
+		}
+		else {
+			rmse = 0.0;
 		}
 				
 		return rmse;
