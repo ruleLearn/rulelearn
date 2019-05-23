@@ -363,9 +363,6 @@ class InformationTableTest {
 			assertEquals(decisions[i], expectedDecisions[i]);
 		}
 		
-		//check decision attribute index of the new table
-//		assertEquals(newInformationTable.getActiveDecisionAttributeIndex(), configuration01.getActiveDecisionAttributeIndex());
-		
 		//check identifiers of the new table
 		Field[] expectedIdentifiers = configuration01.getIdentifiers(objectIndices);
 		Field[] identifiers = newInformationTable.getIdentifiers(false);
@@ -423,9 +420,6 @@ class InformationTableTest {
 			assertEquals(decisions[i], expectedDecisions[i]);
 		}
 		
-		//check decision attribute index of the new table
-//		assertEquals(newInformationTable.getActiveDecisionAttributeIndex(), configuration02.getActiveDecisionAttributeIndex());
-		
 		//check identifiers of the new table
 		Field[] expectedIdentifiers = configuration02.getIdentifiers(objectIndices);
 		Field[] identifiers = newInformationTable.getIdentifiers(false);
@@ -436,6 +430,158 @@ class InformationTableTest {
 		
 		//check identification attribute index of the new table
 		assertEquals(newInformationTable.getActiveIdentificationAttributeIndex(), configuration02.getActiveIdentificationAttributeIndex());
+	}
+	
+	/**
+	 * Test for {@link InformationTable#drop(int[], boolean)} method.
+	 */
+	@Test
+	public void testDropIntArrayBoolean01() {
+		InformationTable informationTable = configuration01.getInformationTable(false);
+		
+		int[] remainingObjectIndices = new int[] {1, 2, 4}; //indices of remaining objects
+		int[] droppedObjectIndices = new int[] {0, 3}; //indices of dropped objects
+		
+		InformationTable newInformationTable = informationTable.drop(droppedObjectIndices, true);
+		
+		assertEquals(newInformationTable.getNumberOfObjects(), remainingObjectIndices.length);
+		assertEquals(newInformationTable.getNumberOfAttributes(), informationTable.getNumberOfAttributes());
+		
+		//check fields of the new table
+		List<Field[]> expectedFields = configuration01.getListOfFields(remainingObjectIndices);
+		for (int i = 0; i < expectedFields.size(); i++) {
+			for (int j = 0; j < expectedFields.get(i).length; j++) {
+				assertEquals(expectedFields.get(i)[j], newInformationTable.getField(i, j));
+			}
+		}
+		
+		//check attributes of the new table
+		Attribute[] expectedAttributes = configuration01.getAttributes();
+		Attribute[] attributes = newInformationTable.getAttributes();
+		assertEquals(attributes.length, expectedAttributes.length);
+		for (int i = 0; i < attributes.length; i++) {
+			assertEquals(attributes[i], expectedAttributes[i]);
+		}
+		
+		//check mapper of the new table
+		Index2IdMapper newMapper = newInformationTable.getIndex2IdMapper();
+		for (int i = 0; i < remainingObjectIndices.length; i++) {
+			assertEquals(newMapper.getId(i), informationTable.getIndex2IdMapper().getId(remainingObjectIndices[i]));
+		}
+		
+		int numberOfObjects = newInformationTable.getNumberOfObjects();
+		
+		//check decisions of the new table
+		Decision[] expectedDecisions = configuration01.getDecisions(remainingObjectIndices);
+		Decision[] decisions = newInformationTable.getDecisions(true);
+		
+		for (int i = 0; i < numberOfObjects; i++) {
+			assertEquals(decisions[i], expectedDecisions[i]);
+		}
+		
+		//check identifiers of the new table
+		Field[] expectedIdentifiers = configuration01.getIdentifiers(remainingObjectIndices);
+		Field[] identifiers = newInformationTable.getIdentifiers(false);
+		
+		assertEquals(expectedIdentifiers, null);
+		assertEquals(identifiers, null);
+		
+		//check identification attribute index of the new table
+		assertEquals(newInformationTable.getActiveIdentificationAttributeIndex(), -1);
+		assertEquals(configuration01.getActiveIdentificationAttributeIndex(), -1);
+	}
+	
+	/**
+	 * Test for {@link InformationTable#drop(int[], boolean)} method.
+	 */
+	@Test
+	public void testDropIntArrayBoolean02() {
+		InformationTable informationTable = configuration02.getInformationTable(false);
+		
+		int[] remainingObjectIndices = new int[] {1, 2, 5, 6};
+		int[] droppedObjectIndices = new int[] {0, 3, 4, 3}; //not sorted and 3 appears twice
+		
+		InformationTable newInformationTable = informationTable.drop(droppedObjectIndices, true);
+		
+		assertEquals(newInformationTable.getNumberOfObjects(), remainingObjectIndices.length);
+		assertEquals(newInformationTable.getNumberOfAttributes(), informationTable.getNumberOfAttributes());
+		
+		//check fields of the new table
+		List<Field[]> expectedFields = configuration02.getListOfFields(remainingObjectIndices);
+		for (int i = 0; i < expectedFields.size(); i++) {
+			for (int j = 0; j < expectedFields.get(i).length; j++) {
+				assertEquals(expectedFields.get(i)[j], newInformationTable.getField(i, j));
+			}
+		}
+		
+		//check attributes of the new table
+		Attribute[] expectedAttributes = configuration02.getAttributes();
+		Attribute[] attributes = newInformationTable.getAttributes();
+		assertEquals(attributes.length, expectedAttributes.length);
+		for (int i = 0; i < attributes.length; i++) {
+			assertEquals(attributes[i], expectedAttributes[i]);
+		}
+		
+		//check mapper of the new table
+		Index2IdMapper newMapper = newInformationTable.getIndex2IdMapper();
+		for (int i = 0; i < remainingObjectIndices.length; i++) {
+			assertEquals(newMapper.getId(i), informationTable.getIndex2IdMapper().getId(remainingObjectIndices[i]));
+		}
+		
+		int numberOfObjects = newInformationTable.getNumberOfObjects();
+		
+		//check decisions of the new table
+		Decision[] expectedDecisions = configuration02.getDecisions(remainingObjectIndices);
+		Decision[] decisions = newInformationTable.getDecisions(true);
+		
+		for (int i = 0; i < numberOfObjects; i++) {
+			assertEquals(decisions[i], expectedDecisions[i]);
+		}
+		
+		//check identifiers of the new table
+		Field[] expectedIdentifiers = configuration02.getIdentifiers(remainingObjectIndices);
+		Field[] identifiers = newInformationTable.getIdentifiers(false);
+		
+		for (int i = 0; i < numberOfObjects; i++) {
+			assertEquals(expectedIdentifiers[i], identifiers[i]);
+		}
+		
+		//check identification attribute index of the new table
+		assertEquals(newInformationTable.getActiveIdentificationAttributeIndex(), configuration02.getActiveIdentificationAttributeIndex());
+	}
+	
+	/**
+	 * Test for {@link InformationTable#drop(int[], boolean)} method.
+	 * Tests if {@link IndexOutOfBoundsException} is thrown if dropped object's index is out of range.
+	 */
+	@Test
+	public void testDropIntArrayBoolean03() {
+		InformationTable informationTable = configuration02.getInformationTable(false);
+		
+		int[] droppedObjectIndices = new int[] {0, 3, 4, 7}; //7 - out of range
+		
+		try {
+			informationTable.drop(droppedObjectIndices, true);
+			fail("Should throw an exception if dropped object's index is out of range.");
+		} catch (IndexOutOfBoundsException exception) {
+			//OK
+		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#drop(int[], boolean)} method.
+	 * Tests if {@link NullPointerException} is thrown if array of dropped objects' indices is {@code null}.
+	 */
+	@Test
+	public void testDropIntArrayBoolean04() {
+		InformationTable informationTable = configuration02.getInformationTable(false);
+		
+		try {
+			informationTable.drop(null, true);
+			fail("Should throw a NullPointerException if array with dropped objects' indices is null.");
+		} catch (NullPointerException exception) {
+			//OK
+		}
 	}
 	
 	/**
