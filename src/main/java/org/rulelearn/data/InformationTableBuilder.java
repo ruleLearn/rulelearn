@@ -241,7 +241,7 @@ public class InformationTableBuilder {
 			EvaluationField valueType = attribute.getValueType(); 
 			if (valueType instanceof IntegerField) {
 				try {
-					field = IntegerFieldFactory.getInstance().create(Integer.parseInt(evaluation), attribute.preferenceType);
+					field = IntegerFieldFactory.getInstance().create(Integer.parseInt(evaluation), attribute.getPreferenceType());
 				}
 				catch (NumberFormatException ex) {
 					// just assign a reference (no new copy of missing value field is made)
@@ -251,7 +251,7 @@ public class InformationTableBuilder {
 			}
 			else if (valueType instanceof RealField) {
 				try {
-					field = RealFieldFactory.getInstance().create(Double.parseDouble(evaluation), attribute.preferenceType);
+					field = RealFieldFactory.getInstance().create(Double.parseDouble(evaluation), attribute.getPreferenceType());
 				}
 				catch (NumberFormatException ex) {
 					// just assign a reference (no new copy of missing value field is made)
@@ -263,7 +263,7 @@ public class InformationTableBuilder {
 				// TODO some optimization is needed here (e.g., construction of a table with element lists)
 				int index = ((EnumerationField)valueType).getElementList().getIndex(evaluation);
 				if (index != ElementList.DEFAULT_INDEX) {
-					field = EnumerationFieldFactory.getInstance().create(((EnumerationField)valueType).getElementList(), index, attribute.preferenceType);
+					field = EnumerationFieldFactory.getInstance().create(((EnumerationField)valueType).getElementList(), index, attribute.getPreferenceType());
 				}
 				else {
 					field = attribute.getMissingValueType();

@@ -19,6 +19,7 @@ package org.rulelearn.types;
 import org.rulelearn.core.ComparableExt;
 import org.rulelearn.core.EvaluationFieldCalculator;
 import org.rulelearn.core.TernaryLogicValue;
+import org.rulelearn.data.EvaluationAttribute;
 
 /**
  * Field of an information table used to store an evaluation assigned to an object by the so-called information function.
@@ -64,4 +65,8 @@ public abstract class EvaluationField extends Field implements ComparableExt<Eva
 	 * @return a value calculated by the calculator; this value is represented as a new field
 	 */
 	public abstract EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField);
+	
+	public <T extends EvaluationField> T construct(String value, EvaluationAttribute attribute, EvaluationFieldFactory<T> factory) { //TODO: how to get factory?
+		return factory.create(value, attribute);
+	}
 }

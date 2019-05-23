@@ -18,6 +18,7 @@ package org.rulelearn.types;
 
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.EvaluationAttribute;
 
 /**
  * Factory for {@link IntegerField}, employing abstract factory and singleton design patterns.
@@ -25,7 +26,7 @@ import org.rulelearn.data.AttributePreferenceType;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class IntegerFieldFactory {
+public class IntegerFieldFactory implements EvaluationFieldFactory<IntegerField> {
 	
 	/**
 	 * The only instance of this factory.
@@ -50,12 +51,12 @@ public class IntegerFieldFactory {
 	private IntegerFieldFactory() {}
 	
 	/**
-	 * Factory method for creating an instance of {@link IntegerField}
+	 * Factory method for constructing an instance of {@link IntegerField}.
 	 * 
-	 * @param value value of the created field
+	 * @param value value of the constructed field
 	 * @param preferenceType preference type of the attribute that the field value refers to
 	 * 
-	 * @return created field
+	 * @return constructed field
 	 */
 	public IntegerField create(int value, AttributePreferenceType preferenceType) {
 		switch (preferenceType) {
@@ -157,6 +158,7 @@ public class IntegerFieldFactory {
 		public AttributePreferenceType getPreferenceType() {
 			return AttributePreferenceType.NONE;
 		}
+
 	}
 	
 	/**
@@ -313,6 +315,26 @@ public class IntegerFieldFactory {
 		@Override
 		public AttributePreferenceType getPreferenceType() {
 			return AttributePreferenceType.COST;
+		}
+	}
+
+	/**
+	 * Constructs integer field from its textual representation.
+	 * 
+	 * @param value textual representation of an integer field
+	 * @param attribute evaluation attribute for which a field should be constructed
+	 *  
+	 * @return constructed field
+	 * @throws NumberFormatException if given value cannot be parsed as an integer
+	 * @throws NullPointerException if given evaluation attribute is {@code null}
+	 */
+	@Override
+	public IntegerField create(String value, EvaluationAttribute attribute) {
+		try {
+			return create(Integer.parseInt(value), attribute.getPreferenceType());
+		}
+		catch (NumberFormatException exception) {
+			throw exception;
 		}
 	}
 }

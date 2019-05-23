@@ -18,6 +18,7 @@ package org.rulelearn.types;
 
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.EvaluationAttribute;
 
 /**
  * Factory for {@link RealField}, employing abstract factory design pattern.
@@ -26,7 +27,7 @@ import org.rulelearn.data.AttributePreferenceType;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
-public class RealFieldFactory {
+public class RealFieldFactory implements EvaluationFieldFactory<RealField> {
 	/**
 	 * The only instance of this factory.
 	 */
@@ -50,12 +51,12 @@ public class RealFieldFactory {
 	private RealFieldFactory() {	}
 	
 	/**
-	 * Factory method for creating an instance of {@link RealField}
+	 * Factory method for constructing an instance of {@link RealField}.
 	 * 
-	 * @param value value of the created field
+	 * @param value value of the constructed field
 	 * @param preferenceType preference type of the attribute that the field value refers to
 	 * 
-	 * @return created field
+	 * @return constructed field
 	 */
 	public RealField create(double value, AttributePreferenceType preferenceType) {
 		switch (preferenceType) {
@@ -322,5 +323,25 @@ public class RealFieldFactory {
 			return AttributePreferenceType.COST;
 		}
 
-	}	
+	}
+
+	/**
+	 * Constructs real field from its textual representation.
+	 * 
+	 * @param value textual representation of a real field
+	 * @param attribute evaluation attribute for which a field should be constructed
+	 *  
+	 * @return constructed field
+	 * @throws NumberFormatException if given value cannot be parsed as a real number
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 */
+	@Override
+	public RealField create(String value, EvaluationAttribute attribute) {
+		try {
+			return create(Double.parseDouble(value), attribute.getPreferenceType());
+		}
+		catch (NumberFormatException exception) {
+			throw exception;
+		}
+	}
 }

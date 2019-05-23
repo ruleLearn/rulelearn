@@ -18,6 +18,9 @@ package org.rulelearn.types;
 
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.EvaluationAttribute;
+
+import org.rulelearn.core.InvalidValueException;
 
 /**
  * Factory for {@link EnumerationField}, employing abstract factory and singleton design patterns.
@@ -26,7 +29,7 @@ import org.rulelearn.data.AttributePreferenceType;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
-public class EnumerationFieldFactory {
+public class EnumerationFieldFactory implements EvaluationFieldFactory<EnumerationField> {
 	/**
 	 * The only instance of this factory.
 	 */
@@ -50,13 +53,13 @@ public class EnumerationFieldFactory {
 	private EnumerationFieldFactory() {}
 	
 	/**
-	 * Factory method for creating an instance of {@link EnumerationField}.
+	 * Factory method for constructing an instance of {@link EnumerationField}.
 	 * 
-	 * @param list element list of the created field
+	 * @param list element list of the constructed field
 	 * @param index position in the element list of enumeration which represents value of the field
 	 * @param preferenceType preference type of the attribute that the field value refers to
 	 * 
-	 * @return created field
+	 * @return constructed field
 	 */
 	public EnumerationField create(ElementList list, int index, AttributePreferenceType preferenceType) {
 		switch (preferenceType) {
@@ -336,4 +339,28 @@ public class EnumerationFieldFactory {
 			return AttributePreferenceType.COST;
 		}
 	}
+
+	/**
+	 * Constructs enumeration field from its textual representation.
+	 * 
+	 * @param value textual representation of an enumeration field
+	 * @param attribute evaluation attribute for which a field should be constructed
+	 *  
+	 * @return constructed field
+	 * 
+	 * @throws NullPointerException if given evaluation attribute is {@code null}
+	 * @throws InvalidValueException if given value is not present in given attribute's domain 
+	 */
+	@Override
+	public EnumerationField create(String value, EvaluationAttribute attribute) {
+		// TODO some optimization is needed here (e.g., construction of a table with element lists)
+		int index = ((EnumerationField)attribute.getValueType()).getElementList().getIndex(value);
+		if (index != ElementList.DEFAULT_INDEX) {
+			return create(((EnumerationField)attribute.getValueType()).getElementList(), index, attribute.getPreferenceType());
+		}
+		else {
+			throw new InvalidValueException(new StringBuilder("Incorrect value of enumeration attribute: ").append(value).toString());
+		}
+	}
+	
 }
