@@ -64,7 +64,8 @@ public class PossibleVCDomLEMWrapper implements RuleInducerWrapper {
 		
 		RuleInducerComponents ruleInducerComponents = new PossibleRuleInducerComponents.Builder().build();
 		
-		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
+		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable, true), 
+				new ClassicalDominanceBasedRoughSetCalculator());
 		ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
 		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
 		ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
@@ -89,7 +90,8 @@ public class PossibleVCDomLEMWrapper implements RuleInducerWrapper {
 		
 		RuleInducerComponents ruleInducerComponents = new PossibleRuleInducerComponents.Builder().build();
 		
-		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
+		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable, true), 
+				new ClassicalDominanceBasedRoughSetCalculator());
 		ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
 		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
 		ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();

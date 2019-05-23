@@ -78,7 +78,8 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().build();
 		
-		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
+		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable, true), 
+				new ClassicalDominanceBasedRoughSetCalculator());
 		ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
 		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
 		ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
@@ -103,7 +104,8 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().build();
 		
-		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), new ClassicalDominanceBasedRoughSetCalculator());
+		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable, true),
+				new ClassicalDominanceBasedRoughSetCalculator());
 		ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
 		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
 		ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
@@ -139,7 +141,7 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 				ruleConditionsPruner(new AttributeOrderRuleConditionsPruner(stoppingConditionChecker)).
 				build();
 		
-		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), 
+		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable, true), 
 								   new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold));
 		ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
 		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
@@ -174,7 +176,7 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 				ruleConditionsPruner(new AttributeOrderRuleConditionsPruner(stoppingConditionChecker)).
 				build();
 		
-		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable), 
+		Unions unions = new UnionsWithSingleLimitingDecision(new InformationTableWithDecisionDistributions(informationTable, true), 
 								   new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold));
 		ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
 		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);

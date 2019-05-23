@@ -5,5 +5,5 @@ build
 lib
 .classpath
 .project
-
-
+*generated.json
+*generated.csv
