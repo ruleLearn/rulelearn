@@ -433,16 +433,16 @@ class InformationTableTest {
 	}
 	
 	/**
-	 * Test for {@link InformationTable#drop(int[], boolean)} method.
+	 * Test for {@link InformationTable#discard(int[], boolean)} method.
 	 */
 	@Test
-	public void testDropIntArrayBoolean01() {
+	public void testDiscardIntArrayBoolean01() {
 		InformationTable informationTable = configuration01.getInformationTable(false);
 		
 		int[] remainingObjectIndices = new int[] {1, 2, 4}; //indices of remaining objects
-		int[] droppedObjectIndices = new int[] {0, 3}; //indices of dropped objects
+		int[] discardedObjectIndices = new int[] {0, 3}; //indices of discarded objects
 		
-		InformationTable newInformationTable = informationTable.drop(droppedObjectIndices, true);
+		InformationTable newInformationTable = informationTable.discard(discardedObjectIndices, true);
 		
 		assertEquals(newInformationTable.getNumberOfObjects(), remainingObjectIndices.length);
 		assertEquals(newInformationTable.getNumberOfAttributes(), informationTable.getNumberOfAttributes());
@@ -492,16 +492,16 @@ class InformationTableTest {
 	}
 	
 	/**
-	 * Test for {@link InformationTable#drop(int[], boolean)} method.
+	 * Test for {@link InformationTable#discard(int[], boolean)} method.
 	 */
 	@Test
-	public void testDropIntArrayBoolean02() {
+	public void testDiscardIntArrayBoolean02() {
 		InformationTable informationTable = configuration02.getInformationTable(false);
 		
 		int[] remainingObjectIndices = new int[] {1, 2, 5, 6};
-		int[] droppedObjectIndices = new int[] {0, 3, 4, 3}; //not sorted and 3 appears twice
+		int[] discardedObjectIndices = new int[] {0, 3, 4, 3}; //not sorted and 3 appears twice
 		
-		InformationTable newInformationTable = informationTable.drop(droppedObjectIndices, true);
+		InformationTable newInformationTable = informationTable.discard(discardedObjectIndices, true);
 		
 		assertEquals(newInformationTable.getNumberOfObjects(), remainingObjectIndices.length);
 		assertEquals(newInformationTable.getNumberOfAttributes(), informationTable.getNumberOfAttributes());
@@ -551,34 +551,34 @@ class InformationTableTest {
 	}
 	
 	/**
-	 * Test for {@link InformationTable#drop(int[], boolean)} method.
-	 * Tests if {@link IndexOutOfBoundsException} is thrown if dropped object's index is out of range.
+	 * Test for {@link InformationTable#discard(int[], boolean)} method.
+	 * Tests if {@link IndexOutOfBoundsException} is thrown if discarded object's index is out of range.
 	 */
 	@Test
-	public void testDropIntArrayBoolean03() {
+	public void testDiscardIntArrayBoolean03() {
 		InformationTable informationTable = configuration02.getInformationTable(false);
 		
-		int[] droppedObjectIndices = new int[] {0, 3, 4, 7}; //7 - out of range
+		int[] discardedObjectIndices = new int[] {0, 3, 4, 7}; //7 - out of range
 		
 		try {
-			informationTable.drop(droppedObjectIndices, true);
-			fail("Should throw an exception if dropped object's index is out of range.");
+			informationTable.discard(discardedObjectIndices, true);
+			fail("Should throw an exception if discarded object's index is out of range.");
 		} catch (IndexOutOfBoundsException exception) {
 			//OK
 		}
 	}
 	
 	/**
-	 * Test for {@link InformationTable#drop(int[], boolean)} method.
-	 * Tests if {@link NullPointerException} is thrown if array of dropped objects' indices is {@code null}.
+	 * Test for {@link InformationTable#discard(int[], boolean)} method.
+	 * Tests if {@link NullPointerException} is thrown if array of discarded objects' indices is {@code null}.
 	 */
 	@Test
-	public void testDropIntArrayBoolean04() {
+	public void testDiscardIntArrayBoolean04() {
 		InformationTable informationTable = configuration02.getInformationTable(false);
 		
 		try {
-			informationTable.drop(null, true);
-			fail("Should throw a NullPointerException if array with dropped objects' indices is null.");
+			informationTable.discard(null, true);
+			fail("Should throw a NullPointerException if array with discarded objects' indices is null.");
 		} catch (NullPointerException exception) {
 			//OK
 		}

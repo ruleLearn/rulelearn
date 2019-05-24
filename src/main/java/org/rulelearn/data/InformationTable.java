@@ -767,8 +767,8 @@ public class InformationTable {
 	 * @throws NullPointerException if given array with object indices is {@code null}
 	 * @throws IndexOutOfBoundsException if any of the given indices does not match the number of considered objects
 	 */
-	public InformationTable drop(int[] objectIndices) {
-		return drop(objectIndices, false);
+	public InformationTable discard(int[] objectIndices) {
+		return discard(objectIndices, false);
 	}
 	
 	/**
@@ -784,7 +784,7 @@ public class InformationTable {
 	 * @throws NullPointerException if given array with object indices is {@code null}
 	 * @throws IndexOutOfBoundsException if any of the given indices does not match the number of considered objects
 	 */
-	public InformationTable drop(int[] objectIndices, boolean accelerateByReadOnlyResult) {
+	public InformationTable discard(int[] objectIndices, boolean accelerateByReadOnlyResult) {
 		int size = getNumberOfObjects();
 		IntOpenHashSet droppedIndices = new IntOpenHashSet();
 		
