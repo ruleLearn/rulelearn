@@ -758,10 +758,10 @@ public class InformationTable {
 	}
 	
 	/**
-	 * Drops rows of this information table that correspond to objects with given indices.
+	 * Discards rows of this information table that correspond to objects with given indices.
 	 * Returns new information table concerning subset of remaining objects (rows).
 	 * 
-	 * @param objectIndices indices of objects that should not be present in the resulting information table (indices can repeat)
+	 * @param objectIndices indices of discarded objects that should not be present in the resulting information table (indices can repeat)
 	 * @return sub-table of this information table, containing only rows corresponding to objects whose index is not in the given array
 	 * 
 	 * @throws NullPointerException if given array with object indices is {@code null}
@@ -772,10 +772,10 @@ public class InformationTable {
 	}
 	
 	/**
-	 * Drops rows of this information table that correspond to objects with given indices.
+	 * Discards rows of this information table that correspond to objects with given indices.
 	 * Returns new information table concerning subset of remaining objects (rows).
 	 * 
-	 * @param objectIndices indices of dropped objects that should not be present in the resulting information table (indices can repeat)
+	 * @param objectIndices indices of discarded objects that should not be present in the resulting information table (indices can repeat)
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
 	 *        at the cost of returning a read-only information table, or should return a safe information table (that can be modified),
 	 *        at the cost of returning the result slower
@@ -786,20 +786,20 @@ public class InformationTable {
 	 */
 	public InformationTable discard(int[] objectIndices, boolean accelerateByReadOnlyResult) {
 		int size = getNumberOfObjects();
-		IntOpenHashSet droppedIndices = new IntOpenHashSet();
+		IntOpenHashSet discardedIndices = new IntOpenHashSet();
 		
 		for (int i : objectIndices) {
 			if (i >= 0 && i < size) {
-				droppedIndices.add(i); //eliminates duplicates of dropped indices
+				discardedIndices.add(i); //eliminates duplicates of discarded indices
 			} else {
-				throw new IndexOutOfBoundsException("Dropped object's index is out of information table range.");
+				throw new IndexOutOfBoundsException("Discarded object's index is out of information table range.");
 			}
 		}
 		
-		int selectedIndices[] = new int[size - droppedIndices.size()];
+		int selectedIndices[] = new int[size - discardedIndices.size()];
 		int index = 0;
 		for (int i = 0; i < size; i++) {
-			if (!droppedIndices.contains(i)) {
+			if (!discardedIndices.contains(i)) {
 				selectedIndices[index++] = i;
 			}
 		}
