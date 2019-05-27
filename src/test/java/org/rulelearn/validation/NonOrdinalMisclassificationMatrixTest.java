@@ -248,7 +248,7 @@ class NonOrdinalMisclassificationMatrixTest {
 		assertEquals(0.0, misclassificationMatrix.getTruePositiveRate(decision4));
 		assertEquals(0.0, misclassificationMatrix.getTruePositiveRate(decision5));
 		assertEquals(((double)1)/3, misclassificationMatrix.getAccuracy());
-		assertEquals(Math.sqrt(((double)1)/3), misclassificationMatrix.getGmean());
+		assertEquals(Math.pow(((double)1)/3, 1.0), misclassificationMatrix.getGmean());
 	}
 	
 	/**

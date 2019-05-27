@@ -348,19 +348,19 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	 */
 	public double getGmean () {
 		double gmean = 0.0;
-		boolean first = true;
+		int i = 0;
 		
 		for (Decision decision : setOfAllOriginalDecisions) {
-			if (first) {
+			if (i == 0) {
 				gmean = getTruePositiveRate(decision);
-				first = false;
 			}
 			else {
 				gmean *= getTruePositiveRate(decision);
 			}
+			i++;
 		}
-		gmean = Math.sqrt(gmean);
 		
+		gmean = Math.pow(gmean, 1.0/i);
 		return gmean;
 	}
 	

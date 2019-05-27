@@ -296,7 +296,7 @@ class OrdinalMisclassificationMatrixTest {
 		assertEquals(1.0, misclassificationMatrix.getTruePositiveRate(decision4));
 		assertEquals(1.0, misclassificationMatrix.getTruePositiveRate(decision5));
 		assertEquals(((double)5)/7, misclassificationMatrix.getAccuracy());
-		assertEquals(Math.sqrt(0.25), misclassificationMatrix.getGmean());
+		assertEquals(Math.pow(0.25, 1.0/5), misclassificationMatrix.getGmean());
 		assertEquals(((double)6)/7, misclassificationMatrix.getMAE());
 		assertEquals(Math.sqrt(((double)20)/7), misclassificationMatrix.getRMSE());
 	}
