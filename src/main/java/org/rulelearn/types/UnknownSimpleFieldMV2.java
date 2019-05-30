@@ -194,5 +194,23 @@ public class UnknownSimpleFieldMV2 extends UnknownSimpleField {
 	public boolean equalWhenReverseComparedToAnyEvaluation() {
 		return true;
 	}
+	
+	@Override
+	public EvaluationFieldFactory getDefaultFactory() {
+		//TODO: implement
+		return null;
+	}
+
+	@Override
+	public EvaluationFieldCachingFactory getCachingFactory() {
+		//TODO: implement
+		return null;
+	}
+
+	@Override
+	public EvaluationField getUnknownEvaluation(UnknownSimpleField missingValueType) {
+		//TODO: implement
+		return null;
+	}
 
 }

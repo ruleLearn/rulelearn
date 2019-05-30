@@ -16,17 +16,20 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.FieldParseException;
+import org.rulelearn.core.InvalidTypeException;
+import org.rulelearn.core.Precondition;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.EvaluationAttribute;
 
 /**
- * Factory for {@link IntegerField}, employing abstract factory and singleton design patterns.
+ * Factory for {@link IntegerField} evaluations, employing abstract factory and singleton design patterns.
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class IntegerFieldFactory implements EvaluationFieldFactory<IntegerField> {
+public class IntegerFieldFactory implements EvaluationFieldFactory {
 	
 	/**
 	 * The only instance of this factory.
@@ -57,9 +60,11 @@ public class IntegerFieldFactory implements EvaluationFieldFactory<IntegerField>
 	 * @param preferenceType preference type of the attribute that the field value refers to
 	 * 
 	 * @return constructed field
+	 * 
+	 * @throws NullPointerException if given attribute's preference type is {@code null}
 	 */
 	public IntegerField create(int value, AttributePreferenceType preferenceType) {
-		switch (preferenceType) {
+		switch (Precondition.notNull(preferenceType, "Attribute's preference type is null.")) {
 			case NONE: return new NoneIntegerField(value);
 			case GAIN: return new GainIntegerField(value);
 			case COST: return new CostIntegerField(value); 
@@ -72,6 +77,8 @@ public class IntegerFieldFactory implements EvaluationFieldFactory<IntegerField>
 	 * 
 	 * @param field field to be cloned
 	 * @return cloned field
+	 * 
+	 * @throws NullPointerException if given field is {@code null}
 	 */
 	public IntegerField clone(IntegerField field) {
 		return field.selfClone();
@@ -95,8 +102,7 @@ public class IntegerFieldFactory implements EvaluationFieldFactory<IntegerField>
 		}
 		
 		@Override
-		@SuppressWarnings("unchecked")
-//		//unfortunately the following implementation would cause a warning by javac:
+		@SuppressWarnings("unchecked") //unfortunately the following implementation causes a warning by javac:
 //		public NoneIntegerField selfClone() {
 //			return new NoneIntegerField(this.value);
 //		}
@@ -322,19 +328,26 @@ public class IntegerFieldFactory implements EvaluationFieldFactory<IntegerField>
 	 * Constructs integer field from its textual representation.
 	 * 
 	 * @param value textual representation of an integer field
-	 * @param attribute evaluation attribute for which a field should be constructed
+	 * @param attribute {@inheritDoc}
 	 *  
-	 * @return constructed field
-	 * @throws NumberFormatException if given value cannot be parsed as an integer
-	 * @throws NullPointerException if given evaluation attribute is {@code null}
+	 * @return {@inheritDoc}
+	 * 
+	 * @throws FieldParseException if given value cannot be parsed as an integer number
+	 * @throws NullPointerException {@inheritDoc}
+	 * @throws InvalidTypeException {@inheritDoc}
 	 */
 	@Override
 	public IntegerField create(String value, EvaluationAttribute attribute) {
+		Precondition.notNull(attribute, "Attribute used to construct integer field is null.");
+		if (!(attribute.getValueType() instanceof IntegerField)) {
+			throw new InvalidTypeException("Attribute's value type is not an instance of integer field.");
+		}
+		
 		try {
 			return create(Integer.parseInt(value), attribute.getPreferenceType());
 		}
 		catch (NumberFormatException exception) {
-			throw exception;
+			throw new FieldParseException(exception.getMessage());
 		}
 	}
 }

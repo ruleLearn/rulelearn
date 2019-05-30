@@ -16,24 +16,31 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.FieldParseException;
+import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.data.EvaluationAttribute;
 
 /**
- * Factory capable of constructing evaluation fields based on their textual representation and corresponding attribute.
+ * Contract for a factory capable of constructing evaluation fields based on their textual representation and corresponding attribute.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface EvaluationFieldFactory<T extends EvaluationField> {
+public interface EvaluationFieldFactory {
 	
 	/**
-	 * Constructs evaluation field of type {@link T}.
+	 * Constructs an evaluation field.
 	 * 
-	 * @param value textual representation of evaluation field
+	 * @param value textual representation of an evaluation field
 	 * @param attribute evaluation attribute for which a field should be constructed
 	 *  
 	 * @return constructed field
+	 * 
+	 * @throws FieldParseException if given value cannot be parsed as a value of the given attribute
+	 * @throws NullPointerException if given attribute is {@code null}
+	 * @throws InvalidTypeException if type of {@link EvaluationAttribute#getValueType() attribute's value}
+	 *         is incompatible with type of constructed evaluation field
 	 */
-	public T create(String value, EvaluationAttribute attribute);
-
+	public EvaluationField create(String value, EvaluationAttribute attribute);
+	
 }

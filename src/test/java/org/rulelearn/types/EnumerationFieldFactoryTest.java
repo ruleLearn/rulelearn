@@ -85,7 +85,7 @@ public class EnumerationFieldFactoryTest {
 	}
 	
 	/**
-	 * Tests creation of enumeration field without (with null domain).
+	 * Tests creation of enumeration field without (with {@code null} domain).
 	 */
 	@Test
 	@SuppressWarnings("unused")
@@ -96,7 +96,7 @@ public class EnumerationFieldFactoryTest {
 			EnumerationField field = EnumerationFieldFactory.getInstance().create(domain1, index, AttributePreferenceType.COST);
 			fail("Construction of enumeration field with null domain should result in an exception.");
 		}
-		catch (IndexOutOfBoundsException ex) {
+		catch (NullPointerException ex) {
 			System.out.println(ex);
 		}
 	}

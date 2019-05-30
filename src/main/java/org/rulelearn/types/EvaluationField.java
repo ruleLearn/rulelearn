@@ -66,7 +66,27 @@ public abstract class EvaluationField extends Field implements ComparableExt<Eva
 	 */
 	public abstract EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField);
 	
-	public <T extends EvaluationField> T construct(String value, EvaluationAttribute attribute, EvaluationFieldFactory<T> factory) { //TODO: how to get factory?
-		return factory.create(value, attribute);
-	}
+	/**
+	 * Gets default evaluation field factory used to create this type of evaluation field.
+	 * 
+	 * @return default evaluation field factory used to create this type of evaluation field
+	 */
+	public abstract EvaluationFieldFactory getDefaultFactory();
+	
+	/**
+	 * Gets evaluation field caching factory used to create this type of evaluation field.
+	 * 
+	 * @return evaluation field caching factory used to create this type of evaluation field
+	 */
+	public abstract EvaluationFieldCachingFactory getCachingFactory();
+	
+	/**
+	 * Gets evaluation representing unknown (empty) value of this field.
+	 * 
+	 * @param missingValueType type of missing value for the evaluation attribute for which this field is defined, as returned by
+	 *        {@link EvaluationAttribute#getMissingValueType()}
+	 * @return evaluation representing unknown (empty) value of this field
+	 */
+	public abstract EvaluationField getUnknownEvaluation(UnknownSimpleField missingValueType);
+	
 }

@@ -220,4 +220,22 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 		return false;
 	}
 
+	@Override
+	public EvaluationFieldFactory getDefaultFactory() {
+		//TODO: implement
+		return null;
+	}
+
+	@Override
+	public EvaluationFieldCachingFactory getCachingFactory() {
+		//TODO: implement
+		return null;
+	}
+
+	@Override
+	public EvaluationField getUnknownEvaluation(UnknownSimpleField missingValueType) {
+		//TODO: implement
+		return null;
+	}
+
 }

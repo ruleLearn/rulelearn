@@ -71,6 +71,16 @@ public class ElementList {
 	protected transient byte [] hash = null;
 	
 	/**
+	 * Cached hash code.
+	 */
+	int hashCode;
+	
+	/**
+	 * Tells if hash code have already been cached in {@link #hashCode} field.
+	 */
+	boolean hashCodeCalculated = false;
+	
+	/**
 	 * Creates an element list and sets element list according to an array of {@link String} elements and creates a hash value using {@link DEFAULT_HASH_ALGORITHM} algorithm. 
 	 * 
 	 * @param elements array of {@link String} elements
@@ -200,7 +210,12 @@ public class ElementList {
      */
 	@Override
 	public int hashCode () {
-		return Objects.hash(this.getClass(), this.elements);
+		if (!hashCodeCalculated) {
+			hashCode = Objects.hash(this.getClass(), this.elements);
+			hashCodeCalculated = true;
+		}
+		
+		return hashCode;
 	}
 
 	/**

@@ -16,6 +16,9 @@
 
 package org.rulelearn.types;
 
+import org.rulelearn.core.FieldParseException;
+import org.rulelearn.core.InvalidTypeException;
+import org.rulelearn.core.Precondition;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.EvaluationAttribute;
@@ -27,7 +30,7 @@ import org.rulelearn.data.EvaluationAttribute;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
-public class RealFieldFactory implements EvaluationFieldFactory<RealField> {
+public class RealFieldFactory implements EvaluationFieldFactory {
 	/**
 	 * The only instance of this factory.
 	 */
@@ -57,9 +60,11 @@ public class RealFieldFactory implements EvaluationFieldFactory<RealField> {
 	 * @param preferenceType preference type of the attribute that the field value refers to
 	 * 
 	 * @return constructed field
+	 * 
+	 * @throws NullPointerException if given attribute's preference type is {@code null}
 	 */
 	public RealField create(double value, AttributePreferenceType preferenceType) {
-		switch (preferenceType) {
+		switch (Precondition.notNull(preferenceType, "Attribute's preference type is null.")) {
 			case NONE: return new NoneRealField(value);
 			case GAIN: return new GainRealField(value);
 			case COST: return new CostRealField(value);
@@ -72,6 +77,8 @@ public class RealFieldFactory implements EvaluationFieldFactory<RealField> {
 	 * 
 	 * @param field field to be cloned
 	 * @return cloned field
+	 * 
+	 * @throws NullPointerException if given field is {@code null}
 	 */
 	public RealField clone (RealField field) {
 		return field.selfClone();
@@ -95,8 +102,7 @@ public class RealFieldFactory implements EvaluationFieldFactory<RealField> {
 		}
 		
 		@Override
-		@SuppressWarnings("unchecked")
-//		//unfortunately the following implementation would cause a warning by javac:
+		@SuppressWarnings("unchecked") //unfortunately the following implementation causes a warning by javac
 //		public NoneRealField selfClone() {
 //			return new NoneRealField(this.value);
 //		}
@@ -180,9 +186,6 @@ public class RealFieldFactory implements EvaluationFieldFactory<RealField> {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-//		public GainRealField selfClone() {
-//			return new GainRealField(this.value);
-//		}
 		public <S extends Field> S selfClone() {
 			return (S)new GainRealField(this.value);
 		}
@@ -262,9 +265,6 @@ public class RealFieldFactory implements EvaluationFieldFactory<RealField> {
 		
 		@Override
 		@SuppressWarnings("unchecked")
-//		public CostRealField selfClone() {
-//			return new CostRealField(this.value);
-//		}
 		public <S extends Field> S selfClone() {
 			return (S)new CostRealField(this.value);
 		}
@@ -329,19 +329,26 @@ public class RealFieldFactory implements EvaluationFieldFactory<RealField> {
 	 * Constructs real field from its textual representation.
 	 * 
 	 * @param value textual representation of a real field
-	 * @param attribute evaluation attribute for which a field should be constructed
+	 * @param attribute {@inheritDoc}
 	 *  
-	 * @return constructed field
-	 * @throws NumberFormatException if given value cannot be parsed as a real number
+	 * @return {@inheritDoc}
+	 * 
+	 * @throws FieldParseException if given value cannot be parsed as a real number
 	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws InvalidTypeException {@inheritDoc}
 	 */
 	@Override
 	public RealField create(String value, EvaluationAttribute attribute) {
+		Precondition.notNull(attribute, "Attribute used to construct real field is null.");
+		if (!(attribute.getValueType() instanceof RealField)) {
+			throw new InvalidTypeException("Attribute's value type is not an instance of real field.");
+		}
+		
 		try {
 			return create(Double.parseDouble(value), attribute.getPreferenceType());
 		}
 		catch (NumberFormatException exception) {
-			throw exception;
+			throw new FieldParseException(exception.getMessage());
 		}
 	}
 }
