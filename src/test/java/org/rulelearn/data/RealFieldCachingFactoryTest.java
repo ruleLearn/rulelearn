@@ -22,37 +22,37 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rulelearn.types.EvaluationField;
-import org.rulelearn.types.IntegerField;
-import org.rulelearn.types.IntegerFieldCachingFactory;
-import org.rulelearn.types.IntegerFieldFactory;
+import org.rulelearn.types.RealField;
+import org.rulelearn.types.RealFieldCachingFactory;
+import org.rulelearn.types.RealFieldFactory;
 
 /**
- * Test for {@link IntegerFieldCachingFactory} class.
+ * Test for {@link RealFieldCachingFactory} class.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-class IntegerFieldCachingFactoryTest {
+class RealFieldCachingFactoryTest {
 
 	@BeforeEach
 	void setUp() {
-		IntegerFieldCachingFactory.getInstance().clearVolatileCache();
+		RealFieldCachingFactory.getInstance().clearVolatileCache();
 	}
 
 	/**
-	 * Test for {@link IntegerFieldCachingFactory#create(int, AttributePreferenceType, boolean)}.
+	 * Test for {@link RealFieldCachingFactory#create(double, AttributePreferenceType, boolean)}.
 	 * Tests persistent cache.
 	 */
 	@Test
 	void testCreate01() {
-		IntegerFieldCachingFactory factory = IntegerFieldCachingFactory.getInstance();
+		RealFieldCachingFactory factory = RealFieldCachingFactory.getInstance();
 		
-		IntegerField field1 = factory.create(1, AttributePreferenceType.GAIN, true);
-		IntegerField field1a = factory.create(1, AttributePreferenceType.GAIN, true);
-		IntegerField field2 = factory.create(1, AttributePreferenceType.COST, true);
-		IntegerField field2a = factory.create(1, AttributePreferenceType.COST, true);
-		IntegerField field3 = factory.create(1, AttributePreferenceType.NONE, true);
-		IntegerField field3a = factory.create(1, AttributePreferenceType.NONE, true);
+		RealField field1 = factory.create(1.0, AttributePreferenceType.GAIN, true);
+		RealField field1a = factory.create(1.0, AttributePreferenceType.GAIN, true);
+		RealField field2 = factory.create(1.0, AttributePreferenceType.COST, true);
+		RealField field2a = factory.create(1.0, AttributePreferenceType.COST, true);
+		RealField field3 = factory.create(1, AttributePreferenceType.NONE, true);
+		RealField field3a = factory.create(1, AttributePreferenceType.NONE, true);
 		
 		assertSame(field1, field1a);
 		assertSame(field2, field2a);
@@ -64,19 +64,19 @@ class IntegerFieldCachingFactoryTest {
 	}
 	
 	/**
-	 * Test for {@link IntegerFieldCachingFactory#create(int, AttributePreferenceType, boolean)}.
+	 * Test for {@link RealFieldCachingFactory#create(double, AttributePreferenceType, boolean)}.
 	 * Tests volatile cache.
 	 */
 	@Test
 	void testCreate02() {
-		IntegerFieldCachingFactory factory = IntegerFieldCachingFactory.getInstance();
+		RealFieldCachingFactory factory = RealFieldCachingFactory.getInstance();
 		
-		IntegerField field1 = factory.create(1, AttributePreferenceType.GAIN, false);
-		IntegerField field1a = factory.create(1, AttributePreferenceType.GAIN, false);
-		IntegerField field2 = factory.create(1, AttributePreferenceType.COST, false);
-		IntegerField field2a = factory.create(1, AttributePreferenceType.COST, false);
-		IntegerField field3 = factory.create(1, AttributePreferenceType.NONE, false);
-		IntegerField field3a = factory.create(1, AttributePreferenceType.NONE, false);
+		RealField field1 = factory.create(1, AttributePreferenceType.GAIN, false);
+		RealField field1a = factory.create(1, AttributePreferenceType.GAIN, false);
+		RealField field2 = factory.create(1, AttributePreferenceType.COST, false);
+		RealField field2a = factory.create(1, AttributePreferenceType.COST, false);
+		RealField field3 = factory.create(1, AttributePreferenceType.NONE, false);
+		RealField field3a = factory.create(1, AttributePreferenceType.NONE, false);
 		
 		assertSame(field1, field1a);
 		assertSame(field2, field2a);
@@ -88,33 +88,33 @@ class IntegerFieldCachingFactoryTest {
 	}
 	
 	/**
-	 * Test for {@link IntegerFieldCachingFactory#createWithPersistentCache(String, EvaluationAttribute)}.
+	 * Test for {@link RealFieldCachingFactory#createWithPersistentCache(String, EvaluationAttribute)}.
 	 */
 	@Test
 	void testCreate03() {
 		EvaluationAttribute attributeMock1 = Mockito.mock(EvaluationAttribute.class);
 		Mockito.when(attributeMock1.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
-		Mockito.when(attributeMock1.getValueType()).thenReturn(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN));
+		Mockito.when(attributeMock1.getValueType()).thenReturn(RealFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN));
 		
 		EvaluationAttribute attributeMock2 = Mockito.mock(EvaluationAttribute.class);
 		Mockito.when(attributeMock2.getPreferenceType()).thenReturn(AttributePreferenceType.COST);
-		Mockito.when(attributeMock2.getValueType()).thenReturn(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST));
+		Mockito.when(attributeMock2.getValueType()).thenReturn(RealFieldFactory.getInstance().create(0, AttributePreferenceType.COST));
 		
 		EvaluationAttribute attributeMock3 = Mockito.mock(EvaluationAttribute.class);
 		Mockito.when(attributeMock3.getPreferenceType()).thenReturn(AttributePreferenceType.NONE);
-		Mockito.when(attributeMock3.getValueType()).thenReturn(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE));
+		Mockito.when(attributeMock3.getValueType()).thenReturn(RealFieldFactory.getInstance().create(0, AttributePreferenceType.NONE));
 		
-		IntegerFieldCachingFactory factory = IntegerFieldCachingFactory.getInstance();
+		RealFieldCachingFactory factory = RealFieldCachingFactory.getInstance();
 		
 		int initialPersistentCacheSize = factory.getPersistentCacheSize();
 		int initialVolatileCacheSize = factory.getVolatileCacheSize();
 		
-		EvaluationField field1 = factory.createWithPersistentCache("-128", attributeMock1);
-		EvaluationField field1a = factory.createWithPersistentCache("-128", attributeMock1);
-		EvaluationField field2 = factory.createWithPersistentCache("-128", attributeMock2);
-		EvaluationField field2a = factory.createWithPersistentCache("-128", attributeMock2);
-		EvaluationField field3 = factory.createWithPersistentCache("-128", attributeMock3);
-		EvaluationField field3a = factory.createWithPersistentCache("-128", attributeMock3);
+		EvaluationField field1 = factory.createWithPersistentCache("-128.01", attributeMock1);
+		EvaluationField field1a = factory.createWithPersistentCache("-128.01", attributeMock1);
+		EvaluationField field2 = factory.createWithPersistentCache("-128.01", attributeMock2);
+		EvaluationField field2a = factory.createWithPersistentCache("-128.01", attributeMock2);
+		EvaluationField field3 = factory.createWithPersistentCache("-128.01", attributeMock3);
+		EvaluationField field3a = factory.createWithPersistentCache("-128.01", attributeMock3);
 		
 		assertSame(field1, field1a);
 		assertSame(field2, field2a);
@@ -129,34 +129,34 @@ class IntegerFieldCachingFactoryTest {
 	}
 	
 	/**
-	 * Test for {@link IntegerFieldCachingFactory#createWithVolatileCache(String, EvaluationAttribute)}.
+	 * Test for {@link RealFieldCachingFactory#createWithVolatileCache(String, EvaluationAttribute)}.
 	 */
 	@Test
 	void testCreate04() {
 		EvaluationAttribute attributeMock1 = Mockito.mock(EvaluationAttribute.class);
 		Mockito.when(attributeMock1.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
-		Mockito.when(attributeMock1.getValueType()).thenReturn(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN));
+		Mockito.when(attributeMock1.getValueType()).thenReturn(RealFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN));
 		
 		EvaluationAttribute attributeMock2 = Mockito.mock(EvaluationAttribute.class);
 		Mockito.when(attributeMock2.getPreferenceType()).thenReturn(AttributePreferenceType.COST);
-		Mockito.when(attributeMock2.getValueType()).thenReturn(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST));
+		Mockito.when(attributeMock2.getValueType()).thenReturn(RealFieldFactory.getInstance().create(0, AttributePreferenceType.COST));
 		
 		EvaluationAttribute attributeMock3 = Mockito.mock(EvaluationAttribute.class);
 		Mockito.when(attributeMock3.getPreferenceType()).thenReturn(AttributePreferenceType.NONE);
-		Mockito.when(attributeMock3.getValueType()).thenReturn(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE));
+		Mockito.when(attributeMock3.getValueType()).thenReturn(RealFieldFactory.getInstance().create(0, AttributePreferenceType.NONE));
 		
-		IntegerFieldCachingFactory factory = IntegerFieldCachingFactory.getInstance();
+		RealFieldCachingFactory factory = RealFieldCachingFactory.getInstance();
 		
 		int initialPersistentCacheSize = factory.getPersistentCacheSize();
 		factory.clearVolatileCache();
 		assertEquals(factory.getVolatileCacheSize(), 0);
 		
-		EvaluationField field1 = factory.createWithVolatileCache("1", attributeMock1);
-		EvaluationField field1a = factory.createWithVolatileCache("1", attributeMock1);
-		EvaluationField field2 = factory.createWithVolatileCache("1", attributeMock2);
-		EvaluationField field2a = factory.createWithVolatileCache("1", attributeMock2);
-		EvaluationField field3 = factory.createWithVolatileCache("1", attributeMock3);
-		EvaluationField field3a = factory.createWithVolatileCache("1", attributeMock3);
+		EvaluationField field1 = factory.createWithVolatileCache("-1.2", attributeMock1);
+		EvaluationField field1a = factory.createWithVolatileCache("-1.2", attributeMock1);
+		EvaluationField field2 = factory.createWithVolatileCache("-1.2", attributeMock2);
+		EvaluationField field2a = factory.createWithVolatileCache("-1.2", attributeMock2);
+		EvaluationField field3 = factory.createWithVolatileCache("-1.2", attributeMock3);
+		EvaluationField field3a = factory.createWithVolatileCache("-1.2", attributeMock3);
 		
 		assertSame(field1, field1a);
 		assertSame(field2, field2a);
@@ -171,23 +171,23 @@ class IntegerFieldCachingFactoryTest {
 	}
 	
 	/**
-	 * Test for {@link IntegerFieldCachingFactory#clearVolatileCache()}.
+	 * Test for {@link RealFieldCachingFactory#clearVolatileCache()}.
 	 */
 	@Test
 	void testClearVolatileCache() {
 		EvaluationAttribute attributeMock1 = Mockito.mock(EvaluationAttribute.class);
 		Mockito.when(attributeMock1.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
-		Mockito.when(attributeMock1.getValueType()).thenReturn(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN));
+		Mockito.when(attributeMock1.getValueType()).thenReturn(RealFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN));
 		
 		EvaluationAttribute attributeMock2 = Mockito.mock(EvaluationAttribute.class);
 		Mockito.when(attributeMock2.getPreferenceType()).thenReturn(AttributePreferenceType.COST);
-		Mockito.when(attributeMock2.getValueType()).thenReturn(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST));
+		Mockito.when(attributeMock2.getValueType()).thenReturn(RealFieldFactory.getInstance().create(0, AttributePreferenceType.COST));
 		
 		EvaluationAttribute attributeMock3 = Mockito.mock(EvaluationAttribute.class);
 		Mockito.when(attributeMock3.getPreferenceType()).thenReturn(AttributePreferenceType.NONE);
-		Mockito.when(attributeMock3.getValueType()).thenReturn(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE));
+		Mockito.when(attributeMock3.getValueType()).thenReturn(RealFieldFactory.getInstance().create(0, AttributePreferenceType.NONE));
 		
-		IntegerFieldCachingFactory factory = IntegerFieldCachingFactory.getInstance();
+		RealFieldCachingFactory factory = RealFieldCachingFactory.getInstance();
 		
 		assertEquals(factory.getVolatileCacheSize(), 0); //due to clearing in setUp method
 		
