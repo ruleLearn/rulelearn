@@ -16,6 +16,7 @@
 
 package org.rulelearn.types;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.rulelearn.core.FieldParseException;
@@ -25,6 +26,7 @@ import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.EvaluationAttribute;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Caching factory for {@link EnumerationField} evaluations, employing abstract factory and singleton design patterns.
@@ -43,18 +45,18 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
  */
 public class EnumerationFieldCachingFactory implements EvaluationFieldCachingFactory {
 	
-	//Maps constituting internal persistent cache, mapping calculated hash of enumeration field to enumeration field
-	Int2ObjectOpenHashMap<EnumerationField> persistentGainCache;
-	Int2ObjectOpenHashMap<EnumerationField> persistentCostCache;
-	Int2ObjectOpenHashMap<EnumerationField> persistentNoneCache;
+	//Maps constituting internal persistent cache, mapping calculated hash of enumeration field to list of enumeration fields having that hash
+	Int2ObjectOpenHashMap<List<EnumerationField>> persistentGainCache;
+	Int2ObjectOpenHashMap<List<EnumerationField>> persistentCostCache;
+	Int2ObjectOpenHashMap<List<EnumerationField>> persistentNoneCache;
 	
-	//Maps constituting internal volatile cache, mapping calculated hash of enumeration field to enumeration field
-	Int2ObjectOpenHashMap<EnumerationField> volatileGainCache;
-	Int2ObjectOpenHashMap<EnumerationField> volatileCostCache;
-	Int2ObjectOpenHashMap<EnumerationField> volatileNoneCache;
+	//Maps constituting internal volatile cache, mapping calculated hash of enumeration field to list of enumeration fields having that hash
+	Int2ObjectOpenHashMap<List<EnumerationField>> volatileGainCache;
+	Int2ObjectOpenHashMap<List<EnumerationField>> volatileCostCache;
+	Int2ObjectOpenHashMap<List<EnumerationField>> volatileNoneCache;
 	
 	/**
-	 * Provider of the only instance of this factory.
+	 * Provider of the only instance of this factory, local to current thread.
 	 */
 	static ThreadLocal<EnumerationFieldCachingFactory> factoryProvider = null;
 	
@@ -118,8 +120,8 @@ public class EnumerationFieldCachingFactory implements EvaluationFieldCachingFac
 	 * @throws IndexOutOfBoundsException if given index is incorrect (i.e., does not match any position of given element list)
 	 */
 	public EnumerationField create(ElementList list, int index, AttributePreferenceType preferenceType, boolean usePersistentCache) {
-		EnumerationField field;
-		Int2ObjectOpenHashMap<EnumerationField> cache = null;
+		EnumerationField field = null;
+		Int2ObjectOpenHashMap<List<EnumerationField>> cache = null;
 		
 		Precondition.notNull(list, "Element list of constructed enumeration attribute is null.");
 		
@@ -138,14 +140,28 @@ public class EnumerationFieldCachingFactory implements EvaluationFieldCachingFac
 		}
 		
 		int key = hashEnumerationField(list, index, preferenceType);
+		boolean found = false;
 		
-		if (cache.containsKey(key)) {
-			return cache.get(key);
-		} else {
-			field = EnumerationFieldFactory.getInstance().create(list, index, preferenceType);
-			cache.put(key, field); //consistently use calculated key, not the hash code returned by the constructed field!
-			return field;
+		if (cache.containsKey(key)) { //there is a list of enumeration fields having calculated hash code
+			//check list
+			for (EnumerationField testedField : cache.get(key)) {
+				if (testedField.getValue() == index &&
+						testedField.getElementList().equals(list)) {
+					field = testedField;
+					found = true;
+					break;
+				}
+			}
 		}
+		
+		if (!found) {
+			field = EnumerationFieldFactory.getInstance().create(list, index, preferenceType);
+			List<EnumerationField> fields = new ObjectArrayList<EnumerationField>();
+			fields.add(field);
+			cache.put(key, fields); //consistently use calculated key, not the hash code returned by the constructed field!
+		}
+		
+		return field;
 		
 	}
 	

@@ -188,7 +188,7 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	/**
 	 * Gets the first value in this pair.
 	 * 
-	 * @return the first value in this pair.
+	 * @return the first value in this pair
 	 */
 	public T getFirstValue() {
 		return firstValue;
@@ -197,7 +197,7 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	/**
 	 * Gets the second value in this pair.
 	 * 
-	 * @return the second value in this pair.
+	 * @return the second value in this pair
 	 */
 	public T getSecondValue() {
 		return secondValue;

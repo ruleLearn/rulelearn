@@ -16,12 +16,18 @@
 
 package org.rulelearn.data;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.rulelearn.core.FieldParseException;
+import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldCachingFactory;
 import org.rulelearn.types.RealFieldFactory;
@@ -89,9 +95,62 @@ class RealFieldCachingFactoryTest {
 	
 	/**
 	 * Test for {@link RealFieldCachingFactory#createWithPersistentCache(String, EvaluationAttribute)}.
+	 * Tests {@code null} attribute.
 	 */
 	@Test
-	void testCreate03() {
+	void testCreateWithPersistentCache01() {
+		try {
+			RealFieldCachingFactory.getInstance().createWithPersistentCache("-12.8", null);
+			fail("Should not create field for null attribute.");
+		} catch (NullPointerException exception) {
+			//OK
+		}
+	}
+	
+	/**
+	 * Test for {@link RealFieldCachingFactory#createWithPersistentCache(String, EvaluationAttribute)}.
+	 * Tests attribute with wrong {@link EvaluationAttribute#getValueType() value type}.
+	 */
+	@Test
+	void testCreateWithPersistentCache02() {
+		String value = "1";
+		EvaluationAttribute attribute = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attribute.getValueType()).thenReturn(Mockito.mock(IntegerField.class)); //deliberately wrong value type
+		Mockito.when(attribute.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
+		
+		try {
+			RealFieldCachingFactory.getInstance().createWithPersistentCache(value, attribute);
+			fail("Should not create field for an attribute with incompatible value type.");
+		} catch (InvalidTypeException exception) {
+			//OK
+		}
+	}
+	
+	/**
+	 * Tests creation of real field from text {@link RealFieldCachingFactory#createWithPersistentCache(String, EvaluationAttribute)}.
+	 * Tests incorrect textual representation of a real number.
+	 */
+	@Test
+	public void testCreateWithPersistentCache03() {
+		String value = "a";
+		EvaluationAttribute attribute = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attribute.getValueType()).thenReturn(Mockito.mock(RealField.class));
+		Mockito.when(attribute.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
+		
+		try {
+			RealFieldCachingFactory.getInstance().createWithPersistentCache(value, attribute);
+			fail("Incorrect text should not be parsed as a real value.");
+		} catch (FieldParseException exception) {
+			//OK
+		}
+	}
+	
+	/**
+	 * Test for {@link RealFieldCachingFactory#createWithPersistentCache(String, EvaluationAttribute)}
+	 * and {@link RealFieldCachingFactory#getPersistentCacheSize()}.
+	 */
+	@Test
+	void testCreateWithPersistentCache04() {
 		EvaluationAttribute attributeMock1 = Mockito.mock(EvaluationAttribute.class);
 		Mockito.when(attributeMock1.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
 		Mockito.when(attributeMock1.getValueType()).thenReturn(RealFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN));
@@ -130,9 +189,62 @@ class RealFieldCachingFactoryTest {
 	
 	/**
 	 * Test for {@link RealFieldCachingFactory#createWithVolatileCache(String, EvaluationAttribute)}.
+	 * Tests {@code null} attribute.
 	 */
 	@Test
-	void testCreate04() {
+	void testCreateWithVolatileCache01() {
+		try {
+			RealFieldCachingFactory.getInstance().createWithVolatileCache("-12.8", null);
+			fail("Should not create field for null attribute.");
+		} catch (NullPointerException exception) {
+			//OK
+		}
+	}
+	
+	/**
+	 * Test for {@link RealFieldCachingFactory#createWithVolatileCache(String, EvaluationAttribute)}.
+	 * Tests attribute with wrong {@link EvaluationAttribute#getValueType() value type}.
+	 */
+	@Test
+	void testCreateWithVolatileCache02() {
+		String value = "1";
+		EvaluationAttribute attribute = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attribute.getValueType()).thenReturn(Mockito.mock(IntegerField.class)); //deliberately wrong value type
+		Mockito.when(attribute.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
+		
+		try {
+			RealFieldCachingFactory.getInstance().createWithVolatileCache(value, attribute);
+			fail("Should not create field for an attribute with incompatible value type.");
+		} catch (InvalidTypeException exception) {
+			//OK
+		}
+	}
+	
+	/**
+	 * Tests creation of real field from text {@link RealFieldCachingFactory#createWithVolatileCache(String, EvaluationAttribute)}.
+	 * Tests incorrect textual representation of a real number.
+	 */
+	@Test
+	public void testCreateWithVolatileCache03() {
+		String value = "a";
+		EvaluationAttribute attribute = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attribute.getValueType()).thenReturn(Mockito.mock(RealField.class));
+		Mockito.when(attribute.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
+		
+		try {
+			RealFieldCachingFactory.getInstance().createWithVolatileCache(value, attribute);
+			fail("Incorrect text should not be parsed as a real value.");
+		} catch (FieldParseException exception) {
+			//OK
+		}
+	}
+	
+	/**
+	 * Test for {@link RealFieldCachingFactory#createWithVolatileCache(String, EvaluationAttribute)}
+	 * and {@link RealFieldCachingFactory#getVolatileCacheSize()}.
+	 */
+	@Test
+	void testCreateWithVolatileCache04() {
 		EvaluationAttribute attributeMock1 = Mockito.mock(EvaluationAttribute.class);
 		Mockito.when(attributeMock1.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
 		Mockito.when(attributeMock1.getValueType()).thenReturn(RealFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN));
@@ -174,7 +286,7 @@ class RealFieldCachingFactoryTest {
 	 * Test for {@link RealFieldCachingFactory#clearVolatileCache()}.
 	 */
 	@Test
-	void testClearVolatileCache() {
+	void testClearVolatileCache01() {
 		EvaluationAttribute attributeMock1 = Mockito.mock(EvaluationAttribute.class);
 		Mockito.when(attributeMock1.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
 		Mockito.when(attributeMock1.getValueType()).thenReturn(RealFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN));

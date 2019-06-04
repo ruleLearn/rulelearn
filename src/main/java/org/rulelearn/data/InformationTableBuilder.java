@@ -219,25 +219,22 @@ public class InformationTableBuilder {
 	 */
 	protected EvaluationField parseEvaluation(String evaluation, EvaluationAttribute attribute) throws NumberFormatException, IndexOutOfBoundsException {
 		EvaluationField field = null;
-		boolean missingValue = false;
+		boolean missingSimpleField = false;
 	
 		// get rid of white spaces
 		evaluation = trimConversion.execute(evaluation);
 		
-		//TODO: recognize text representation of unknown values of all types of evaluation fields (see EvaluationField.getUnknownEvaluation method),
-		//especially for composite fields; e.g., for a pair field, one could expect something like "(?,?)"
-		
-		// check whether it is a missing value
+		// check whether given string represent a missing value of a simple field
 		if (attribute.getValueType() instanceof SimpleField && missingValueStrings != null) { //single missing value is of interest only for a simple field
 			for (String missingValueString : this.missingValueStrings) {
 				if ((missingValueString != null) && (missingValueString.equalsIgnoreCase(evaluation))) {
-					missingValue = true;
+					missingSimpleField = true;
 					break;
 				}
 			}
 		}
 		
-		if (!missingValue) { //simple field without missing value or not a simple field
+		if (!missingSimpleField) { //simple field without missing value or not a simple field
 			try {
 				field = attribute.getValueType().getCachingFactory().createWithVolatileCache(evaluation, attribute); //MSz
 			}
