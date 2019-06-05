@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.rulelearn.data;
+package org.rulelearn.types;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -26,6 +26,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rulelearn.core.FieldParseException;
 import org.rulelearn.core.InvalidTypeException;
+import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.RealField;
