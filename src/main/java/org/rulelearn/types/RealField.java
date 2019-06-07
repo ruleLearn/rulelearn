@@ -136,4 +136,36 @@ public abstract class RealField extends KnownSimpleField {
 	public EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField) {
 		return calculator.calculate(this, otherField);
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public RealFieldFactory getDefaultFactory() {
+		return RealFieldFactory.getInstance();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public RealFieldCachingFactory getCachingFactory() {
+		return RealFieldCachingFactory.getInstance();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * Just returns the given parameter.
+	 * 
+	 * @param missingValueType {@inheritDoc}
+	 * @return {@inheritDoc}
+	 */
+	public UnknownSimpleField getUnknownEvaluation(UnknownSimpleField missingValueType) {
+		return missingValueType;
+	}
+	
 }

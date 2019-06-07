@@ -17,6 +17,7 @@
 package org.rulelearn.types;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -39,10 +40,10 @@ public class ElementListTest {
 	private ElementList list2;
 	private ElementList list3;
 	
-	private String [] domain1 = {"1", "2", "3"};
-	private String [] domain2 = {"1", "2", "30"};
-	private String [] domain3 = {"1", "20", "3"};
-	private String [] domain4 = {"1", "2", "3", "4"};
+	private String[] domain1 = {"1", "2", "3"};
+	private String[] domain2 = {"1", "2", "30"};
+	private String[] domain3 = {"1", "20", "3"};
+	private String[] domain4 = {"1", "2", "3", "4"};
 	
 	private String algorithm1 = "ano";
 	private String algorithm2 = "MD5";
@@ -212,6 +213,19 @@ public class ElementListTest {
 		
 		assertTrue(list1.getIndex("100") < 0);
 		assertTrue(list1.getIndex(null) < 0);
+	}
+	
+	/**
+	 * Tests persistence of calculated hash code.
+	 */
+	@Test
+	public void testHashCode() {
+		this.setUp01();
+		assertFalse(list1.hashCodeCalculated);
+		int hashCode = list1.hashCode();
+		assertTrue(list1.hashCodeCalculated);
+		assertEquals(list1.hashCode, hashCode);
+		assertEquals(list1.hashCode(), hashCode);
 	}
 	
 }

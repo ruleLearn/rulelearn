@@ -174,12 +174,13 @@ public class PairField<T extends SimpleField> extends CompositeField {
 		return Objects.hash(firstValue.getClass(), firstValue, secondValue);
 	}
 
-	/** {@inheritDoc}
+	/**
+	 * {@inheritDoc}
 	 * 
 	 * @return {@inheritDoc} 
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") //unfortunately the following implementation causes a warning by javac
 	public <S extends Field> S selfClone() {
 		return (S)new PairField<T>(firstValue, secondValue);
 	}
@@ -187,7 +188,7 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	/**
 	 * Gets the first value in this pair.
 	 * 
-	 * @return the first value in this pair.
+	 * @return the first value in this pair
 	 */
 	public T getFirstValue() {
 		return firstValue;
@@ -196,7 +197,7 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	/**
 	 * Gets the second value in this pair.
 	 * 
-	 * @return the second value in this pair.
+	 * @return the second value in this pair
 	 */
 	public T getSecondValue() {
 		return secondValue;
@@ -230,6 +231,40 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	@Override
 	public EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField) {
 		return calculator.calculate(this, otherField);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * Not implemented yet (TODO). Currently throws {@link UnsupportedOperationException}.
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public EvaluationFieldFactory getDefaultFactory() {
+		throw new UnsupportedOperationException("Not implemented yet.");
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * Not implemented yet (TODO). Currently throws {@link UnsupportedOperationException}.
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public EvaluationFieldCachingFactory getCachingFactory() {
+		throw new UnsupportedOperationException("Not implemented yet.");
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * Just returns a new {@link PairField pair} in which each element is set to be the given parameter.
+	 * 
+	 * @param missingValueType {@inheritDoc}
+	 * @return evaluation {@inheritDoc}
+	 */
+	@Override
+	public EvaluationField getUnknownEvaluation(UnknownSimpleField missingValueType) {
+		return new PairField<UnknownSimpleField>(missingValueType, missingValueType);
 	}
 
 }

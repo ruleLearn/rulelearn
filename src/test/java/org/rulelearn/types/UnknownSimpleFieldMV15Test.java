@@ -21,9 +21,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.EvaluationAttribute;
 
 /**
  * Tests for {@link UnknownSimpleFieldMV15}.
@@ -248,6 +251,8 @@ class UnknownSimpleFieldMV15Test {
 		Field clonedField = mvField.selfClone();
 		
 		assertTrue(clonedField instanceof UnknownSimpleFieldMV15);
+		
+		assertEquals(mvField, clonedField);
 	}
 	
 	/**
@@ -312,6 +317,67 @@ class UnknownSimpleFieldMV15Test {
 	@Test
 	public void testEqualWhenReverseComparedToAnyEvaluation() {
 		assertEquals(new UnknownSimpleFieldMV15().equalWhenReverseComparedToAnyEvaluation(), false);
+	}
+	
+	/**
+	 * Tests {@link UnknownSimpleFieldMV15#getInstance()} static method.
+	 */
+	@Test
+	public void testGetInstance() {
+		UnknownSimpleField field = UnknownSimpleFieldMV15.getInstance();
+		assertSame(field, UnknownSimpleFieldMV15.getInstance());
+	}
+	
+	/**
+	 * Test {@link UnknownSimpleFieldMV15.UnknownSimpleFieldMV15Factory#create(String, EvaluationAttribute)}.
+	 */
+	@Test
+	public void testFactory() {
+		UnknownSimpleFieldMV15.UnknownSimpleFieldMV15Factory factory = UnknownSimpleFieldMV15.UnknownSimpleFieldMV15Factory.getInstance();
+		assertSame(factory, UnknownSimpleFieldMV15.UnknownSimpleFieldMV15Factory.getInstance()); //test if factory is a singleton
+		
+		EvaluationAttribute attributeMock = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock.getMissingValueType()).thenReturn(UnknownSimpleFieldMV15.getInstance());
+		
+		//test if factory retrieves the only instance of unknown field
+		assertSame(UnknownSimpleFieldMV15.getInstance(), UnknownSimpleFieldMV15.UnknownSimpleFieldMV15Factory.getInstance().create(null, attributeMock));
+	}
+	
+	/**
+	 * Test for methods of {@link UnknownSimpleFieldMV15.UnknownSimpleFieldMV15CachingFactory} class.
+	 */
+	@Test
+	public void testCachingFactory() {
+		UnknownSimpleFieldMV15.UnknownSimpleFieldMV15CachingFactory factory = UnknownSimpleFieldMV15.UnknownSimpleFieldMV15CachingFactory.getInstance();
+		assertSame(factory, UnknownSimpleFieldMV15.UnknownSimpleFieldMV15CachingFactory.getInstance()); //test if factory is a singleton
+		
+		EvaluationAttribute attributeMock = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock.getMissingValueType()).thenReturn(UnknownSimpleFieldMV15.getInstance());
+		
+		//test if factory retrieves the only instance of unknown field
+		assertSame(UnknownSimpleFieldMV15.getInstance(), UnknownSimpleFieldMV15.UnknownSimpleFieldMV15CachingFactory.getInstance().createWithPersistentCache("", attributeMock));
+		assertSame(UnknownSimpleFieldMV15.getInstance(), UnknownSimpleFieldMV15.UnknownSimpleFieldMV15CachingFactory.getInstance().createWithVolatileCache("", attributeMock));
+		
+		assertEquals(UnknownSimpleFieldMV15.UnknownSimpleFieldMV15CachingFactory.getInstance().getPersistentCacheSize(), 1);
+		assertEquals(UnknownSimpleFieldMV15.UnknownSimpleFieldMV15CachingFactory.getInstance().getVolatileCacheSize(), 0);
+		assertEquals(UnknownSimpleFieldMV15.UnknownSimpleFieldMV15CachingFactory.getInstance().clearVolatileCache(), 0);
+		
+		EvaluationAttribute attributeMock2 = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock2.getMissingValueType()).thenReturn(UnknownSimpleFieldMV2.getInstance()); //incompatible MV type
+		
+		try {
+			UnknownSimpleFieldMV15.UnknownSimpleFieldMV15CachingFactory.getInstance().createWithPersistentCache(null, attributeMock2);
+			fail("Should not create instance of UnknownSimpleFieldMV15.");
+		} catch (InvalidTypeException exception) {
+			//OK
+		}
+		
+		try {
+			UnknownSimpleFieldMV15.UnknownSimpleFieldMV15CachingFactory.getInstance().createWithVolatileCache(null, attributeMock2);
+			fail("Should not create instance of UnknownSimpleFieldMV15.");
+		} catch (InvalidTypeException exception) {
+			//OK
+		}
 	}
 
 }

@@ -314,7 +314,7 @@ class RuleTest {
 	}
 	
 	/**
-	 * Test method for shorter constructor {@link org.rulelearn.rules.Rule#Rule(RuleType, List, SimpleCondition)}.
+	 * Test method for shorter constructor {@link org.rulelearn.rules.Rule#Rule(RuleType, List, Condition)}.
 	 */
 	@Test
 	void testRule() {

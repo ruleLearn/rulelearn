@@ -19,6 +19,7 @@ package org.rulelearn.types;
 import org.rulelearn.core.ComparableExt;
 import org.rulelearn.core.EvaluationFieldCalculator;
 import org.rulelearn.core.TernaryLogicValue;
+import org.rulelearn.data.EvaluationAttribute;
 
 /**
  * Field of an information table used to store an evaluation assigned to an object by the so-called information function.
@@ -64,4 +65,28 @@ public abstract class EvaluationField extends Field implements ComparableExt<Eva
 	 * @return a value calculated by the calculator; this value is represented as a new field
 	 */
 	public abstract EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField);
+	
+	/**
+	 * Gets default evaluation field factory used to create this type of evaluation field.
+	 * 
+	 * @return default evaluation field factory used to create this type of evaluation field
+	 */
+	public abstract EvaluationFieldFactory getDefaultFactory();
+	
+	/**
+	 * Gets evaluation field caching factory used to create this type of evaluation field.
+	 * 
+	 * @return evaluation field caching factory used to create this type of evaluation field
+	 */
+	public abstract EvaluationFieldCachingFactory getCachingFactory();
+	
+	/**
+	 * Gets evaluation representing unknown (empty) value of this field.
+	 * 
+	 * @param missingValueType type of missing value for the evaluation attribute for which this field is defined, as returned by
+	 *        {@link EvaluationAttribute#getMissingValueType()}
+	 * @return evaluation representing unknown (empty) value of this field
+	 */
+	public abstract EvaluationField getUnknownEvaluation(UnknownSimpleField missingValueType);
+	
 }
