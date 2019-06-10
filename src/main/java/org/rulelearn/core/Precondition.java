@@ -244,7 +244,7 @@ public final class Precondition {
 	 * @throws InvalidValueException if given number is not within interval [0,1]
 	 */
 	public static double within01Interval(double number, String errorMsg) {
-		if (number < 0 || number > 1) {
+		if (number < 0.0 || number > 1.0) {
 			throw new InvalidValueException(errorMsg);
 		}
 		return number;
@@ -260,7 +260,7 @@ public final class Precondition {
 	 * @throws InvalidValueException if given number is not within interval [-1,1]
 	 */
 	public static double withinMinus1Plus1Interval(double number, String errorMsg) {
-		if (number < -1 || number > 1) {
+		if (number < -1.0 || number > 1.0) {
 			throw new InvalidValueException(errorMsg);
 		}
 		return number;

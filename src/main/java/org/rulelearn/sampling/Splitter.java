@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
@@ -48,7 +49,7 @@ public class Splitter {
 	 * 
 	 * @param informationTable {@link InformationTable information table} which will be split into sub tables
 	 * @param splits an array with proportions, where the length is the number of {@link InformationTable information tables} to
-     * construct; each value, in this array, is a proportion (fraction) of objects from the {@link InformationTable information table} 
+     * construct; each value, in this array, is a proportion (fraction in interval (0, 1)) of objects from the {@link InformationTable information table} 
      * passed as a parameter, which will be selected to respective constructed {@link InformationTable information sub-table}; 
      * The sum of proportions must be less than or equal to 1.0
      * 
@@ -56,7 +57,8 @@ public class Splitter {
 	 * passed as a parameter 
 	 * 
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table} or splits array provided as parameters are {@code null}
-	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0 
+	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0
+	 * @throws InvalidValueException if any proportion is not within interval [0,1]
 	 */
 	public static List<InformationTable> split(InformationTable informationTable, double... splits) {
 		return split(informationTable, false, splits);
@@ -72,7 +74,7 @@ public class Splitter {
 	 *        at the cost of returning read-only information tables, or should return safe information tables (which may be modified),
 	 *        at the cost of returning the result slower
 	 * @param splits an array with proportions, where the length is the number of {@link InformationTable information tables} to
-     * construct; each value, in this array, is a proportion (fraction) of objects from the {@link InformationTable information table} 
+     * construct; each value, in this array, is a proportion (fraction in interval (0, 1)) of objects from the {@link InformationTable information table} 
      * passed as a parameter, which will be selected to respective constructed {@link InformationTable information sub-table}; 
      * The sum of proportions must be less than or equal to 1.0
      * 
@@ -80,7 +82,8 @@ public class Splitter {
 	 * passed as a parameter 
 	 * 
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table} or splits array provided as parameters are {@code null}
-	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0 
+	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0
+	 * @throws InvalidValueException if any proportion is not within interval [0,1]
 	 */
 	public static List<InformationTable> split(InformationTable informationTable, boolean accelerateByReadOnlyResult, double... splits) {
 		Precondition.notNull(informationTable, "Information table provided to split is null.");
@@ -115,7 +118,7 @@ public class Splitter {
 	 * 
 	 * @param informationTable {@link InformationTable information table} which will be split into sub tables
 	 * @param splits an array with proportions, where the length is the number of {@link InformationTable information tables} to
-     * construct; each value, in this array, is a proportion (fraction) of objects from the {@link InformationTable information table} 
+     * construct; each value, in this array, is a proportion (fraction in interval (0, 1)) of objects from the {@link InformationTable information table} 
      * passed as a parameter, which will be selected to respective constructed {@link InformationTable information sub-table}; 
      * The sum of proportions must be less than or equal to 1.0
      * 
@@ -124,6 +127,7 @@ public class Splitter {
 	 * 
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table} or splits array provided as parameters are {@code null}
 	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0
+	 * @throws InvalidValueException if any proportion is not within interval [0,1]
 	 */
 	public static List<InformationTable> stratifiedSplit(InformationTableWithDecisionDistributions informationTable, double... splits) {
 		return stratifiedSplit(informationTable, false, splits);
@@ -142,7 +146,7 @@ public class Splitter {
 	 *        at the cost of returning read-only information tables, or should return safe information tables (which may be modified),
 	 *        at the cost of returning the result slower
 	 * @param splits an array with proportions, where the length is the number of {@link InformationTable information tables} to
-     * construct; each value, in this array, is a proportion (fraction) of objects from the {@link InformationTable information table} 
+     * construct; each value, in this array, is a proportion (fraction in interval (0, 1)) of objects from the {@link InformationTable information table} 
      * passed as a parameter, which will be selected to respective constructed {@link InformationTable information sub-table}; 
      * The sum of proportions must be less than or equal to 1.0
      * 
@@ -151,6 +155,7 @@ public class Splitter {
 	 * 
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table} or splits array provided as parameters are {@code null}
 	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0
+	 * @throws InvalidValueException if any proportion is not within interval [0,1]
 	 */
 	public static List<InformationTable> stratifiedSplit(InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, double... splits) {
 		Precondition.notNull(informationTable, "Information table provided to split is null.");
@@ -207,7 +212,7 @@ public class Splitter {
 	 * @param informationTable {@link InformationTable information table} which will be split into sub tables
 	 * @param random the source of randomness
 	 * @param splits an array with proportions, where the length is the number of {@link InformationTable information tables} to
-     * construct; each value, in this array, is a proportion (fraction) of objects from the {@link InformationTable information table} 
+     * construct; each value, in this array, is a proportion (fraction in interval (0, 1)) of objects from the {@link InformationTable information table} 
      * passed as a parameter, which will be selected to respective constructed {@link InformationTable information sub-table}; 
      * The sum of proportions must be less than or equal to 1.0
      * 
@@ -217,6 +222,7 @@ public class Splitter {
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table}, splits array or source of randomness 
 	 * provided as parameters are {@code null}
 	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0
+	 * @throws InvalidValueException if any proportion is not within interval [0,1]
 	 */
 	public static List<InformationTable> randomSplit(InformationTable informationTable, Random random, double... splits) {
 		return randomSplit(informationTable, false, random, splits);
@@ -232,7 +238,7 @@ public class Splitter {
 	 *        at the cost of returning read-only information tables, or should return safe information tables (which may be modified),
 	 *        at the cost of returning the result slower
 	 * @param splits an array with proportions, where the length is the number of {@link InformationTable information tables} to
-     * construct; each value, in this array, is a proportion (fraction) of objects from the {@link InformationTable information table} 
+     * construct; each value, in this array, is a proportion (fraction in interval (0, 1)) of objects from the {@link InformationTable information table} 
      * passed as a parameter, which will be selected to respective constructed {@link InformationTable information sub-table}; 
      * The sum of proportions must be less than or equal to 1.0
      * 
@@ -242,6 +248,7 @@ public class Splitter {
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table}, splits array or source of randomness 
 	 * provided as parameters are {@code null}
 	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0
+	 * @throws InvalidValueException if any proportion is not within interval [0,1]
 	 */
 	public static List<InformationTable> randomSplit(InformationTable informationTable, boolean accelerateByReadOnlyResult, Random random, double... splits) {
 		Precondition.notNull(informationTable, "Information table provided to split is null.");
@@ -276,7 +283,7 @@ public class Splitter {
 	 * @param informationTable {@link InformationTable information table} which will be split into sub tables
 	 * @param random the source of randomness
 	 * @param splits an array with proportions, where the length is the number of {@link InformationTable information tables} to
-     * construct; each value, in this array, is a proportion (fraction) of objects from the {@link InformationTable information table} 
+     * construct; each value, in this array, is a proportion (fraction in interval (0, 1)) of objects from the {@link InformationTable information table} 
      * passed as a parameter, which will be selected to respective constructed {@link InformationTable information sub-table}; 
      * The sum of proportions must be less than or equal to 1.0
      * 
@@ -286,6 +293,7 @@ public class Splitter {
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table}, splits array or source of randomness
 	 * provided as parameters are {@code null}
 	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0
+	 * @throws InvalidValueException if any proportion is not within interval [0,1]
 	 */
 	public static List<InformationTable> randomStratifiedSplit(InformationTableWithDecisionDistributions informationTable, Random random, double... splits) {
 		return randomStratifiedSplit(informationTable, false, random, splits);
@@ -302,7 +310,7 @@ public class Splitter {
 	 *        at the cost of returning the result slower
 	 * @param random the source of randomness
 	 * @param splits an array with proportions, where the length is the number of {@link InformationTable information tables} to
-     * construct; each value, in this array, is a proportion (fraction) of objects from the {@link InformationTable information table} 
+     * construct; each value, in this array, is a proportion (fraction in interval (0, 1)) of objects from the {@link InformationTable information table} 
      * passed as a parameter, which will be selected to respective constructed {@link InformationTable information sub-table}; 
      * The sum of proportions must be less than or equal to 1.0
      * 
@@ -312,6 +320,7 @@ public class Splitter {
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table}, splits array or source of randomness
 	 * provided as parameters are {@code null}
 	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0
+	 * @throws InvalidValueException if any proportion is not within interval [0,1]
 	 */
 	public static List<InformationTable> randomStratifiedSplit(InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, Random random, double... splits) {
 		Precondition.notNull(informationTable, "Information table provided to split is null.");
@@ -368,9 +377,10 @@ public class Splitter {
 	/**
 	 * Checks array with proportions - i.e., it should have not less than 2 elements and sum of its elements should be less than or equal to 1.0.
 	 * 
-	 * @param proportions an array with proportions
+	 * @param proportions an array with proportions in range [0, 1]
      * 
      * @throws IllegalArgumentException when size of array with proportions is lower than 2 or sum of proportions is greater than 1.0
+     * @throws InvalidValueException if any proportion is not within interval [0,1]
 	 */
 	static void checkProportionsArray (double... proportions) {
 		if(proportions.length < 2)
@@ -378,7 +388,7 @@ public class Splitter {
 		
         double sum = 0;
         for(int i = 0; i < proportions.length; i++) {
-            sum += proportions[i];
+        	sum += Precondition.within01Interval(proportions[i], "At least one proportion is not in interval [0, 1].");
             // check whether fractions sum up to 1 (with some flexibility) in case of numeric approximation errors
             if(sum >= 1.0001) {
                 throw new IllegalArgumentException("Sum of proportions is greater than 1.0 by index " + i + ", and it is reaching value " + sum);

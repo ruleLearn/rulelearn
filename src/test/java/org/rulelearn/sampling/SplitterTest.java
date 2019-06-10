@@ -23,6 +23,7 @@ import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.AttributePreferenceType;
@@ -105,6 +106,7 @@ class SplitterTest {
 		assertThrows(IllegalArgumentException.class, () -> {Splitter.split(informationTable, new double [] {});});
 		assertThrows(IllegalArgumentException.class, () -> {Splitter.split(informationTable, new double [] {0.1});});
 		assertThrows(IllegalArgumentException.class, () -> {Splitter.split(informationTable, new double [] {0.1, 1.0});});
+		assertThrows(InvalidValueException.class, () -> {Splitter.split(informationTable, new double [] {-0.1, 0.01});});
 	}
 
 	/**
@@ -143,6 +145,7 @@ class SplitterTest {
 		assertThrows(IllegalArgumentException.class, () -> {Splitter.stratifiedSplit(informationTable, new double [] {});});
 		assertThrows(IllegalArgumentException.class, () -> {Splitter.stratifiedSplit(informationTable, new double [] {0.1});});
 		assertThrows(IllegalArgumentException.class, () -> {Splitter.stratifiedSplit(informationTable, new double [] {0.1, 1.0});});
+		assertThrows(InvalidValueException.class, () -> {Splitter.stratifiedSplit(informationTable, new double [] {-0.1, 0.01});});
 	}
 	
 	/**
@@ -214,6 +217,7 @@ class SplitterTest {
 		assertThrows(IllegalArgumentException.class, () -> {Splitter.randomSplit(informationTable, new Random(), new double [] {});});
 		assertThrows(IllegalArgumentException.class, () -> {Splitter.randomSplit(informationTable, new Random(), new double [] {0.1});});
 		assertThrows(IllegalArgumentException.class, () -> {Splitter.randomSplit(informationTable, new Random(), new double [] {0.1, 1.0});});
+		assertThrows(InvalidValueException.class, () -> {Splitter.randomSplit(informationTable, new Random(), new double [] {-0.1, 0.01});});
 	}
 	
 	/**
@@ -257,6 +261,7 @@ class SplitterTest {
 		assertThrows(IllegalArgumentException.class, () -> {Splitter.randomStratifiedSplit(informationTable, new Random(), new double [] {});});
 		assertThrows(IllegalArgumentException.class, () -> {Splitter.randomStratifiedSplit(informationTable, new Random(), new double [] {0.1});});
 		assertThrows(IllegalArgumentException.class, () -> {Splitter.randomStratifiedSplit(informationTable, new Random(), new double [] {0.1, 1.0});});
+		assertThrows(InvalidValueException.class, () -> {Splitter.randomStratifiedSplit(informationTable, new Random(), new double [] {-0.1, 0.01});});
 	}
 	
 	/**
