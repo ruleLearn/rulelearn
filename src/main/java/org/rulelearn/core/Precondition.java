@@ -244,7 +244,7 @@ public final class Precondition {
 	 * @throws InvalidValueException if given number is not within interval [0,1]
 	 */
 	public static double within01Interval(double number, String errorMsg) {
-		if (number < 0 || number > 1) {
+		if (number < 0.0 || number > 1.0) {
 			throw new InvalidValueException(errorMsg);
 		}
 		return number;
@@ -260,10 +260,44 @@ public final class Precondition {
 	 * @throws InvalidValueException if given number is not within interval [-1,1]
 	 */
 	public static double withinMinus1Plus1Interval(double number, String errorMsg) {
-		if (number < -1 || number > 1) {
+		if (number < -1.0 || number > 1.0) {
 			throw new InvalidValueException(errorMsg);
 		}
 		return number;
+	}
+	
+	/**
+	 * Verifies if given numbers are equal.
+	 * 
+	 * @param number1 first number to verify
+	 * @param number2 second number to verify
+	 * @param errorMsg error message of the thrown {@link InvalidValueException}, used when given numbers are not equal
+	 * @return the equal number provided that both numbers are equal
+	 * 
+	 * @throws InvalidValueException if given numbers are not equal
+	 */
+	public static int equal(int number1, int number2, String errorMsg) {
+		if (number1 != number2) {
+			throw new InvalidValueException(errorMsg);
+		}
+		return number1;
+	}
+	
+	/**
+	 * Verifies if given numbers are equal.
+	 * 
+	 * @param number1 first number to verify
+	 * @param number2 second number to verify
+	 * @param errorMsg error message of the thrown {@link InvalidValueException}, used when given numbers are not equal
+	 * @return the equal number provided that both numbers are equal
+	 * 
+	 * @throws InvalidValueException if given numbers are not equal
+	 */
+	public static double equal(double number1, double number2, String errorMsg) {
+		if (number1 != number2) {
+			throw new InvalidValueException(errorMsg);
+		}
+		return number1;
 	}
 	
 	/**

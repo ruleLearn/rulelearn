@@ -157,10 +157,15 @@ public class InformationTable {
 		this.activeConditionAttributeFields = activeConditionAttributeFields;
 		this.notActiveOrDescriptionAttributeFields = notActiveOrDescriptionAttributeFields;
 		
-		this.decisions = accelerateByReadOnlyParams ? decisions : decisions.clone();
-//		this.activeDecisionAttributeIndex = activeDecisionAttributeIndex;
-		
-		this.activeIdentificationAttributeFields = accelerateByReadOnlyParams ? activeIdentificationAttributeFields : activeIdentificationAttributeFields.clone();
+		// decisions not always must be set in the information table (i.e., they may be null)
+		this.decisions = accelerateByReadOnlyParams ? decisions : ( (decisions == null) ? null : decisions.clone() );
+		/* depreciated
+		 this.activeDecisionAttributeIndex = activeDecisionAttributeIndex;
+		*/
+
+		// active identification fields not always must be set in the information table (i.e., they may be null)
+		this.activeIdentificationAttributeFields = accelerateByReadOnlyParams ? activeIdentificationAttributeFields : 
+			( (activeIdentificationAttributeFields == null) ? null : activeIdentificationAttributeFields.clone() );
 		this.activeIdentificationAttributeIndex = activeIdentificationAttributeIndex;
 		
 		this.attributeMap = accelerateByReadOnlyParams ? attributeMap : attributeMap.clone();
