@@ -25,17 +25,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.UUID;
 
+import org.rulelearn.core.FieldParseException;
 import org.rulelearn.data.json.AttributeDeserializer;
-import org.rulelearn.types.ElementList;
-import org.rulelearn.types.EnumerationField;
-import org.rulelearn.types.EnumerationFieldFactory;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
 import org.rulelearn.types.IdentificationField;
-import org.rulelearn.types.IntegerField;
-import org.rulelearn.types.IntegerFieldFactory;
-import org.rulelearn.types.RealField;
-import org.rulelearn.types.RealFieldFactory;
+import org.rulelearn.types.SimpleField;
 import org.rulelearn.types.TextIdentificationField;
 import org.rulelearn.types.UUIDIdentificationField;
 
@@ -142,7 +137,7 @@ public class InformationTableBuilder {
 	 * @param missingValueStrings array of string representations of missing values
 	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or strings representing missing values have not been set 
 	 */
-	public InformationTableBuilder(Attribute[] attributes, String [] missingValueStrings) {
+	public InformationTableBuilder(Attribute[] attributes, String[] missingValueStrings) {
 		this(attributes);
 		notNull(missingValueStrings, "Missing value strings array is null.");
 		this.missingValueStrings = missingValueStrings;
@@ -156,7 +151,7 @@ public class InformationTableBuilder {
 	 * @param missingValueStrings array of string representations of missing values
 	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or sparator, and/or strings representing missing values have not been set
 	 */
-	public InformationTableBuilder(Attribute[] attributes, String separator, String [] missingValueStrings) {
+	public InformationTableBuilder(Attribute[] attributes, String separator, String[] missingValueStrings) {
 		this(attributes, separator);
 		notNull(missingValueStrings, "Missing value strings array is null.");
 		this.missingValueStrings = missingValueStrings;
@@ -212,93 +207,103 @@ public class InformationTableBuilder {
 	}
 	
 	/**
-	 * Parses one object's evaluation and transforms it into a field {@link EvaluationField}.
+	 * Parses one object's evaluation and transforms it into an {@link EvaluationField evaluation field}.
 	 * 
 	 * @param evaluation text-encoded object's evaluation
 	 * @param attribute whose value should be parsed
 	 * 
 	 * @return constructed field
-	 * @throws NumberFormatException if evaluation of a numeric attribute can't be parsed
+	 * 
+	 * @throws FieldParseException if given string cannot be parsed as a value of the given attribute
 	 * @throws IndexOutOfBoundsException if evaluation of an enumeration attribute can't be parsed  
 	 */
 	protected EvaluationField parseEvaluation(String evaluation, EvaluationAttribute attribute) throws NumberFormatException, IndexOutOfBoundsException {
 		EvaluationField field = null;
-		boolean missingValue = false;
+		boolean missingSimpleField = false;
 	
 		// get rid of white spaces
 		evaluation = trimConversion.execute(evaluation);
-		// check whether it is a missing value
-		if (missingValueStrings != null) {
+		
+		// check whether given string represent a missing value of a simple field
+		if (attribute.getValueType() instanceof SimpleField && missingValueStrings != null) { //single missing value is of interest only for a simple field
 			for (String missingValueString : this.missingValueStrings) {
 				if ((missingValueString != null) && (missingValueString.equalsIgnoreCase(evaluation))) {
-					missingValue = true;
+					missingSimpleField = true;
 					break;
 				}
 			}
 		}
 		
-		if (!missingValue) {
-			EvaluationField valueType = attribute.getValueType(); 
-			if (valueType instanceof IntegerField) {
-				try {
-					field = IntegerFieldFactory.getInstance().create(Integer.parseInt(evaluation), attribute.preferenceType);
-				}
-				catch (NumberFormatException ex) {
-					// just assign a reference (no new copy of missing value field is made)
-					field = attribute.getMissingValueType();
-					throw new NumberFormatException(ex.getMessage());
-				}
+		if (!missingSimpleField) { //simple field without missing value or not a simple field
+			try {
+				field = attribute.getValueType().getCachingFactory().createWithVolatileCache(evaluation, attribute); //MSz
 			}
-			else if (valueType instanceof RealField) {
-				try {
-					field = RealFieldFactory.getInstance().create(Double.parseDouble(evaluation), attribute.preferenceType);
-				}
-				catch (NumberFormatException ex) {
-					// just assign a reference (no new copy of missing value field is made)
-					field = attribute.getMissingValueType();
-					throw new NumberFormatException(ex.getMessage());
-				}
+			catch (FieldParseException exception) {
+				throw exception;
 			}
-			else if (valueType instanceof EnumerationField) {
-				// TODO some optimization is needed here (e.g., construction of a table with element lists)
-				int index = ((EnumerationField)valueType).getElementList().getIndex(evaluation);
-				if (index != ElementList.DEFAULT_INDEX) {
-					field = EnumerationFieldFactory.getInstance().create(((EnumerationField)valueType).getElementList(), index, attribute.preferenceType);
-				}
-				else {
-					field = attribute.getMissingValueType();
-					throw new IndexOutOfBoundsException(new StringBuilder("Incorrect value of enumeration: ").append(evaluation).append(" was replaced by a missing value.").toString());
-				}
-					
-			}
-			else {
-				// just assign a reference (no new copy of missing value field is made) 
-				field = attribute.getMissingValueType();
-			}
+			
+//			if (valueType instanceof IntegerField) {
+//				try {
+//					field = IntegerFieldFactory.getInstance().create(Integer.parseInt(evaluation), attribute.getPreferenceType());
+//				}
+//				catch (NumberFormatException ex) {
+//					// just assign a reference (no new copy of missing value field is made)
+//					field = attribute.getMissingValueType();
+//					throw new NumberFormatException(ex.getMessage());
+//				}
+//			}
+//			else if (valueType instanceof RealField) {
+//				try {
+//					field = RealFieldFactory.getInstance().create(Double.parseDouble(evaluation), attribute.getPreferenceType());
+//				}
+//				catch (NumberFormatException ex) {
+//					// just assign a reference (no new copy of missing value field is made)
+//					field = attribute.getMissingValueType();
+//					throw new NumberFormatException(ex.getMessage());
+//				}
+//			}
+//			else if (valueType instanceof EnumerationField) {
+//				int index = ((EnumerationField)valueType).getElementList().getIndex(evaluation);
+//				if (index != ElementList.DEFAULT_INDEX) {
+//					field = EnumerationFieldFactory.getInstance().create(((EnumerationField)valueType).getElementList(), index, attribute.getPreferenceType());
+//				}
+//				else {
+//					field = attribute.getMissingValueType();
+//					throw new IndexOutOfBoundsException(new StringBuilder("Incorrect value of enumeration: ").append(evaluation).append(" was replaced by a missing value.").toString());
+//				}
+//					
+//			}
+//			else {
+//				// just assign a reference (no new copy of missing value field is made) 
+//				field = attribute.getMissingValueType();
+//			}
 		}
 		else {
-			// just assign a reference (no new copy of missing value field is made) 
-			field = attribute.getMissingValueType();
+			//field = attribute.getMissingValueType(); //does not work for a pair field...
+			field = attribute.getValueType().getUnknownEvaluation(attribute.getMissingValueType());
 		}
 		
 		return field;
 	}
 	
 	/**
-	 * Parses one object's identification and transforms it into a field {@link IdentificationField}.
+	 * Parses one object's identification and transforms it into an {@link IdentificationField identification field}.
 	 * 
 	 * @param identification text-encoded object's identification
 	 * @param attribute whose value should be parsed
 	 * 
 	 * @return constructed field
+	 * 
+	 * @throws FieldParseException if given string cannot be parsed as a value of given identification attribute;
+	 *         this exception concerns only attributes with {@link UUIDIdentificationField} value type 
 	 */
 	protected IdentificationField parseIdentification(String identification, IdentificationAttribute attribute) {
 		IdentificationField field = null;
 		boolean missingValue = false;
-	
-		
+
 		// get rid of white spaces
 		identification = trimConversion.execute(identification);
+		
 		// check whether it is a missing value
 		if (missingValueStrings != null) {
 			for (String missingValueString : this.missingValueStrings) {
@@ -311,8 +316,12 @@ public class InformationTableBuilder {
 		
 		// assign according to value type
 		if (attribute.getValueType() instanceof UUIDIdentificationField) {
-			field = (missingValue ?
-				new UUIDIdentificationField(UUIDIdentificationField.DEFAULT_VALUE) : new UUIDIdentificationField(UUID.fromString(identification))); 			
+			try {
+				field = (missingValue ?
+						new UUIDIdentificationField(UUIDIdentificationField.DEFAULT_VALUE) : new UUIDIdentificationField(UUID.fromString(identification)));
+			} catch (IllegalArgumentException exception) {
+				throw new FieldParseException("Cannot parse given string as an UUID.");
+			}
 		}
 		else {
 			field = (missingValue ?
@@ -469,7 +478,13 @@ public class InformationTableBuilder {
 				informationTableBuilder = new InformationTableBuilder(attributes, new String[] {org.rulelearn.data.csv.ObjectBuilder.DEFAULT_MISSING_VALUE_STRING});
 				if (objects != null) {
 					for (int i = 0; i < objects.size(); i++) {
-						informationTableBuilder.addObject(objects.get(i));
+						informationTableBuilder.addObject(objects.get(i)); //uses volatile caches
+					}
+					//clear volatile caches of all used evaluation field caching factories
+					for (int i = 0; i < informationTableBuilder.attributes.length; i++) {
+						if (informationTableBuilder.attributes[i] instanceof EvaluationAttribute) {
+							((EvaluationAttribute)informationTableBuilder.attributes[i]).getValueType().getCachingFactory().clearVolatileCache();
+						}
 					}
 				}
 			}
@@ -540,7 +555,13 @@ public class InformationTableBuilder {
 				informationTableBuilder = new InformationTableBuilder(attributes, new String[] {org.rulelearn.data.json.ObjectBuilder.DEFAULT_MISSING_VALUE_STRING});
 				if (objects != null) {
 					for (int i = 0; i < objects.size(); i++) {
-						informationTableBuilder.addObject(objects.get(i));
+						informationTableBuilder.addObject(objects.get(i)); //uses volatile cache
+					}
+					//clear volatile caches of all used evaluation field caching factories
+					for (int i = 0; i < informationTableBuilder.attributes.length; i++) {
+						if (informationTableBuilder.attributes[i] instanceof EvaluationAttribute) {
+							((EvaluationAttribute)informationTableBuilder.attributes[i]).getValueType().getCachingFactory().clearVolatileCache();
+						}
 					}
 				}
 			}

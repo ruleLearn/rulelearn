@@ -137,4 +137,35 @@ public abstract class IntegerField extends KnownSimpleField {
 		return calculator.calculate(this, otherField);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public IntegerFieldFactory getDefaultFactory() {
+		return IntegerFieldFactory.getInstance();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public IntegerFieldCachingFactory getCachingFactory() {
+		return IntegerFieldCachingFactory.getInstance();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * Just returns the given parameter.
+	 * 
+	 * @param missingValueType {@inheritDoc}
+	 * @return {@inheritDoc}
+	 */
+	public UnknownSimpleField getUnknownEvaluation(UnknownSimpleField missingValueType) {
+		return missingValueType;
+	}
+	
 }

@@ -18,6 +18,10 @@ package org.rulelearn.types;
 
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.EvaluationAttribute;
+import org.rulelearn.core.FieldParseException;
+import org.rulelearn.core.InvalidTypeException;
+import org.rulelearn.core.Precondition;
 
 /**
  * Factory for {@link EnumerationField}, employing abstract factory and singleton design patterns.
@@ -26,7 +30,7 @@ import org.rulelearn.data.AttributePreferenceType;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
  */
-public class EnumerationFieldFactory {
+public class EnumerationFieldFactory implements EvaluationFieldFactory {
 	/**
 	 * The only instance of this factory.
 	 */
@@ -50,16 +54,19 @@ public class EnumerationFieldFactory {
 	private EnumerationFieldFactory() {}
 	
 	/**
-	 * Factory method for creating an instance of {@link EnumerationField}.
+	 * Factory method for constructing an instance of {@link EnumerationField}.
 	 * 
-	 * @param list element list of the created field
+	 * @param list element list of the constructed field
 	 * @param index position in the element list of enumeration which represents value of the field
 	 * @param preferenceType preference type of the attribute that the field value refers to
 	 * 
-	 * @return created field
+	 * @return constructed field
+	 * 
+	 * @throws NullPointerException if given list or attribute's preference type is {@code null}
+	 * @throws IndexOutOfBoundsException if given index is incorrect (i.e., does not match any position of given element list)
 	 */
 	public EnumerationField create(ElementList list, int index, AttributePreferenceType preferenceType) {
-		switch (preferenceType) {
+		switch (Precondition.notNull(preferenceType, "Attribute's preference type is null.")) {
 			case NONE: return new NoneEnumerationField(list, index);
 			case GAIN: return new GainEnumerationField(list, index);
 			case COST: return new CostEnumerationField(list, index);
@@ -72,6 +79,8 @@ public class EnumerationFieldFactory {
 	 * 
 	 * @param field field to be cloned
 	 * @return cloned field
+	 * 
+	 * @throws NullPointerException if given field is {@code null}
 	 */
 	public EnumerationField clone (EnumerationField field) {
 		return field.selfClone();
@@ -89,13 +98,16 @@ public class EnumerationFieldFactory {
 		 * 
 		 * @param set element set of the created field
 		 * @param index position in the element set of enumeration which represents value of the field
+		 * 
+		 * @throws IndexOutOfBoundsException if index is incorrect
+		 * @throws NullPointerException if given list is {@code null}
 		 */
 		public NoneEnumerationField(ElementList list, int index) {
 			super(list, index);
 		}
 		
 		@Override
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("unchecked") //unfortunately the following implementation causes a warning by javac
 		public <S extends Field> S selfClone() {
 			return (S)new NoneEnumerationField(this.list, this.value);
 		}
@@ -169,6 +181,9 @@ public class EnumerationFieldFactory {
 		 * 
 		 * @param set element set of the created field
 		 * @param index position in the element set of enumeration which represents value of the field
+		 * 
+		 * @throws IndexOutOfBoundsException if index is incorrect
+		 * @throws NullPointerException if given list is {@code null}
 		 */
 		public GainEnumerationField(ElementList list, int index){
 			super(list, index);
@@ -259,6 +274,9 @@ public class EnumerationFieldFactory {
 		 * 
 		 * @param set element set of the created field
 		 * @param index position in the element set of enumeration which represents value of the field
+		 * 
+		 * @throws IndexOutOfBoundsException if index is incorrect
+		 * @throws NullPointerException if given list is {@code null}
 		 */
 		public CostEnumerationField(ElementList list, int index){
 			super(list, index);
@@ -336,4 +354,34 @@ public class EnumerationFieldFactory {
 			return AttributePreferenceType.COST;
 		}
 	}
+
+	/**
+	 * Constructs enumeration field from its textual representation.
+	 * 
+	 * @param value textual representation of an enumeration field
+	 * @param attribute {@inheritDoc}
+	 *  
+	 * @return {@inheritDoc}
+	 * 
+	 * @throws FieldParseException if given value is not present in given attribute's domain
+	 * @throws NullPointerException {@inheritDoc}
+	 * @throws InvalidTypeException {@inheritDoc} 
+	 */
+	@Override
+	public EnumerationField create(String value, EvaluationAttribute attribute) {
+		Precondition.notNull(attribute, "Attribute used to construct enumeration field is null.");
+		if (!(attribute.getValueType() instanceof EnumerationField)) {
+			throw new InvalidTypeException("Attribute's value type is not an instance of enumeration field.");
+		}
+		
+		// TODO some optimization is needed here (e.g., construction of a table with element lists)
+		int index = ((EnumerationField)attribute.getValueType()).getElementList().getIndex(value);
+		if (index != ElementList.DEFAULT_INDEX) {
+			return create(((EnumerationField)attribute.getValueType()).getElementList(), index, attribute.getPreferenceType());
+		}
+		else {
+			throw new FieldParseException(new StringBuilder("Incorrect value of enumeration attribute: ").append(value).toString());
+		}
+	}
+	
 }

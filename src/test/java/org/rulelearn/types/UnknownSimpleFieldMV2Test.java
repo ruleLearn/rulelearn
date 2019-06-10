@@ -21,9 +21,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.EvaluationAttribute;
 
 /**
  * Tests for {@link UnknownSimpleFieldMV2}.
@@ -243,6 +246,8 @@ class UnknownSimpleFieldMV2Test {
 		Field clonedField = mvField.selfClone();
 		
 		assertTrue(clonedField instanceof UnknownSimpleFieldMV2);
+		
+		assertEquals(mvField, clonedField);
 	}
 	
 	/**
@@ -307,6 +312,67 @@ class UnknownSimpleFieldMV2Test {
 	@Test
 	public void testEqualWhenReverseComparedToAnyEvaluation() {
 		assertEquals(new UnknownSimpleFieldMV2().equalWhenReverseComparedToAnyEvaluation(), true);
+	}
+	
+	/**
+	 * Tests {@link UnknownSimpleFieldMV2#getInstance()} static method.
+	 */
+	@Test
+	public void testGetInstance() {
+		UnknownSimpleField field = UnknownSimpleFieldMV2.getInstance();
+		assertSame(field, UnknownSimpleFieldMV2.getInstance());
+	}
+	
+	/**
+	 * Test {@link UnknownSimpleFieldMV2.UnknownSimpleFieldMV2Factory#create(String, EvaluationAttribute)}.
+	 */
+	@Test
+	public void testFactory() {
+		UnknownSimpleFieldMV2.UnknownSimpleFieldMV2Factory factory = UnknownSimpleFieldMV2.UnknownSimpleFieldMV2Factory.getInstance();
+		assertSame(factory, UnknownSimpleFieldMV2.UnknownSimpleFieldMV2Factory.getInstance()); //test if factory is a singleton
+		
+		EvaluationAttribute attributeMock = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock.getMissingValueType()).thenReturn(UnknownSimpleFieldMV2.getInstance());
+		
+		//test if factory retrieves the only instance of unknown field
+		assertSame(UnknownSimpleFieldMV2.getInstance(), UnknownSimpleFieldMV2.UnknownSimpleFieldMV2Factory.getInstance().create(null, attributeMock));
+	}
+	
+	/**
+	 * Test for methods of {@link UnknownSimpleFieldMV2.UnknownSimpleFieldMV2CachingFactory} class.
+	 */
+	@Test
+	public void testCachingFactory() {
+		UnknownSimpleFieldMV2.UnknownSimpleFieldMV2CachingFactory factory = UnknownSimpleFieldMV2.UnknownSimpleFieldMV2CachingFactory.getInstance();
+		assertSame(factory, UnknownSimpleFieldMV2.UnknownSimpleFieldMV2CachingFactory.getInstance()); //test if factory is a singleton
+		
+		EvaluationAttribute attributeMock = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock.getMissingValueType()).thenReturn(UnknownSimpleFieldMV2.getInstance());
+		
+		//test if factory retrieves the only instance of unknown field
+		assertSame(UnknownSimpleFieldMV2.getInstance(), UnknownSimpleFieldMV2.UnknownSimpleFieldMV2CachingFactory.getInstance().createWithPersistentCache("", attributeMock));
+		assertSame(UnknownSimpleFieldMV2.getInstance(), UnknownSimpleFieldMV2.UnknownSimpleFieldMV2CachingFactory.getInstance().createWithVolatileCache("", attributeMock));
+		
+		assertEquals(UnknownSimpleFieldMV2.UnknownSimpleFieldMV2CachingFactory.getInstance().getPersistentCacheSize(), 1);
+		assertEquals(UnknownSimpleFieldMV2.UnknownSimpleFieldMV2CachingFactory.getInstance().getVolatileCacheSize(), 0);
+		assertEquals(UnknownSimpleFieldMV2.UnknownSimpleFieldMV2CachingFactory.getInstance().clearVolatileCache(), 0);
+		
+		EvaluationAttribute attributeMock2 = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attributeMock2.getMissingValueType()).thenReturn(UnknownSimpleFieldMV15.getInstance()); //incompatible MV type
+		
+		try {
+			UnknownSimpleFieldMV2.UnknownSimpleFieldMV2CachingFactory.getInstance().createWithPersistentCache(null, attributeMock2);
+			fail("Should not create instance of UnknownSimpleFieldMV2.");
+		} catch (InvalidTypeException exception) {
+			//OK
+		}
+		
+		try {
+			UnknownSimpleFieldMV2.UnknownSimpleFieldMV2CachingFactory.getInstance().createWithVolatileCache(null, attributeMock2);
+			fail("Should not create instance of UnknownSimpleFieldMV2.");
+		} catch (InvalidTypeException exception) {
+			//OK
+		}
 	}
 	
 }

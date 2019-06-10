@@ -55,16 +55,23 @@ public abstract class EnumerationField extends KnownSimpleField {
 	 * 
 	 * @param list element list of the created field
 	 * @param index position in the element list of enumeration which represents value of the field
-	 * @throws IndexOutOfBoundsException when list is null and/or index is incorrect 
+	 * 
+	 * @throws IndexOutOfBoundsException if index is incorrect
+	 * @throws NullPointerException if given list is {@code null}
 	 */
 	protected EnumerationField(ElementList list, int index) throws IndexOutOfBoundsException {
 		if (list != null) {
 			this.list = list;
-			if ((index >= 0) && (index < this.list.getSize()))
+			if ((index >= 0) && (index < this.list.getSize())) {
 				this.value = index;
-			else throw new IndexOutOfBoundsException();
+			}
+			else {
+				throw new IndexOutOfBoundsException();
+			}
 		}
-		else throw new IndexOutOfBoundsException();
+		else {
+			throw new NullPointerException("List of enumeration values is null.");
+		}
 	}
 	
 	/**
@@ -189,4 +196,36 @@ public abstract class EnumerationField extends KnownSimpleField {
 	public EvaluationField calculate(EvaluationFieldCalculator calculator, EvaluationField otherField) {
 		return calculator.calculate(this, otherField);
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public EnumerationFieldFactory getDefaultFactory() {
+		return EnumerationFieldFactory.getInstance();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public EnumerationFieldCachingFactory getCachingFactory() {
+		return EnumerationFieldCachingFactory.getInstance();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * Just returns the given parameter.
+	 * 
+	 * @param missingValueType {@inheritDoc}
+	 * @return {@inheritDoc}
+	 */
+	public UnknownSimpleField getUnknownEvaluation(UnknownSimpleField missingValueType) {
+		return missingValueType;
+	}
+	
 }

@@ -18,7 +18,11 @@ package org.rulelearn.types;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.rulelearn.core.FieldParseException;
+import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.EvaluationAttribute;
 
 /**
  * Tests for {@link IntegerFieldFactory}.
@@ -59,6 +63,78 @@ class IntegerFieldFactoryTest {
 		IntegerField field = IntegerFieldFactory.getInstance().create(value, AttributePreferenceType.COST);
 		
 		assertEquals(field.getValue(), value);
+	}
+	
+	/**
+	 * Tests creation of integer field from text {@link IntegerFieldFactory#create(String, EvaluationAttribute)}.
+	 * Tests incorrect textual representation of an integer number.
+	 */
+	@Test
+	public void testCreateFromString01() {
+		String value = "a";
+		EvaluationAttribute attribute = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attribute.getValueType()).thenReturn(Mockito.mock(IntegerField.class));
+		Mockito.when(attribute.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
+		
+		try {
+			IntegerFieldFactory.getInstance().create(value, attribute);
+			fail("Incorrect text should not be parsed as an integer value.");
+		} catch (FieldParseException exception) {
+			//OK
+		}
+
+	}
+	
+	/**
+	 * Tests creation of integer field from text {@link IntegerFieldFactory#create(String, EvaluationAttribute)}.
+	 * Tests correct textual representation of an integer number and {@code null} attribute.
+	 */
+	@Test
+	public void testCreateFromString02() {
+		try {
+			IntegerFieldFactory.getInstance().create("1", null);
+			fail("Should not parse text as an integer number for null attribute.");
+		} catch (NullPointerException exception) {
+			//OK
+		}
+
+	}
+	
+	/**
+	 * Tests creation of integer field from text {@link IntegerFieldFactory#create(String, EvaluationAttribute)}.
+	 * Tests correct textual representation of an integer number and attribute with wrong {@link EvaluationAttribute#getValueType() value type}.
+	 */
+	@Test
+	public void testCreateFromString03() {
+		String value = "1";
+		EvaluationAttribute attribute = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attribute.getValueType()).thenReturn(Mockito.mock(RealField.class)); //deliberately wrong value type
+		Mockito.when(attribute.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
+		
+		try {
+			IntegerFieldFactory.getInstance().create(value, attribute);
+			fail("Should not create field for an attribute with incompatible value type.");
+		} catch (InvalidTypeException exception) {
+			//OK
+		}
+
+	}
+	
+	/**
+	 * Tests creation of integer field from text {@link IntegerFieldFactory#create(String, EvaluationAttribute)}.
+	 * Tests correct textual representation of an integer number and non-null attribute.
+	 */
+	@Test
+	public void testCreateFromString04() {
+		String value = "-1";
+		int parsedValue = Integer.valueOf(value);
+		EvaluationAttribute attribute = Mockito.mock(EvaluationAttribute.class);
+		Mockito.when(attribute.getValueType()).thenReturn(Mockito.mock(IntegerField.class));
+		Mockito.when(attribute.getPreferenceType()).thenReturn(AttributePreferenceType.GAIN);
+		
+		IntegerField field = IntegerFieldFactory.getInstance().create(value, attribute);
+		
+		assertEquals(field.getValue(), parsedValue);
 	}
 
 	/**

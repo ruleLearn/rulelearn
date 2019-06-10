@@ -17,25 +17,24 @@
 package org.rulelearn.core;
 
 /**
- * Exception thrown when semantically uncomparable objects of the same type are requested to be compared.
- * Such situation may occur, e.g., when comparing two fields of type {@link org.rulelearn.types.PairField} in an information table.
+ * Exception thrown when an information table field cannot be parsed from its textual representation.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class UncomparableException extends Exception {
+public class FieldParseException extends RuntimeException {
 
 	/**
 	 * Generated serial version UID.
 	 */
-	private static final long serialVersionUID = -5460524209459293416L;
-
+	private static final long serialVersionUID = -3533826749343589378L;
+	
 	/**
-	 * Constructs an exception with message of failure reason.
+	 * Constructs this exception with given message of failure reason.
 	 * 
 	 * @param message message of this exception
 	 */
-	public UncomparableException(String message) {
+	public FieldParseException(String message) {
 		super(message);
 	}
 

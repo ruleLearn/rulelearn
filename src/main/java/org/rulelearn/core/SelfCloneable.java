@@ -28,10 +28,18 @@ public interface SelfCloneable<T> {
 	
 	/**
 	 * Clones this object. Type (class) of the returned clone is defined by the implementing class.
-	 * It should be exactly that class.
+	 * It should be exactly that class.<br>
+	 * <br>
+	 * This method should be used with caution as internally it casts cloned object to requested return type {@code S}
+	 * (determined by the declared type of the variable that the result is assigned to).
+	 * This works if {@code S} is the same type as the runtime type of cloned object, or if it is its supertype.
+	 * Otherwise, {@link ClassCastException} will be thrown. Therefore, it is recommended that the type of the variable
+	 * that the result is assigned to is either the same type or a supertype of the DECLARED type of cloned object. 
 	 * 
 	 * @return clone of this object
 	 * @param <S> subclass of cloned object
+	 * 
+	 * @throws ClassCastException if type {@code S} is not equal to the runtime type of cloned object or is not a supertype of the runtime type of cloned object
 	 */
 	public <S extends T> S selfClone();
 }
