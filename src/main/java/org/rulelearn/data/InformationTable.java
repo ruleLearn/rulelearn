@@ -18,6 +18,7 @@ package org.rulelearn.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
@@ -34,6 +35,8 @@ import org.rulelearn.types.UUIDIdentificationField;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 /**
  * Information table composed of fields storing identifiers/evaluations of all considered objects on all specified attributes, among which we distinguish:<br>
@@ -435,9 +438,42 @@ public class InformationTable {
 	}
 	
 	/**
+	 * Calculates array of all unique decisions assigned to objects of this information table.<br>
+	 * <br>
+	 * For any two decisions from the returned array, {@code decision1.equals(decision2)} should return {@code false}.
+	 * If {@link #getDecisions()} returns {@code null}, then result of this method is {@code null}.
+	 * This may be the case if the information table stores evaluations of test objects (for which decisions are unknown).
+	 * 
+	 * @return array of all unique decisions assigned to objects of this information table
+	 */
+	public Decision[] calculateUniqueDecisions() {
+		Decision[] allDecisions = this.getDecisions(true);
+		
+		if (allDecisions == null || allDecisions.length < 1) {
+			return allDecisions;
+		}
+		
+		List<Decision> uniqueDecisionsList = new ObjectArrayList<>();
+		Set<Decision> uniqueDecisionsSet = new ObjectOpenHashSet<>();
+		
+		uniqueDecisionsList.add(allDecisions[0]); //add first decision
+		uniqueDecisionsSet.add(allDecisions[0]); //remember decision
+		
+		for (int i = 1; i < allDecisions.length; i++) {
+			if (!uniqueDecisionsSet.contains(allDecisions[i])) {
+				uniqueDecisionsList.add(allDecisions[i]); //add next decision
+				uniqueDecisionsSet.add(allDecisions[i]); //remember decision
+			}
+		}
+		
+		return uniqueDecisionsList.toArray(new Decision[uniqueDecisionsList.size()]); //convert the list of decisions to an array of decisions
+	}
+	
+	/**
 	 * Calculates ordered (from the worst to the best) array of all unique fully-determined decisions assigned to objects of this information table.
 	 * A fully-determined {@link Decision decision} is a decision whose all contributing evaluations are non-missing (are instances of {@link KnownSimpleField}) -
-	 * see {@link Decision#hasNoMissingEvaluation()}.
+	 * see {@link Decision#hasNoMissingEvaluation()}.<br>
+	 * <br>
 	 * For any two decisions from the returned array, {@code decision1.equals(decision2)} should return {@code false}.
 	 * If {@link #getDecisions()} returns {@code null}, then result of this method is {@code null}.
 	 * This may be the case if the information table stores evaluations of test objects (for which decisions are unknown).
