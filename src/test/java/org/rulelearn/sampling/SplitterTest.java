@@ -265,7 +265,7 @@ class SplitterTest {
 	}
 	
 	/**
-	 * Tests for {@link Splitter#stratifiedSplit(InformationTableWithDecisionDistributions, double...)}.
+	 * Tests for {@link Splitter#randomStratifiedSplit(InformationTableWithDecisionDistributions, Random, double...)}.
 	 */
 	@Test
 	void testSplit07() {
@@ -316,6 +316,144 @@ class SplitterTest {
 	}
 	
 	/**
+	 * Tests for repetitions of {@link Splitter#randomSplit(InformationTable, Random, double...)}.
+	 */
+	@Test
+	void testSplit08() {
+		InformationTable informationTable = informationTableTestConfiguration.getInformationTable(true);
+		List<InformationTable> informationTables1 = Splitter.randomSplit(informationTable, new Random(64), new double [] {0.5, 0.5});
+		List<InformationTable> informationTables2 = Splitter.randomSplit(informationTable, new Random(64), new double [] {0.5, 0.5});
+		assertEquals(15, informationTables1.get(0).getNumberOfObjects());
+		assertEquals(15, informationTables1.get(1).getNumberOfObjects());
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables1.get(1)));
+		assertEquals(15, informationTables2.get(0).getNumberOfObjects());
+		assertEquals(15, informationTables2.get(1).getNumberOfObjects());
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables2.get(0), informationTables2.get(1)));
+		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables2.get(0)));
+		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(1), informationTables2.get(1)));
+		
+		informationTables1 = Splitter.randomSplit(informationTable, new Random(64), new double [] {1.0/3, 0.5});
+		informationTables2 = Splitter.randomSplit(informationTable, new Random(64), new double [] {1.0/3, 0.5});
+		assertEquals(10, informationTables1.get(0).getNumberOfObjects());
+		assertEquals(15, informationTables1.get(1).getNumberOfObjects());
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables1.get(1)));
+		assertEquals(10, informationTables2.get(0).getNumberOfObjects());
+		assertEquals(15, informationTables2.get(1).getNumberOfObjects());
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables2.get(0), informationTables2.get(1)));
+		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables2.get(0)));
+		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(1), informationTables2.get(1)));
+		
+		informationTables1 = Splitter.randomSplit(informationTable, new Random(64), new double [] {1.0/3, 1.0/3, 1.0/3});
+		informationTables2 = Splitter.randomSplit(informationTable, new Random(64), new double [] {1.0/3, 1.0/3, 1.0/3});
+		assertEquals(10, informationTables1.get(0).getNumberOfObjects());
+		assertEquals(10, informationTables1.get(1).getNumberOfObjects());
+		assertEquals(10, informationTables1.get(2).getNumberOfObjects());
+		assertEquals(10, informationTables2.get(0).getNumberOfObjects());
+		assertEquals(10, informationTables2.get(1).getNumberOfObjects());
+		assertEquals(10, informationTables2.get(2).getNumberOfObjects());
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables1.get(1)));
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables1.get(2)));
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables1.get(1), informationTables1.get(2)));
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables2.get(0), informationTables2.get(1)));
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables2.get(0), informationTables2.get(2)));
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables2.get(1), informationTables2.get(2)));
+		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables2.get(0)));
+		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(1), informationTables2.get(1)));
+		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(2), informationTables2.get(2)));
+	}
+	
+	/**
+	 * Tests for repetitions of {@link Splitter#randomStratifiedSplit(InformationTableWithDecisionDistributions, Random, double...)}.
+	 */
+	@Test
+	void testSplit09() {
+		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(informationTableTestConfiguration.getInformationTable(true));
+		// check distribution of decisions in the information table
+		for (Decision decision : informationTable.getDecisions()) {
+			assertEquals(1.0/3, ((double)informationTable.getDecisionDistribution().getCount(decision))/informationTable.getNumberOfObjects());
+		}
+		// perform splitting
+		List<InformationTable> informationTables1 = Splitter.randomStratifiedSplit(informationTable, new Random(64), new double [] {0.5, 0.5});
+		List<InformationTable> informationTables2 = Splitter.randomStratifiedSplit(informationTable, new Random(64), new double [] {0.5, 0.5});
+		assertEquals(15, informationTables1.get(0).getNumberOfObjects());
+		assertEquals(15, informationTables1.get(1).getNumberOfObjects());
+		assertEquals(15, informationTables2.get(0).getNumberOfObjects());
+		assertEquals(15, informationTables2.get(1).getNumberOfObjects());
+		// check distribution of decisions in information sub-tables
+		for (InformationTable table : informationTables1) {
+			InformationTableWithDecisionDistributions informationSubTable = new InformationTableWithDecisionDistributions(table);
+			for (Decision decision : informationTable.getDecisions()) {
+				assertEquals(1.0/3, ((double)informationSubTable.getDecisionDistribution().getCount(decision))/informationSubTable.getNumberOfObjects());
+			}
+		}
+		for (InformationTable table : informationTables2) {
+			InformationTableWithDecisionDistributions informationSubTable = new InformationTableWithDecisionDistributions(table);
+			for (Decision decision : informationTable.getDecisions()) {
+				assertEquals(1.0/3, ((double)informationSubTable.getDecisionDistribution().getCount(decision))/informationSubTable.getNumberOfObjects());
+			}
+		}
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables1.get(1)));
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables2.get(0), informationTables2.get(1)));
+		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables2.get(0)));
+		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(1), informationTables2.get(1)));
+		
+		informationTables1 = Splitter.randomStratifiedSplit(informationTable, new Random(64), new double [] {1.0/3, 0.5});
+		informationTables2 = Splitter.randomStratifiedSplit(informationTable, new Random(64), new double [] {1.0/3, 0.5});
+		assertEquals(9, informationTables1.get(0).getNumberOfObjects());
+		assertEquals(15, informationTables1.get(1).getNumberOfObjects());
+		assertEquals(9, informationTables2.get(0).getNumberOfObjects());
+		assertEquals(15, informationTables2.get(1).getNumberOfObjects());
+		// check distribution of decisions in information sub-tables
+		for (InformationTable table : informationTables1) {
+			InformationTableWithDecisionDistributions informationSubTable = new InformationTableWithDecisionDistributions(table);
+			for (Decision decision : informationTable.getDecisions()) {
+				assertEquals(1.0/3, ((double)informationSubTable.getDecisionDistribution().getCount(decision))/informationSubTable.getNumberOfObjects());
+			}
+		}
+		for (InformationTable table : informationTables2) {
+			InformationTableWithDecisionDistributions informationSubTable = new InformationTableWithDecisionDistributions(table);
+			for (Decision decision : informationTable.getDecisions()) {
+				assertEquals(1.0/3, ((double)informationSubTable.getDecisionDistribution().getCount(decision))/informationSubTable.getNumberOfObjects());
+			}
+		}
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables1.get(1)));
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables2.get(0), informationTables2.get(1)));
+		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables2.get(0)));
+		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(1), informationTables2.get(1)));
+		
+		informationTables1 = Splitter.randomStratifiedSplit(informationTable, new Random(64), new double [] {1.0/3, 1.0/3, 1.0/3});
+		informationTables2 = Splitter.randomStratifiedSplit(informationTable, new Random(64), new double [] {1.0/3, 1.0/3, 1.0/3});
+		assertEquals(9, informationTables1.get(0).getNumberOfObjects());
+		assertEquals(9, informationTables1.get(1).getNumberOfObjects());
+		assertEquals(9, informationTables1.get(2).getNumberOfObjects());
+		assertEquals(9, informationTables2.get(0).getNumberOfObjects());
+		assertEquals(9, informationTables2.get(1).getNumberOfObjects());
+		assertEquals(9, informationTables2.get(2).getNumberOfObjects());
+		// check distribution of decisions in information sub-tables
+		for (InformationTable table : informationTables1) {
+			InformationTableWithDecisionDistributions informationSubTable = new InformationTableWithDecisionDistributions(table);
+			for (Decision decision : informationTable.getDecisions()) {
+				assertEquals(1.0/3, ((double)informationSubTable.getDecisionDistribution().getCount(decision))/informationSubTable.getNumberOfObjects());
+			}
+		}
+		for (InformationTable table : informationTables2) {
+			InformationTableWithDecisionDistributions informationSubTable = new InformationTableWithDecisionDistributions(table);
+			for (Decision decision : informationTable.getDecisions()) {
+				assertEquals(1.0/3, ((double)informationSubTable.getDecisionDistribution().getCount(decision))/informationSubTable.getNumberOfObjects());
+			}
+		}
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables1.get(1)));
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables1.get(2)));
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables1.get(1), informationTables1.get(2)));
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables2.get(0), informationTables2.get(1)));
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables2.get(0), informationTables2.get(2)));
+		assertTrue(noEqualValuesOnFirstAttribute(informationTables2.get(1), informationTables2.get(2)));
+		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables2.get(0)));
+		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(1), informationTables2.get(1)));
+		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(2), informationTables2.get(2)));
+	}
+	
+	/**
 	 * Checks whether two {@link InformationTable information tables} provided as parameters do not have the (even one) equal value on the first attribute.
 	 * 
 	 * @param it1 first {@link InformationTable information table}
@@ -334,6 +472,28 @@ class SplitterTest {
 			}
 			if (!result) {
 				break;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Checks whether two {@link InformationTable information tables} provided as parameters have all the equal subsequent values on the first attribute.
+	 * 
+	 * @param it1 first {@link InformationTable information table}
+	 * @param it2 second {@link InformationTable information table}
+	 * 
+	 * @return {@code true} when information tables do not have the (even one) equal value on the first attribute; {@code false} otherwise
+	 */
+	boolean allEqualValuesOnFirstAttribute(InformationTable it1, InformationTable it2) {
+		if (it1.getNumberOfObjects() != it2.getNumberOfObjects()) {
+			return false;
+		}
+		boolean result = true;
+		for (int i = 0; i < it1.getNumberOfObjects(); i++) {
+			if (it1.getField(i, 0).isEqualTo(it2.getField(i, 0)) != TernaryLogicValue.TRUE) {
+				result = false;
+					break;
 			}
 		}
 		return result;
