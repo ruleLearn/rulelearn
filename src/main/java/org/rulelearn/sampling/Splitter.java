@@ -391,7 +391,7 @@ public class Splitter {
         	sum += Precondition.within01Interval(proportions[i], "At least one proportion is not in interval [0, 1].");
             // check whether fractions sum up to 1 (with some flexibility) in case of numeric approximation errors
             if(sum >= 1.0001) {
-                throw new IllegalArgumentException("Sum of proportions is greater than 1.0 by index " + i + ", and it is reaching value " + sum);
+                throw new IllegalArgumentException("Sum of proportions is greater than 1.0 by index " + (i+1) + ", and it is reaching value " + sum);
             }
         }
 	}
