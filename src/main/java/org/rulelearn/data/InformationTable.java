@@ -135,6 +135,16 @@ public class InformationTable {
 	Int2IntMap localActiveConditionAttributeIndex2GlobalAttributeIndexMap;
 	
 	/**
+	 * Cached output of {@link #calculateOrderedUniqueFullyDeterminedDecisions()}.
+	 */
+	private Decision[] orderedUniqueFullyDeterminedDecisions = null;
+	
+	/**
+	 * Cached output of {@link #calculateUniqueDecisions()}.
+	 */
+	private Decision[] uniqueDecisions = null;
+	
+	/**
 	 * Protected copy constructor for internal use only. Sets all data fields of this information table.
 	 * 
 	 * @param attributes all attributes of constructed information table (identification and evaluation (condition/decision/description) ones, both active and non-active)
@@ -438,6 +448,22 @@ public class InformationTable {
 	}
 	
 	/**
+	 * Gets array of all unique decisions assigned to objects of this information table.<br>
+	 * <br>
+	 * For any two decisions from the returned array, {@code decision1.equals(decision2)} should return {@code false}.
+	 * If {@link #getDecisions()} returns {@code null}, then result of this method is {@code null}.
+	 * This may be the case if the information table stores evaluations of test objects (for which decisions are unknown).
+	 * 
+	 * @return array of all unique decisions assigned to objects of this information table
+	 */
+	public Decision[] getUniqueDecisions() {
+		if (uniqueDecisions == null) {
+			uniqueDecisions = calculateUniqueDecisions(); //quickly returns null if decisions are indeed null
+		}
+		return uniqueDecisions;
+	}
+	
+	/**
 	 * Calculates array of all unique decisions assigned to objects of this information table.<br>
 	 * <br>
 	 * For any two decisions from the returned array, {@code decision1.equals(decision2)} should return {@code false}.
@@ -446,7 +472,7 @@ public class InformationTable {
 	 * 
 	 * @return array of all unique decisions assigned to objects of this information table
 	 */
-	public Decision[] calculateUniqueDecisions() {
+	Decision[] calculateUniqueDecisions() {
 		Decision[] allDecisions = this.getDecisions(true);
 		
 		if (allDecisions == null || allDecisions.length < 1) {
@@ -470,6 +496,26 @@ public class InformationTable {
 	}
 	
 	/**
+	 * Gets ordered (from the worst to the best) array of all unique fully-determined decisions assigned to objects of this information table.
+	 * A fully-determined {@link Decision decision} is a decision whose all contributing evaluations are non-missing (are instances of {@link KnownSimpleField}) -
+	 * see {@link Decision#hasNoMissingEvaluation()}.<br>
+	 * <br>
+	 * For any two decisions from the returned array, {@code decision1.equals(decision2)} should return {@code false}.
+	 * If {@link #getDecisions()} returns {@code null}, then result of this method is {@code null}.
+	 * This may be the case if the information table stores evaluations of test objects (for which decisions are unknown).
+	 * 
+	 * @return array with unique fully-determined decisions ordered from the worst to the best,
+	 *         or {@code null} if this information table does not store any decisions ({@link #getDecisions()} returns {@code null})
+	 * @see Decision#hasNoMissingEvaluation()
+	 */
+	public Decision[] getOrderedUniqueFullyDeterminedDecisions() {
+		if (orderedUniqueFullyDeterminedDecisions == null) {
+			orderedUniqueFullyDeterminedDecisions = calculateOrderedUniqueFullyDeterminedDecisions(); //quickly returns null if decisions are indeed null
+		}
+		return orderedUniqueFullyDeterminedDecisions;
+	}
+	
+	/**
 	 * Calculates ordered (from the worst to the best) array of all unique fully-determined decisions assigned to objects of this information table.
 	 * A fully-determined {@link Decision decision} is a decision whose all contributing evaluations are non-missing (are instances of {@link KnownSimpleField}) -
 	 * see {@link Decision#hasNoMissingEvaluation()}.<br>
@@ -482,7 +528,7 @@ public class InformationTable {
 	 *         or {@code null} if this information table does not store any decisions ({@link #getDecisions()} returns {@code null})
 	 * @see Decision#hasNoMissingEvaluation()
 	 */
-	public Decision[] calculateOrderedUniqueFullyDeterminedDecisions() {
+	Decision[] calculateOrderedUniqueFullyDeterminedDecisions() {
 		Decision[] allDecisions = this.getDecisions(true);
 		
 		if (allDecisions == null || allDecisions.length < 1) {

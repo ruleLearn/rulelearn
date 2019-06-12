@@ -66,7 +66,7 @@ public class UnionsWithSingleLimitingDecision extends Unions {
 	 * being comparable to this decision, and better than decisions to the left being comparable to this decision.
 	 * If two decisions are incomparable, then their respective order is not constrained and may be any.<br>
 	 * <br>
-	 * See {@link InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()}.
+	 * See {@link InformationTable#getOrderedUniqueFullyDeterminedDecisions()}.
 	 */
 	Decision[] limitingDecisions = null;
 	
@@ -84,7 +84,7 @@ public class UnionsWithSingleLimitingDecision extends Unions {
 		super(informationTable, roughSetCalculator);
 		
 		//calculate limiting decisions
-		limitingDecisions = informationTable.calculateOrderedUniqueFullyDeterminedDecisions();
+		limitingDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
 		
 		if (limitingDecisions == null) {
 			throw new NullPointerException("Information table does not store decisions for subsequent objects.");
@@ -220,10 +220,10 @@ public class UnionsWithSingleLimitingDecision extends Unions {
 	 * being comparable to this decision, and better than decisions to the left being comparable to this decision.
 	 * If any two decisions are incomparable, then their respective order may be arbitrary.<br>
 	 * <br>
-	 * See {@link InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()}.
+	 * See {@link InformationTable#getOrderedUniqueFullyDeterminedDecisions()}.
 	 * 
 	 * @return ordered (from the worst to the best) array of all distinct decisions, which can be found in information table
-	 * @see InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()
+	 * @see InformationTable#getOrderedUniqueFullyDeterminedDecisions()
 	 */
 	public Decision[] getLimitingDecisions() {
 		return limitingDecisions.clone();
@@ -236,7 +236,7 @@ public class UnionsWithSingleLimitingDecision extends Unions {
 	 * being comparable to this decision, and better than decisions to the left being comparable to this decision.
 	 * If any two decisions are incomparable, then their respective order may be arbitrary.<br>
 	 * <br>
-	 * See {@link InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()}.<br>
+	 * See {@link InformationTable#getOrderedUniqueFullyDeterminedDecisions()}.<br>
 	 * <br>
 	 * This method can be used in certain circumstances to accelerate calculations.
 	 * 
@@ -244,7 +244,7 @@ public class UnionsWithSingleLimitingDecision extends Unions {
 	 *        at the cost of returning a read-only array, or should return a safe array (that can be
 	 *        modified outside this object), at the cost of returning the result slower
 	 * @return ordered (from the worst to the best) array of all distinct decisions, which can be found in information table
-	 * @see InformationTable#calculateOrderedUniqueFullyDeterminedDecisions()
+	 * @see InformationTable#getOrderedUniqueFullyDeterminedDecisions()
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
 	public Decision[] getLimitingDecisions(boolean accelerateByReadOnlyResult) {

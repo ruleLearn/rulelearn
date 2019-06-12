@@ -103,7 +103,7 @@ class UnionsWithSingleLimitingDecisionTest {
 		
 		Decision decision = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, preferenceType), attributeIndex);
 		//
-		Mockito.when(informationTableMock.calculateOrderedUniqueFullyDeterminedDecisions()).thenReturn(new Decision[] {decision});
+		Mockito.when(informationTableMock.getOrderedUniqueFullyDeterminedDecisions()).thenReturn(new Decision[] {decision});
 		
 		DecisionDistribution decisionDistribution = Mockito.mock(DecisionDistribution.class);
 		Set<Decision> allDecisions = new HashSet<Decision>();
@@ -149,7 +149,7 @@ class UnionsWithSingleLimitingDecisionTest {
 						new int[] {attributeIndices[0], attributeIndices[1]}), //3,3
 		};
 		//
-		Mockito.when(informationTableMock.calculateOrderedUniqueFullyDeterminedDecisions()).thenReturn(orderedUniqueFullyDeterminedDecisions);
+		Mockito.when(informationTableMock.getOrderedUniqueFullyDeterminedDecisions()).thenReturn(orderedUniqueFullyDeterminedDecisions);
 		
 		Set<Decision> allDecisions = new HashSet<Decision>(Arrays.asList(orderedUniqueFullyDeterminedDecisions));
 		allDecisions.add(
