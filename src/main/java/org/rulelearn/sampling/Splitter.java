@@ -18,7 +18,6 @@ package org.rulelearn.sampling;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -167,41 +166,39 @@ public class Splitter {
 		int numberOfDecisions = decisions.size();
 		Map<Decision, Integer> starts = new Object2IntLinkedOpenHashMap<Decision>(numberOfDecisions);
 		Map<Decision, IntArrayList> objectsToSelect = new Object2ObjectLinkedOpenHashMap<Decision, IntArrayList>(numberOfDecisions);
-		Iterator<Decision> decisionIterator = decisions.iterator();
-		while (decisionIterator.hasNext()) {
-			Decision decision = decisionIterator.next();
+		Decision [] decisionsSet = informationTable.getUniqueDecisions();
+		for (Decision decision : decisionsSet) {
 			starts.put(decision, 0);
 			objectsToSelect.put(decision, new IntArrayList(informationTable.getDecisionDistribution().getCount(decision)));
 		}
 		Decision[] objectDecisions = informationTable.getDecisions();
-		IntArrayList list;
-		for (int i = 0; i < objectDecisions.length; i++) {
-			list = objectsToSelect.get(objectDecisions[i]);
-			list.add(i);
-		}
-		// selection
-		int numberOfObjects = informationTable.getNumberOfObjects(), start, stop, maxToSelectForDecison;
-		IntArrayList indices;
-		for (double split : splits) {
-			indices = new IntArrayList((int)(split * numberOfObjects));
-			decisionIterator = decisions.iterator();
-			while (decisionIterator.hasNext()) {
-				Decision decision = decisionIterator.next();
-				start = starts.get(decision); 
-				maxToSelectForDecison = informationTable.getDecisionDistribution().getCount(decision);
-				stop = start + (int)(split * maxToSelectForDecison);
-				if (stop > maxToSelectForDecison) { // just in case of numeric approximation errors
-					stop = maxToSelectForDecison;
-				}
-				list = objectsToSelect.get(decision);
-					for (int i = start; i < stop; i++) {
-					indices.add(list.getInt(i));
-				}
-				starts.put(decision, stop);
+		if (objectDecisions != null) {
+			IntArrayList list;
+			for (int i = 0; i < objectDecisions.length; i++) {
+				list = objectsToSelect.get(objectDecisions[i]);
+				list.add(i);
 			}
-			subTables.add(informationTable.select(indices.toIntArray(), accelerateByReadOnlyResult));
+			// selection
+			int numberOfObjects = informationTable.getNumberOfObjects(), start, stop, maxToSelectForDecison;
+			IntArrayList indices;
+			for (double split : splits) {
+				indices = new IntArrayList((int)(split * numberOfObjects));
+				for (Decision decision : decisionsSet) {
+					start = starts.get(decision); 
+					maxToSelectForDecison = informationTable.getDecisionDistribution().getCount(decision);
+					stop = start + (int)(split * maxToSelectForDecison);
+					if (stop > maxToSelectForDecison) { // just in case of numeric approximation errors
+						stop = maxToSelectForDecison;
+					}
+					list = objectsToSelect.get(decision);
+						for (int i = start; i < stop; i++) {
+						indices.add(list.getInt(i));
+					}
+					starts.put(decision, stop);
+				}
+				subTables.add(informationTable.select(indices.toIntArray(), accelerateByReadOnlyResult));
+			}
 		}
-		
 		return subTables;
 	}
 	
@@ -333,43 +330,42 @@ public class Splitter {
 		int numberOfDecisions = decisions.size(), numberOfObjectsForDecision;
 		Map<Decision, IntArrayList> objectsToSelect = new Object2ObjectLinkedOpenHashMap<Decision, IntArrayList>(numberOfDecisions);
 		Map<Decision, BitSet> pickedObjects = new Object2ObjectLinkedOpenHashMap<Decision, BitSet>(numberOfDecisions);
-		Iterator<Decision> decisionIterator = decisions.iterator();
-		while (decisionIterator.hasNext()) {
-			Decision decision = decisionIterator.next();
+		Decision [] decisionsSet = informationTable.getUniqueDecisions(); 
+		for (Decision decision : decisionsSet) {
 			numberOfObjectsForDecision = informationTable.getDecisionDistribution().getCount(decision);
 			objectsToSelect.put(decision, new IntArrayList(numberOfObjectsForDecision));
 			pickedObjects.put(decision, new BitSet(numberOfObjectsForDecision));
 		}
 		Decision[] objectDecisions = informationTable.getDecisions();
-		IntArrayList list;
-		for (int i = 0; i < objectDecisions.length; i++) {
-			list = objectsToSelect.get(objectDecisions[i]);
-			list.add(i);
-		}
-		// selection
-		IntArrayList indices;
-		BitSet picked;
-		int numberOfObjects = informationTable.getNumberOfObjects(), splitForDecisionSize, i, j;
-		for (double split : splits) {
-			indices = new IntArrayList((int)(split * numberOfObjects));
-			decisionIterator = decisions.iterator();
-			while (decisionIterator.hasNext()) {
-				Decision decision = decisionIterator.next();
-				numberOfObjectsForDecision = informationTable.getDecisionDistribution().getCount(decision);
-				splitForDecisionSize = (int)(split * numberOfObjectsForDecision);
-				list = objectsToSelect.get(decision);
-				picked = pickedObjects.get(decision);
-				i = 0;
-				while (i < splitForDecisionSize) {
-					j = random.nextInt(numberOfObjectsForDecision);
-					if (!picked.get(j)) {
-						indices.add(list.getInt(j));
-						picked.set(j);
-						i++;
+		if (objectDecisions != null) {
+			IntArrayList list;
+			for (int i = 0; i < objectDecisions.length; i++) {
+				list = objectsToSelect.get(objectDecisions[i]);
+				list.add(i);
+			}
+			// selection
+			IntArrayList indices;
+			BitSet picked;
+			int numberOfObjects = informationTable.getNumberOfObjects(), splitForDecisionSize, i, j;
+			for (double split : splits) {
+				indices = new IntArrayList((int)(split * numberOfObjects));
+				for (Decision decision : decisionsSet) {
+					numberOfObjectsForDecision = informationTable.getDecisionDistribution().getCount(decision);
+					splitForDecisionSize = (int)(split * numberOfObjectsForDecision);
+					list = objectsToSelect.get(decision);
+					picked = pickedObjects.get(decision);
+					i = 0;
+					while (i < splitForDecisionSize) {
+						j = random.nextInt(numberOfObjectsForDecision);
+						if (!picked.get(j)) {
+							indices.add(list.getInt(j));
+							picked.set(j);
+							i++;
+						}
 					}
 				}
+				subTables.add(informationTable.select(indices.toIntArray(), accelerateByReadOnlyResult));
 			}
-			subTables.add(informationTable.select(indices.toIntArray(), accelerateByReadOnlyResult));
 		}
 		return subTables;
 	}
