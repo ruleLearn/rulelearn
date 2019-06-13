@@ -108,7 +108,7 @@ public class PossibleRuleInducerComponents extends RuleInducerComponents {
 		 */
 		@Override
 		public Builder ruleInductionStoppingConditionChecker(RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker) {
-			this.ruleInductionStoppingConditionChecker = notNull(ruleInductionStoppingConditionChecker, "Provided rule induction stopping condition checker is null.");;
+			this.ruleInductionStoppingConditionChecker = notNull(ruleInductionStoppingConditionChecker, "Provided rule induction stopping condition checker is null.");
 			return this;
 		}
 		
@@ -133,7 +133,7 @@ public class PossibleRuleInducerComponents extends RuleInducerComponents {
 		 */
 		@Override
 		public Builder ruleConditionsPruner(RuleConditionsPruner ruleConditionsPruner) {
-			this.ruleConditionsPruner = notNull(ruleConditionsPruner, "Provided rule conditions pruner is null.");;
+			this.ruleConditionsPruner = notNull(ruleConditionsPruner, "Provided rule conditions pruner is null.");
 			return this;
 		}
 		

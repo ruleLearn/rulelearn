@@ -161,7 +161,7 @@ public class Splitter {
 		Precondition.notNull(splits, "Provided array with splits is null.");
 		checkProportionsArray(splits);
 		// initialization
-		List<InformationTable> subTables = new ArrayList<InformationTable> (splits.length);;
+		List<InformationTable> subTables = new ArrayList<InformationTable> (splits.length);
 		Set<Decision> decisions = informationTable.getDecisionDistribution().getDecisions();
 		int numberOfDecisions = decisions.size();
 		Map<Decision, Integer> starts = new Object2IntLinkedOpenHashMap<Decision>(numberOfDecisions);
@@ -327,7 +327,7 @@ public class Splitter {
 		Precondition.notNull(splits, "Provided array with splits is null.");
 		checkProportionsArray(splits);
 		// initialization
-		List<InformationTable> subTables = new ArrayList<InformationTable> (splits.length);;
+		List<InformationTable> subTables = new ArrayList<InformationTable> (splits.length);
 		Set<Decision> decisions = informationTable.getDecisionDistribution().getDecisions();
 		int numberOfDecisions = decisions.size(), numberOfObjectsForDecision;
 		Map<Decision, IntArrayList> objectsToSelect = new Object2ObjectLinkedOpenHashMap<Decision, IntArrayList>(numberOfDecisions);

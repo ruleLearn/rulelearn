@@ -246,7 +246,7 @@ class RuleTest {
 		conditions.add(condition);
 		
 		@SuppressWarnings("unchecked")
-		ConditionAtLeastThresholdVSObject<EvaluationField> decision = Mockito.mock(ConditionAtLeastThresholdVSObject.class);;
+		ConditionAtLeastThresholdVSObject<EvaluationField> decision = Mockito.mock(ConditionAtLeastThresholdVSObject.class);
 		
 		List<List<Condition<? extends EvaluationField>>> decisions = new ObjectArrayList<>();
 		decisions.add(new ObjectArrayList<>());
