@@ -15,10 +15,11 @@
  */
 
 apply plugin: 'java-library'
+apply plugin: 'maven'
 apply plugin: 'org.junit.platform.gradle.plugin'
 
 group = 'org.rulelearn'
-version = '0.8.6'
+version = '0.14.1'
 
 buildscript {
 	repositories {
@@ -154,4 +155,18 @@ task all(dependsOn: ["junitPlatformTest", "jar", "javadoc"], description: "Perfo
 	doLast {
 		println("Building ruleLearn completed.")
 	}
+}
+
+install {
+  repositories.mavenInstaller {
+    pom.project {
+      licenses {
+        license {
+          name 'The Apache Software License, Version 2.0'
+          url 'http://www.apache.org/licenses/LICENSE-2.0'
+          distribution 'repo'
+        }
+      }
+    }
+  }
 }

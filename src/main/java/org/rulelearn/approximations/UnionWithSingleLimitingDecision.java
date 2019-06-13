@@ -67,9 +67,9 @@ public class UnionWithSingleLimitingDecision extends Union {
 	 * See {@link #isDecisionPositive(Decision)}.
 	 * 
 	 * @param decision decision to verify for being positive with respect to the union of ordered decision classes that would be constructed for given parameters
-	 * @param unionType see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param limitingDecision see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param informationTable see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param unionType see {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param limitingDecision see {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param informationTable see {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
 	 * 
 	 * @return {@code true} if given decision is positive with respect to the union of ordered decision classes that would be constructed for given parameters,
 	 *         {@code false} otherwise
