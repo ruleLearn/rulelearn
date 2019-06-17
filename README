@@ -1,19 +1,34 @@
-ruleLearn - open source library for learning rule models from decision examples and applying these models to classify or rank new examples
+# ruleLearn
+Open source library for learning rule models from decision examples and applying these models to classify or rank new examples
 
-IDE dependencies:
-Lombok (https://projectlombok.org) needs to be available in your Java IDE; otherwise it may suggest compile errors
+## Documentation
+[API Javadoc documentation](https://javadoc.jitpack.io/com/github/rulelearn/ruleLearn/latest/javadoc/)
 
-Configuration of text files:
------
+## Importing into build.gradle
+```
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+$RL_VERSION = '0.14.2' //e.g. '0.14.2'
+
+dependencies {
+    compile("com.github.ruleLearn:rulelearn:${RL_VERSION}")
+}
+```
+
+## Configuration of text files:
 UTF-8 encoding
 LF line endings
 
-Configuration of Gradle build:
------
-Developers should either extend/supply 'gradle.properties' file (in the main directory of the project
-or in the USER_HOME/.gradle directory), specifying inside this local path to the installed Java JDK,
+## Configuration of Gradle build:
+Developers should either extend/supply `gradle.properties` file (in the main directory of the project
+or in the `USER_HOME/.gradle` directory), specifying inside this local path to the installed Java JDK,
 e.g., on a Windows machine:
 
-org.gradle.java.home=C:\\Program Files\\Java\\jdk-11.0.1
+`org.gradle.java.home=C:\\Program Files\\Java\\jdk-11.0.1`
 
-or set JAVA_HOME environmental variable to local path to the installed Java JDK.
+or set `JAVA_HOME` environmental variable to local path to the installed Java JDK.
+
+## IDE dependencies:
+Lombok (https://projectlombok.org) needs to be available in your Java IDE; otherwise it may suggest compile errors

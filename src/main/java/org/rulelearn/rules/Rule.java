@@ -447,7 +447,7 @@ public class Rule {
      * @param semantics semantics of constructed rule; see {@link RuleSemantics}
      * @param ruleConditions rule conditions to be set on the LHS of this rule
      * @param decisions list with lists of elementary decisions building decision (RHS) part of this rule; it is assumed that the items from the given list are connected with OR connective,
-     *        while the items on each "inner" list are connected with AND connective; for instance, if decisions are {@code((d_1(x) >= 5, d_2(x) <= 2), (d_1(x) <= 8, d_2(x) >= 1))},
+     *        while the items on each "inner" list are connected with AND connective; for instance, if decisions are {@code ((d_1(x) >= 5, d_2(x) <= 2), (d_1(x) <= 8, d_2(x) >= 1))},
      *        then the RHS of this rule is read as: {@code then (d_1(x) >= 5 AND d_2(x) <= 2) OR (d_1(x) <= 8 AND d_2(x) >= 1)}
      * 
      * @throws NullPointerException if any of the parameters is {@code null}, or any list with elementary decisions is {@code null}, or any elementary decision is {@code null}

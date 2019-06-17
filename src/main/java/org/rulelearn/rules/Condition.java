@@ -93,7 +93,7 @@ public abstract class Condition<T extends EvaluationField> {
      * 
      * @throws IndexOutOfBoundsException if given object index does not correspond to any object in the given information table
      * @throws NullPointerException if given information table is {@code null}
-     * @throws ClassCastException if the field against which this condition should be checked is not of type {@link T}
+     * @throws ClassCastException if the field against which this condition should be checked is not of generic type {@code T} with which this condition is instantiated
      * @throws IndexOutOfBoundsException if attribute index of this condition does not correspond to any attribute for which given information table stores fields
      */
     @SuppressWarnings("unchecked")
@@ -173,7 +173,7 @@ public abstract class Condition<T extends EvaluationField> {
 	 * Tells if this condition is at most as general as the given condition.
 	 * 
 	 * @param otherCondition the other condition that this condition is being compared to
-	 * @param<S> type used for wildcard capture
+	 * @param <S> type used for wildcard capture
 	 * @return {@link TernaryLogicValue#TRUE} if this condition is at most as general as the other condition (i.e., equally specific, or more specific),
 	 *         {@link TernaryLogicValue#FALSE} if this condition is not at most as general as the other condition
 	 *         (is more general, or both conditions are of the same type but cover distinct objects as their limiting evaluations are incomparable),
