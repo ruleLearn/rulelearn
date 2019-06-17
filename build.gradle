@@ -23,13 +23,9 @@ buildscript {
 	}
 }
 
-//plugins {
-//    id 'maven-publish'
-//}
- 
+
 apply plugin: 'java-library'
 apply plugin: 'org.junit.platform.gradle.plugin'
-//apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 group = 'org.rulelearn'
@@ -37,7 +33,6 @@ version = '0.14.2'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
-    //jcenter()
     mavenCentral()
 }
 
@@ -165,30 +160,9 @@ task all(dependsOn: ["junitPlatformTest", "jar", "javadoc"], description: "Perfo
 	}
 }
 
-//install {
-//  repositories.mavenInstaller {
-//    pom.project {
-//      licenses {
-//        license {
-//          name 'The Apache Software License, Version 2.0'
-//          url 'http://www.apache.org/licenses/LICENSE-2.0'
-//          distribution 'repo'
-//        }
-//      }
-//    }
-//  }
-//}
-
 task javadocJar(type: Jar, dependsOn: javadoc) {
     archiveClassifier = 'javadoc'
-    from javadoc.destinationDir
-    //archiveFileName = "javadoc.jar"
-    //destinationDirectory = project.buildDir
-}
-
-//artifacts {
-//    archives javadocJar
-//}
+    from javadoc.destinationDir}
 
 publishing {
     publications {

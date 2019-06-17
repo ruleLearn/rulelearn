@@ -29,6 +29,3 @@ e.g., on a Windows machine:
 `org.gradle.java.home=C:\\Program Files\\Java\\jdk-11.0.1`
 
 or set `JAVA_HOME` environmental variable to local path to the installed Java JDK.
-
-## IDE dependencies:
-Lombok (https://projectlombok.org) needs to be available in your Java IDE; otherwise it may suggest compile errors
