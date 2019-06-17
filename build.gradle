@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-apply plugin: 'java-library'
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
-apply plugin: 'org.junit.platform.gradle.plugin'
-
-group = 'org.rulelearn'
-version = '0.14.2'
-
 buildscript {
 	repositories {
 		mavenCentral()
@@ -30,6 +22,18 @@ buildscript {
 		classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2' //adds junitPlatformTest task
 	}
 }
+
+//plugins {
+//    id 'maven-publish'
+//}
+ 
+apply plugin: 'java-library'
+apply plugin: 'org.junit.platform.gradle.plugin'
+//apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+group = 'org.rulelearn'
+version = '0.14.2'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -119,6 +123,9 @@ javadoc {
 	options.addStringOption("charset", "UTF-8")
 	options.addStringOption("encoding", "UTF-8");
 	//options.addBooleanOption('html5', true)
+	if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
 	
 	if (project.properties["org.gradle.java.home"] == null ) {
 		if (System.getenv('JAVA_HOME') != null) {
@@ -158,19 +165,19 @@ task all(dependsOn: ["junitPlatformTest", "jar", "javadoc"], description: "Perfo
 	}
 }
 
-install {
-  repositories.mavenInstaller {
-    pom.project {
-      licenses {
-        license {
-          name 'The Apache Software License, Version 2.0'
-          url 'http://www.apache.org/licenses/LICENSE-2.0'
-          distribution 'repo'
-        }
-      }
-    }
-  }
-}
+//install {
+//  repositories.mavenInstaller {
+//    pom.project {
+//      licenses {
+//        license {
+//          name 'The Apache Software License, Version 2.0'
+//          url 'http://www.apache.org/licenses/LICENSE-2.0'
+//          distribution 'repo'
+//        }
+//      }
+//    }
+//  }
+//}
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     archiveClassifier = 'javadoc'
@@ -187,9 +194,35 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-
             artifact javadocJar
+            pom {
+                name = 'ruleLearn library'
+                description = 'Open source library for learning rule models from decision examples and applying these models to classify or rank new examples'
+                url = 'https://github.com/ruleLearn/rulelearn'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'marcin-szelag'
+                        name = 'Marcin Szelag'
+                        email = 'marcin.szelag@cs.put.poznan.pl'
+                    }
+                    developer {
+                        id = 'jurek-blaszczynski'
+                        name = 'Jurek Błaszczyński'
+                        email = 'jurek.blaszczynski@cs.put.poznan.pl'
+                    }
+                }
+                scm {
+                    connection = 'https://github.com/ruleLearn/rulelearn'
+                    developerConnection = 'https://github.com/ruleLearn/rulelearn'
+                    url = 'https://github.com/ruleLearn/rulelearn'
+                }
+            }
         }
     }
 }
-
