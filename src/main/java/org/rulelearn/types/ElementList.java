@@ -16,13 +16,13 @@
 
 package org.rulelearn.types;
 
-import org.rulelearn.core.ReadOnlyArrayReference;
-import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
-import org.rulelearn.core.TernaryLogicValue;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
+
+import org.rulelearn.core.ReadOnlyArrayReference;
+import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
+import org.rulelearn.core.TernaryLogicValue;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -68,7 +68,7 @@ public class ElementList {
 	/**
 	 * Hash value used for quicker comparison of element lists.
 	 */
-	protected transient byte [] hash = null;
+	protected transient byte[] hash = null;
 	
 	/**
 	 * Cached hash code.
@@ -81,11 +81,11 @@ public class ElementList {
 	boolean hashCodeCalculated = false;
 	
 	/**
-	 * Creates an element list and sets element list according to an array of {@link String} elements and creates a hash value using {@link DEFAULT_HASH_ALGORITHM} algorithm. 
+	 * Creates an element list and sets element list according to an array of {@link String} elements and creates a hash value using {@link #DEFAULT_HASH_ALGORITHM default hash algorithm}. 
 	 * 
 	 * @param elements array of {@link String} elements
 	 * @throws NullPointerException when elements is null
-	 * @throws NoSuchAlgorithmException when algorithm {@link DEFAULT_HASH_ALGORITHM} is not on the list of algorithms provided in {@link MessageDigest}.
+	 * @throws NoSuchAlgorithmException when {@link #DEFAULT_HASH_ALGORITHM default hash algorithm} is not on the list of algorithms provided in {@link MessageDigest}.
 	 */
 	public ElementList (String [] elements) throws NoSuchAlgorithmException {
 		this(elements, DEFAULT_HASH_ALGORITHM);

@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 
 /**
  * Decision rule composed of elementary conditions on the left-hand-side (LHS), connected by "and" connective, and elementary decisions on the right-hand-side (RHS)
- * represented by {@link RuleDecisions} object.<br>
+ * represented by {@link Rule.RuleDecisions} object.<br>
  * <br>
  * The rule is immutable, i.e., it has all conditions and decisions fixed in constructor.
  *
@@ -110,7 +110,7 @@ public class Rule {
 	}
 	
 	/**
-	 * Compound rule's RHS composed of AND-connected objects of type {@link RuleDecisions}.
+	 * Compound rule's RHS composed of AND-connected objects of type {@link Rule.RuleDecisions}.
 	 *
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -119,7 +119,7 @@ public class Rule {
 		ObjectList<RuleDecisions> andConnectedRuleDecisions;
 		
 		/**
-		 * Constructs compound rule's RHS composed of AND-connected rule decisions {@link RuleDecisions}.
+		 * Constructs compound rule's RHS composed of AND-connected rule decisions {@link Rule.RuleDecisions}.
 		 * 
 		 * @param andConnectedRuleDecisions list of rule decisions that should be connected with AND connective to form rule's RHS
 		 * @throws NullPointerException if given list is {@code null}
@@ -134,7 +134,7 @@ public class Rule {
 		}
 		
 		/**
-		 * Constructs compound rule's RHS composed of AND-connected rule decisions {@link RuleDecisions}.
+		 * Constructs compound rule's RHS composed of AND-connected rule decisions {@link Rule.RuleDecisions}.
 		 * 
 		 * @param andConnectedRuleDecisions vararg (array) of rule decisions that should be connected with AND connective to form rule's RHS
 		 * @throws NullPointerException if given array is {@code null}
@@ -174,7 +174,7 @@ public class Rule {
 	}
 	
 	/**
-	 * Compound rule's RHS composed of OR-connected objects of type {@link RuleDecisions}.
+	 * Compound rule's RHS composed of OR-connected objects of type {@link Rule.RuleDecisions}.
 	 *
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -183,7 +183,7 @@ public class Rule {
 		ObjectList<RuleDecisions> orConnectedRuleDecisions;
 		
 		/**
-		 * Constructs compound rule's RHS composed of OR-connected rule decisions {@link RuleDecisions}.
+		 * Constructs compound rule's RHS composed of OR-connected rule decisions {@link Rule.RuleDecisions}.
 		 * 
 		 * @param orConnectedRuleDecisions list of rule decisions that should be connected with OR connective to form rule's RHS
 		 * @throws NullPointerException if given list is {@code null}
@@ -198,7 +198,7 @@ public class Rule {
 		}
 		
 		/**
-		 * Constructs compound rule's RHS composed of OR-connected rule decisions {@link RuleDecisions}.
+		 * Constructs compound rule's RHS composed of OR-connected rule decisions {@link Rule.RuleDecisions}.
 		 * 
 		 * @param orConnectedRuleDecisions vararg (array) of rule decisions that should be connected with OR connective to form rule's RHS
 		 * @throws NullPointerException if given array is {@code null}
@@ -283,9 +283,9 @@ public class Rule {
      * Elementary decisions building decision part of this rule, possibly connected by logical connectives (AND, OR).
      * For example, rule decisions may look like this: (dec1a OR dec1b) AND (dec2a OR dec2b).
      * Such combination can be obtained this way:<br>
-     * new {@link ANDConnectedRuleDecisions} (<br>
-     * &nbsp;&nbsp;new {@link ORConnectedRuleDecisions} (new {@link ElementaryDecision}(dec1a), new {@link ElementaryDecision}(dec1b)),<br>
-     * &nbsp;&nbsp;new {@link ORConnectedRuleDecisions} (new {@link ElementaryDecision}(dec2a), new {@link ElementaryDecision}(dec2b))<br>
+     * new {@link Rule.ANDConnectedRuleDecisions} (<br>
+     * &nbsp;&nbsp;new {@link Rule.ORConnectedRuleDecisions} (new {@link Rule.ElementaryDecision}(dec1a), new {@link Rule.ElementaryDecision}(dec1b)),<br>
+     * &nbsp;&nbsp;new {@link Rule.ORConnectedRuleDecisions} (new {@link Rule.ElementaryDecision}(dec2a), new {@link Rule.ElementaryDecision}(dec2b))<br>
      * ).
      */
     protected RuleDecisions ruleDecisions = null; //TODO: use this field!
@@ -461,7 +461,7 @@ public class Rule {
     	
     	saveDecisions(decisions);
     }
-    
+
     /**
      * Constructor that enables to build decision rule using (induced) rule conditions.
      * 
@@ -485,7 +485,7 @@ public class Rule {
     }
     
     /**
-     * Constructor that enables to build decision rule using (induced) rule conditions {@link RuleConditions} and (given) rule decisions {@link RuleDecisions}.
+     * Constructor that enables to build decision rule using (induced) rule conditions {@link RuleConditions} and (given) rule decisions {@link Rule.RuleDecisions}.
      * 
      * @param type type of constructed rule; see {@link RuleType}
      * @param semantics semantics of constructed rule; see {@link RuleSemantics}

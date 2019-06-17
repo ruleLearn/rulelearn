@@ -70,7 +70,7 @@ public abstract class Union extends ApproximatedSet {
 	}
 	
 	/**
-	 * Type of this union. See {@link UnionType}.
+	 * Type of this union. See {@link Union.UnionType}.
 	 */
 	protected UnionType unionType;
 	

@@ -87,7 +87,7 @@ public class UnionWithSingleLimitingDecision extends Union {
 	 * Constructs union of ordered decision classes of given type (at least or at most), using given limiting decision (concerning the least or the most preferred decision class). Calculates objects
 	 * belonging to this union and neutral objects. Stores given information table and given rough set calculator.
 	 * 
-	 * @param unionType type of this union; see {@link UnionType}
+	 * @param unionType type of this union; see {@link Union.UnionType}
 	 * @param limitingDecision decision that serves as a limit for this union; e.g., decision "3" is a limit for union "at least 3" and "at most 3" 
 	 * @param informationTable information table with considered objects, some of which belong to this union
 	 * @param roughSetCalculator dominance-based rough set calculator used to calculate approximations of this union
@@ -110,10 +110,10 @@ public class UnionWithSingleLimitingDecision extends Union {
 	 * belonging to this union and neutral objects. Stores given information table and given rough set calculator. Takes into account the flag concerning inclusion of objects
 	 * having decision equal to the limiting decision of this union. 
 	 * 
-	 * @param unionType see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param limitingDecision see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param informationTable see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param roughSetCalculator see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param unionType see {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param limitingDecision see {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param informationTable see {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param roughSetCalculator see {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
 	 * @param includeLimitingDecision tells if objects having decision equal to the limiting decision of this union should be included in this union
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
@@ -139,9 +139,9 @@ public class UnionWithSingleLimitingDecision extends Union {
 	 * providing limited functionality. In particular, this constructor does not calculate objects belonging to this union (nor neutral objects),
 	 * which is a time consuming process. Moreover, it does not set rough set calculator.
 	 * 
-	 * @param unionType see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param limitingDecision see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
-	 * @param informationTable see {@link #UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param unionType see {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param limitingDecision see {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
+	 * @param informationTable see {@link UnionWithSingleLimitingDecision#UnionWithSingleLimitingDecision(UnionType, Decision, InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidTypeException see {@link #validateLimitingDecision(Decision, InformationTableWithDecisionDistributions)}
