@@ -16,6 +16,7 @@
 
 apply plugin: 'java-library'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'org.junit.platform.gradle.plugin'
 
 group = 'org.rulelearn'
@@ -172,13 +173,23 @@ install {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from javadoc.destinationDir
     //archiveFileName = "javadoc.jar"
     //destinationDirectory = project.buildDir
 }
 
-artifacts {
-    archives javadocJar
+//artifacts {
+//    archives javadocJar
+//}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact javadocJar
+        }
+    }
 }
 
