@@ -128,8 +128,8 @@ public class Splitter {
 	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0
 	 * @throws InvalidValueException if any proportion is not within interval [0,1]
 	 */
-	public static List<InformationTable> stratifiedSplit(InformationTableWithDecisionDistributions informationTable, double... splits) {
-		return stratifiedSplit(informationTable, false, splits);
+	public static List<InformationTable> splitStratified(InformationTableWithDecisionDistributions informationTable, double... splits) {
+		return splitStratified(informationTable, false, splits);
 	}
 	
 	/**
@@ -156,7 +156,7 @@ public class Splitter {
 	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0
 	 * @throws InvalidValueException if any proportion is not within interval [0,1]
 	 */
-	public static List<InformationTable> stratifiedSplit(InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, double... splits) {
+	public static List<InformationTable> splitStratified(InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, double... splits) {
 		Precondition.notNull(informationTable, "Information table provided to split is null.");
 		Precondition.notNull(splits, "Provided array with splits is null.");
 		checkProportionsArray(splits);
@@ -223,8 +223,8 @@ public class Splitter {
 	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0
 	 * @throws InvalidValueException if any proportion is not within interval [0,1]
 	 */
-	public static List<InformationTable> randomSplit(InformationTable informationTable, Random random, double... splits) {
-		return randomSplit(informationTable, false, random, splits);
+	public static List<InformationTable> splitRandomly(InformationTable informationTable, Random random, double... splits) {
+		return splitRandomly(informationTable, false, random, splits);
 	}
 	
 	/**
@@ -249,7 +249,7 @@ public class Splitter {
 	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0
 	 * @throws InvalidValueException if any proportion is not within interval [0,1]
 	 */
-	public static List<InformationTable> randomSplit(InformationTable informationTable, boolean accelerateByReadOnlyResult, Random random, double... splits) {
+	public static List<InformationTable> splitRandomly(InformationTable informationTable, boolean accelerateByReadOnlyResult, Random random, double... splits) {
 		Precondition.notNull(informationTable, "Information table provided to split is null.");
 		Precondition.notNull(random, "Provided random generator is null.");
 		Precondition.notNull(splits, "Provided array with splits is null.");
@@ -294,8 +294,8 @@ public class Splitter {
 	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0
 	 * @throws InvalidValueException if any proportion is not within interval [0,1]
 	 */
-	public static List<InformationTable> randomStratifiedSplit(InformationTableWithDecisionDistributions informationTable, Random random, double... splits) {
-		return randomStratifiedSplit(informationTable, false, random, splits);
+	public static List<InformationTable> splitStratifiedRandomly(InformationTableWithDecisionDistributions informationTable, Random random, double... splits) {
+		return splitStratifiedRandomly(informationTable, false, random, splits);
 	}
 	
 	/**
@@ -321,7 +321,7 @@ public class Splitter {
 	 * @throws IllegalArgumentException when size of array with split proportions is lower than 2 or sum of split proportions is greater than 1.0
 	 * @throws InvalidValueException if any proportion is not within interval [0,1]
 	 */
-	public static List<InformationTable> randomStratifiedSplit(InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, Random random, double... splits) {
+	public static List<InformationTable> splitStratifiedRandomly(InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, Random random, double... splits) {
 		Precondition.notNull(informationTable, "Information table provided to split is null.");
 		Precondition.notNull(random, "Provided random generator is null.");
 		Precondition.notNull(splits, "Provided array with splits is null.");
