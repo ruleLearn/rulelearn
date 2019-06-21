@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 
 /**
- * Splits {@link InformationTable information table (a data set)} into multiple information sub-tables (subsets of the data set).
+ * Splits {@link InformationTable an information table (a data set)} into multiple disjoint information sub-tables (subsets of the data set).
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -228,7 +228,7 @@ public class Splitter {
 	}
 	
 	/**
-	 * Randomly splits {@link InformationTable information table} provided as a parameter into multiple information sub-tables according to proportions
+	 * Randomly splits {@link InformationTable an information table} provided as a parameter into multiple information sub-tables according to proportions
 	 * provided as a parameter.
 	 * 
 	 * @param informationTable {@link InformationTable information table} which will be split into sub tables
@@ -275,7 +275,7 @@ public class Splitter {
 	}
 	
 	/**
-	 * Randomly splits {@link InformationTable information table} provided as a parameter into multiple information sub-tables according to proportions
+	 * Randomly splits {@link InformationTable an information table} provided as a parameter into multiple information sub-tables according to proportions
 	 * provided as a parameter, and according to the distribution of decisions in the information table (i.e., each constructed 
 	 * sub-table has the same distribution of decisions as the original information table). 
 	 * 
@@ -299,7 +299,7 @@ public class Splitter {
 	}
 	
 	/**
-	 * Randomly splits {@link InformationTable information table} provided as a parameter into multiple information sub-tables according to proportions
+	 * Randomly splits {@link InformationTable an information table} provided as a parameter into multiple information sub-tables according to proportions
 	 * provided as a parameter, and according to the distribution of decisions in the information table (i.e., each constructed 
 	 * sub-table has the same distribution of decisions as the original information table). 
 	 * 
