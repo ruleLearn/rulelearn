@@ -16,7 +16,9 @@
 
 package org.rulelearn.sampling;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -39,16 +41,15 @@ import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
-import org.rulelearn.sampling.Splitter;
 
 /**
- * Tests for {@link Splitter}.
+ * Tests for {@link RandomSplitter}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-class SplitterTest {
-	
+class RandomSplitterTest {
+
 	private InformationTableTestConfiguration informationTableTestConfiguration;
 
 	@BeforeEach
@@ -95,158 +96,42 @@ class SplitterTest {
 						{"30", "0"}
 				});
 	}
-	
-	/**
-	 * Tests for {@link Splitter#split(InformationTable, double...)}.
-	 */
-	@Test
-	void testSplit00() {
-		InformationTable informationTable = informationTableTestConfiguration.getInformationTable(true);
-		assertThrows(NullPointerException.class, () -> {Splitter.split(null);});
-		assertThrows(NullPointerException.class, () -> {Splitter.split(null, null);});
-		assertThrows(NullPointerException.class, () -> {Splitter.split(null, new double [] {});});
-		assertThrows(NullPointerException.class, () -> {Splitter.split(informationTable, null);});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.split(informationTable, new double [] {});});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.split(informationTable, new double [] {0.1});});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.split(informationTable, 0.1);});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.split(informationTable, new double [] {0.1, 1.0});});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.split(informationTable, 0.1, 1.0);});
-		assertThrows(InvalidValueException.class, () -> {Splitter.split(informationTable, new double [] {-0.1, 0.01});});
-		assertThrows(InvalidValueException.class, () -> {Splitter.split(informationTable, -0.1, 0.01);});
-	}
 
 	/**
-	 * Tests for {@link Splitter#split(InformationTable, double...)}.
-	 */
-	@Test
-	void testSplit01() {
-		InformationTable informationTable = informationTableTestConfiguration.getInformationTable(true);
-		List<InformationTable> informationTables = Splitter.split(informationTable, 0.5, 0.5);
-		assertEquals(15, informationTables.get(0).getNumberOfObjects());
-		assertEquals(15, informationTables.get(1).getNumberOfObjects());
-		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(1)));
-		informationTables = Splitter.split(informationTable, 1.0/3, 0.5);
-		assertEquals(10, informationTables.get(0).getNumberOfObjects());
-		assertEquals(15, informationTables.get(1).getNumberOfObjects());
-		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(1)));
-		informationTables = Splitter.split(informationTable, 1.0/3, 1.0/3, 1.0/3);
-		assertEquals(10, informationTables.get(0).getNumberOfObjects());
-		assertEquals(10, informationTables.get(1).getNumberOfObjects());
-		assertEquals(10, informationTables.get(2).getNumberOfObjects());
-		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(1)));
-		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(2)));
-		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(1), informationTables.get(2)));
-	}
-	
-	/**
-	 * Tests for {@link Splitter#split(InformationTable, double...)}.
-	 */
-	@Test
-	void testSplit02() {
-		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(informationTableTestConfiguration.getInformationTable(true));
-		assertThrows(NullPointerException.class, () -> {Splitter.splitStratified(null);});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitStratified(null, null);});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitStratified(null, new double [] {});});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitStratified(informationTable, null);});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.splitStratified(informationTable, new double [] {});});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.splitStratified(informationTable, new double [] {0.1});});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.splitStratified(informationTable, 0.1);});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.splitStratified(informationTable, new double [] {0.1, 1.0});});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.splitStratified(informationTable, 0.1, 1.0);});
-		assertThrows(InvalidValueException.class, () -> {Splitter.splitStratified(informationTable, new double [] {-0.1, 0.01});});
-		assertThrows(InvalidValueException.class, () -> {Splitter.splitStratified(informationTable, -0.1, 0.01);});
-	}
-	
-	/**
-	 * Tests for {@link Splitter#splitStratified(InformationTableWithDecisionDistributions, double...)}.
-	 */
-	@Test
-	void testSplit03() {
-		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(informationTableTestConfiguration.getInformationTable(true));
-		// check distribution of decisions in the information table
-		for (Decision decision : informationTable.getDecisions()) {
-			assertEquals(1.0/3, ((double)informationTable.getDecisionDistribution().getCount(decision))/informationTable.getNumberOfObjects());
-		}
-		// perform splitting
-		List<InformationTable> informationTables = Splitter.splitStratified(informationTable, new double [] {0.5, 0.5});
-		assertEquals(15, informationTables.get(0).getNumberOfObjects());
-		assertEquals(15, informationTables.get(1).getNumberOfObjects());
-		// check distribution of decisions in information sub-tables
-		for (InformationTable table : informationTables) {
-			InformationTableWithDecisionDistributions informationSubTable = new InformationTableWithDecisionDistributions(table);
-			for (Decision decision : informationTable.getDecisions()) {
-				assertEquals(1.0/3, ((double)informationSubTable.getDecisionDistribution().getCount(decision))/informationSubTable.getNumberOfObjects());
-			}
-		}
-		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(1)));
-		
-		informationTables = Splitter.splitStratified(informationTable, new double [] {1.0/3, 0.5});
-		assertEquals(9, informationTables.get(0).getNumberOfObjects());
-		assertEquals(15, informationTables.get(1).getNumberOfObjects());
-		// check distribution of decisions in information sub-tables
-		for (InformationTable table : informationTables) {
-			InformationTableWithDecisionDistributions informationSubTable = new InformationTableWithDecisionDistributions(table);
-			for (Decision decision : informationTable.getDecisions()) {
-				assertEquals(1.0/3, ((double)informationSubTable.getDecisionDistribution().getCount(decision))/informationSubTable.getNumberOfObjects());
-			}
-		}
-		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(1)));
-		
-		informationTables = Splitter.splitStratified(informationTable, new double [] {1.0/3, 1.0/3, 1.0/3});
-		assertEquals(9, informationTables.get(0).getNumberOfObjects());
-		assertEquals(9, informationTables.get(1).getNumberOfObjects());
-		assertEquals(9, informationTables.get(2).getNumberOfObjects());
-		// check distribution of decisions in information sub-tables
-		for (InformationTable table : informationTables) {
-			InformationTableWithDecisionDistributions informationSubTable = new InformationTableWithDecisionDistributions(table);
-			for (Decision decision : informationTable.getDecisions()) {
-				assertEquals(1.0/3, ((double)informationSubTable.getDecisionDistribution().getCount(decision))/informationSubTable.getNumberOfObjects());
-			}
-		}
-		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(1)));
-		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(2)));
-		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(1), informationTables.get(2)));
-	}
-	
-	/**
-	 * Tests for {@link Splitter#splitRandomly(InformationTable, java.util.Random, double...)}.
+	 * Tests for {@link RandomSplitter#split(InformationTable, double...)}.
 	 */
 	@Test
 	void testSplit04() {
 		InformationTable informationTable = informationTableTestConfiguration.getInformationTable(true);
-		assertThrows(NullPointerException.class, () -> {Splitter.splitRandomly(null, null);});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitRandomly(null, null, null);});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitRandomly(null, null, new double [] {});});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitRandomly(null, new Random());});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitRandomly(null, new Random(), null);});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitRandomly(null, new Random(), new double [] {});});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitRandomly(informationTable, null);});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitRandomly(informationTable, null, null);});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitRandomly(informationTable, new Random(), null);});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.splitRandomly(informationTable, new Random(), new double [] {});});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.splitRandomly(informationTable, new Random(), new double [] {0.1});});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.splitRandomly(informationTable, new Random(), 0.1);});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.splitRandomly(informationTable, new Random(), new double [] {0.1, 1.0});});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.splitRandomly(informationTable, new Random(), 0.1, 1.0);});
-		assertThrows(InvalidValueException.class, () -> {Splitter.splitRandomly(informationTable, new Random(), new double [] {-0.1, 0.01});});
-		assertThrows(InvalidValueException.class, () -> {Splitter.splitRandomly(informationTable, new Random(), -0.1, 0.01);});
+		RandomSplitter splitter = new RandomSplitter(new Random(64));
+		assertThrows(NullPointerException.class, () -> {splitter.split(null, null);});
+		assertThrows(NullPointerException.class, () -> {splitter.split(null, new double [] {});});
+		assertThrows(NullPointerException.class, () -> {splitter.split(informationTable, null);});
+		assertThrows(IllegalArgumentException.class, () -> {splitter.split(informationTable, new double [] {});});
+		assertThrows(IllegalArgumentException.class, () -> {splitter.split(informationTable, new double [] {0.1});});
+		assertThrows(IllegalArgumentException.class, () -> {splitter.split(informationTable, 0.1);});
+		assertThrows(IllegalArgumentException.class, () -> {splitter.split(informationTable, new double [] {0.1, 1.0});});
+		assertThrows(IllegalArgumentException.class, () -> {splitter.split(informationTable, 0.1, 1.0);});
+		assertThrows(InvalidValueException.class, () -> {splitter.split(informationTable, new double [] {-0.1, 0.01});});
+		assertThrows(InvalidValueException.class, () -> {splitter.split(informationTable, -0.1, 0.01);});
 	}
 	
 	/**
-	 * Tests for {@link Splitter#splitRandomly(InformationTable, Random, double...)}.
+	 * Tests for {@link RandomSplitter#split(InformationTable, double...)}.
 	 */
 	@Test
 	void testSplit05() {
 		InformationTable informationTable = informationTableTestConfiguration.getInformationTable(true);
-		List<InformationTable> informationTables = Splitter.splitRandomly(informationTable, new Random(64), new double [] {0.5, 0.5});
+		RandomSplitter splitter = new RandomSplitter(new Random(64));
+		List<InformationTable> informationTables = splitter.split(informationTable, new double [] {0.5, 0.5});
 		assertEquals(15, informationTables.get(0).getNumberOfObjects());
 		assertEquals(15, informationTables.get(1).getNumberOfObjects());
 		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(1)));
-		informationTables = Splitter.splitRandomly(informationTable, new Random(64), new double [] {1.0/3, 0.5});
+		informationTables = splitter.split(informationTable, new double [] {1.0/3, 0.5});
 		assertEquals(10, informationTables.get(0).getNumberOfObjects());
 		assertEquals(15, informationTables.get(1).getNumberOfObjects());
 		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(1)));
-		informationTables = Splitter.splitRandomly(informationTable, new Random(64), new double [] {1.0/3, 1.0/3, 1.0/3});
+		informationTables = splitter.split(informationTable, new double [] {1.0/3, 1.0/3, 1.0/3});
 		assertEquals(10, informationTables.get(0).getNumberOfObjects());
 		assertEquals(10, informationTables.get(1).getNumberOfObjects());
 		assertEquals(10, informationTables.get(2).getNumberOfObjects());
@@ -256,41 +141,37 @@ class SplitterTest {
 	}
 	
 	/**
-	 * Tests for {@link Splitter#splitStratifiedRandomly(InformationTableWithDecisionDistributions, Random, double...)}.
+	 * Tests for {@link RandomSplitter#splitStratified(InformationTableWithDecisionDistributions, double...)}.
 	 */
 	@Test
 	void testSplit06() {
 		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(informationTableTestConfiguration.getInformationTable(true));
-		assertThrows(NullPointerException.class, () -> {Splitter.splitStratifiedRandomly(null, null);});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitStratifiedRandomly(null, null, null);});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitStratifiedRandomly(null, null, new double [] {});});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitStratifiedRandomly(null, new Random());});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitStratifiedRandomly(null, new Random(), null);});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitStratifiedRandomly(null, new Random(), new double [] {});});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitStratifiedRandomly(informationTable, null);});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitStratifiedRandomly(informationTable, null, null);});
-		assertThrows(NullPointerException.class, () -> {Splitter.splitStratifiedRandomly(informationTable, new Random(), null);});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.splitStratifiedRandomly(informationTable, new Random(), new double [] {});});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.splitStratifiedRandomly(informationTable, new Random(), new double [] {0.1});});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.splitStratifiedRandomly(informationTable, new Random(), 0.1);});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.splitStratifiedRandomly(informationTable, new Random(), new double [] {0.1, 1.0});});
-		assertThrows(IllegalArgumentException.class, () -> {Splitter.splitStratifiedRandomly(informationTable, new Random(), 0.1, 1.0);});
-		assertThrows(InvalidValueException.class, () -> {Splitter.splitStratifiedRandomly(informationTable, new Random(), new double [] {-0.1, 0.01});});
-		assertThrows(InvalidValueException.class, () -> {Splitter.splitStratifiedRandomly(informationTable, new Random(), -0.1, 0.01);});
+		RandomSplitter splitter = new RandomSplitter(new Random(64));
+		assertThrows(NullPointerException.class, () -> {splitter.splitStratified(null, null);});
+		assertThrows(NullPointerException.class, () -> {splitter.splitStratified(null, new double [] {});});
+		assertThrows(NullPointerException.class, () -> {splitter.splitStratified(informationTable, null);});
+		assertThrows(IllegalArgumentException.class, () -> {splitter.splitStratified(informationTable, new double [] {});});
+		assertThrows(IllegalArgumentException.class, () -> {splitter.splitStratified(informationTable, new double [] {0.1});});
+		assertThrows(IllegalArgumentException.class, () -> {splitter.splitStratified(informationTable, 0.1);});
+		assertThrows(IllegalArgumentException.class, () -> {splitter.splitStratified(informationTable, new double [] {0.1, 1.0});});
+		assertThrows(IllegalArgumentException.class, () -> {splitter.splitStratified(informationTable, 0.1, 1.0);});
+		assertThrows(InvalidValueException.class, () -> {splitter.splitStratified(informationTable, new double [] {-0.1, 0.01});});
+		assertThrows(InvalidValueException.class, () -> {splitter.splitStratified(informationTable, -0.1, 0.01);});
 	}
 	
 	/**
-	 * Tests for {@link Splitter#splitStratifiedRandomly(InformationTableWithDecisionDistributions, Random, double...)}.
+	 * Tests for {@link RandomSplitter#splitStratified(InformationTableWithDecisionDistributions, double...)}.
 	 */
 	@Test
 	void testSplit07() {
 		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(informationTableTestConfiguration.getInformationTable(true));
+		RandomSplitter splitter = new RandomSplitter(new Random(64));
 		// check distribution of decisions in the information table
 		for (Decision decision : informationTable.getDecisions()) {
 			assertEquals(1.0/3, ((double)informationTable.getDecisionDistribution().getCount(decision))/informationTable.getNumberOfObjects());
 		}
 		// perform splitting
-		List<InformationTable> informationTables = Splitter.splitStratifiedRandomly(informationTable, new Random(64), new double [] {0.5, 0.5});
+		List<InformationTable> informationTables = splitter.splitStratified(informationTable, new double [] {0.5, 0.5});
 		assertEquals(15, informationTables.get(0).getNumberOfObjects());
 		assertEquals(15, informationTables.get(1).getNumberOfObjects());
 		// check distribution of decisions in information sub-tables
@@ -302,7 +183,7 @@ class SplitterTest {
 		}
 		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(1)));
 		
-		informationTables = Splitter.splitStratifiedRandomly(informationTable, new Random(64), new double [] {1.0/3, 0.5});
+		informationTables = splitter.splitStratified(informationTable,  new double [] {1.0/3, 0.5});
 		assertEquals(9, informationTables.get(0).getNumberOfObjects());
 		assertEquals(15, informationTables.get(1).getNumberOfObjects());
 		// check distribution of decisions in information sub-tables
@@ -314,7 +195,7 @@ class SplitterTest {
 		}
 		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(1)));
 		
-		informationTables = Splitter.splitStratifiedRandomly(informationTable, new Random(64), new double [] {1.0/3, 1.0/3, 1.0/3});
+		informationTables = splitter.splitStratified(informationTable, new double [] {1.0/3, 1.0/3, 1.0/3});
 		assertEquals(9, informationTables.get(0).getNumberOfObjects());
 		assertEquals(9, informationTables.get(1).getNumberOfObjects());
 		assertEquals(9, informationTables.get(2).getNumberOfObjects());
@@ -331,13 +212,15 @@ class SplitterTest {
 	}
 	
 	/**
-	 * Tests for repetitions of {@link Splitter#splitRandomly(InformationTable, Random, double...)}.
+	 * Tests for repetitions of {@link RandomSplitter#split(InformationTable, double...)}.
 	 */
 	@Test
 	void testSplit08() {
 		InformationTable informationTable = informationTableTestConfiguration.getInformationTable(true);
-		List<InformationTable> informationTables1 = Splitter.splitRandomly(informationTable, new Random(64), 0.5, 0.5);
-		List<InformationTable> informationTables2 = Splitter.splitRandomly(informationTable, new Random(64), new double [] {0.5, 0.5});
+		RandomSplitter splitter1 = new RandomSplitter(new Random(64));
+		RandomSplitter splitter2 = new RandomSplitter(new Random(64));
+		List<InformationTable> informationTables1 = splitter1.split(informationTable, 0.5, 0.5);
+		List<InformationTable> informationTables2 = splitter2.split(informationTable, new double [] {0.5, 0.5});
 		assertEquals(15, informationTables1.get(0).getNumberOfObjects());
 		assertEquals(15, informationTables1.get(1).getNumberOfObjects());
 		assertTrue(noEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables1.get(1)));
@@ -347,8 +230,8 @@ class SplitterTest {
 		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables2.get(0)));
 		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(1), informationTables2.get(1)));
 		
-		informationTables1 = Splitter.splitRandomly(informationTable, new Random(64), 1.0/3, 0.5);
-		informationTables2 = Splitter.splitRandomly(informationTable, new Random(64), new double [] {1.0/3, 0.5});
+		informationTables1 = splitter1.split(informationTable, 1.0/3, 0.5);
+		informationTables2 = splitter2.split(informationTable, new double [] {1.0/3, 0.5});
 		assertEquals(10, informationTables1.get(0).getNumberOfObjects());
 		assertEquals(15, informationTables1.get(1).getNumberOfObjects());
 		assertTrue(noEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables1.get(1)));
@@ -358,8 +241,8 @@ class SplitterTest {
 		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables2.get(0)));
 		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(1), informationTables2.get(1)));
 		
-		informationTables1 = Splitter.splitRandomly(informationTable, new Random(64), 1.0/3, 1.0/3, 1.0/3);
-		informationTables2 = Splitter.splitRandomly(informationTable, new Random(64), new double [] {1.0/3, 1.0/3, 1.0/3});
+		informationTables1 = splitter1.split(informationTable, 1.0/3, 1.0/3, 1.0/3);
+		informationTables2 = splitter2.split(informationTable, new double [] {1.0/3, 1.0/3, 1.0/3});
 		assertEquals(10, informationTables1.get(0).getNumberOfObjects());
 		assertEquals(10, informationTables1.get(1).getNumberOfObjects());
 		assertEquals(10, informationTables1.get(2).getNumberOfObjects());
@@ -378,18 +261,20 @@ class SplitterTest {
 	}
 	
 	/**
-	 * Tests for repetitions of {@link Splitter#splitStratifiedRandomly(InformationTableWithDecisionDistributions, Random, double...)}.
+	 * Tests for repetitions of {@link RandomSplitter#splitStratified(InformationTableWithDecisionDistributions, double...)}.
 	 */
 	@Test
 	void testSplit09() {
 		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(informationTableTestConfiguration.getInformationTable(true));
+		RandomSplitter splitter1 = new RandomSplitter(new Random(64));
+		RandomSplitter splitter2 = new RandomSplitter(new Random(64));
 		// check distribution of decisions in the information table
 		for (Decision decision : informationTable.getDecisions()) {
 			assertEquals(1.0/3, ((double)informationTable.getDecisionDistribution().getCount(decision))/informationTable.getNumberOfObjects());
 		}
 		// perform splitting
-		List<InformationTable> informationTables1 = Splitter.splitStratifiedRandomly(informationTable, new Random(64), new double [] {0.5, 0.5});
-		List<InformationTable> informationTables2 = Splitter.splitStratifiedRandomly(informationTable, new Random(64), 0.5, 0.5);
+		List<InformationTable> informationTables1 = splitter1.splitStratified(informationTable, new double [] {0.5, 0.5});
+		List<InformationTable> informationTables2 = splitter2.splitStratified(informationTable, 0.5, 0.5);
 		assertEquals(15, informationTables1.get(0).getNumberOfObjects());
 		assertEquals(15, informationTables1.get(1).getNumberOfObjects());
 		assertEquals(15, informationTables2.get(0).getNumberOfObjects());
@@ -412,8 +297,8 @@ class SplitterTest {
 		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables2.get(0)));
 		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(1), informationTables2.get(1)));
 		
-		informationTables1 = Splitter.splitStratifiedRandomly(informationTable, new Random(64), new double [] {1.0/3, 0.5});
-		informationTables2 = Splitter.splitStratifiedRandomly(informationTable, new Random(64), 1.0/3, 0.5);
+		informationTables1 = splitter1.splitStratified(informationTable, new double [] {1.0/3, 0.5});
+		informationTables2 = splitter2.splitStratified(informationTable, 1.0/3, 0.5);
 		assertEquals(9, informationTables1.get(0).getNumberOfObjects());
 		assertEquals(15, informationTables1.get(1).getNumberOfObjects());
 		assertEquals(9, informationTables2.get(0).getNumberOfObjects());
@@ -436,8 +321,8 @@ class SplitterTest {
 		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables2.get(0)));
 		assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(1), informationTables2.get(1)));
 		
-		informationTables1 = Splitter.splitStratifiedRandomly(informationTable, new Random(64), new double [] {1.0/3, 1.0/3, 1.0/3});
-		informationTables2 = Splitter.splitStratifiedRandomly(informationTable, new Random(64), 1.0/3, 1.0/3, 1.0/3);
+		informationTables1 = splitter1.splitStratified(informationTable, new double [] {1.0/3, 1.0/3, 1.0/3});
+		informationTables2 = splitter2.splitStratified(informationTable, 1.0/3, 1.0/3, 1.0/3);
 		assertEquals(9, informationTables1.get(0).getNumberOfObjects());
 		assertEquals(9, informationTables1.get(1).getNumberOfObjects());
 		assertEquals(9, informationTables1.get(2).getNumberOfObjects());
@@ -469,99 +354,24 @@ class SplitterTest {
 	}
 	
 	/**
-	 * Tests for repetitions of {@link Splitter#splitStratifiedRandomly(InformationTableWithDecisionDistributions, Random, double...)}.
+	 * Tests for repetitions of {@link RandomSplitter#splitStratified(InformationTableWithDecisionDistributions, double...)}.
 	 */
 	@Test
 	void testSplit11() {
 		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(informationTableTestConfiguration.getInformationTable(true));
+		RandomSplitter splitter1 = new RandomSplitter(new Random(64));
+		RandomSplitter splitter2 = new RandomSplitter(new Random(64));
 		List<InformationTable> informationTables1, informationTables2;
 		for (int i = 0; i < 100; i++) {
-			informationTables1 = Splitter.splitStratifiedRandomly(informationTable, new Random(64), 1.0/3, 0.5);
-			informationTables2 = Splitter.splitStratifiedRandomly(informationTable, new Random(64), 1.0/3, 0.5);
+			informationTables1 = splitter1.splitStratified(informationTable, 1.0/3, 0.5);
+			informationTables2 = splitter2.splitStratified(informationTable, 1.0/3, 0.5);
 			assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables2.get(0)));
 			assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(1), informationTables2.get(1)));
 		}
 	}
 	
 	/**
-	 * Tests for repetitions of {@link Splitter#splitStratified(InformationTableWithDecisionDistributions, double...)}.
-	 */
-	@Test
-	void testSplit12() {
-		for (int i = 0; i < 10; i++) {
-			InformationTableWithDecisionDistributions informationTable = null;
-			try {
-				informationTable = new InformationTableWithDecisionDistributions(InformationTableBuilder.buildFromJSONFile("src/test/resources/data/json/metadata-prioritisation.json", "src/test/resources/data/json/data-example4.json"));
-			}
-			catch (FileNotFoundException ex) {
-				System.out.println(ex);
-			}
-			catch (IOException ex) {
-				System.out.println(ex);
-			}
-			List<InformationTable> informationTables1, informationTables2;
-			informationTables1 = Splitter.splitStratified(informationTable, 1.0/3, 0.5);
-			informationTables2 = Splitter.splitStratified(informationTable, true, 1.0/3, 0.5);
-			/* debug
-			System.out.println("-first repeated-");
-			for (int j = 0; j < informationTables1.get(0).getNumberOfObjects(); j++) {
-				System.out.println(informationTables1.get(0).getIdentifier(j).toString());
-			}
-			System.out.println("-second repeated-");
-			for (int j = 0; j < informationTables2.get(0).getNumberOfObjects(); j++) {
-				System.out.println(informationTables2.get(0).getIdentifier(j).toString());
-			}*/
-			assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables2.get(0)));
-			assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(1), informationTables2.get(1)));
-		}
-	}
-	
-	/**
-	 * Tests for repetitions of {@link Splitter#splitStratifiedRandomly(InformationTableWithDecisionDistributions, Random, double...)}.
-	 */
-	@Test
-	void testSplit13() {
-		InformationTableWithDecisionDistributions informationTable = null;
-		try {
-			informationTable = new InformationTableWithDecisionDistributions(InformationTableBuilder.buildFromJSONFile("src/test/resources/data/json/metadata-prioritisation.json", "src/test/resources/data/json/data-example4.json"));
-		}
-		catch (FileNotFoundException ex) {
-			System.out.println(ex);
-		}
-		catch (IOException ex) {
-			System.out.println(ex);
-		}
-		List<InformationTable> informationTables1;
-		informationTables1 = Splitter.splitStratified(informationTable, new double [] {1.0/3, 0.5});
-		/* debug
-		System.out.println("-first-");
-		for (int j = 0; j < informationTables1.get(0).getNumberOfObjects(); j++) {
-			System.out.println(informationTables1.get(0).getIdentifier(j).toString());
-		}*/
-		for (int i = 0; i < 10; i++) {
-			try {
-				informationTable = new InformationTableWithDecisionDistributions(InformationTableBuilder.buildFromJSONFile("src/test/resources/data/json/metadata-prioritisation.json", "src/test/resources/data/json/data-example4.json"));
-			}
-			catch (FileNotFoundException ex) {
-				System.out.println(ex);
-			}
-			catch (IOException ex) {
-				System.out.println(ex);
-			}
-			List<InformationTable> informationTables2;
-			informationTables2 = Splitter.splitStratified(informationTable, true, new double [] {1.0/3, 0.5});
-			/* debug
-			System.out.println("-repeated-");
-			for (int j = 0; j < informationTables2.get(0).getNumberOfObjects(); j++) {
-				System.out.println(informationTables2.get(0).getIdentifier(j).toString());
-			}*/
-			assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(0), informationTables2.get(0)));
-			assertTrue(allEqualValuesOnFirstAttribute(informationTables1.get(1), informationTables2.get(1)));
-		}
-	}
-	
-	/**
-	 * Tests for repetitions of {@link Splitter#splitStratifiedRandomly(InformationTableWithDecisionDistributions, Random, double...)}.
+	 * Tests for repetitions of {@link RandomSplitter#splitStratified(InformationTableWithDecisionDistributions, double...)}.
 	 */
 	@Test
 	void testSplit14() {
@@ -576,9 +386,11 @@ class SplitterTest {
 			catch (IOException ex) {
 				System.out.println(ex);
 			}
+			RandomSplitter splitter1 = new RandomSplitter(new Random(64));
+			RandomSplitter splitter2 = new RandomSplitter(new Random(64));
 			List<InformationTable> informationTables1, informationTables2;
-			informationTables1 = Splitter.splitStratifiedRandomly(informationTable, new Random(64), new double [] {1.0/3, 0.5});
-			informationTables2 = Splitter.splitStratifiedRandomly(informationTable, true, new Random(64), new double [] {1.0/3, 0.5});
+			informationTables1 = splitter1.splitStratified(informationTable, new double [] {1.0/3, 0.5});
+			informationTables2 = splitter2.splitStratified(informationTable, true, new double [] {1.0/3, 0.5});
 			/* debug
 			System.out.println("-first repeated-");
 			for (int j = 0; j < informationTables1.get(0).getNumberOfObjects(); j++) {
@@ -594,7 +406,7 @@ class SplitterTest {
 	}
 	
 	/**
-	 * Tests for repetitions of {@link Splitter#splitStratifiedRandomly(InformationTableWithDecisionDistributions, Random, double...)}.
+	 * Tests for repetitions of {@link RandomSplitter#splitStratified(InformationTableWithDecisionDistributions, double...)}.
 	 */
 	@Test
 	void testSplit15() {
@@ -608,8 +420,9 @@ class SplitterTest {
 		catch (IOException ex) {
 			System.out.println(ex);
 		}
+		RandomSplitter splitter1 = new RandomSplitter(new Random(64));
 		List<InformationTable> informationTables1;
-		informationTables1 = Splitter.splitStratifiedRandomly(informationTable, new Random(64), new double [] {1.0/3, 0.5});
+		informationTables1 = splitter1.splitStratified(informationTable, new double [] {1.0/3, 0.5});
 		/* debug
 		System.out.println("-first-");
 		for (int j = 0; j < informationTables1.get(0).getNumberOfObjects(); j++) {
@@ -625,8 +438,9 @@ class SplitterTest {
 			catch (IOException ex) {
 				System.out.println(ex);
 			}
+			RandomSplitter splitter2 = new RandomSplitter(new Random(64));
 			List<InformationTable> informationTables2;
-			informationTables2 = Splitter.splitStratifiedRandomly(informationTable, true, new Random(64), new double [] {1.0/3, 0.5});
+			informationTables2 = splitter2.splitStratified(informationTable, true, new double [] {1.0/3, 0.5});
 			/* debug
 			System.out.println("-repeated-");
 			for (int j = 0; j < informationTables2.get(0).getNumberOfObjects(); j++) {

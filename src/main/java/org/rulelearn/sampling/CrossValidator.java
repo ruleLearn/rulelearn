@@ -57,21 +57,35 @@ public class CrossValidator {
 	}
 	
 	/**
+	 * Source of randomness.
+	 */
+	Random random = null;
+	
+	/** 
+	 * Constructor setting random generator (i.e., the source of randomness for this cross-validator).
+	 * 
+	 * @param random random generator
+	 * 
+	 * @throws NullPointerException when the {@link Random random generator} is {@code null}
+	 */
+	public CrossValidator(Random random) {
+		this.random = Precondition.notNull(random, "Provided random generator is null.");
+	}
+	
+	/**
 	 * Randomly splits {@link InformationTable an information table} provided as a parameter into a given number k (also provided as a parameter) 
 	 * of {@link CrossValidationFold folds}. Each fold consists of two disjoint sub-tables of the information table. 
 	 *
 	 * @param informationTable {@link InformationTable information table} which will be split into folds
-	 * @param random the source of randomness
 	 * @param k number of folds
 	 * 
 	 * @return list with k {@link CrossValidationFold folds}
 	 * 
-	 * @throws NullPointerException when the informationTable {@link InformationTable information table}, or source of randomness 
-	 * provided as parameters are {@code null}
+	 * @throws NullPointerException when the informationTable {@link InformationTable information table} is {@code null}
 	 * @throws InvalidValueException when the provided number of folds is negative
 	 */
-	public List<CrossValidationFold<InformationTable>> splitIntoKFold (InformationTable informationTable, Random random, int k) {
-		return splitIntoKFold(informationTable, false, random, k);
+	public List<CrossValidationFold<InformationTable>> splitIntoKFold (InformationTable informationTable, int k) {
+		return splitIntoKFold(informationTable, false, k);
 	}
 	
 	/**
@@ -79,7 +93,6 @@ public class CrossValidator {
 	 * of {@link CrossValidationFold folds}. Each fold consists of two disjoint sub-tables of the information table.
 	 * 
 	 * @param informationTable {@link InformationTable information table} which will be split into folds
-	 * @param random the source of randomness
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
 	 *        at the cost of returning read-only information tables, or should return folds with safe information tables (which may be modified),
 	 *        at the cost of returning the result slower
@@ -87,13 +100,11 @@ public class CrossValidator {
 	 * 
 	 * @return k {@link CrossValidationFold folds}
 	 * 
-	 * @throws NullPointerException when the informationTable {@link InformationTable information table}, or source of randomness 
-	 * provided as parameters are {@code null}
+	 * @throws NullPointerException when the informationTable {@link InformationTable information table} is {@code null}
 	 * @throws InvalidValueException when the provided number of folds is negative
 	 */
-	public List<CrossValidationFold<InformationTable>> splitIntoKFold (InformationTable informationTable, boolean accelerateByReadOnlyResult, Random random, int k) {
+	public List<CrossValidationFold<InformationTable>> splitIntoKFold (InformationTable informationTable, boolean accelerateByReadOnlyResult, int k) {
 		Precondition.notNull(informationTable, "Information table provided to cross-validate is null.");
-		Precondition.notNull(random, "Provided random generator is null.");
 		Precondition.nonNegative(k, "Provided number of folds is negative.");
 		List<CrossValidationFold<InformationTable>> folds = new ArrayList<CrossValidationFold<InformationTable>> ();
 		
@@ -109,17 +120,15 @@ public class CrossValidator {
 	 * decisions as the original information table).
 	 * 
 	 * @param informationTable {@link InformationTable information table} which will be split into folds
-	 * @param random the source of randomness
 	 * @param k number of folds
 	 * 
 	 * @return k {@link CrossValidationFold folds}
 	 * 
-	 * @throws NullPointerException when the informationTable {@link InformationTable information table}, or source of randomness 
-	 * provided as parameters are {@code null}
+	 * @throws NullPointerException when the informationTable {@link InformationTable information table} is {@code null}
 	 * @throws InvalidValueException when the provided number of folds is negative
 	 */
-	public List<CrossValidationFold<InformationTableWithDecisionDistributions>> splitIntoKFoldStratified (InformationTableWithDecisionDistributions informationTable, Random random, int k) {
-		return splitIntoKFoldStratified(informationTable, false, random, k);
+	public List<CrossValidationFold<InformationTableWithDecisionDistributions>> splitIntoKFoldStratified (InformationTableWithDecisionDistributions informationTable, int k) {
+		return splitIntoKFoldStratified(informationTable, false, k);
 	}
 	
 	/**
@@ -129,7 +138,6 @@ public class CrossValidator {
 	 * decisions as the original information table).
 	 * 
 	 * @param informationTable {@link InformationTable information table} which will be split into folds
-	 * @param random the source of randomness
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
 	 *        at the cost of returning read-only information tables, or should return folds with safe information tables (which may be modified),
 	 *        at the cost of returning the result slower
@@ -137,13 +145,11 @@ public class CrossValidator {
 	 * 
 	 * @return k {@link CrossValidationFold folds}
 	 * 
-	 * @throws NullPointerException when the informationTable {@link InformationTable information table}, or source of randomness 
-	 * provided as parameters are {@code null}
+	 * @throws NullPointerException when the informationTable {@link InformationTable information table} is {@code null}
 	 * @throws InvalidValueException when the provided number of folds is negative
 	 */
-	public List<CrossValidationFold<InformationTableWithDecisionDistributions>> splitIntoKFoldStratified (InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, Random random, int k) {
+	public List<CrossValidationFold<InformationTableWithDecisionDistributions>> splitIntoKFoldStratified (InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, int k) {
 		Precondition.notNull(informationTable, "Information table provided to cross-validate is null.");
-		Precondition.notNull(random, "Provided random generator is null.");
 		Precondition.nonNegative(k, "Provided number of folds is negative.");
 		List<CrossValidationFold<InformationTableWithDecisionDistributions>> folds = new ArrayList<CrossValidationFold<InformationTableWithDecisionDistributions>> ();
 		
