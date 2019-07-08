@@ -80,7 +80,6 @@ public class RandomSplitter implements Splitter {
 	@Override
 	public List<InformationTable> split(InformationTable informationTable, boolean accelerateByReadOnlyResult, double... splits) {
 		Precondition.notNull(informationTable, "Information table provided to split is null.");
-		Precondition.notNull(random, "Provided random generator is null.");
 		Precondition.notNull(splits, "Provided array with splits is null.");
 		checkProportionsArray(splits);
 		List<InformationTable> subTables = new ArrayList<InformationTable> (splits.length);
@@ -128,7 +127,6 @@ public class RandomSplitter implements Splitter {
 	@Override
 	public List<InformationTable> splitStratified(InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, double... splits) {
 		Precondition.notNull(informationTable, "Information table provided to split is null.");
-		Precondition.notNull(random, "Provided random generator is null.");
 		Precondition.notNull(splits, "Provided array with splits is null.");
 		checkProportionsArray(splits);
 		// initialization
