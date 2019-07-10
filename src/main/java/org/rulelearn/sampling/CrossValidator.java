@@ -17,6 +17,7 @@
 package org.rulelearn.sampling;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Random;
 
@@ -106,9 +107,39 @@ public class CrossValidator {
 	public List<CrossValidationFold<InformationTable>> splitIntoKFold (InformationTable informationTable, boolean accelerateByReadOnlyResult, int k) {
 		Precondition.notNull(informationTable, "Information table provided to cross-validate is null.");
 		Precondition.nonNegative(k, "Provided number of folds is negative.");
-		List<CrossValidationFold<InformationTable>> folds = new ArrayList<CrossValidationFold<InformationTable>> ();
+		List<CrossValidationFold<InformationTable>> folds = new ArrayList<CrossValidationFold<InformationTable>> (k);
 		
-		// TODO
+		int informationTableSize = informationTable.getNumberOfObjects(), numberSelectedSoFar = 0, splitSize, i, j;
+		BitSet picked = new BitSet(informationTableSize);
+		int [] indices; 
+		for (int l = 0; l < k; l++) {
+			if (l == (k-1)) {
+				// in the last fold - take all that remained
+				indices = new int [informationTableSize - numberSelectedSoFar];
+				i = 0;
+				for (j = 0; j < informationTableSize; j++) {
+					if (!picked.get(j)) {
+						indices[i++] = j;
+						picked.set(j);
+						numberSelectedSoFar++;
+					}
+				}
+			}
+			else {
+				splitSize =  (int)(informationTableSize/k);
+				indices = new int [splitSize];
+				i = 0;
+				while (i < splitSize) {
+					j = random.nextInt(informationTableSize);
+					if (!picked.get(j)) {
+						indices[i++] = j;
+						picked.set(j);
+						numberSelectedSoFar++;
+					}
+				}
+			}
+			folds.add(new CrossValidationFold<InformationTable>(informationTable.discard(indices, accelerateByReadOnlyResult), informationTable.select(indices, accelerateByReadOnlyResult)));
+		}
 		
 		return folds;
 	}
@@ -127,8 +158,8 @@ public class CrossValidator {
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table} is {@code null}
 	 * @throws InvalidValueException when the provided number of folds is negative
 	 */
-	public List<CrossValidationFold<InformationTableWithDecisionDistributions>> splitIntoKFoldStratified (InformationTableWithDecisionDistributions informationTable, int k) {
-		return splitIntoKFoldStratified(informationTable, false, k);
+	public List<CrossValidationFold<InformationTableWithDecisionDistributions>> splitStratifiedIntoKFold (InformationTableWithDecisionDistributions informationTable, int k) {
+		return splitStratifiedIntoKFold(informationTable, false, k);
 	}
 	
 	/**
@@ -148,7 +179,7 @@ public class CrossValidator {
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table} is {@code null}
 	 * @throws InvalidValueException when the provided number of folds is negative
 	 */
-	public List<CrossValidationFold<InformationTableWithDecisionDistributions>> splitIntoKFoldStratified (InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, int k) {
+	public List<CrossValidationFold<InformationTableWithDecisionDistributions>> splitStratifiedIntoKFold (InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, int k) {
 		Precondition.notNull(informationTable, "Information table provided to cross-validate is null.");
 		Precondition.nonNegative(k, "Provided number of folds is negative.");
 		List<CrossValidationFold<InformationTableWithDecisionDistributions>> folds = new ArrayList<CrossValidationFold<InformationTableWithDecisionDistributions>> ();
