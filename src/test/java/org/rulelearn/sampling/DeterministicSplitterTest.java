@@ -124,14 +124,17 @@ class DeterministicSplitterTest {
 		InformationTable informationTable = informationTableTestConfiguration.getInformationTable(true);
 		DeterministicSplitter splitter = new DeterministicSplitter();
 		List<InformationTable> informationTables = splitter.split(informationTable, 0.5, 0.5);
+		assertEquals(2, informationTables.size());
 		assertEquals(15, informationTables.get(0).getNumberOfObjects());
 		assertEquals(15, informationTables.get(1).getNumberOfObjects());
 		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(1)));
 		informationTables = splitter.split(informationTable, 1.0/3, 0.5);
+		assertEquals(2, informationTables.size());
 		assertEquals(10, informationTables.get(0).getNumberOfObjects());
 		assertEquals(15, informationTables.get(1).getNumberOfObjects());
 		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(1)));
 		informationTables = splitter.split(informationTable, 1.0/3, 1.0/3, 1.0/3);
+		assertEquals(3, informationTables.size());
 		assertEquals(10, informationTables.get(0).getNumberOfObjects());
 		assertEquals(10, informationTables.get(1).getNumberOfObjects());
 		assertEquals(10, informationTables.get(2).getNumberOfObjects());
@@ -173,6 +176,7 @@ class DeterministicSplitterTest {
 		}
 		// perform splitting
 		List<InformationTable> informationTables = splitter.splitStratified(informationTable, new double [] {0.5, 0.5});
+		assertEquals(2, informationTables.size());
 		assertEquals(15, informationTables.get(0).getNumberOfObjects());
 		assertEquals(15, informationTables.get(1).getNumberOfObjects());
 		// check distribution of decisions in information sub-tables
@@ -185,6 +189,7 @@ class DeterministicSplitterTest {
 		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(1)));
 		
 		informationTables = splitter.splitStratified(informationTable, new double [] {1.0/3, 0.5});
+		assertEquals(2, informationTables.size());
 		assertEquals(9, informationTables.get(0).getNumberOfObjects());
 		assertEquals(15, informationTables.get(1).getNumberOfObjects());
 		// check distribution of decisions in information sub-tables
@@ -197,6 +202,7 @@ class DeterministicSplitterTest {
 		assertTrue(noEqualValuesOnFirstAttribute(informationTables.get(0), informationTables.get(1)));
 		
 		informationTables = splitter.splitStratified(informationTable, new double [] {1.0/3, 1.0/3, 1.0/3});
+		assertEquals(3, informationTables.size());
 		assertEquals(9, informationTables.get(0).getNumberOfObjects());
 		assertEquals(9, informationTables.get(1).getNumberOfObjects());
 		assertEquals(9, informationTables.get(2).getNumberOfObjects());
@@ -232,6 +238,8 @@ class DeterministicSplitterTest {
 			List<InformationTable> informationTables1, informationTables2;
 			informationTables1 = splitter.splitStratified(informationTable, 1.0/3, 0.5);
 			informationTables2 = splitter.splitStratified(informationTable, true, 1.0/3, 0.5);
+			assertEquals(2, informationTables1.size());
+			assertEquals(2, informationTables2.size());
 			/* debug
 			System.out.println("-first repeated-");
 			for (int j = 0; j < informationTables1.get(0).getNumberOfObjects(); j++) {
@@ -264,6 +272,7 @@ class DeterministicSplitterTest {
 		}
 		List<InformationTable> informationTables1;
 		informationTables1 = splitter.splitStratified(informationTable, new double [] {1.0/3, 0.5});
+		assertEquals(2, informationTables1.size());
 		/* debug
 		System.out.println("-first-");
 		for (int j = 0; j < informationTables1.get(0).getNumberOfObjects(); j++) {
@@ -281,6 +290,7 @@ class DeterministicSplitterTest {
 			}
 			List<InformationTable> informationTables2;
 			informationTables2 = splitter.splitStratified(informationTable, true, new double [] {1.0/3, 0.5});
+			assertEquals(2, informationTables2.size());
 			/* debug
 			System.out.println("-repeated-");
 			for (int j = 0; j < informationTables2.get(0).getNumberOfObjects(); j++) {
