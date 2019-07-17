@@ -19,12 +19,18 @@ package org.rulelearn.sampling;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
+import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 
 /**
  * Splits {@link InformationTable an information table (a data set)} into multiple disjoint information sub-tables (subsets of the data set).
@@ -158,7 +164,7 @@ public class CrossValidator {
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table} is {@code null}
 	 * @throws InvalidValueException when the provided number of folds is negative
 	 */
-	public List<CrossValidationFold<InformationTableWithDecisionDistributions>> splitStratifiedIntoKFold (InformationTableWithDecisionDistributions informationTable, int k) {
+	public List<CrossValidationFold<InformationTable>> splitStratifiedIntoKFold (InformationTableWithDecisionDistributions informationTable, int k) {
 		return splitStratifiedIntoKFold(informationTable, false, k);
 	}
 	
@@ -179,12 +185,75 @@ public class CrossValidator {
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table} is {@code null}
 	 * @throws InvalidValueException when the provided number of folds is negative
 	 */
-	public List<CrossValidationFold<InformationTableWithDecisionDistributions>> splitStratifiedIntoKFold (InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, int k) {
+	public List<CrossValidationFold<InformationTable>> splitStratifiedIntoKFold (InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, int k) {
 		Precondition.notNull(informationTable, "Information table provided to cross-validate is null.");
 		Precondition.nonNegative(k, "Provided number of folds is negative.");
-		List<CrossValidationFold<InformationTableWithDecisionDistributions>> folds = new ArrayList<CrossValidationFold<InformationTableWithDecisionDistributions>> ();
+		List<CrossValidationFold<InformationTable>> folds = new ArrayList<CrossValidationFold<InformationTable>> (k);
 		
-		// TODO
+		// initialization
+		Set<Decision> decisions = informationTable.getDecisionDistribution().getDecisions();
+		int numberOfDecisions = decisions.size(), numberOfObjectsForDecision;
+		Map<Decision, IntArrayList> objectsToSelect = new Object2ObjectLinkedOpenHashMap<Decision, IntArrayList>(numberOfDecisions);
+		Map<Decision, BitSet> pickedObjects = new Object2ObjectLinkedOpenHashMap<Decision, BitSet>(numberOfDecisions);
+		Decision [] decisionsSet = informationTable.getUniqueDecisions();
+		if (decisionsSet != null) {
+			for (Decision decision : decisionsSet) {
+				numberOfObjectsForDecision = informationTable.getDecisionDistribution().getCount(decision);
+				objectsToSelect.put(decision, new IntArrayList(numberOfObjectsForDecision));
+				pickedObjects.put(decision, new BitSet(numberOfObjectsForDecision));
+			}
+			Decision[] objectDecisions = informationTable.getDecisions();
+			if (objectDecisions != null) {
+				IntArrayList list;
+				for (int i = 0; i < objectDecisions.length; i++) {
+					list = objectsToSelect.get(objectDecisions[i]);
+					list.add(i);
+				}
+				// selection
+				IntArrayList indices = null;
+				BitSet picked = null;
+				int numberOfObjects = informationTable.getNumberOfObjects(), numberSelectedSoFar = 0, splitForDecisionSize, i, j;
+				for (int l = 0; l < k; l++) {
+					if (l == (k-1)) {
+						// in the last fold - take all that remained
+						indices = new IntArrayList(numberOfObjects - numberSelectedSoFar);
+						for (Decision decision : decisionsSet) {
+							numberOfObjectsForDecision = informationTable.getDecisionDistribution().getCount(decision);
+							list = objectsToSelect.get(decision);
+							picked = pickedObjects.get(decision);
+							for (j = 0; j < numberOfObjectsForDecision; j++) {
+								if (!picked.get(j)) {
+									indices.add(list.getInt(j));
+									picked.set(j);
+									numberSelectedSoFar++;
+								}
+							}
+						}
+					}
+					else {
+						indices = new IntArrayList((int)(((double)numberOfObjects)/k));
+						for (Decision decision : decisionsSet) {
+							numberOfObjectsForDecision = informationTable.getDecisionDistribution().getCount(decision);
+							splitForDecisionSize = (int)(((double)numberOfObjectsForDecision)/k);
+							list = objectsToSelect.get(decision);
+							picked = pickedObjects.get(decision);
+							i = 0;
+							while (i < splitForDecisionSize) {
+								j = random.nextInt(numberOfObjectsForDecision);
+								if (!picked.get(j)) {
+									indices.add(list.getInt(j));
+									picked.set(j);
+									numberSelectedSoFar++;
+									i++;
+								}
+							}
+						}
+					}
+					folds.add(new CrossValidationFold<InformationTable>(informationTable.discard(indices.toIntArray(), accelerateByReadOnlyResult), 
+							informationTable.select(indices.toIntArray(), accelerateByReadOnlyResult)));
+				}
+			}
+		}
 		
 		return folds;
 	}
