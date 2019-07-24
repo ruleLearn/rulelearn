@@ -20,8 +20,8 @@ import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.data.Decision;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -38,12 +38,12 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	/**
 	 * Maps counts of unknown assigned {@link Decision decisions} for given original {@link Decision decisions}.
 	 */
-	Object2IntMap<Decision> unknownAssignedDecisionsCount;
+	Object2DoubleMap<Decision> unknownAssignedDecisionsCount;
 	
 	/**
 	 * Maps counts of unknown original {@link Decision decisions} for given assigned {@link Decision decisions}.
 	 */
-	Object2IntMap<Decision> unknownOriginalDecisionsCount;
+	Object2DoubleMap<Decision> unknownOriginalDecisionsCount;
 	
 	/**
 	 * Stores number of both original {@link Decision decisions} and assigned {@link Decision decisions} beeing unknown.
@@ -53,32 +53,32 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	/**
 	 * Maps counts of given assigned {@link Decision decisions} for given original {@link Decision decisions}.
 	 */
-	Object2ObjectMap<Decision, Object2IntMap <Decision>> assignedDecisions2OriginalDecisionsCount;
+	Object2ObjectMap<Decision, Object2DoubleMap <Decision>> assignedDecisions2OriginalDecisionsCount;
 	
 	/**
 	 * Number of correct classification assignments.
 	 */
-	int numberOfCorrectAssignments;
+	double numberOfCorrectAssignments;
 	
 	/**
 	 * Number of incorrect classification assignments.
 	 */
-	int numberOfIncorrectAssignments;
+	double numberOfIncorrectAssignments;
 	
 	/**
 	 * Number of unknown classification assigned decisions.
 	 */
-	int numberOfUnknownAssignmnets;
+	double numberOfUnknownAssignmnets;
 	
 	/**
 	 * Number of unknown classification original decisions.
 	 */
-	int numberOfUnknownOriginalDecisions;
+	double numberOfUnknownOriginalDecisions;
 	
 	/**
 	 * Number of assigned decisions.
 	 */
-	int numberOfObjectsWithAssignedDecision;
+	double numberOfObjectsWithAssignedDecision;
 	
 	/**
 	 * Set of all {@link Decision decisions} which were assigned.
@@ -104,9 +104,9 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		Precondition.notNullWithContents(assignedDecisions, "Array with assigned decisions is null.", "Element %i of array with assigned decisions is null.");
 		Precondition.equal(originalDecisions.length, assignedDecisions.length, "Number of elements in the array with original decision and in the array with assigned decisions differ.");
 
-		assignedDecisions2OriginalDecisionsCount = new Object2ObjectOpenHashMap<Decision, Object2IntMap<Decision>> ();
-		unknownAssignedDecisionsCount = new Object2IntOpenHashMap<Decision>();
-		unknownOriginalDecisionsCount = new Object2IntOpenHashMap<Decision>();
+		assignedDecisions2OriginalDecisionsCount = new Object2ObjectOpenHashMap<Decision, Object2DoubleMap<Decision>> ();
+		unknownAssignedDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
+		unknownOriginalDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
 		numberOfBothUnknownDecisions = 0;
 		numberOfCorrectAssignments = 0;
 		numberOfIncorrectAssignments = 0;
@@ -114,8 +114,8 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		numberOfUnknownOriginalDecisions = 0;
 		numberOfObjectsWithAssignedDecision = 0;
 		setOfAllOriginalDecisions = new ObjectOpenHashSet<Decision>();
-		Object2IntMap<Decision> map = null;
-		int previousValue; 
+		Object2DoubleMap<Decision> map = null;
+		double previousValue; 
 		for (int i = 0; i < assignedDecisions.length; i++) {
 			if (!assignedDecisions[i].hasAllMissingEvaluations()) { 
 				if (!originalDecisions[i].hasAllMissingEvaluations()) {
@@ -132,7 +132,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 					if (assignedDecisions2OriginalDecisionsCount.containsKey(assignedDecisions[i])) {
 						map = assignedDecisions2OriginalDecisionsCount.get(assignedDecisions[i]);
 						if (map.containsKey(originalDecisions[i])) {
-							previousValue = map.getInt(originalDecisions[i]);
+							previousValue = map.getDouble(originalDecisions[i]);
 							map.put(originalDecisions[i], ++previousValue);
 						}
 						else {
@@ -140,7 +140,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 						}
 					}
 					else {
-						map = new Object2IntOpenHashMap<Decision>();
+						map = new Object2DoubleOpenHashMap<Decision>();
 						map.put(originalDecisions[i], 1);
 						assignedDecisions2OriginalDecisionsCount.put(assignedDecisions[i], map);
 					}
@@ -148,7 +148,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 				else { // assigned decision is known (at least partially) but original is not
 					numberOfUnknownOriginalDecisions++;
 					if (unknownOriginalDecisionsCount.containsKey(assignedDecisions[i])) {
-						previousValue = unknownOriginalDecisionsCount.getInt(assignedDecisions[i]);
+						previousValue = unknownOriginalDecisionsCount.getDouble(assignedDecisions[i]);
 						unknownOriginalDecisionsCount.put(assignedDecisions[i], ++previousValue);
 					}
 					else {
@@ -161,7 +161,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 				// set value in matrix
 				if (!originalDecisions[i].hasAllMissingEvaluations()) { // original decision is known (at least partially) but assigned is not
 					if (unknownAssignedDecisionsCount.containsKey(originalDecisions[i])) {
-						previousValue = unknownAssignedDecisionsCount.getInt(originalDecisions[i]);
+						previousValue = unknownAssignedDecisionsCount.getDouble(originalDecisions[i]);
 						unknownAssignedDecisionsCount.put(originalDecisions[i], ++previousValue);
 					}
 					else {
@@ -193,7 +193,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		Precondition.notNull(assignedDecision, "Assigned decision passed as parameter is null.");
 		if (assignedDecisions2OriginalDecisionsCount.containsKey(assignedDecision)) {
 			if (assignedDecisions2OriginalDecisionsCount.get(assignedDecision).containsKey(originalDecision)) {
-				return assignedDecisions2OriginalDecisionsCount.get(assignedDecision).getInt(originalDecision);
+				return assignedDecisions2OriginalDecisionsCount.get(assignedDecision).getDouble(originalDecision);
 			}
 		}
 		return 0.0;
@@ -211,7 +211,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	public double getNumberOfUnknownAssignedDecisions(Decision originalDecision) {
 		Precondition.notNull(originalDecision, "Original passed as parameter decision is null.");
 		if (unknownAssignedDecisionsCount.containsKey(originalDecision)) {
-			return unknownAssignedDecisionsCount.getInt(originalDecision);
+			return unknownAssignedDecisionsCount.getDouble(originalDecision);
 		}
 		else {
 			return 0.0;
@@ -230,7 +230,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	public double getNumberOfUnknownOriginalDecisions(Decision assignedDecision) {
 		Precondition.notNull(assignedDecision, "Assigned passed as parameter decision is null.");
 		if (unknownOriginalDecisionsCount.containsKey(assignedDecision)) {
-			return unknownOriginalDecisionsCount.getInt(assignedDecision);
+			return unknownOriginalDecisionsCount.getDouble(assignedDecision);
 		}
 		else {
 			return 0.0;
@@ -319,16 +319,16 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	 */
 	public double getTruePositiveRate(Decision decision) {
 		Precondition.notNull(decision, "Decision passed as parameter is null.");
-		int truePositives = 0, allOtherAssignedPositives = 0;
+		double truePositives = 0, allOtherAssignedPositives = 0;
 		for (Decision assignedDecsion : assignedDecisions2OriginalDecisionsCount.keySet()) {
 			if (decision.equals(assignedDecsion)) {
 				if (assignedDecisions2OriginalDecisionsCount.get(assignedDecsion).containsKey(decision)) {
-					truePositives = assignedDecisions2OriginalDecisionsCount.get(assignedDecsion).getInt(decision);
+					truePositives = assignedDecisions2OriginalDecisionsCount.get(assignedDecsion).getDouble(decision);
 				}
 			}
 			else {
 				if (assignedDecisions2OriginalDecisionsCount.get(assignedDecsion).containsKey(decision)) {
-					allOtherAssignedPositives += assignedDecisions2OriginalDecisionsCount.get(assignedDecsion).getInt(decision);
+					allOtherAssignedPositives += assignedDecisions2OriginalDecisionsCount.get(assignedDecsion).getDouble(decision);
 				}
 			}
 		}
