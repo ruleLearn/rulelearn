@@ -48,7 +48,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	/**
 	 * Stores number of both original {@link Decision decisions} and assigned {@link Decision decisions} beeing unknown.
 	 */
-	int numberOfBothUnknownDecisions;
+	double numberOfBothUnknownDecisions;
 	
 	/**
 	 * Maps counts of given assigned {@link Decision decisions} for given original {@link Decision decisions}.
@@ -91,7 +91,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	ObjectSet<Decision> setOfAllOriginalDecisions;
 	
 	/**
-	 * Calculates values in misclassification matrix.
+	 * Calculates all values in this misclassification matrix.
 	 * 
 	 * @param originalDecisions array with original {@link Decision decisions} of objects in the batch
 	 * @param assignedDecisions array with assigned {@link Decision decisions} which are validated 
@@ -107,12 +107,12 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		assignedDecisions2OriginalDecisionsCount = new Object2ObjectOpenHashMap<Decision, Object2DoubleMap<Decision>> ();
 		unknownAssignedDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
 		unknownOriginalDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
-		numberOfBothUnknownDecisions = 0;
-		numberOfCorrectAssignments = 0;
-		numberOfIncorrectAssignments = 0;
-		numberOfUnknownAssignmnets = 0;
-		numberOfUnknownOriginalDecisions = 0;
-		numberOfObjectsWithAssignedDecision = 0;
+		numberOfBothUnknownDecisions = 0.0;
+		numberOfCorrectAssignments = 0.0;
+		numberOfIncorrectAssignments = 0.0;
+		numberOfUnknownAssignmnets = 0.0;
+		numberOfUnknownOriginalDecisions = 0.0;
+		numberOfObjectsWithAssignedDecision = 0.0;
 		setOfAllOriginalDecisions = new ObjectOpenHashSet<Decision>();
 		Object2DoubleMap<Decision> map = null;
 		double previousValue; 
@@ -175,6 +175,29 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 			}
 		}
 		setOfAllAssignedDecisions = assignedDecisions2OriginalDecisionsCount.keySet();
+	}
+	
+	/**
+	 * Calculates mean and deviation of all values in this misclassification matrix on the basis of values of misclassification matrices passed as parameter.
+	 * 
+	 * @param matrices an array with misclassification matrices to be averaged
+	 * 
+	 * @throws NullPointerException when array with misclassification matrices passed as parameters or any of its elements is null
+	 */
+	void calculateMeanAndDeviation(MisclassificationMatrix... matrices) {
+		Precondition.notNullWithContents(matrices, "Array with misclassification matrices is null.", "Element %i of array with misclassification matrices is null.");
+		assignedDecisions2OriginalDecisionsCount = new Object2ObjectOpenHashMap<Decision, Object2DoubleMap<Decision>> ();
+		unknownAssignedDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
+		unknownOriginalDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
+		numberOfBothUnknownDecisions = 0.0;
+		numberOfCorrectAssignments = 0.0;
+		numberOfIncorrectAssignments = 0.0;
+		numberOfUnknownAssignmnets = 0.0;
+		numberOfUnknownOriginalDecisions = 0.0;
+		numberOfObjectsWithAssignedDecision = 0.0;
+		setOfAllOriginalDecisions = new ObjectOpenHashSet<Decision>();
+		
+		// TODO
 	}
 	
 	/**

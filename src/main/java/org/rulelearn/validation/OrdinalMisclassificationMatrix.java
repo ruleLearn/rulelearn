@@ -51,6 +51,21 @@ public class OrdinalMisclassificationMatrix extends MisclassificationMatrix {
 	}
 	
 	/**
+	 * Constructor calculating mean and deviation of all values in misclassification matrix.
+	 * 
+	 * @param matrices an array with {@link OrdinalMisclassificationMatrix misclassification matrices} to be averaged
+	 * @param orderOfDecisions array with ordered {@link Decision decisions} (i.e., array indicating order of decisions in all original decisions and assigned decisions
+	 * 		which are present in matrices)
+	 * 
+	 * @throws NullPointerException when any of arrays (with misclassification matrices or ordered decisions) passed as parameters or their elements is null
+	 */
+	public OrdinalMisclassificationMatrix(OrdinalMisclassificationMatrix matrices, Decision[] orderOfDecisions) {
+		super();
+		this.orderOfDecisions = Precondition.notNullWithContents(orderOfDecisions, "Array with ordered decisions is null.", "Element %i of array with ordered decisions is null.");
+		calculateMeanAndDeviation(matrices);
+	}
+	
+	/**
 	 * Calculates mean absolute error (MAE) based on information from this misclassification matrix.
 	 * 
 	 * @return value of mean absolute error (MAE) 
