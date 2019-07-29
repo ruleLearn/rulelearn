@@ -41,9 +41,19 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	Object2DoubleMap<Decision> unknownAssignedDecisionsCount;
 	
 	/**
+	 * Maps deviations of counts of unknown assigned {@link Decision decisions} for given original {@link Decision decisions}.
+	 */
+	Object2DoubleMap<Decision> devUnknownAssignedDecisionsCount;
+	
+	/**
 	 * Maps counts of unknown original {@link Decision decisions} for given assigned {@link Decision decisions}.
 	 */
 	Object2DoubleMap<Decision> unknownOriginalDecisionsCount;
+	
+	/**
+	 * Maps deviations of counts of unknown original {@link Decision decisions} for given assigned {@link Decision decisions}.
+	 */
+	Object2DoubleMap<Decision> devUnknownOriginalDecisionsCount;
 	
 	/**
 	 * Stores number of both original {@link Decision decisions} and assigned {@link Decision decisions} beeing unknown.
@@ -51,45 +61,80 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	double numberOfBothUnknownDecisions;
 	
 	/**
+	 * Stores deviation of number of both original {@link Decision decisions} and assigned {@link Decision decisions} beeing unknown.
+	 */
+	double devNumberOfBothUnknownDecisions;
+	
+	/**
 	 * Maps counts of given assigned {@link Decision decisions} for given original {@link Decision decisions}.
 	 */
 	Object2ObjectMap<Decision, Object2DoubleMap <Decision>> assignedDecisions2OriginalDecisionsCount;
 	
 	/**
-	 * Number of correct classification assignments.
+	 * Maps deviations of counts of given assigned {@link Decision decisions} for given original {@link Decision decisions}.
+	 */
+	Object2ObjectMap<Decision, Object2DoubleMap <Decision>> devAssignedDecisions2OriginalDecisionsCount;
+	
+	/**
+	 * Stores number of correct classification assignments.
 	 */
 	double numberOfCorrectAssignments;
 	
 	/**
-	 * Number of incorrect classification assignments.
+	 * Stores deviation of number of correct classification assignments.
+	 */
+	double devNumberOfCorrectAssignments;
+	
+	/**
+	 * Stores number of incorrect classification assignments.
 	 */
 	double numberOfIncorrectAssignments;
 	
 	/**
-	 * Number of unknown classification assigned decisions.
+	 * Stores deviation of number of incorrect classification assignments.
+	 */
+	double devNumberOfIncorrectAssignments;
+	
+	/**
+	 * Stores number of unknown classification assigned decisions.
 	 */
 	double numberOfUnknownAssignmnets;
 	
 	/**
-	 * Number of unknown classification original decisions.
+	 * Stores deviation of number of unknown classification assigned decisions.
+	 */
+	double devNumberOfUnknownAssignmnets;
+	
+	/**
+	 * Stores number of unknown classification original decisions.
 	 */
 	double numberOfUnknownOriginalDecisions;
 	
 	/**
-	 * Number of assigned decisions.
+	 * Stores deviation of number of unknown classification original decisions.
+	 */
+	double devNumberOfUnknownOriginalDecisions;
+	
+	/**
+	 * Stores number of assigned decisions.
 	 */
 	double numberOfObjectsWithAssignedDecision;
+	
+	/**
+	 * Stores deviation of number of assigned decisions.
+	 */
+	double devNumberOfObjectsWithAssignedDecision;
 	
 	/**
 	 * Set of all {@link Decision decisions} which were assigned.
 	 */
 	ObjectSet<Decision> setOfAllAssignedDecisions;
-	
+		
 	/**
 	 * Set of all original {@link Decision decisions}.
 	 */
 	ObjectSet<Decision> setOfAllOriginalDecisions;
-	
+		
 	/**
 	 * Calculates all values in this misclassification matrix.
 	 * 
@@ -105,16 +150,27 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		Precondition.equal(originalDecisions.length, assignedDecisions.length, "Number of elements in the array with original decision and in the array with assigned decisions differ.");
 
 		assignedDecisions2OriginalDecisionsCount = new Object2ObjectOpenHashMap<Decision, Object2DoubleMap<Decision>> ();
+		devAssignedDecisions2OriginalDecisionsCount = new Object2ObjectOpenHashMap<Decision, Object2DoubleMap<Decision>> ();
 		unknownAssignedDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
+		devUnknownAssignedDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
 		unknownOriginalDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
+		devUnknownOriginalDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
 		numberOfBothUnknownDecisions = 0.0;
+		devNumberOfBothUnknownDecisions = 0.0;
 		numberOfCorrectAssignments = 0.0;
+		devNumberOfCorrectAssignments = 0.0;
 		numberOfIncorrectAssignments = 0.0;
+		devNumberOfIncorrectAssignments = 0.0;
 		numberOfUnknownAssignmnets = 0.0;
+		devNumberOfUnknownAssignmnets = 0.0;
 		numberOfUnknownOriginalDecisions = 0.0;
+		devNumberOfUnknownOriginalDecisions = 0.0;
 		numberOfObjectsWithAssignedDecision = 0.0;
+		devNumberOfObjectsWithAssignedDecision = 0.0;
 		setOfAllOriginalDecisions = new ObjectOpenHashSet<Decision>();
-		Object2DoubleMap<Decision> map = null;
+		
+		Object2DoubleMap<Decision> countMap = null;
+		Object2DoubleMap<Decision> devCountMap = null;
 		double previousValue; 
 		for (int i = 0; i < assignedDecisions.length; i++) {
 			if (!assignedDecisions[i].hasAllMissingEvaluations()) { 
@@ -130,19 +186,25 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 					}
 					// set value in matrix
 					if (assignedDecisions2OriginalDecisionsCount.containsKey(assignedDecisions[i])) {
-						map = assignedDecisions2OriginalDecisionsCount.get(assignedDecisions[i]);
-						if (map.containsKey(originalDecisions[i])) {
-							previousValue = map.getDouble(originalDecisions[i]);
-							map.put(originalDecisions[i], ++previousValue);
+						countMap = assignedDecisions2OriginalDecisionsCount.get(assignedDecisions[i]);
+						devCountMap = devAssignedDecisions2OriginalDecisionsCount.get(assignedDecisions[i]);
+						if (countMap.containsKey(originalDecisions[i])) {
+							previousValue = countMap.getDouble(originalDecisions[i]);
+							countMap.put(originalDecisions[i], ++previousValue);
 						}
 						else {
-							map.put(originalDecisions[i], 1);
+							countMap.put(originalDecisions[i], 1.0);
+							devCountMap.put(originalDecisions[i], 0.0);
 						}
 					}
 					else {
-						map = new Object2DoubleOpenHashMap<Decision>();
-						map.put(originalDecisions[i], 1);
-						assignedDecisions2OriginalDecisionsCount.put(assignedDecisions[i], map);
+						countMap = new Object2DoubleOpenHashMap<Decision>();
+						devCountMap = new Object2DoubleOpenHashMap<Decision>();
+						countMap.put(originalDecisions[i], 1.0);
+						assignedDecisions2OriginalDecisionsCount.put(assignedDecisions[i], countMap);
+						// deviation is always 0
+						devCountMap.put(originalDecisions[i], 0.0);
+						devAssignedDecisions2OriginalDecisionsCount.put(assignedDecisions[i], devCountMap);
 					}
 				}
 				else { // assigned decision is known (at least partially) but original is not
@@ -152,7 +214,9 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 						unknownOriginalDecisionsCount.put(assignedDecisions[i], ++previousValue);
 					}
 					else {
-						unknownOriginalDecisionsCount.put(assignedDecisions[i], 1);
+						unknownOriginalDecisionsCount.put(assignedDecisions[i], 1.0);
+						// deviation is always 0
+						unknownOriginalDecisionsCount.put(originalDecisions[i], 0.0);
 					}
 				}
 			}
@@ -165,7 +229,9 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 						unknownAssignedDecisionsCount.put(originalDecisions[i], ++previousValue);
 					}
 					else {
-						unknownAssignedDecisionsCount.put(originalDecisions[i], 1);
+						unknownAssignedDecisionsCount.put(originalDecisions[i], 1.0);
+						// deviation is always 0
+						devUnknownAssignedDecisionsCount.put(originalDecisions[i], 0.0);
 					}
 				}
 				else { // both assigned and original decisions are unknown
@@ -187,17 +253,86 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	void calculateMeanAndDeviation(MisclassificationMatrix... matrices) {
 		Precondition.notNullWithContents(matrices, "Array with misclassification matrices is null.", "Element %i of array with misclassification matrices is null.");
 		assignedDecisions2OriginalDecisionsCount = new Object2ObjectOpenHashMap<Decision, Object2DoubleMap<Decision>> ();
+		devAssignedDecisions2OriginalDecisionsCount = new Object2ObjectOpenHashMap<Decision, Object2DoubleMap<Decision>> ();
 		unknownAssignedDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
+		devUnknownAssignedDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
 		unknownOriginalDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
+		devUnknownOriginalDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
 		numberOfBothUnknownDecisions = 0.0;
+		devNumberOfBothUnknownDecisions = 0.0;
 		numberOfCorrectAssignments = 0.0;
+		devNumberOfCorrectAssignments = 0.0;
 		numberOfIncorrectAssignments = 0.0;
+		devNumberOfIncorrectAssignments = 0.0;
 		numberOfUnknownAssignmnets = 0.0;
+		devNumberOfUnknownAssignmnets = 0.0;
 		numberOfUnknownOriginalDecisions = 0.0;
+		devNumberOfUnknownOriginalDecisions = 0.0;
 		numberOfObjectsWithAssignedDecision = 0.0;
+		devNumberOfObjectsWithAssignedDecision = 0.0;
 		setOfAllOriginalDecisions = new ObjectOpenHashSet<Decision>();
 		
-		// TODO
+		// calculation of sums of averages
+		Object2DoubleOpenHashMap<Decision> originalDecisionsCount;
+		int n = matrices.length;
+		for (MisclassificationMatrix matrix : matrices) {
+			// sum all assigned decision - to - original decision counts
+			for (Decision assignedDecision : matrix.setOfAllAssignedDecisions) {
+				if (!assignedDecisions2OriginalDecisionsCount.containsKey(assignedDecision)) {
+					setOfAllAssignedDecisions.add(assignedDecision);
+					originalDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
+					for (Decision originalDecision : matrix.assignedDecisions2OriginalDecisionsCount.get(assignedDecision).keySet()) {
+						setOfAllOriginalDecisions.add(originalDecision);
+						originalDecisionsCount.put(originalDecision, matrix.assignedDecisions2OriginalDecisionsCount.get(assignedDecision).getDouble(originalDecision)/n);
+					}
+					assignedDecisions2OriginalDecisionsCount.put(assignedDecision, originalDecisionsCount);
+				}
+				else {
+					originalDecisionsCount = ((Object2DoubleOpenHashMap<Decision>)assignedDecisions2OriginalDecisionsCount.get(assignedDecision));
+					for (Decision originalDecision : matrix.assignedDecisions2OriginalDecisionsCount.get(assignedDecision).keySet()) {
+						if (!originalDecisionsCount.containsKey(originalDecision)) {
+							setOfAllOriginalDecisions.add(originalDecision);
+							originalDecisionsCount.put(originalDecision, matrix.assignedDecisions2OriginalDecisionsCount.get(assignedDecision).getDouble(originalDecision)/n);
+						}
+						else {
+							originalDecisionsCount.addTo(originalDecision, matrix.assignedDecisions2OriginalDecisionsCount.get(assignedDecision).getDouble(originalDecision)/n);
+						}
+					}
+					assignedDecisions2OriginalDecisionsCount.put(assignedDecision, originalDecisionsCount);
+				}
+			}
+			// sum unknown assigned decision counts
+			for (Decision assignedDecision : matrix.unknownAssignedDecisionsCount.keySet()) {
+				if (unknownAssignedDecisionsCount.containsKey(assignedDecision)) {
+					unknownAssignedDecisionsCount.put(assignedDecision, unknownAssignedDecisionsCount.getDouble(assignedDecision) + 
+							(matrix.unknownAssignedDecisionsCount.getDouble(assignedDecision)/n));
+				}
+				else {
+					unknownAssignedDecisionsCount.put(assignedDecision, matrix.unknownAssignedDecisionsCount.getDouble(assignedDecision)/n);
+				}
+			}
+			// sum unknown original decision counts
+			for (Decision originalDecision : matrix.unknownOriginalDecisionsCount.keySet()) {
+				if (unknownOriginalDecisionsCount.containsKey(originalDecision)) {
+					unknownOriginalDecisionsCount.put(originalDecision, unknownOriginalDecisionsCount.getDouble(originalDecision) + 
+							(matrix.unknownOriginalDecisionsCount.getDouble(originalDecision)/n));
+				}
+				else {
+					unknownOriginalDecisionsCount.put(originalDecision, matrix.unknownOriginalDecisionsCount.getDouble(originalDecision)/n);
+				}
+			}
+			// sum other counters
+			numberOfBothUnknownDecisions += (matrix.numberOfBothUnknownDecisions/n);
+			numberOfCorrectAssignments += (matrix.numberOfCorrectAssignments/n);
+			numberOfIncorrectAssignments += (matrix.numberOfIncorrectAssignments/n);
+			numberOfUnknownAssignmnets += (matrix.numberOfUnknownAssignmnets/n);
+			numberOfUnknownOriginalDecisions += (matrix.numberOfUnknownOriginalDecisions/n);
+			numberOfObjectsWithAssignedDecision += (matrix.numberOfObjectsWithAssignedDecision/n);
+		}
+		
+		// TODO calculation of averages and deviations
+		
+		setOfAllAssignedDecisions = assignedDecisions2OriginalDecisionsCount.keySet();
 	}
 	
 	/**
@@ -223,6 +358,28 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	}
 	
 	/**
+	 * Gets standard deviation of value from this misclassification matrix, which corresponds to a given original decision and assigned decision both passed as parameters.
+	 * 
+	 * @param originalDecision original {@link Decision decision}
+	 * @param assignedDecision assigned {@link Decision decision}
+	 * 
+	 * @return standard deviation of value from misclassification matrix, which corresponds to a given original decision and assigned decision; 
+	 * or {@code 0.0} when the given pair of decisions is not present in this misclassification matrix   
+	 * 
+	 * @throws NullPointerException when any of parameters is null 
+	 */
+	public double getDeviationOfValue(Decision originalDecision, Decision assignedDecision) {
+		Precondition.notNull(originalDecision, "Original decision passed as parameter is null.");
+		Precondition.notNull(assignedDecision, "Assigned decision passed as parameter is null.");
+		if (devAssignedDecisions2OriginalDecisionsCount.containsKey(assignedDecision)) {
+			if (devAssignedDecisions2OriginalDecisionsCount.get(assignedDecision).containsKey(originalDecision)) {
+				return devAssignedDecisions2OriginalDecisionsCount.get(assignedDecision).getDouble(originalDecision);
+			}
+		}
+		return 0.0;
+	}
+	
+	/**
 	 * Gets number of unknown assigned {@link Decision decisions} for a given original {@link Decision decision} passed as a parameter.
 	 * 
 	 * @param originalDecision original {@link Decision decision}
@@ -235,6 +392,25 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		Precondition.notNull(originalDecision, "Original passed as parameter decision is null.");
 		if (unknownAssignedDecisionsCount.containsKey(originalDecision)) {
 			return unknownAssignedDecisionsCount.getDouble(originalDecision);
+		}
+		else {
+			return 0.0;
+		}
+	}
+	
+	/**
+	 * Gets standard deviation of number of unknown assigned {@link Decision decisions} for a given original {@link Decision decision} passed as a parameter.
+	 * 
+	 * @param originalDecision original {@link Decision decision}
+	 * @return standard deviation of number of unknown assignments for a given original {@link Decision decision}; 
+	 * or {@code 0.0} when the given original {@link Decision decision} has not unknown decisions assigned in this misclassification matrix
+	 * 
+	 * @throws NullPointerException when originalDecision is null 
+	 */
+	public double getDeviationOfNumberOfUnknownAssignedDecisions(Decision originalDecision) {
+		Precondition.notNull(originalDecision, "Original passed as parameter decision is null.");
+		if (devUnknownAssignedDecisionsCount.containsKey(originalDecision)) {
+			return devUnknownAssignedDecisionsCount.getDouble(originalDecision);
 		}
 		else {
 			return 0.0;
@@ -261,6 +437,25 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	}
 	
 	/**
+	 * Gets standard deviation of number of unknown original {@link Decision decisions} for a given assigned {@link Decision decision} passed as a parameter.
+	 * 
+	 * @param assignedDecision assigned {@link Decision decision}
+	 * @return standard deviation of number of unknown original decisions for a given assigned {@link Decision decision};
+	 * or {@code 0.0} when the given assigned {@link Decision decision} has not unknown original decisions in this misclassification matrix
+	 * 
+	 * @throws NullPointerException when assignedDecision is null
+	 */
+	public double getDeviationOfNumberOfUnknownOriginalDecisions(Decision assignedDecision) {
+		Precondition.notNull(assignedDecision, "Assigned passed as parameter decision is null.");
+		if (devUnknownOriginalDecisionsCount.containsKey(assignedDecision)) {
+			return devUnknownOriginalDecisionsCount.getDouble(assignedDecision);
+		}
+		else {
+			return 0.0;
+		}
+	}
+	
+	/**
 	 * Gets number of unknown original {@link Decision decisions} for all assigned (known or unknown) {@link Decision decisions}.
 	 * 
 	 * @return number of unknown original {@link Decision decisions} for all assigned {@link Decision decisions}
@@ -268,6 +463,16 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	 */
 	public double getNumberOfUnknownOriginalDecisions() {
 		return numberOfUnknownOriginalDecisions;
+	}
+	
+	/**
+	 * Gets standard deviation of number of unknown original {@link Decision decisions} for all assigned (known or unknown) {@link Decision decisions}.
+	 * 
+	 * @return standard deviation of number of unknown original {@link Decision decisions} for all assigned {@link Decision decisions}
+	 * 
+	 */
+	public double getDeviationOfNumberOfUnknownOriginalDecisions() {
+		return devNumberOfUnknownOriginalDecisions;
 	}
 	
 	/**
@@ -280,6 +485,16 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		return numberOfBothUnknownDecisions;
 	}
 	
+	/**
+	 * Gets standard deviation of number of unknown original {@link Decision decisions} for all unknown assigned {@link Decision decisions}.
+	 * 
+	 * @return standard deviation of number of unknown original decisions for all unknown assigned decisions
+	 * 
+	 */
+	public double getDeviationOfNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions() {
+		return devNumberOfBothUnknownDecisions;
+	}
+	
 	/** {@inheritDoc}
 	 * 
 	 * @return {@inheritDoc}
@@ -287,6 +502,15 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	@Override
 	public double getNumberOfCorrectAssignments() {
 		return numberOfCorrectAssignments;
+	}
+	
+	/**
+	 * Gets standard deviation of number of assignments which are correct.
+	 * 
+	 * @return standard deviation of number of correct assignments
+	 */
+	public double getDeviationOfNumberOfCorrectAssignments() {
+		return devNumberOfCorrectAssignments;
 	}
 
 	/** {@inheritDoc}
@@ -296,6 +520,15 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	@Override
 	public double getNumberOfIncorrectAssignments() {
 		return numberOfIncorrectAssignments;
+	}
+	
+	/**
+	 * Gets standard deviation of number of assignments which are incorrect.
+	 * 
+	 * @return standard deviation of number of incorrect assignments
+	 */
+	public double getDeviationOfNumberOfIncorrectAssignments() {
+		return devNumberOfIncorrectAssignments;
 	}
 
 	/** {@inheritDoc}
@@ -308,6 +541,15 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	}
 	
 	/**
+	 * Gets standard deviation of number of times no assignment are made.
+	 * 
+	 * @return standard deviation of number of no (unknown) assignments
+	 */
+	public double getDeviationOfNumberOfUnknownAssignments() {
+		return devNumberOfUnknownAssignmnets;
+	}
+	
+	/**
 	 * Gets number of objects with assigned decision based on information from this misclassification matrix.
 	 * 
 	 * @return number of objects with assigned decision
@@ -317,14 +559,38 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	}
 	
 	/**
-	 * Gets accuracy in this misclassification matrix calculated as the number of correct assignments divided by sum of correct and incorrect assignments.
+	 * Gets standard deviation of number of objects with assigned decision based on information from this misclassification matrix.
+	 * 
+	 * @return standard deviation of number of objects with assigned decision
+	 */
+	public double getDeviationOfNumberObjectsWithAssignedDecision() {
+		return devNumberOfObjectsWithAssignedDecision;
+	}
+	
+	/**
+	 * Gets accuracy in this misclassification matrix calculated as the number of correct assignments divided by the number of objects with any assignments.
 	 * Please note that this ratio does not take into account unknown assignments.
 	 *  	
 	 * @return accuracy in this misclassification matrix
 	 */
 	public double getAccuracy() {
-		if (numberOfObjectsWithAssignedDecision > 0) {
-			return (((double) numberOfCorrectAssignments) / (numberOfObjectsWithAssignedDecision));
+		if (numberOfObjectsWithAssignedDecision > 0.0) {
+			return (numberOfCorrectAssignments / numberOfObjectsWithAssignedDecision);
+		}
+		else {
+			return 0.0;
+		}
+	}
+	
+	/**
+	 * Gets standard deviation of accuracy in this misclassification matrix calculated as deviation of the number of correct assignments divided by 
+	 * deviation of the number of objects with any assignments. Please note that this ratio does not take into account unknown assignments.
+	 *  	
+	 * @return accuracy in this misclassification matrix
+	 */
+	public double getDeviationOfAccuracy() {
+		if (devNumberOfObjectsWithAssignedDecision > 0.0) {
+			return (devNumberOfCorrectAssignments / devNumberOfObjectsWithAssignedDecision);
 		}
 		else {
 			return 0.0;
@@ -342,7 +608,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	 */
 	public double getTruePositiveRate(Decision decision) {
 		Precondition.notNull(decision, "Decision passed as parameter is null.");
-		double truePositives = 0, allOtherAssignedPositives = 0;
+		double truePositives = 0.0, allOtherAssignedPositives = 0.0;
 		for (Decision assignedDecsion : assignedDecisions2OriginalDecisionsCount.keySet()) {
 			if (decision.equals(assignedDecsion)) {
 				if (assignedDecisions2OriginalDecisionsCount.get(assignedDecsion).containsKey(decision)) {
@@ -355,8 +621,40 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 				}
 			}
 		}
-		if (truePositives > 0) {
-			return (((double)truePositives) / (truePositives + allOtherAssignedPositives));
+		if (truePositives > 0.0) {
+			return (truePositives / (truePositives + allOtherAssignedPositives));
+		}
+		else {
+			return 0.0;
+		}
+	}
+	
+	/**
+	 * Gets standard deviation of true positive rate TPR for a given decision (sometimes also called sensitivity, recall or hit rate). 
+	 * This rate, based on values in this misclassification matrix, is calculated as the number of object correctly assigned to the class divided
+	 * by all objects from this class which were assigned. Please note that this ratio does not take into account unknown assignments.
+	 * 
+	 * @param decision {@link Decision decision} for which standard deviation of true positive rate is being calculated
+	 *  	
+	 * @return true positive rate (TPR) for a given decision
+	 */
+	public double getDeviationOfTruePositiveRate(Decision decision) {
+		Precondition.notNull(decision, "Decision passed as parameter is null.");
+		double devTruePositives = 0.0, devAllOtherAssignedPositives = 0.0;
+		for (Decision assignedDecsion : assignedDecisions2OriginalDecisionsCount.keySet()) {
+			if (decision.equals(assignedDecsion)) {
+				if (assignedDecisions2OriginalDecisionsCount.get(assignedDecsion).containsKey(decision)) {
+					devTruePositives = devAssignedDecisions2OriginalDecisionsCount.get(assignedDecsion).getDouble(decision);
+				}
+			}
+			else {
+				if (devAssignedDecisions2OriginalDecisionsCount.get(assignedDecsion).containsKey(decision)) {
+					devAllOtherAssignedPositives += devAssignedDecisions2OriginalDecisionsCount.get(assignedDecsion).getDouble(decision);
+				}
+			}
+		}
+		if (devTruePositives > 0.0) {
+			return (devTruePositives / (devTruePositives + devAllOtherAssignedPositives));
 		}
 		else {
 			return 0.0;
