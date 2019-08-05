@@ -1,0 +1,74 @@
+[
+    {
+	"name": "ID",
+	"active": true,
+	"identifierType": "uuid"
+    },
+    {
+	"name": "SourceAssetCriticality",
+	"active": true,
+	"type": "condition",
+	"valueType": "enumeration",
+	"domain": ["NA", "low", "med", "high", "critical"],
+	"preferenceType": "gain"
+    },
+    {
+	"name": "TargetAssetCriticality",
+	"active": true,
+	"type": "condition",
+	"valueType": "enumeration",
+	"domain": ["NA", "low", "med", "high", "critical"],
+	"preferenceType": "gain"
+    },
+    {
+	"name": "TimeToDueDate",
+	"active": true,
+	"type": "condition",
+	"valueType": "real",
+	"preferenceType": "cost"
+    },
+    {
+	"name": "TimeFromDetectTime",
+	"active": true,
+	"type": "condition",
+	"valueType": "real",
+	"preferenceType": "cost"
+    },
+    {
+	"name": "SeverityForAttackCategory",
+	"active": true,
+	"type": "condition",
+	"valueType": "enumeration",
+	"domain": ["NA", "low", "med", "high", "critical"],
+	"preferenceType": "gain"
+    },
+    {
+	"name": "MAQuality",
+	"active": true,
+	"type": "condition",
+	"valueType": "real",
+	"preferenceType": "gain"
+    },
+    {
+	"name": "AttackSourceReputationScore",
+	"active": true,
+	"type": "condition",
+	"valueType": "real",
+	"preferenceType": "gain"
+    },
+    {
+	"name": "MaxCVE",
+	"active": true,
+	"type": "condition",
+	"valueType": "real",
+	"preferenceType": "gain"
+    },
+    {
+	"name": "Priority",
+	"active": true,
+	"type": "decision",
+	"valueType": "enumeration",
+	"domain": ["1", "2", "3", "4", "5"],
+	"preferenceType": "cost"
+    }
+]
