@@ -43,15 +43,15 @@ public class NonOrdinalMisclassificationMatrix extends MisclassificationMatrix {
 	}
 	
 	/**
-	 * Constructor calculating mean and deviation of all values in misclassification matrix.
+	 * Constructor calculating mean and variance of all values in misclassification matrix.
 	 * 
 	 * @param matrices an array with {@link NonOrdinalMisclassificationMatrix misclassification matrices} to be averaged
 	 * 
 	 * @throws NullPointerException when array with misclassification matrices passed as parameters or any of its elements is null
 	 */
-	public NonOrdinalMisclassificationMatrix(NonOrdinalMisclassificationMatrix matrices) {
+	public NonOrdinalMisclassificationMatrix(NonOrdinalMisclassificationMatrix... matrices) {
 		super();
-		calculateMeanAndDeviation(matrices);
+		calculateMeanAndVariance(matrices);
 	}
 
 }

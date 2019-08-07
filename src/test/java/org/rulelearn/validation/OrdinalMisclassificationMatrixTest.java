@@ -16,7 +16,7 @@
 
 package org.rulelearn.validation;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,7 +64,7 @@ class OrdinalMisclassificationMatrixTest {
 	void testAll00() {
 		originalDecisions = new SimpleDecision[] {decision1, decision2, decision3, decision4, decision5};
 		assignedDecisions = new SimpleDecision[] {decision1, decision2, decision3, decision4, decision5};
-		OrdinalMisclassificationMatrix misclassificationMatrix = new OrdinalMisclassificationMatrix(originalDecisions, assignedDecisions, orderedDecisions);
+		OrdinalMisclassificationMatrix misclassificationMatrix = new OrdinalMisclassificationMatrix(orderedDecisions, originalDecisions, assignedDecisions);
 		
 		assertEquals(5.0, misclassificationMatrix.getNumberOfCorrectAssignments());
 		assertEquals(0.0, misclassificationMatrix.getNumberOfIncorrectAssignments());
@@ -125,7 +125,7 @@ class OrdinalMisclassificationMatrixTest {
 	void testAll04() {
 		originalDecisions = new SimpleDecision[] {decision1, decision2, decision3, decision4, decision5};
 		assignedDecisions = new SimpleDecision[] {decision5, decision4, decision3, decision2, decision1};
-		OrdinalMisclassificationMatrix misclassificationMatrix = new OrdinalMisclassificationMatrix(originalDecisions, assignedDecisions, orderedDecisions);
+		OrdinalMisclassificationMatrix misclassificationMatrix = new OrdinalMisclassificationMatrix(orderedDecisions, originalDecisions, assignedDecisions);
 		
 		assertEquals(1.0, misclassificationMatrix.getNumberOfCorrectAssignments());
 		assertEquals(4.0, misclassificationMatrix.getNumberOfIncorrectAssignments());
@@ -186,7 +186,7 @@ class OrdinalMisclassificationMatrixTest {
 	void testAll05() {
 		originalDecisions = new SimpleDecision[] {decision1, decision2, decision2, decision3, decision4, decision4, decision5};
 		assignedDecisions = new SimpleDecision[] {decision5, decision4, decision4, decision3, decision2, decision2, decision1};
-		OrdinalMisclassificationMatrix misclassificationMatrix = new OrdinalMisclassificationMatrix(originalDecisions, assignedDecisions, orderedDecisions);
+		OrdinalMisclassificationMatrix misclassificationMatrix = new OrdinalMisclassificationMatrix(orderedDecisions, originalDecisions, assignedDecisions);
 		
 		assertEquals(1.0, misclassificationMatrix.getNumberOfCorrectAssignments());
 		assertEquals(6.0, misclassificationMatrix.getNumberOfIncorrectAssignments());
@@ -247,7 +247,7 @@ class OrdinalMisclassificationMatrixTest {
 	void testAll06() {
 		originalDecisions = new SimpleDecision[] {decision1, decision2, decision3, decision4, decision5, decision1, decision2};
 		assignedDecisions = new SimpleDecision[] {decision1, decision2, decision3, decision4, decision5, decision5, decision4};
-		OrdinalMisclassificationMatrix misclassificationMatrix = new OrdinalMisclassificationMatrix(originalDecisions, assignedDecisions, orderedDecisions);
+		OrdinalMisclassificationMatrix misclassificationMatrix = new OrdinalMisclassificationMatrix(orderedDecisions, originalDecisions, assignedDecisions);
 		
 		assertEquals(5.0, misclassificationMatrix.getNumberOfCorrectAssignments());
 		assertEquals(2.0, misclassificationMatrix.getNumberOfIncorrectAssignments());
