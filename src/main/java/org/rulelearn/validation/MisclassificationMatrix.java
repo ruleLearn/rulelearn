@@ -730,6 +730,39 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	}
 	
 	/**
+	 * Gets standard deviation of true positive rate TPR for a given decision (sometimes also called sensitivity, recall or hit rate). 
+	 * This rate, based on values in this misclassification matrix, is calculated as the number of object correctly assigned to the class divided
+	 * by all objects from this class which were assigned. Please note that this ratio does not take into account unknown assignments.
+	 * 
+	 * @param decision {@link Decision decision} for which standard deviation of true positive rate is being calculated
+	 *  	
+	 * @return true positive rate (TPR) for a given decision
+	 */
+	public double getDeviationOfTruePositiveRate(Decision decision) {
+		Precondition.notNull(decision, "Decision passed as parameter is null.");
+		double varTruePositives = 0.0, allWithAssignedDecision = 0.0;
+		for (Decision assignedDecsion : assignedDecisions2OriginalDecisionsCount.keySet()) {
+			if (decision.equals(assignedDecsion)) {
+				if (assignedDecisions2OriginalDecisionsCount.get(assignedDecsion).containsKey(decision)) {
+					varTruePositives = varAssignedDecisions2OriginalDecisionsCount.get(assignedDecsion).getDouble(decision);
+					allWithAssignedDecision += assignedDecisions2OriginalDecisionsCount.get(assignedDecsion).getDouble(decision);
+				}
+			}
+			else {
+				if (assignedDecisions2OriginalDecisionsCount.get(assignedDecsion).containsKey(decision)) {
+					allWithAssignedDecision += assignedDecisions2OriginalDecisionsCount.get(assignedDecsion).getDouble(decision);
+				}
+			}
+		}
+		if (allWithAssignedDecision > 0.0) {
+			return Math.sqrt(varTruePositives) / allWithAssignedDecision;
+		}
+		else {
+			return 0.0;
+		}
+	}
+	
+	/**
 	 * Calculates geometric mean (G-mean) of true positive rates (i.e., sensitivity and specificity for two dimensional misclassification matrices)
 	 * based on information from this misclassification matrix.
 	 * 
