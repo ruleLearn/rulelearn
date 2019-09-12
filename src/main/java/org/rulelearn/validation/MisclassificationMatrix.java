@@ -357,6 +357,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		}
 		setOfAllAssignedDecisions = assignedDecisions2OriginalDecisionsCount.keySet();
 		
+		double value = 0.0;
 		// calculation of variance
 		if (n > 1) {
 			int n1 = n - 1;
@@ -366,48 +367,72 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 					if (!varAssignedDecisions2OriginalDecisionsCount.containsKey(assignedDecision)) {
 						varOriginalDecisionsCount = new Object2DoubleOpenHashMap<Decision>();
 						for (Decision originalDecision : setOfAllOriginalDecisions) {
+							if (matrix.assignedDecisions2OriginalDecisionsCount.containsKey(assignedDecision) && matrix.assignedDecisions2OriginalDecisionsCount.get(assignedDecision).containsKey(originalDecision)) {
+								value = matrix.assignedDecisions2OriginalDecisionsCount.get(assignedDecision).getDouble(originalDecision);
+							}
+							else {
+								value = 0.0;
+							}
 							varOriginalDecisionsCount.put(originalDecision, 
-									squareDifferenceAndDivide(assignedDecisions2OriginalDecisionsCount.get(assignedDecision).getDouble(originalDecision),
-											matrix.assignedDecisions2OriginalDecisionsCount.get(assignedDecision).getDouble(originalDecision), n1));
+								squareDifferenceAndDivide(assignedDecisions2OriginalDecisionsCount.get(assignedDecision).getDouble(originalDecision),
+								value, n1));
 						}
 						varAssignedDecisions2OriginalDecisionsCount.put(assignedDecision, varOriginalDecisionsCount);
 					}
 					else {
 						varOriginalDecisionsCount = ((Object2DoubleOpenHashMap<Decision>)varAssignedDecisions2OriginalDecisionsCount.get(assignedDecision));
 						for (Decision originalDecision : setOfAllOriginalDecisions) {
+							if (matrix.assignedDecisions2OriginalDecisionsCount.containsKey(assignedDecision) && matrix.assignedDecisions2OriginalDecisionsCount.get(assignedDecision).containsKey(originalDecision)) {
+								value = matrix.assignedDecisions2OriginalDecisionsCount.get(assignedDecision).getDouble(originalDecision);
+							}
+							else {
+								value = 0.0;
+							}
 							if (!varOriginalDecisionsCount.containsKey(originalDecision)) {
 								varOriginalDecisionsCount.put(originalDecision, 
 										squareDifferenceAndDivide(assignedDecisions2OriginalDecisionsCount.get(assignedDecision).getDouble(originalDecision),
-												matrix.assignedDecisions2OriginalDecisionsCount.get(assignedDecision).getDouble(originalDecision), n1));
+											value, n1));
 							}
 							else {
 								varOriginalDecisionsCount.addTo(originalDecision, 
 										squareDifferenceAndDivide(assignedDecisions2OriginalDecisionsCount.get(assignedDecision).getDouble(originalDecision),
-												matrix.assignedDecisions2OriginalDecisionsCount.get(assignedDecision).getDouble(originalDecision), n1));
+												value, n1));
 							}
 						}
 					}
 				}
 				// calculate variance of unknown assigned decision counts
 				for (Decision assignedDecision : unknownAssignedDecisionsCount.keySet()) {
+					if (matrix.unknownAssignedDecisionsCount.containsKey(assignedDecision)) {
+						value = matrix.unknownAssignedDecisionsCount.getDouble(assignedDecision);
+					}
+					else {
+						value = 0.0;
+					}
 					if (varUnknownAssignedDecisionsCount.containsKey(assignedDecision)) {
-						varUnknownAssignedDecisionsCount.put(assignedDecision, varUnknownAssignedDecisionsCount.getDouble(assignedDecision) + 
-								squareDifferenceAndDivide(unknownAssignedDecisionsCount.getDouble(assignedDecision), matrix.unknownAssignedDecisionsCount.getDouble(assignedDecision), n1));
+							varUnknownAssignedDecisionsCount.put(assignedDecision, varUnknownAssignedDecisionsCount.getDouble(assignedDecision) + 
+								squareDifferenceAndDivide(unknownAssignedDecisionsCount.getDouble(assignedDecision), value, n1));
 					}
 					else {
 						varUnknownAssignedDecisionsCount.put(assignedDecision, 
-								squareDifferenceAndDivide(unknownAssignedDecisionsCount.getDouble(assignedDecision), matrix.unknownAssignedDecisionsCount.getDouble(assignedDecision), n1));
+								squareDifferenceAndDivide(unknownAssignedDecisionsCount.getDouble(assignedDecision), value, n1));
 					}
 				}
 				// calculate variance of original decision counts
 				for (Decision originalDecision : unknownOriginalDecisionsCount.keySet()) {
+					if (matrix.unknownOriginalDecisionsCount.containsKey(originalDecision)) {
+						value = matrix.unknownOriginalDecisionsCount.getDouble(originalDecision);
+					}
+					else {
+						value = 0.0;
+					}
 					if (varUnknownOriginalDecisionsCount.containsKey(originalDecision)) {
 						varUnknownOriginalDecisionsCount.put(originalDecision, varUnknownOriginalDecisionsCount.getDouble(originalDecision) + 
-								squareDifferenceAndDivide(unknownOriginalDecisionsCount.getDouble(originalDecision), matrix.unknownOriginalDecisionsCount.getDouble(originalDecision), n1));
+								squareDifferenceAndDivide(unknownOriginalDecisionsCount.getDouble(originalDecision), value, n1));
 					}
 					else {
 						varUnknownOriginalDecisionsCount.put(originalDecision, 
-								squareDifferenceAndDivide(unknownOriginalDecisionsCount.getDouble(originalDecision), matrix.unknownOriginalDecisionsCount.getDouble(originalDecision), n1));
+								squareDifferenceAndDivide(unknownOriginalDecisionsCount.getDouble(originalDecision), value, n1));
 					}
 				}
 				// calculate variance of other counters
