@@ -29,7 +29,7 @@ import org.rulelearn.data.Decision;
 public class NonOrdinalMisclassificationMatrix extends MisclassificationMatrix {
 	
 	/**
-	 * Constructor calculating values in misclassification matrix.
+	 * Constructor calculating all values in misclassification matrix.
 	 * 
 	 * @param originalDecisions array with original {@link Decision decisions} of objects in the batch
 	 * @param assignedDecisions array with assigned {@link Decision decisions} which are validated 
@@ -40,6 +40,18 @@ public class NonOrdinalMisclassificationMatrix extends MisclassificationMatrix {
 	public NonOrdinalMisclassificationMatrix(Decision[] originalDecisions, Decision[] assignedDecisions) {
 		super();
 		calculateMisclassificationMatrix(originalDecisions, assignedDecisions);
+	}
+	
+	/**
+	 * Constructor calculating mean and variance of all values in misclassification matrix.
+	 * 
+	 * @param matrices an array with {@link NonOrdinalMisclassificationMatrix misclassification matrices} to be averaged
+	 * 
+	 * @throws NullPointerException when array with misclassification matrices passed as parameters or any of its elements is null
+	 */
+	public NonOrdinalMisclassificationMatrix(NonOrdinalMisclassificationMatrix... matrices) {
+		super();
+		calculateMeanAndVariance(matrices);
 	}
 
 }

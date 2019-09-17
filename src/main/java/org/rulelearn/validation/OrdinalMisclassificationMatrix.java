@@ -37,17 +37,32 @@ public class OrdinalMisclassificationMatrix extends MisclassificationMatrix {
 	/**
 	 * Constructor calculating values in misclassification matrix.
 	 * 
+	 * @param orderOfDecisions array with ordered {@link Decision decisions} (i.e., array indicating order of decisions in original decisions and assigned decisions) 
 	 * @param originalDecisions array with original {@link Decision decisions} of objects in the batch
 	 * @param assignedDecisions array with assigned {@link Decision decisions} which are validated
-	 * @param orderOfDecisions array with ordered {@link Decision decisions} (i.e., array indicating order of decisions in original decisions and assigned decisions) 
 	 * 
 	 * @throws NullPointerException when any of arrays (with original decisions, assigned decisions or ordered decisions) passed as parameters or their elements is null 
 	 * @throws InvalidValueException when size of the array with original decisions and size of the array with assigned decisions differ
 	 */
-	public OrdinalMisclassificationMatrix(Decision[] originalDecisions, Decision[] assignedDecisions, Decision[] orderOfDecisions) {
+	public OrdinalMisclassificationMatrix(Decision[] orderOfDecisions, Decision[] originalDecisions, Decision[] assignedDecisions) {
 		super();
 		this.orderOfDecisions = Precondition.notNullWithContents(orderOfDecisions, "Array with ordered decisions is null.", "Element %i of array with ordered decisions is null.");
 		calculateMisclassificationMatrix(originalDecisions, assignedDecisions);
+	}
+	
+	/**
+	 * Constructor calculating mean and variance of all values in misclassification matrix.
+	 * 
+	 * @param orderOfDecisions array with ordered {@link Decision decisions} (i.e., array indicating order of decisions in all original decisions and assigned decisions
+	 * 		which are present in matrices)
+	 *  @param matrices an array with {@link OrdinalMisclassificationMatrix misclassification matrices} to be averaged
+	 * 
+	 * @throws NullPointerException when any of arrays (with misclassification matrices or ordered decisions) passed as parameters or their elements is null
+	 */
+	public OrdinalMisclassificationMatrix(Decision[] orderOfDecisions, OrdinalMisclassificationMatrix... matrices) {
+		super();
+		this.orderOfDecisions = Precondition.notNullWithContents(orderOfDecisions, "Array with ordered decisions is null.", "Element %i of array with ordered decisions is null.");
+		calculateMeanAndVariance(matrices);
 	}
 	
 	/**
