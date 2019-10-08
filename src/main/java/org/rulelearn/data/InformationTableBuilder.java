@@ -18,15 +18,19 @@ package org.rulelearn.data;
 
 import static org.rulelearn.core.Precondition.notNull;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.UUID;
 
 import org.rulelearn.core.FieldParseException;
 import org.rulelearn.data.json.AttributeDeserializer;
+import org.rulelearn.data.json.AttributeParser;
+import org.rulelearn.data.json.ObjectStreamParser;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
 import org.rulelearn.types.IdentificationField;
@@ -36,8 +40,6 @@ import org.rulelearn.types.UUIDIdentificationField;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import com.univocity.parsers.conversions.TrimConversion;
 
@@ -516,7 +518,7 @@ public class InformationTableBuilder {
 	
 	/**
 	 * Builds information table on the base of file with JSON specification of attributes {@link Attribute} and file with objects stored also in JSON format.
-	 * Internally it uses attribute deserializer {@link AttributeDeserializer} to load attributes and object builder {@link org.rulelearn.data.json.ObjectBuilder} to load objects.
+	 * Internally it uses {@link AttributeParser attribute parser} to load attributes and {@link ObjectStreamParser object parser} to load objects.
 	 * 
 	 * @param pathToJSONAttributeFile a path to JSON file with attributes
 	 * @param pathToJSONObjectFile a path to the JSON file with objects
@@ -526,6 +528,36 @@ public class InformationTableBuilder {
 	 * @throws FileNotFoundException when JSON file cannot be found
 	 */
 	public static InformationTable safelyBuildFromJSONFile(String pathToJSONAttributeFile, String pathToJSONObjectFile) throws IOException, FileNotFoundException {
+		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");
+		notNull(pathToJSONObjectFile, "Path to JSON file with objects is null.");
+		
+		InformationTable informationTable = null;
+		try (FileReader attributeReader = new FileReader(pathToJSONAttributeFile)) {
+			AttributeParser attributeParser = new AttributeParser();
+			Attribute [] attributes = attributeParser.parseAttributes(attributeReader);
+			if (attributes != null) {
+				ObjectStreamParser objectParser = new ObjectStreamParser.Builder(attributes).build();
+				try (InputStreamReader objectReader = new InputStreamReader(new FileInputStream(pathToJSONObjectFile), "UTF-8")) {
+					informationTable = objectParser.parseObjects(objectReader);
+				}
+				catch (FileNotFoundException ex) {
+					System.out.println(ex.toString());
+				}
+				catch (IOException ex) {
+					System.out.println(ex.toString());
+				}
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		catch (IOException ex) {
+			System.out.println(ex.toString());
+		}
+
+		return informationTable;
+	}
+	/*public static InformationTable safelyBuildFromJSONFile(String pathToJSONAttributeFile, String pathToJSONObjectFile) throws IOException, FileNotFoundException {
 		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");
 		notNull(pathToJSONObjectFile, "Path to JSON file with objects is null.");
 		
@@ -574,6 +606,7 @@ public class InformationTableBuilder {
 
 		return informationTable;
 	}
+	*/
 	
 	/**
 	 * Gets missing value strings.

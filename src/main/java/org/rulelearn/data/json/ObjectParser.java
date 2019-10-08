@@ -32,7 +32,10 @@ import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
 /**
- * Parser of objects stored in JSON format.
+ * Parser of objects stored in JSON format. Parses objects from JSON into {@link InformationTable an information table}.
+ * 
+ * Content is read using {@link Reader} and whole JSON structure is parsed at once using GSON {@link JsonParser}. 
+ * On the basis of this structure {@link InformationTable an information table} is constructed using {@link InformationTableBuilder}. 
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -57,7 +60,7 @@ public class ObjectParser {
 	
 	/**
 	 * 
-	 * Builder class for {@link ObjectParser}. 
+	 * Builder class for {@link ObjectStreamParser}. 
 	 *
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -124,7 +127,7 @@ public class ObjectParser {
 		}
 		
 		/**
-		 * Builds a new object parser {@link ObjectParser}.
+		 * Builds a new object parser {@link ObjectStreamParser}.
 		 * 
 		 * @return a new object parser
 		 */
@@ -183,7 +186,7 @@ public class ObjectParser {
 	protected JsonElement getJSON (Reader reader) throws IOException {
 		notNull(reader, "Reader with content to be parsed is null.");
 		try (JsonReader jsonReader = new JsonReader(reader)) {
-			JsonParser jsonParser = new JsonParser();			
+			JsonParser jsonParser = new JsonParser();		
 			return jsonParser.parse(jsonReader);
 		}
 	}

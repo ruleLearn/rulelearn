@@ -16,6 +16,7 @@
 
 package org.rulelearn.sampling;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileNotFoundException;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.rulelearn.classification.SimpleClassificationResult;
@@ -125,7 +127,7 @@ class CrossValidatorRealTest {
 				}
 			}
 			avgMMatrix = new OrdinalMisclassificationMatrix(windsor.getOrderedUniqueFullyDeterminedDecisions(), aMatrices);
-			System.out.println("===");
+			System.out.println("--- summary of all validations ---");
 			System.out.println("Averaged validation table accuracy: " + avgMMatrix.getAccuracy() + ", deviation: " + avgMMatrix.getDeviationOfAccuracy());
 			System.out.println("Averaged validation table MAE: " + avgMMatrix.getMAE());
 			for (Decision decision : windsor.getOrderedUniqueFullyDeterminedDecisions()) {
@@ -142,6 +144,7 @@ class CrossValidatorRealTest {
 	 * Test cross validation on learning-set-prioritisation-2604v1 data set.
 	 */
 	@Test
+	@Disabled("computationally expensive")
 	@Tag("integration")
 	void testCrossValidationLearningSetPrioritisation2604() {
 		InformationTableWithDecisionDistributions learningSet = null;
@@ -151,7 +154,7 @@ class CrossValidatorRealTest {
 		try {
 			learningSet = new InformationTableWithDecisionDistributions(InformationTableBuilder.safelyBuildFromJSONFile("src/test/resources/data/json/metadata-prioritisation.json", 
 					"src/test/resources/data/json/learning-set-prioritisation-2604v1.json"));
-			//assertEquals(6853, learningSet.getNumberOfObjects());
+			assertEquals(6853, learningSet.getNumberOfObjects());
 		}
 		catch (FileNotFoundException ex) {
 			System.out.println(ex.toString());
@@ -213,7 +216,7 @@ class CrossValidatorRealTest {
 				}
 			}
 			avgMMatrix = new OrdinalMisclassificationMatrix(learningSet.getOrderedUniqueFullyDeterminedDecisions(), aMatrices);
-			System.out.println("===");
+			System.out.println("--- summary of all validations ---");
 			System.out.println("Averaged validation table accuracy: " + avgMMatrix.getAccuracy() + ", deviation: " + avgMMatrix.getDeviationOfAccuracy());
 			System.out.println("Averaged validation table MAE: " + avgMMatrix.getMAE());
 			for (Decision decision : learningSet.getOrderedUniqueFullyDeterminedDecisions()) {
@@ -230,16 +233,24 @@ class CrossValidatorRealTest {
 	 * Test cross validation on learning-set-prioritisation-0609 data set.
 	 */
 	@Test
+	@Disabled("computationally expensive")
 	@Tag("integration")
 	void testCrossValidationLearningSetPrioritisation0609() {
-		InformationTableWithDecisionDistributions learningSet = null;
+		InformationTableWithDecisionDistributions wholeSet = null, learningSet = null, testSet = null;
 		int n = 3, a = 1;
 		double consistencyThreshold = 0.99;
 		
 		try {
-			learningSet = new InformationTableWithDecisionDistributions(InformationTableBuilder.safelyBuildFromJSONFile("src/test/resources/data/json/metadata-prioritisation.json", 
-					"src/test/resources/data/json/learning-set-prioritisation-0609.json"));
-			//assertEquals(27824, learningSet.getNumberOfObjects());
+			wholeSet = new InformationTableWithDecisionDistributions(InformationTableBuilder.safelyBuildFromJSONFile("src/test/resources/data/json/metadata-prioritisation.json", 
+					"src/test/resources/data/json/learning-set-prioritisation-0609v1.json"));
+			assertEquals(27824, wholeSet.getNumberOfObjects());
+			
+			RandomSplitter splitter = new RandomSplitter(new Random(64));
+			List<InformationTable> informationTables = splitter.splitStratified(wholeSet, new double [] {0.2, 0.8});
+			learningSet = new InformationTableWithDecisionDistributions(informationTables.get(0));
+			//System.out.println(learningSet.getNumberOfObjects());
+			testSet = new InformationTableWithDecisionDistributions(informationTables.get(1));
+			//System.out.println(testSet.getNumberOfObjects());
 		}
 		catch (FileNotFoundException ex) {
 			System.out.println(ex.toString());
@@ -274,6 +285,7 @@ class CrossValidatorRealTest {
 			SimpleRuleClassifier classifier = null;
 			int validationTableSize = 0;
 			InformationTable validationTable = null;
+			System.out.println("--- validation ---");
 			for (int j = 0; j < a; j++) {
 				List<CrossValidator.CrossValidationFold<InformationTable>> folds = validator.splitStratifiedIntoKFold(learningSet, n);
 				for (int i = 0; i < n; i++) {
@@ -301,13 +313,29 @@ class CrossValidatorRealTest {
 				}
 			}
 			avgMMatrix = new OrdinalMisclassificationMatrix(learningSet.getOrderedUniqueFullyDeterminedDecisions(), aMatrices);
-			System.out.println("===");
+			System.out.println("--- summary of all validations ---");
 			System.out.println("Averaged validation table accuracy: " + avgMMatrix.getAccuracy() + ", deviation: " + avgMMatrix.getDeviationOfAccuracy());
 			System.out.println("Averaged validation table MAE: " + avgMMatrix.getMAE());
 			for (Decision decision : learningSet.getOrderedUniqueFullyDeterminedDecisions()) {
 				System.out.println("Averaged validation table, TP for decision: " + decision + ": " + avgMMatrix.getTruePositiveRate(decision) + ", deviation: " + avgMMatrix.getDeviationOfTruePositiveRate(decision));
 			}
 			System.out.println("Number unknown assignments in averaged validation table: " + avgMMatrix.getNumberOfUnknownAssignments());
+			System.out.println("--- test ---");
+			rules = vcDomLEMWrapper.induceRulesWithCharacteristics(learningSet, consistencyThreshold);
+			int testTableSize = testSet.getNumberOfObjects();
+			SimpleDecision[] decisions = new SimpleDecision[testTableSize];
+			classifier = new SimpleRuleClassifier(rules, defaultResponse);
+			for (int k = 0; k < testSet.getNumberOfObjects(); k++) {
+				decisions[k] = classifier.classify(k, testSet).getSuggestedDecision();
+				// debug
+				// System.out.println(decisions[k] + " : " + validationTable.getDecision(k));
+			}
+			OrdinalMisclassificationMatrix tMatrix = new OrdinalMisclassificationMatrix(wholeSet.getOrderedUniqueFullyDeterminedDecisions(), decisions, testSet.getDecisions());
+			System.out.println("Test table accuracy: " + tMatrix.getAccuracy());
+			System.out.println("Averaged validation table MAE: " + tMatrix.getMAE());
+			for (Decision decision : testSet.getOrderedUniqueFullyDeterminedDecisions()) {
+				System.out.println("Test table, TP for decision: " + decision + ": " + tMatrix.getTruePositiveRate(decision));
+			}
 		}
 		else {
 			fail("Unable to load JSON learning-set-prioritisation-0609 file");

@@ -28,8 +28,8 @@ import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
- * Build objects from JSON.
- *
+ * Builds objects {@link String} representation from {@link JsonElement GSON JSON representation}.
+ * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  *
@@ -57,7 +57,6 @@ public class ObjectBuilder {
 	protected String encoding = ObjectBuilder.DEFAULT_ENCODING; 
 	
 	/**
-	 * 
 	 * Builder class for {@link ObjectBuilder}. 
 	 *
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
