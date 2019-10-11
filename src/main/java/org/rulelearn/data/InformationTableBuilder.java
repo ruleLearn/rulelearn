@@ -99,7 +99,7 @@ public class InformationTableBuilder {
 		this.separator = InformationTableBuilder.DEFAULT_SEPARATOR_STRING;
 		this.missingValueStrings = InformationTableBuilder.DEFAULT_MISSING_VALUE_STRINGS;
 		this.trimConversion = new TrimConversion();
-		this.evaluationParser = new EvaluationParser(InformationTableBuilder.DEFAULT_MISSING_VALUE_STRINGS, true);
+		this.evaluationParser = new EvaluationParser(InformationTableBuilder.DEFAULT_MISSING_VALUE_STRINGS, true); //use volatile caching factory
 	}
 	
 	/**
@@ -147,7 +147,7 @@ public class InformationTableBuilder {
 		this(attributes);
 		notNullWithContents(missingValueStrings, "Missing value strings array is null.", "Missing value string is null at index %i."); //asserts all missing value representations are not null
 		this.missingValueStrings = missingValueStrings;
-		this.evaluationParser = new EvaluationParser(missingValueStrings, true);
+		this.evaluationParser = new EvaluationParser(missingValueStrings, true); //use volatile caching factory
 	}
 	
 	/**
@@ -156,13 +156,13 @@ public class InformationTableBuilder {
 	 * @param attributes table with attributes
 	 * @param separator separator of object's evaluations
 	 * @param missingValueStrings array of string representations of missing values
-	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or sparator, and/or strings representing missing values have not been set
+	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or separator, and/or strings representing missing values have not been set
 	 */
 	public InformationTableBuilder(Attribute[] attributes, String separator, String[] missingValueStrings) {
 		this(attributes, separator);
 		notNullWithContents(missingValueStrings, "Missing value strings array is null.", "Missing value string is null at index %i."); //asserts all missing value representations are not null
 		this.missingValueStrings = missingValueStrings;
-		this.evaluationParser = new EvaluationParser(missingValueStrings, true);
+		this.evaluationParser = new EvaluationParser(missingValueStrings, true); //use volatile caching factory
 	}
 	
 	/**
