@@ -28,11 +28,13 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.rulelearn.core.FieldParseException;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeWithContext;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.EvaluationAttributeWithContext;
+import org.rulelearn.data.EvaluationParser;
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.ConditionAtLeast;
 import org.rulelearn.rules.ConditionAtLeastObjectVSThreshold;
@@ -47,16 +49,7 @@ import org.rulelearn.rules.RuleSemantics;
 import org.rulelearn.rules.RuleSet;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.rules.RuleType;
-import org.rulelearn.types.ElementList;
-import org.rulelearn.types.EnumerationField;
-import org.rulelearn.types.EnumerationFieldFactory;
 import org.rulelearn.types.EvaluationField;
-import org.rulelearn.types.Field;
-import org.rulelearn.types.IntegerField;
-import org.rulelearn.types.IntegerFieldFactory;
-import org.rulelearn.types.RealField;
-import org.rulelearn.types.RealFieldFactory;
-import org.rulelearn.types.SimpleField;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -74,9 +67,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
 public class RuleParser {
+	
+	/** 
+	 * Default string representations of a missing value.
+	 */
+	protected final static String[] DEFAULT_MISSING_VALUE_STRINGS = {"?", "*"}; //SIC! null is not allowed on this list and the list itself cannot be null
 
 	/** 
 	 * Default value for this type of a field.
@@ -114,22 +111,30 @@ public class RuleParser {
 	protected Object2IntMap<String> attributeNamesMap = null;
 	
 	/**
+	 * Parser of evaluations given in textual form, converting them to {@link EvaluationField evaluation fields} based on information about an attribute.
+	 * Initialized in class constructor with {@link EvaluationParser.CachingType#VOLATILE volatile caching type}.
+	 */
+	EvaluationParser evaluationParser = null;
+	
+	/**
 	 * Constructs rule parser, sets attributes and initializes parser.
+	 * At present, it is assumed that missing values in rules' conditions, if present, have to be represented either by "?" or "*".
 	 * 
 	 * @param attributes array of attributes {@link Attribute} which may be present in elementary conditions, that are forming decision rules
 	 */
-	public RuleParser (Attribute [] attributes) {
+	public RuleParser(Attribute [] attributes) { //TODO: add constructor with missingValueStrings, and update method description
 		this.attributes = attributes;
 		this.initializeParser();
 	}
 	
 	/**
 	 * Constructs rule parser, sets attributes, encoding and initializes parser.
+	 * At present, it is assumed that missing values in rules' conditions, if present, have to be represented either by "?" or "*".
 	 * 
 	 * @param attributes array of attributes {@link Attribute} which may be present in elementary conditions, that are forming decision rules
 	 * @param encoding encoding of text data in RuleML
 	 */
-	public RuleParser (Attribute [] attributes, String encoding) {
+	public RuleParser(Attribute [] attributes, String encoding) { //TODO: add constructor with missingValueStrings, and update method description
 		this.attributes = attributes;
 		this.encoding = encoding;
 		this.initializeParser();
@@ -138,7 +143,7 @@ public class RuleParser {
 	/**
 	 * Initializes rule parser.
 	 */
-	protected void initializeParser () {
+	protected void initializeParser() {
 		notNull(this.attributes, "Null set of attributes was passed to RuleML parser.");
 		nonEmpty(this.attributes, "Empty set of attributes was passed to RuleML parser.");
 		
@@ -154,7 +159,11 @@ public class RuleParser {
 				this.attributesWithContext[i] = new AttributeWithContext<Attribute>(this.attributes[i], i);
 			}
 			this.attributeNamesMap.put(this.attributes[i].getName(), i);
-		}		
+		}
+		
+		//initialize evaluation parser used to parse thresholds in rules' conditions
+		//TODO: allow different missing value strings
+		this.evaluationParser = new EvaluationParser(DEFAULT_MISSING_VALUE_STRINGS, EvaluationParser.CachingType.VOLATILE); //use caching factory, and force volatile cache
 	}
 	
 	/**
@@ -163,7 +172,7 @@ public class RuleParser {
 	 * @param inputStream stream with RuleML
 	 * @return interface representing RuleML document
 	 */
-	protected Document getRuleMLDocument (InputStream inputStream)  {
+	protected Document getRuleMLDocument(InputStream inputStream)  {
 		Document document = null;
 		
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -184,22 +193,24 @@ public class RuleParser {
 	}
 	
 	/**
-	 * Parses all rules from RuleML source and returns a map {@link Object2ObjectRBTreeMap} with each rule sets from RuleML placed on different index. 
+	 * Parses all rules from RuleML source and returns a map {@link Object2ObjectRBTreeMap} with each rule set from RuleML placed on different index. 
 	 * 
 	 * @param inputStream stream with RuleML
 	 * @return map {@link Object2ObjectRBTreeMap} with each rule sets from RuleML placed on different index
 	 */
-	public Map<Integer, RuleSet> parseRules (InputStream inputStream)  {
+	public Map<Integer, RuleSet> parseRules(InputStream inputStream)  {
 		Map<Integer, RuleSet> ruleSets = null;
 		
 		notNull(this.attributesWithContext, "Attributes were not specified in RuleML parser.");
 		notNull(this.attributeNamesMap, "Attributes were not specified in RuleML parser.");
 		Document ruleMLDocument =  getRuleMLDocument(inputStream);
+		
 		// RuleML has been parsed
 		if (ruleMLDocument != null) {
 			Element root = ruleMLDocument.getDocumentElement();
             int lowestAvailableIndex = 0;
-            ruleSets = new Object2ObjectRBTreeMap<Integer, RuleSet> ();
+            ruleSets = new Object2ObjectRBTreeMap<Integer, RuleSet>();
+            
             // iterate through sets of rules
             for (Node act : new NodeListWrapper(root.getElementsByTagName("act"))) {
                 if (act.getNodeType() == Node.ELEMENT_NODE) {
@@ -228,6 +239,7 @@ public class RuleParser {
                 }
             }
 		}
+		clearVolatileCaches();
 		return ruleSets;
 	}
 	
@@ -237,12 +249,13 @@ public class RuleParser {
 	 * @param inputStream stream with RuleML
 	 * @return map {@link Object2ObjectRBTreeMap} with each rule sets with characteristics (may have not set values) from RuleML placed on different index
 	 */
-	public Map<Integer, RuleSetWithCharacteristics> parseRulesWithCharacteristics (InputStream inputStream)  {
+	public Map<Integer, RuleSetWithCharacteristics> parseRulesWithCharacteristics(InputStream inputStream)  {
 		Map<Integer, RuleSetWithCharacteristics> ruleSets = null;
 		
 		notNull(this.attributesWithContext, "Attributes were not specified in RuleML parser.");
 		notNull(this.attributeNamesMap, "Attributes were not specified in RuleML parser.");
 		Document ruleMLDocument =  getRuleMLDocument(inputStream);
+		
 		// RuleML has been parsed
 		if (ruleMLDocument != null) {
 			Element root = ruleMLDocument.getDocumentElement();
@@ -274,11 +287,12 @@ public class RuleParser {
                         }
                     }
                     //add parsed sets of rules and rule characteristics to the map
-                    ruleSets.put(index, new RuleSetWithCharacteristics(rules.toArray(new Rule[rules.size()]), 
-                    													 ruleCharacteristics.toArray(new RuleCharacteristics[ruleCharacteristics.size()])));
+                    ruleSets.put(index, new RuleSetWithCharacteristics(rules.toArray(new Rule[rules.size()]),
+                    		ruleCharacteristics.toArray(new RuleCharacteristics[ruleCharacteristics.size()])));
                 }
             }
 		}
+		clearVolatileCaches();
 		return ruleSets;
 	}
 	
@@ -287,9 +301,10 @@ public class RuleParser {
 	 * 
 	 * @param assertElement RuleML element representing a single rule
 	 * @return a rule {@link Rule}
+	 * 
 	 * @throws RuleParseException if any of the rules can't be parsed
 	 */
-	protected Rule parseRule (Element assertElement) throws RuleParseException {
+	protected Rule parseRule(Element assertElement) throws RuleParseException {
 		Rule rule = null;
 		List<Condition<? extends EvaluationField>> conditions = null;
 		List<List<Condition<? extends EvaluationField>>> decisions = null;
@@ -353,7 +368,7 @@ public class RuleParser {
 				ruleType = DEFAULT_RULE_TYPE;
 			}
 			if (ruleSemantics == null) { // rule semantics not set 
-				// TODO for now the semantics of rule depends on type of first decision condition only
+				// TODO for now the semantics of rule depends on the type of the first decision condition only
 				Condition<? extends EvaluationField> firstDecisionCondition = decisions.get(0).get(0);
 				AttributePreferenceType preferenceType = firstDecisionCondition.getAttributeWithContext().getAttributePreferenceType();
 				if (preferenceType == AttributePreferenceType.NONE) {
@@ -386,9 +401,9 @@ public class RuleParser {
 	 * 
 	 * @param assertElement RuleML element representing a single rule
 	 * @return rule characteristics {@link RuleCharacteristics}
-	 * @throws RuleParseException if any of the rules can't bex parsed
+	 * @throws RuleParseException if any of the rules can't be parsed
 	 */
-	protected RuleCharacteristics parseRuleEvaluations (Element assertElement) throws RuleParseException {
+	protected RuleCharacteristics parseRuleEvaluations(Element assertElement) throws RuleParseException {
 		RuleCharacteristics ruleCharacteristics = null;
 		
 		for (Node assertClause = assertElement.getFirstChild(); assertClause != null; assertClause = assertClause.getNextSibling()) {
@@ -416,7 +431,7 @@ public class RuleParser {
 	 * @return a list {@link ObjectArrayList} of conditions {@link Condition}
 	 * @throws RuleParseException if any of the rules can't be parsed
 	 */
-	protected List<Condition<? extends EvaluationField>> parseRuleConditionPart (Element ifElement) throws RuleParseException {
+	protected List<Condition<? extends EvaluationField>> parseRuleConditionPart(Element ifElement) throws RuleParseException {
 		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<Condition<? extends EvaluationField>> ();
 		for (Node ifClause = ifElement.getFirstChild(); ifClause != null; ifClause = ifClause.getNextSibling()) {
             if (ifClause.getNodeType() == Node.ELEMENT_NODE) {
@@ -454,7 +469,7 @@ public class RuleParser {
 	 * @return a list {@link ObjectArrayList} of conditions {@link Condition}
 	 * @throws RuleParseException if any of the rules can't be parsed 
 	 */
-	protected List<List<Condition<? extends EvaluationField>>> parseRuleDecisionPart (Element thenElement) throws RuleParseException {
+	protected List<List<Condition<? extends EvaluationField>>> parseRuleDecisionPart(Element thenElement) throws RuleParseException {
 		List<List<Condition<? extends EvaluationField>>> decisionsOR = new ObjectArrayList<List<Condition<? extends EvaluationField>>> ();
 		List<Condition<? extends EvaluationField>> decisionsAND = null;
 		for (Node thenClause = thenElement.getFirstChild(); thenClause != null; thenClause = thenClause.getNextSibling()) {
@@ -514,7 +529,7 @@ public class RuleParser {
 	 * @return a condition {@link Condition}
 	 * @throws RuleParseException if any of the rules can't be parsed
 	 */
-	protected Condition<? extends EvaluationField> parseRuleCondition (Element atomElement) throws RuleParseException {
+	protected Condition<? extends EvaluationField> parseRuleCondition(Element atomElement) throws RuleParseException {
 		Condition<? extends EvaluationField> condition = null;
 		boolean relationThresholdVSObject = true; // by default relation is of type threshold versus object
         NodeList relationList = atomElement.getElementsByTagName("rel");
@@ -581,80 +596,29 @@ public class RuleParser {
 	 * @param attributeWithContext attribute for which condition is constructed
 	 * @return constructed condition 
 	 */
-	protected Condition<? extends EvaluationField> constructCondition (String relation, String value, boolean relationThresholdVSObject, EvaluationAttributeWithContext attributeWithContext) {
-		Condition<? extends EvaluationField> condition = null;
-		if (attributeWithContext.getAttribute().getValueType() instanceof SimpleField) {
-			Field valueType = attributeWithContext.getAttribute().getValueType();
-			if (!relationThresholdVSObject) { // standard object versus value relation
-				if ("le".equals(relation.toLowerCase())) {
-					if (valueType instanceof IntegerField) {
-						condition = new ConditionAtMostObjectVSThreshold<IntegerField>(attributeWithContext, (IntegerField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-					else if (valueType instanceof RealField) {
-						condition = new ConditionAtMostObjectVSThreshold<RealField>(attributeWithContext, (RealField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-					else if (valueType instanceof EnumerationField) {
-						condition = new ConditionAtMostObjectVSThreshold<EnumerationField>(attributeWithContext, (EnumerationField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-	        	}
-	        	else if ("ge".equals(relation.toLowerCase())) {
-	        		if (valueType instanceof IntegerField) {
-						condition = new ConditionAtLeastObjectVSThreshold<IntegerField>(attributeWithContext, (IntegerField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-					else if (valueType instanceof RealField) {
-						condition = new ConditionAtLeastObjectVSThreshold<RealField>(attributeWithContext, (RealField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-					else if (valueType instanceof EnumerationField) {
-						condition = new ConditionAtLeastObjectVSThreshold<EnumerationField>(attributeWithContext, (EnumerationField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-	        	}
-	        	else {
-	        		if (valueType instanceof IntegerField) {
-						condition = new ConditionEqualObjectVSThreshold<IntegerField>(attributeWithContext, (IntegerField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-					else if (valueType instanceof RealField) {
-						condition = new ConditionEqualObjectVSThreshold<RealField>(attributeWithContext, (RealField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-					else if (valueType instanceof EnumerationField) {
-						condition = new ConditionEqualObjectVSThreshold<EnumerationField>(attributeWithContext, (EnumerationField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-	        	}
-			}
-			else { // value (threshold) versus object relation
-				if ("le".equals(relation.toLowerCase())) {
-					if (valueType instanceof IntegerField) {
-						condition = new ConditionAtMostThresholdVSObject<IntegerField>(attributeWithContext, (IntegerField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-					else if (valueType instanceof RealField) {
-						condition = new ConditionAtMostThresholdVSObject<RealField>(attributeWithContext, (RealField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-					else if (valueType instanceof EnumerationField) {
-						condition = new ConditionAtMostThresholdVSObject<EnumerationField>(attributeWithContext, (EnumerationField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-	        	}
-	        	else if ("ge".equals(relation.toLowerCase())) {
-	        		if (valueType instanceof IntegerField) {
-						condition = new ConditionAtLeastThresholdVSObject<IntegerField>(attributeWithContext, (IntegerField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-					else if (valueType instanceof RealField) {
-						condition = new ConditionAtLeastThresholdVSObject<RealField>(attributeWithContext, (RealField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-					else if (valueType instanceof EnumerationField) {
-						condition = new ConditionAtLeastThresholdVSObject<EnumerationField>(attributeWithContext, (EnumerationField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-	        	}
-	        	else {
-	        		if (valueType instanceof IntegerField) {
-						condition = new ConditionEqualThresholdVSObject<IntegerField>(attributeWithContext, (IntegerField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-					else if (valueType instanceof RealField) {
-						condition = new ConditionEqualThresholdVSObject<RealField>(attributeWithContext, (RealField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-					else if (valueType instanceof EnumerationField) {
-						condition = new ConditionEqualThresholdVSObject<EnumerationField>(attributeWithContext, (EnumerationField)constructEvaluation(value, attributeWithContext.getAttribute()));
-					}
-	        	}
-			}
+	protected Condition<EvaluationField> constructCondition(String relation, String value, boolean relationThresholdVSObject, EvaluationAttributeWithContext attributeWithContext) {
+		Condition<EvaluationField> condition = null;
+		if (!relationThresholdVSObject) { // standard object versus value (threshold) relation
+			if ("le".equals(relation.toLowerCase())) {
+				condition = new ConditionAtMostObjectVSThreshold<EvaluationField>(attributeWithContext, constructEvaluation(value, attributeWithContext.getAttribute()));
+        	}
+        	else if ("ge".equals(relation.toLowerCase())) {
+        		condition = new ConditionAtLeastObjectVSThreshold<EvaluationField>(attributeWithContext, constructEvaluation(value, attributeWithContext.getAttribute()));
+        	}
+        	else { //equality condition
+        		condition = new ConditionEqualObjectVSThreshold<EvaluationField>(attributeWithContext, constructEvaluation(value, attributeWithContext.getAttribute()));
+        	}
+		}
+		else { // value (threshold) versus object relation
+			if ("le".equals(relation.toLowerCase())) {
+				condition = new ConditionAtMostThresholdVSObject<EvaluationField>(attributeWithContext, constructEvaluation(value, attributeWithContext.getAttribute()));
+        	}
+        	else if ("ge".equals(relation.toLowerCase())) {
+        		condition = new ConditionAtLeastThresholdVSObject<EvaluationField>(attributeWithContext, constructEvaluation(value, attributeWithContext.getAttribute()));
+        	}
+        	else { //equality condition
+        		condition = new ConditionEqualThresholdVSObject<EvaluationField>(attributeWithContext, constructEvaluation(value, attributeWithContext.getAttribute()));
+        	}
 		}
 		return condition;
 	}
@@ -664,49 +628,12 @@ public class RuleParser {
 	 * 
 	 * @param evaluation string representation of evaluation
 	 * @param attribute attribute, which evaluation is parsed
+	 * 
 	 * @return evaluation field {@link EvaluationField}
+	 * @throws FieldParseException if given string cannot be parsed as a value of the given attribute
 	 */
-	// TODO should be propagated somewhere else and used also in InformationTableBuilder
-	protected EvaluationField constructEvaluation (String evaluation, EvaluationAttribute attribute) {
-		EvaluationField field = null;
-		if (attribute.getValueType() instanceof SimpleField) {
-			Field valueType = attribute.getValueType();
-			if (valueType instanceof IntegerField) {
-				try {
-					field = IntegerFieldFactory.getInstance().create(Integer.parseInt(evaluation), attribute.getPreferenceType());
-				}
-				catch (NumberFormatException ex) {
-					// just assign a reference (no new copy of missing value field is made)
-					field = attribute.getMissingValueType();
-					throw new NumberFormatException(ex.getMessage());
-				}
-			}
-			else if (valueType instanceof RealField) {
-				try {
-					field = RealFieldFactory.getInstance().create(Double.parseDouble(evaluation), attribute.getPreferenceType());
-				}
-				catch (NumberFormatException ex) {
-					// just assign a reference (no new copy of missing value field is made)
-					field = attribute.getMissingValueType();
-					throw new NumberFormatException(ex.getMessage());
-				}
-			}
-			else if (valueType instanceof EnumerationField) {
-				// TODO some optimization is needed here (e.g., construction of a table with element lists)
-				int index = ((EnumerationField)valueType).getElementList().getIndex(evaluation);
-				if (index != ElementList.DEFAULT_INDEX) {
-					field = EnumerationFieldFactory.getInstance().create(((EnumerationField)valueType).getElementList(), index, attribute.getPreferenceType());
-				}
-				else {
-					field = attribute.getMissingValueType();
-					throw new IndexOutOfBoundsException(new StringBuilder("Incorrect value of enumeration: ").append(evaluation).append(" was replaced by a missing value.").toString());
-				}
-			}
-			else {
-				field = attribute.getMissingValueType();
-			}
-		}
-		return field;
+	protected EvaluationField constructEvaluation(String evaluation, EvaluationAttribute attribute) {
+		return this.evaluationParser.parseEvaluation(evaluation, attribute);
 	}
 	
 	/**
@@ -716,7 +643,7 @@ public class RuleParser {
 	 * @return rule characteristics {@link RuleCharacteristics} of a rule
 	 * @throws RuleParseException if any of evaluations of rules can't be parsed
 	 */
-	protected RuleCharacteristics parseEachRuleEvaluation (Element evaluationsElement) throws RuleParseException {
+	protected RuleCharacteristics parseEachRuleEvaluation(Element evaluationsElement) throws RuleParseException {
 		RuleCharacteristics ruleCharacteristics = new RuleCharacteristics();
 		for (Node evaluationElement = evaluationsElement.getFirstChild(); evaluationElement != null; evaluationElement = evaluationElement.getNextSibling()) {
             if (evaluationElement.getNodeType() == Node.ELEMENT_NODE) {
@@ -792,7 +719,7 @@ public class RuleParser {
 	 * @param ruleSemanticsElement RuleML element representing rule semantics
 	 * @return rule semantics {@link RuleSemantics}
 	 */
-	protected RuleSemantics parseRuleSemantics (Element ruleSemanticsElement) {
+	protected RuleSemantics parseRuleSemantics(Element ruleSemanticsElement) {
 		RuleSemantics ruleSemantics = null;
         
 		Node valueNode = ruleSemanticsElement.getFirstChild();
@@ -818,7 +745,7 @@ public class RuleParser {
 	 * @param ruleTypeElement RuleML element representing rule semantics
 	 * @return rule type {@link RuleType}
 	 */
-	protected RuleType parseRuleType (Element ruleTypeElement) {
+	protected RuleType parseRuleType(Element ruleTypeElement) {
 		RuleType ruleType = null;
 		
 		Node valueNode = ruleTypeElement.getFirstChild();
@@ -837,4 +764,19 @@ public class RuleParser {
 		
 	    return ruleType;
     }
+	
+	/**
+	 * Clears volatile caches of all evaluation field caching factories.
+	 *  
+	 * @param attributes attributes of the information table for which parsed rules have been induced
+	 */
+	void clearVolatileCaches() {
+		//clear volatile caches of all evaluation field caching factories
+		for (int i = 0; i < attributes.length; i++) {
+			if (attributes[i] instanceof EvaluationAttribute) {
+				((EvaluationAttribute)attributes[i]).getValueType().getCachingFactory().clearVolatileCache(); //clears volatile cache of the caching factory corresponding to current evaluation attribute
+			}
+		}
+	}
+	
 }

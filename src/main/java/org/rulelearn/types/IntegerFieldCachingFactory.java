@@ -33,8 +33,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
  * <br>
  * This factory employs two types of caches: persistent and volatile one. Cache of the first type can be only extended with new objects (it is never cleared).
  * Cache of the second type is volatile, in the sense that it can be cleared any time using call to {@link #clearVolatileCache()} method.
- * Volatile cache can be useful for building an information table. In such case, one can clear the cache after reading the entire table
- * to prevent high memory consumption by cached fields.
+ * Volatile cache can be useful for building an information table or reading decision rules. In such case, one can clear the volatile cache after reading the entire table
+ * or after reading all rules to prevent high memory consumption by cached fields.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

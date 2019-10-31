@@ -19,7 +19,9 @@ package org.rulelearn.data;
 import static org.rulelearn.core.Precondition.notNullWithContents;
 
 import org.rulelearn.core.FieldParseException;
+import org.rulelearn.core.Precondition;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.EvaluationFieldCachingFactory;
 import org.rulelearn.types.SimpleField;
 
 import com.univocity.parsers.conversions.TrimConversion;
@@ -31,6 +33,28 @@ import com.univocity.parsers.conversions.TrimConversion;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class EvaluationParser {
+	
+	/**
+	 * Type of caching of {@link EvaluationField evaluation fields} constructed by evaluation parser from their textual representations. 
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	public static enum CachingType {
+		/**
+		 * Type of caching denoting lack of caching. If used, then {@link EvaluationField#getDefaultFactory() default (non-caching) factory} is used to convert
+		 * an evaluation from textual representation to an instance of {@link EvaluationField}, based on the {@link EvaluationAttribute#getValueType()
+		 * value type of considered evaluation attribute}.
+		 */
+		NONE,
+		/**
+		 * Type of caching denoting caching using volatile cache. If used, then {@link EvaluationField#getCachingFactory() caching factory} is used to convert
+		 * an evaluation from textual representation to an instance of {@link EvaluationField}, based on the {@link EvaluationAttribute#getValueType()
+		 * value type of considered evaluation attribute},
+		 * storing resulting instance in caching factory's volatile cache.
+		 */
+		VOLATILE
+	}
 	
 	/** 
 	 * Default string representations of a missing value.
@@ -48,42 +72,46 @@ public class EvaluationParser {
 	TrimConversion trimConversion = null;
 	
 	/**
-	 * Tells if volatile caching factory should be used to translate string representation of an evaluation to its proper {@link EvaluationField} sub-type representation.
+	 * Type of caching of {@link EvaluationField evaluation fields} constructed from their textual representations.
 	 */
-	boolean useVolatileCachingFactory;
+	CachingType cachingType;
 	
 	/**
 	 * Sole constructor initializing fields with default values. In particular, the array of strings representing a missing value is initialized with
-	 * {@link EvaluationParser#DEFAULT_MISSING_VALUE_STRINGS} and use of volatile caching factory is assumed when translating string representation of an evaluation
-	 * to its proper {@link EvaluationField} sub-type representation.
+	 * {@link EvaluationParser#DEFAULT_MISSING_VALUE_STRINGS} and use of default (non-caching) factory is assumed when converting textual representation of an evaluation
+	 * to an instance of {@link EvaluationField}.
 	 */
 	public EvaluationParser() {
 		super();
 		this.trimConversion = new TrimConversion();
 		this.missingValueStrings = DEFAULT_MISSING_VALUE_STRINGS;
-		this.useVolatileCachingFactory = true;
+		this.cachingType = CachingType.NONE;
 	}
 	
 	/**
 	 * Sole constructor initializing fields with default values and setting some of them based on given parameters.
 	 * 
 	 * @param missingValueStrings array of string representations of missing values
-	 * @param useVolatileCachingFactory tells if volatile caching factory should be used to translate string representation of an evaluation to its proper {@link EvaluationField} sub-type representation.
-	 *        If {@code true}, then caching factories are used (see {@link EvaluationField#getCachingFactory()}),
-	 *        and string evaluations are parsed to {@link EvaluationField evaluation fields} using volatile cache.
-	 *        If {@code false}, then default factories are used (see {@link EvaluationField#getDefaultFactory()}).
+	 * @param cachingType requested type of caching of {@link EvaluationField evaluation fields} constructed by this parser from evaluations given in textual form
+	 * 
 	 * @throws NullPointerException if given array or any of its elements is {@code null}
+	 * @throws NullPointerException if requested caching type is {@code null}
 	 */
-	public EvaluationParser(String[] missingValueStrings, boolean useVolatileCachingFactory) {
+	public EvaluationParser(String[] missingValueStrings, CachingType cachingType) {
 		super();
 		this.trimConversion = new TrimConversion();
-		notNullWithContents(missingValueStrings, "Missing value strings array is null.", "Missing value string is null at index %i."); //asserts all missing value representations are not null
-		this.missingValueStrings = missingValueStrings;
-		this.useVolatileCachingFactory = useVolatileCachingFactory;
+		//asserts all missing value representations are not null
+		this.missingValueStrings = notNullWithContents(missingValueStrings, "Missing value strings array is null.", "Missing value string is null at index %i.");
+		this.cachingType = Precondition.notNull(cachingType, "Caching type is null.");
 	}
 
 	/**
-	 * Parses one object's evaluation and transforms it into an {@link EvaluationField evaluation field}.
+	 * Parses an object's evaluation and transforms it into an {@link EvaluationField evaluation field}. Employs current information about string representations of missing values
+	 * (as returned by {@link #getMissingValueStrings()} and caching type (as returned by {@link #getCachingType()}.
+	 * Exact type of the resulting evaluation field is determined using {@link EvaluationAttribute#getValueType() value type} of the given attribute.
+	 * If caching type if {@link CachingType#NONE}, then resulting evaluation field is constructed using default factory (see {@link EvaluationField#getDefaultFactory()}).
+	 * If caching type if {@link CachingType#VOLATILE}, then resulting evaluation field is constructed using caching factory (see {@link EvaluationField#getCachingFactory()})
+	 * and put in its volatile cache (see {@link EvaluationFieldCachingFactory#createWithVolatileCache(String, EvaluationAttribute)}).
 	 * 
 	 * @param evaluation text-encoded object's evaluation
 	 * @param attribute whose value should be parsed
@@ -92,12 +120,12 @@ public class EvaluationParser {
 	 * 
 	 * @throws FieldParseException if given string cannot be parsed as a value of the given attribute
 	 */
-	protected EvaluationField parseEvaluation(String evaluation, EvaluationAttribute attribute) {
+	public EvaluationField parseEvaluation(String evaluation, EvaluationAttribute attribute) {
 		EvaluationField field = null;
 		boolean missingSimpleField = false;
 	
 		// get rid of white spaces
-		evaluation = trimConversion.execute(evaluation);
+		evaluation = this.trimConversion.execute(evaluation);
 		
 		// check whether given string represent a missing value of a simple field
 		if (attribute.getValueType() instanceof SimpleField) { //single missing value is of interest only for a simple field
@@ -109,9 +137,9 @@ public class EvaluationParser {
 			}
 		}
 		
-		if (!missingSimpleField) { //simple field without missing value or not a simple field
+		if (!missingSimpleField) { //simple field without missing value, or not a simple field
 			try {
-				if (useVolatileCachingFactory) {
+				if (this.cachingType == CachingType.VOLATILE) {
 					field = attribute.getValueType().getCachingFactory().createWithVolatileCache(evaluation, attribute);
 				} else {
 					field = attribute.getValueType().getDefaultFactory().create(evaluation, attribute);
@@ -142,6 +170,7 @@ public class EvaluationParser {
 //				}
 //			}
 //			else if (valueType instanceof EnumerationField) {
+			   //todo: some optimization is needed here (e.g., construction of a table with element lists)
 //				int index = ((EnumerationField)valueType).getElementList().getIndex(evaluation);
 //				if (index != ElementList.DEFAULT_INDEX) {
 //					field = EnumerationFieldFactory.getInstance().create(((EnumerationField)valueType).getElementList(), index, attribute.getPreferenceType());
@@ -163,5 +192,44 @@ public class EvaluationParser {
 		}
 		
 		return field;
+	}
+
+	/**
+	 * Gets array of string representations of missing values.
+	 * 
+	 * @return array of string representations of missing values (clone of the array stored in this parser)
+	 */
+	public String[] getMissingValueStrings() {
+		return missingValueStrings.clone();
+	}
+
+	/**
+	 * Sets array of string representations of missing values.
+	 * 
+	 * @param missingValueStrings array of string representations of missing values
+	 * @throws NullPointerException if given array or any of its elements is {@code null}
+	 */
+	public void setMissingValueStrings(String[] missingValueStrings) {
+		//asserts all missing value representations are not null
+		this.missingValueStrings = notNullWithContents(missingValueStrings, "Missing value strings array is null.", "Missing value string is null at index %i.");
+	}
+
+	/**
+	 * Gets requested type of caching of {@link EvaluationField evaluation fields} constructed by this parser from evaluations given in textual form.
+	 * 
+	 * @return requested type of caching of {@link EvaluationField evaluation fields} constructed by this parser from evaluations given in textual form
+	 */
+	public CachingType getCachingType() {
+		return cachingType;
+	}
+
+	/**
+	 * Sets requested type of caching of {@link EvaluationField evaluation fields} constructed by this parser from evaluations given in textual form.
+	 * 
+	 * @param cachingType requested type of caching of {@link EvaluationField evaluation fields} constructed by this parser from evaluations given in textual form
+	 * @throws NullPointerException if requested caching type is {@code null}
+	 */
+	public void setCachingType(CachingType cachingType) {
+		this.cachingType = Precondition.notNull(cachingType, "Caching type is null.");
 	}
 }

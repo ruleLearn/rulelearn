@@ -53,7 +53,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 public class InformationTableBuilder {
 	
 	/** 
-	 * Default string representations of missing value.
+	 * Default string representations of a missing value.
 	 */
 	protected final static String[] DEFAULT_MISSING_VALUE_STRINGS = {"?", "*", "NA"}; //SIC! null is not allowed on this list and the list itself cannot be null
 	
@@ -88,18 +88,18 @@ public class InformationTableBuilder {
 	TrimConversion trimConversion = null;
 	
 	/**
-	 * Parser of evaluations given in textual form, converting them to evaluation fields.
+	 * Parser of evaluations given in textual form, converting them to {@link EvaluationField evaluation fields} based on information about an attribute.
 	 */
 	EvaluationParser evaluationParser = null;
-	
+
 	/**
 	 * Default constructor initializing this information table builder.
 	 */
-	protected InformationTableBuilder() {
+	InformationTableBuilder() {
 		this.separator = InformationTableBuilder.DEFAULT_SEPARATOR_STRING;
 		this.missingValueStrings = InformationTableBuilder.DEFAULT_MISSING_VALUE_STRINGS;
 		this.trimConversion = new TrimConversion();
-		this.evaluationParser = new EvaluationParser(InformationTableBuilder.DEFAULT_MISSING_VALUE_STRINGS, true); //use volatile caching factory
+		this.evaluationParser = new EvaluationParser(InformationTableBuilder.DEFAULT_MISSING_VALUE_STRINGS, EvaluationParser.CachingType.VOLATILE); //use caching factory, and force volatile cache 
 	}
 	
 	/**
@@ -108,8 +108,9 @@ public class InformationTableBuilder {
 	 * @param attributes table with attributes
 	 * @throws NullPointerException if all or some of the attributes of the constructed information table have not been set
 	 */
-	public InformationTableBuilder(Attribute[] attributes) {
+	public InformationTableBuilder(Attribute[] attributes) { //TODO: use accelerateByReadOnlyParams
 		this();
+		
 		// check attributes and initialize fields
 		if (attributes != null) {
 			for (Attribute attribute : attributes) {
@@ -130,7 +131,7 @@ public class InformationTableBuilder {
 	 * @param separator separator of object's evaluations
 	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or separator have not been set
 	 */
-	public InformationTableBuilder(Attribute[] attributes, String separator) {
+	public InformationTableBuilder(Attribute[] attributes, String separator) { //TODO: use accelerateByReadOnlyParams
 		this(attributes);
 		notNull(separator, "Separator is null.");
 		this.separator = separator;
@@ -141,13 +142,14 @@ public class InformationTableBuilder {
 	 * 
 	 * @param attributes table with attributes
 	 * @param missingValueStrings array of string representations of missing values
+	 * 
 	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or strings representing missing values have not been set 
 	 */
-	public InformationTableBuilder(Attribute[] attributes, String[] missingValueStrings) {
+	public InformationTableBuilder(Attribute[] attributes, String[] missingValueStrings) { //TODO: use accelerateByReadOnlyParams
 		this(attributes);
-		notNullWithContents(missingValueStrings, "Missing value strings array is null.", "Missing value string is null at index %i."); //asserts all missing value representations are not null
-		this.missingValueStrings = missingValueStrings;
-		this.evaluationParser = new EvaluationParser(missingValueStrings, true); //use volatile caching factory
+		//asserts all missing value representations are not null
+		this.missingValueStrings = notNullWithContents(missingValueStrings, "Missing value strings array is null.", "Missing value string is null at index %i.");
+		this.evaluationParser.setMissingValueStrings(missingValueStrings); //update missing value strings
 	}
 	
 	/**
@@ -158,11 +160,11 @@ public class InformationTableBuilder {
 	 * @param missingValueStrings array of string representations of missing values
 	 * @throws NullPointerException if all or some of attributes of the constructed information table, and/or separator, and/or strings representing missing values have not been set
 	 */
-	public InformationTableBuilder(Attribute[] attributes, String separator, String[] missingValueStrings) {
+	public InformationTableBuilder(Attribute[] attributes, String separator, String[] missingValueStrings) { //TODO: use accelerateByReadOnlyParams
 		this(attributes, separator);
-		notNullWithContents(missingValueStrings, "Missing value strings array is null.", "Missing value string is null at index %i."); //asserts all missing value representations are not null
-		this.missingValueStrings = missingValueStrings;
-		this.evaluationParser = new EvaluationParser(missingValueStrings, true); //use volatile caching factory
+		//asserts all missing value representations are not null
+		this.missingValueStrings = notNullWithContents(missingValueStrings, "Missing value strings array is null.", "Missing value string is null at index %i.");
+		this.evaluationParser.setMissingValueStrings(missingValueStrings); //update missing value strings
 	}
 	
 	/**
@@ -419,16 +421,13 @@ public class InformationTableBuilder {
 				org.rulelearn.data.csv.ObjectBuilder ob = new org.rulelearn.data.csv.ObjectBuilder.Builder().attributes(attributes).header(header).separator(separator).build();
 				objects = ob.getObjects(pathToCSVObjectFile);
 				informationTableBuilder = new InformationTableBuilder(attributes, new String[] {org.rulelearn.data.csv.ObjectBuilder.DEFAULT_MISSING_VALUE_STRING});
+				
 				if (objects != null) {
 					for (int i = 0; i < objects.size(); i++) {
 						informationTableBuilder.addObject(objects.get(i)); //uses volatile caches
 					}
 					//clear volatile caches of all used evaluation field caching factories
-					for (int i = 0; i < informationTableBuilder.attributes.length; i++) {
-						if (informationTableBuilder.attributes[i] instanceof EvaluationAttribute) {
-							((EvaluationAttribute)informationTableBuilder.attributes[i]).getValueType().getCachingFactory().clearVolatileCache(); //clears volatile cache
-						}
-					}
+					informationTableBuilder.clearVolatileCaches();
 				}
 			}
 		}
@@ -500,12 +499,9 @@ public class InformationTableBuilder {
 					for (int i = 0; i < objects.size(); i++) {
 						informationTableBuilder.addObject(objects.get(i)); //uses volatile cache
 					}
+					
 					//clear volatile caches of all used evaluation field caching factories
-					for (int i = 0; i < informationTableBuilder.attributes.length; i++) {
-						if (informationTableBuilder.attributes[i] instanceof EvaluationAttribute) {
-							((EvaluationAttribute)informationTableBuilder.attributes[i]).getValueType().getCachingFactory().clearVolatileCache(); //clears volatile cache
-						}
-					}
+					informationTableBuilder.clearVolatileCaches();
 				}
 			}
 		}
@@ -519,12 +515,26 @@ public class InformationTableBuilder {
 	}
 	
 	/**
-	 * Gets missing value strings.
+	 * Clears volatile caches of all used evaluation field caching factories.
+	 *  
+	 * @param attributes attributes of the information table being built
+	 */
+	void clearVolatileCaches() {
+		//clear volatile caches of all used evaluation field caching factories
+		for (int i = 0; i < attributes.length; i++) {
+			if (attributes[i] instanceof EvaluationAttribute) {
+				((EvaluationAttribute)attributes[i]).getValueType().getCachingFactory().clearVolatileCache(); //clears volatile cache of the caching factory corresponding to current evaluation attribute
+			}
+		}
+	}
+	
+	/**
+	 * Gets missing value strings (cloned array).
 	 * 
 	 * @return the missingValueStrings
 	 */
 	public String[] getMissingValueStrings() {
-		return this.missingValueStrings;
+		return this.missingValueStrings.clone();
 	}
 	
 	/**
@@ -532,7 +542,7 @@ public class InformationTableBuilder {
 	 * 
 	 * @return the separator
 	 */
-	public String getSeparatorStrings() {
+	public String getSeparator() {
 		return this.separator;
 	}
 	

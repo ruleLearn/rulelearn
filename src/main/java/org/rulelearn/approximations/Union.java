@@ -55,7 +55,7 @@ public abstract class Union extends ApproximatedSet {
 		 */
 		AT_LEAST,
 		/**
-		 * Type of an downward union of decision classes.
+		 * Type of a downward union of decision classes.
 		 */
 		AT_MOST;
 		
