@@ -1044,12 +1044,9 @@ class RuleCharacteristicsTest {
 	 */
 	@Test
 	void testSetLConfirmation01() {
-		try {
-			ruleCharacteristics.setLConfirmation(1.001);
-			fail("Should not set invalid lConfirmation.");
-		} catch (InvalidValueException exception) {
-			//exception is correctly thrown => do nothing
-		}
+		double lConfirmation = Double.POSITIVE_INFINITY;
+		ruleCharacteristics.setLConfirmation(lConfirmation);
+		assertEquals(ruleCharacteristics.getLConfirmation(), lConfirmation);
 	}
 	
 	/**
