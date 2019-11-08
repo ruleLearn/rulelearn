@@ -3372,7 +3372,7 @@ class VCDomLEMTest {
 		RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
 		
 		System.out.println("-----*****-----");
-		System.out.println(ruleMLBuilder.toRuleMLString(ruleSet, 1)); //prints content of windsor-certain.rules.xml
+		System.out.println(ruleMLBuilder.toRuleMLString(ruleSet, 1)); //prints content of windsor-mv-certain.rules.xml
 		System.out.println("-----*****-----");
 		
 		String[] expectedRules = {
@@ -4017,7 +4017,7 @@ class VCDomLEMTest {
 		
 		RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
 		System.out.println("-----+++++-----");
-		System.out.println(ruleMLBuilder.toRuleMLString(ruleSet, 1)); //prints content of windsor-possible.rules.xml
+		System.out.println(ruleMLBuilder.toRuleMLString(ruleSet, 1)); //prints content of windsor-mv1.5-possible.rules.xml
 		System.out.println("-----+++++-----");
 		
 //		String[] expectedRules = {
