@@ -1,7 +1,7 @@
 # ruleLearn
 Open source library for learning rule models from decision examples and applying these models to classify or rank new examples. 
 
-Rule models are induced according to sequential covering algorithm presented in []. The learning is preceded by analysis of consistency of data, whcih is based on rough set theory. More precisely, this library implements dominance-based rough et approaches: original one (DRSA) [] and its variable consistency extensions (VC-DRSA) []. Rule models can be used to classify new examples [].
+Rule models are induced according to sequential covering algorithm presented in [[1]](#VCDomLEM). The learning is preceded by analysis of consistency of data, whcih is based on rough set theory. More precisely, this library implements dominance-based rough et approaches: original one (DRSA) [[2]](#DRSA) and its variable consistency extensions (VC-DRSA) [[3]](#VCDRSA). Rule models can be used to classify new examples [].
 
 ruleLearn also allows to validate constructed rule models in stratified cross-validation.
 
@@ -26,11 +26,29 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
-$RL_VERSION = '0.14.2' //e.g. '0.14.2'
+$RL_VERSION = '0.14.3' //e.g. '0.14.3'
 
 dependencies {
     compile("com.github.ruleLearn:rulelearn:${RL_VERSION}")
 }
+```
+
+### Importing into pom.xml
+```
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>com.github.ruleLearn</groupId>
+        <artifactId>rulelearn</artifactId>
+        <version>0.14.3</version>
+    </dependency>
+</dependencies>
 ```
 
 ## Developer guide
@@ -49,3 +67,11 @@ or set `JAVA_HOME` environmental variable to local path to the installed Java JD
 
 ### Other settings
 When importing ruleLearn into an IDE (e.g., Eclipse, IntelliJ), one should specify the following settings: `UTF-8` encoding, and `LF` (i.e., line feed) line endings.
+
+## References
+
+<a name="VCDomLEM">[1]</a>: Footnote content goes here J. Błaszczyński, R. Słowiński, M. Szeląg, Sequential Covering Rule Induction Algorithm for Variable Consistency Rough Set Approaches. Information Sciences, 181, 2011, pp. 987-1002.
+
+<a name="DRSA">[2]</a>: S. Greco, B. Matarazzo, R. Słowiński, Rough Sets Theory for Multicriteria Decision Analysis. European Journal of Operational Research, 129(1), 2001, pp. 1-47.
+
+<a name="VCDRSA">[3]</a>: J. Błaszczyński, S. Greco, R. Słowiński, M. Szeląg, Monotonic Variable Consistency Rough Set Approaches. International Journal of Approximate Reasoning, 50(7), 2009, pp. 979-999.
