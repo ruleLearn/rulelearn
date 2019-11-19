@@ -70,8 +70,8 @@ When importing ruleLearn into an IDE (e.g., Eclipse, IntelliJ), one should speci
 
 ## References
 
-<a name="VCDomLEM">[1]</a>: Footnote content goes here J. Błaszczyński, R. Słowiński, M. Szeląg, Sequential Covering Rule Induction Algorithm for Variable Consistency Rough Set Approaches. Information Sciences, 181, 2011, pp. 987-1002.
+<a name="VCDomLEM">[1]</a>: Błaszczyński, J., Słowiński, R. , Szeląg, M., Sequential Covering Rule Induction Algorithm for Variable Consistency Rough Set Approaches. Information Sciences, 181, 2011, pp. 987-1002.
 
-<a name="DRSA">[2]</a>: S. Greco, B. Matarazzo, R. Słowiński, Rough Sets Theory for Multicriteria Decision Analysis. European Journal of Operational Research, 129(1), 2001, pp. 1-47.
+<a name="DRSA">[2]</a>: Greco, S., Matarazzo, B., Słowiński, R., Rough Sets Theory for Multicriteria Decision Analysis. European Journal of Operational Research, 129(1), 2001, pp. 1-47.
 
-<a name="VCDRSA">[3]</a>: J. Błaszczyński, S. Greco, R. Słowiński, M. Szeląg, Monotonic Variable Consistency Rough Set Approaches. International Journal of Approximate Reasoning, 50(7), 2009, pp. 979-999.
+<a name="VCDRSA">[3]</a>: Błaszczyński, J., Greco, S., Słowiński, R., Szeląg, M., Monotonic Variable Consistency Rough Set Approaches. International Journal of Approximate Reasoning, 50(7), 2009, pp. 979-999.
