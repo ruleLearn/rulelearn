@@ -16,8 +16,6 @@
 
 package org.rulelearn.data;
 
-import static org.rulelearn.core.Precondition.notNullWithContents;
-
 import org.rulelearn.core.FieldParseException;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.types.EvaluationField;
@@ -28,6 +26,7 @@ import com.univocity.parsers.conversions.TrimConversion;
 
 /**
  * Parses object's evaluation given as string, using information about an attribute.
+ * Ignores leading and trailing spaces.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -78,8 +77,8 @@ public class EvaluationParser {
 	
 	/**
 	 * Sole constructor initializing fields with default values. In particular, the array of strings representing a missing value is initialized with
-	 * {@link EvaluationParser#DEFAULT_MISSING_VALUE_STRINGS} and use of default (non-caching) factory is assumed when converting textual representation of an evaluation
-	 * to an instance of {@link EvaluationField}.
+	 * {@link EvaluationParser#DEFAULT_MISSING_VALUE_STRINGS} and use of default (non-caching) factory is assumed to be used when converting
+	 * textual representation of an evaluation to an instance of {@link EvaluationField}.
 	 */
 	public EvaluationParser() {
 		super();
@@ -101,7 +100,7 @@ public class EvaluationParser {
 		super();
 		this.trimConversion = new TrimConversion();
 		//asserts all missing value representations are not null
-		this.missingValueStrings = notNullWithContents(missingValueStrings, "Missing value strings array is null.", "Missing value string is null at index %i.");
+		this.missingValueStrings = Precondition.notNullWithContents(missingValueStrings, "Missing value strings array is null.", "Missing value string is null at index %i.");
 		this.cachingType = Precondition.notNull(cachingType, "Caching type is null.");
 	}
 
@@ -119,10 +118,15 @@ public class EvaluationParser {
 	 * @return constructed evaluation field
 	 * 
 	 * @throws FieldParseException if given string cannot be parsed as a value of the given attribute
+	 * @throws FieldParseException if given string is {@code null} or empty
 	 */
 	public EvaluationField parseEvaluation(String evaluation, EvaluationAttribute attribute) {
 		EvaluationField field = null;
 		boolean missingSimpleField = false;
+		
+		if (evaluation == null || evaluation.equals("")) {
+			throw new FieldParseException("Cannot parse null or empty evaluation.");
+		}
 	
 		// get rid of white spaces
 		evaluation = this.trimConversion.execute(evaluation);
@@ -211,7 +215,7 @@ public class EvaluationParser {
 	 */
 	public void setMissingValueStrings(String[] missingValueStrings) {
 		//asserts all missing value representations are not null
-		this.missingValueStrings = notNullWithContents(missingValueStrings, "Missing value strings array is null.", "Missing value string is null at index %i.");
+		this.missingValueStrings = Precondition.notNullWithContents(missingValueStrings, "Missing value strings array is null.", "Missing value string is null at index %i.");
 	}
 
 	/**

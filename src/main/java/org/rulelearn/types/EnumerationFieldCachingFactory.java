@@ -141,10 +141,13 @@ public class EnumerationFieldCachingFactory implements EvaluationFieldCachingFac
 		
 		int key = hashEnumerationField(list, index, preferenceType);
 		boolean found = false;
+		List<EnumerationField> listOfEnumerationFields = null;
 		
 		if (cache.containsKey(key)) { //there is a list of enumeration fields having calculated hash code
+			listOfEnumerationFields = cache.get(key);
+			
 			//check list
-			for (EnumerationField testedField : cache.get(key)) {
+			for (EnumerationField testedField : listOfEnumerationFields) {
 				if (testedField.getValue() == index &&
 						testedField.getElementList().equals(list)) {
 					field = testedField;
@@ -156,9 +159,9 @@ public class EnumerationFieldCachingFactory implements EvaluationFieldCachingFac
 		
 		if (!found) {
 			field = EnumerationFieldFactory.getInstance().create(list, index, preferenceType);
-			List<EnumerationField> fields = new ObjectArrayList<EnumerationField>();
+			List<EnumerationField> fields = (listOfEnumerationFields == null ? new ObjectArrayList<EnumerationField>() : listOfEnumerationFields);
 			fields.add(field);
-			cache.put(key, fields); //consistently use calculated key, not the hash code returned by the constructed field!
+			cache.put(key, fields); //consistently use calculated key, not the hash code returned by the constructed enumeration field!
 		}
 		
 		return field;
