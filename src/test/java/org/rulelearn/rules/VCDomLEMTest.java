@@ -46,6 +46,7 @@ import org.rulelearn.data.csv.ObjectParser;
 import org.rulelearn.data.json.AttributeParser;
 import org.rulelearn.measures.SupportMeasure;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
+import org.rulelearn.rules.ruleml.RuleMLBuilder;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.RealField;
@@ -3368,6 +3369,12 @@ class VCDomLEMTest {
 		
 		RuleSet ruleSet = new VCDomLEM(ruleInducerComponents, approximatedSetProvider, approximatedSetRuleDecisionsProvider).generateRules();
 		
+		RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
+		
+		System.out.println("-----*****-----");
+		System.out.println(ruleMLBuilder.toRuleMLString(ruleSet, 1)); //prints content of windsor-mv-certain.rules.xml
+		System.out.println("-----*****-----");
+		
 		String[] expectedRules = {
 				"(nbed >= 6) & (ngarage >= 2) => (sale_price >= 3)",
 				"(nbed >= 6) & (nstoreys >= 4) => (sale_price >= 3)",
@@ -4007,6 +4014,11 @@ class VCDomLEMTest {
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 
 		RuleSet ruleSet = new VCDomLEM(ruleInducerComponents, approximatedSetProvider, approximatedSetRuleDecisionsProvider).generateRules();
+		
+		RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
+		System.out.println("-----+++++-----");
+		System.out.println(ruleMLBuilder.toRuleMLString(ruleSet, 1)); //prints content of windsor-mv1.5-possible.rules.xml
+		System.out.println("-----+++++-----");
 		
 //		String[] expectedRules = {
 //				

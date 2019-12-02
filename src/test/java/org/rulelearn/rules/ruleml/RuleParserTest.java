@@ -43,7 +43,7 @@ class RuleParserTest {
 	 * Tests parsing RuleML file.
 	 */
 	@Test
-	public void testLoading() {
+	public void testLoading01() {
 		Attribute [] attributes = null;
 		AttributeParser attributeParser = new AttributeParser();
 		try (FileReader attributeReader = new FileReader("src/test/resources/data/csv/prioritisation.json")) {
@@ -57,6 +57,86 @@ class RuleParserTest {
 						assertEquals(rules.size(), 1);
 						RuleSet firstRuleSet = rules.get(1);
 						assertEquals(firstRuleSet.size(), 2);
+					}
+					else {
+						fail("Unable to load RuleML file.");
+					}
+				}
+				catch (FileNotFoundException ex) {
+					System.out.println(ex.toString());
+				}
+			}
+			else {
+				fail("Unable to load JSON file with meta-data.");
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		catch (IOException ex) {
+			System.out.println(ex.toString());
+		}
+	}
+	
+	/**
+	 * Tests parsing RuleML file with certain rules.
+	 */
+	@Test
+	public void testLoading02() {
+		Attribute [] attributes = null;
+		AttributeParser attributeParser = new AttributeParser();
+		try (FileReader attributeReader = new FileReader("src/test/resources/data/csv/windsor.json")) {
+			attributes = attributeParser.parseAttributes(attributeReader);
+			if (attributes != null) {
+				Map<Integer, RuleSet> rules = null;
+				RuleParser ruleParser = new RuleParser(attributes);
+				try (FileInputStream fileRulesStream = new FileInputStream("src/test/resources/data/ruleml/windsor-certain.rules.xml")) {
+					rules = ruleParser.parseRules(fileRulesStream);
+					if (rules != null) {
+						assertEquals(rules.size(), 1);
+						RuleSet firstRuleSet = rules.get(1);
+						System.out.println(firstRuleSet.size() + " rules read.");
+						//assertEquals(firstRuleSet.size(), 2);
+					}
+					else {
+						fail("Unable to load RuleML file.");
+					}
+				}
+				catch (FileNotFoundException ex) {
+					System.out.println(ex.toString());
+				}
+			}
+			else {
+				fail("Unable to load JSON file with meta-data.");
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex.toString());
+		}
+		catch (IOException ex) {
+			System.out.println(ex.toString());
+		}
+	}
+	
+	/**
+	 * Tests parsing RuleML file with possible rules.
+	 */
+	@Test
+	public void testLoading03() {
+		Attribute [] attributes = null;
+		AttributeParser attributeParser = new AttributeParser();
+		try (FileReader attributeReader = new FileReader("src/test/resources/data/csv/windsor.json")) {
+			attributes = attributeParser.parseAttributes(attributeReader);
+			if (attributes != null) {
+				Map<Integer, RuleSet> rules = null;
+				RuleParser ruleParser = new RuleParser(attributes);
+				try (FileInputStream fileRulesStream = new FileInputStream("src/test/resources/data/ruleml/windsor-possible.rules.xml")) {
+					rules = ruleParser.parseRules(fileRulesStream);
+					if (rules != null) {
+						assertEquals(rules.size(), 1);
+						RuleSet firstRuleSet = rules.get(1);
+						System.out.println(firstRuleSet.size() + " rules read.");
+						//assertEquals(firstRuleSet.size(), 2);
 					}
 					else {
 						fail("Unable to load RuleML file.");
