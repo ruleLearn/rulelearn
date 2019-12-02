@@ -63,7 +63,7 @@ class RuleParserTest {
 					}
 				}
 				catch (FileNotFoundException ex) {
-					System.out.println(ex.toString());
+					fail(ex.toString());
 				}
 			}
 			else {
@@ -71,10 +71,10 @@ class RuleParserTest {
 			}
 		}
 		catch (FileNotFoundException ex) {
-			System.out.println(ex.toString());
+			fail(ex.toString());
 		}
 		catch (IOException ex) {
-			System.out.println(ex.toString());
+			fail(ex.toString());
 		}
 	}
 	
@@ -90,7 +90,7 @@ class RuleParserTest {
 			if (attributes != null) {
 				Map<Integer, RuleSet> rules = null;
 				RuleParser ruleParser = new RuleParser(attributes);
-				try (FileInputStream fileRulesStream = new FileInputStream("src/test/resources/data/ruleml/windsor-certain.rules.xml")) {
+				try (FileInputStream fileRulesStream = new FileInputStream("src/test/resources/data/ruleml/windsor-mv-certain.rules.xml")) {
 					rules = ruleParser.parseRules(fileRulesStream);
 					if (rules != null) {
 						assertEquals(rules.size(), 1);
@@ -103,7 +103,7 @@ class RuleParserTest {
 					}
 				}
 				catch (FileNotFoundException ex) {
-					System.out.println(ex.toString());
+					fail(ex.toString());
 				}
 			}
 			else {
@@ -111,10 +111,10 @@ class RuleParserTest {
 			}
 		}
 		catch (FileNotFoundException ex) {
-			System.out.println(ex.toString());
+			fail(ex.toString());
 		}
 		catch (IOException ex) {
-			System.out.println(ex.toString());
+			fail(ex.toString());
 		}
 	}
 	
@@ -130,7 +130,7 @@ class RuleParserTest {
 			if (attributes != null) {
 				Map<Integer, RuleSet> rules = null;
 				RuleParser ruleParser = new RuleParser(attributes);
-				try (FileInputStream fileRulesStream = new FileInputStream("src/test/resources/data/ruleml/windsor-possible.rules.xml")) {
+				try (FileInputStream fileRulesStream = new FileInputStream("src/test/resources/data/ruleml/windsor-mv1.5-possible.rules.xml")) {
 					rules = ruleParser.parseRules(fileRulesStream);
 					if (rules != null) {
 						assertEquals(rules.size(), 1);
@@ -143,7 +143,7 @@ class RuleParserTest {
 					}
 				}
 				catch (FileNotFoundException ex) {
-					System.out.println(ex.toString());
+					fail(ex.toString());
 				}
 			}
 			else {
@@ -151,10 +151,10 @@ class RuleParserTest {
 			}
 		}
 		catch (FileNotFoundException ex) {
-			System.out.println(ex.toString());
+			fail(ex.toString());
 		}
 		catch (IOException ex) {
-			System.out.println(ex.toString());
+			fail(ex.toString());
 		}
 	}
 	
