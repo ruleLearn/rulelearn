@@ -45,8 +45,9 @@ public class RuleCharacteristics {
 	
 	/**
 	 * Default value of all floating-point characteristics, indicating that given characteristic is unknown, i.e., it has not been set or calculated yet.
+	 * Set to {@link Double#MAX_VALUE}.
 	 */
-	public static final double UNKNOWN_DOUBLE_VALUE = Double.POSITIVE_INFINITY;
+	public static final double UNKNOWN_DOUBLE_VALUE = Double.MAX_VALUE;
 	
 	//initialization of all characteristics as unknown
 	/**
@@ -499,14 +500,8 @@ public class RuleCharacteristics {
 	 * In order to forget stored value of this rule confirmation measure, one can invoke this method with {@link #UNKNOWN_DOUBLE_VALUE}.
 	 * 
 	 * @param lConfirmation value of rule confirmation measure $l$ calculated for a decision rule in the context of an information table
-	 * @throws InvalidValueException if given value of rule confirmation measure 'l' is greater than 1
 	 */
 	public void setLConfirmation(double lConfirmation) {
-		if (lConfirmation != UNKNOWN_DOUBLE_VALUE) { //do validation
-			if (lConfirmation > 1) {
-				throw new InvalidValueException("Value of rule confirmation measure 'l' cannot exceed 1.");
-			}
-		}
 		this.lConfirmation = lConfirmation;
 	}
 
