@@ -34,11 +34,19 @@ import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
 /**
- * Build objects from CSV file.
+ * Extracts from a block of text (mainly CSV file) a list of objects, each represented as an array of evaluations,
+ * where each evaluation is a {@link String string}.
+ * Reads all rows of considered text (from a CSV file or from a given {@link Reader reader}),
+ * and in each row identifies subsequent fields (cells),
+ * taking into account pre-configured field separator. Operates purely on the level of {@link String strings},
+ * without interpreting their meaning.
+ * As the result of text processing, returns a list of arrays of {@link String strings},
+ * where each list item corresponds to a row of cells,
+ * and each array item corresponds to a field (cell) in that row.
+ * Can handle CSV files with and without headers.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
 public class ObjectBuilder {
 	
@@ -60,7 +68,7 @@ public class ObjectBuilder {
 	/**
 	 * All attributes which describe objects.
 	 */
-	Attribute [] attributes = null;
+	Attribute[] attributes = null;
 	
 	/**
 	 * Encoding of text data in CSV files.
@@ -93,7 +101,7 @@ public class ObjectBuilder {
 		/**
 		 * All attributes which describe objects.
 		 */
-		protected Attribute [] attributes = null;
+		protected Attribute[] attributes = null;
 		
 		/**
 		 * Encoding of text data in CSV files.
@@ -122,7 +130,7 @@ public class ObjectBuilder {
 		 * @throws NullPointerException if all or some of the attributes describing data to be loaded have not been set
 		 * @return this builder
 		 */
-		public Builder attributes (Attribute [] attributes) {
+		public Builder attributes(Attribute[] attributes) {
 			if (attributes != null) {
 				for (Attribute attribute : attributes) {
 					if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
@@ -142,7 +150,7 @@ public class ObjectBuilder {
 		 * @throws NullPointerException if encoding has not been set
 		 * @return this builder
 		 */
-		public Builder encoding (String value) {
+		public Builder encoding(String value) {
 			notNull(value, "String representing encoding is null.");
 			this.encoding = value;
 			return this;
@@ -154,7 +162,7 @@ public class ObjectBuilder {
 		 * @param value indication of header in parsed CSV file
 		 * @return this builder 
 		 */
-		public Builder header (boolean value) {
+		public Builder header(boolean value) {
 			this.header = value;
 			return this;
 		}
@@ -165,7 +173,7 @@ public class ObjectBuilder {
 		 * @param value string representation of encoding
 		 * @return this builder 
 		 */
-		public Builder separator (char value) {
+		public Builder separator(char value) {
 			this.separator = value;
 			return this;
 		}
@@ -177,7 +185,7 @@ public class ObjectBuilder {
 		 * @throws NullPointerException if representation of missing value has not been set
 		 * @return this builder
 		 */
-		public Builder missingValueString (String value) {
+		public Builder missingValueString(String value) {
 			notNull(value, "String representing missing values is null.");
 			this.missingValueString = value;
 			return this;
@@ -188,7 +196,7 @@ public class ObjectBuilder {
 		 * 
 		 * @return a new object parser
 		 */
-		public ObjectBuilder build () {
+		public ObjectBuilder build() {
 			return new ObjectBuilder(this);
 		}
 	}
@@ -207,7 +215,7 @@ public class ObjectBuilder {
 	}
 	
 	/**
-	 * Reads description of all objects from the supplied CSV reader and returns them as a list of {@link String} arrays.
+	 * Reads description of all objects from the supplied (CSV) reader and returns them as a list of {@link String} arrays.
 	 * 
 	 * @param reader a reader of the CSV file
 	 * @return a list of {@link String} arrays representing description of all objects in the file on all attributes

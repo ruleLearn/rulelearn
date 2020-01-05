@@ -409,8 +409,8 @@ public class InformationTableBuilder {
 		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");
 		notNull(pathToCSVObjectFile, "Path to CSV file with objects is null.");
 		
-		Attribute [] attributes = null;
-		List<String []> objects = null;
+		Attribute[] attributes = null;
+		List<String[]> objects = null;
 		InformationTableBuilder informationTableBuilder = null;
 		InformationTable informationTable = null;
 		
@@ -481,7 +481,7 @@ public class InformationTableBuilder {
 		notNull(pathToJSONObjectFile, "Path to JSON file with objects is null.");
 		
 		Attribute [] attributes = null;
-		List<String []> objects = null;
+		List<String[]> objects = null;
 		InformationTableBuilder informationTableBuilder = null;
 		InformationTable informationTable = null;
 		
@@ -494,7 +494,7 @@ public class InformationTableBuilder {
 			attributes = gson.fromJson(jsonAttributesReader, Attribute[].class);
 			// load objects
 			JsonElement json = null;
-			try(JsonReader jsonObjectsReader = new JsonReader(new FileReader(pathToJSONObjectFile))) {
+			try (JsonReader jsonObjectsReader = new JsonReader(new FileReader(pathToJSONObjectFile))) {
 				JsonParser jsonParser = new JsonParser();
 				json = jsonParser.parse(jsonObjectsReader);
 			}

@@ -249,12 +249,12 @@ public class AttributeDeserializer implements JsonDeserializer<Attribute> {
 		if (element != null) {
 			value = element.getAsString().toLowerCase();
 			if (value.compareTo("mv1.5") == 0)
-				missingValueType = new UnknownSimpleFieldMV15();
+				missingValueType = UnknownSimpleFieldMV15.getInstance();
 			else // in case it is not provided set mv2
-				missingValueType = new UnknownSimpleFieldMV2();
+				missingValueType = UnknownSimpleFieldMV2.getInstance();
 		}
 		else // in case it is not provided set mv2
-			missingValueType = new UnknownSimpleFieldMV2();
+			missingValueType = UnknownSimpleFieldMV2.getInstance();
 		
 		return new EvaluationAttribute(name, active, type, valueType, missingValueType, preferenceType);
 	}

@@ -82,7 +82,7 @@ public class InformationTableWriter {
 	 * 
 	 * @param informationTable information table with attributes to be written to JSON
 	 * @param writer writer used to write attributes to JSON
-	 * @throws IOException when there problems with writer
+	 * @throws IOException when the writer encounters a problem when writing JSON string with attributes
 	 */
 	public void writeAttributes(InformationTable informationTable, Writer writer) throws IOException {
 		notNull(informationTable, "Information table from which attributes are to be written to JSON is null.");
@@ -96,7 +96,7 @@ public class InformationTableWriter {
 	 * 
 	 * @param informationTable information table with objects to be written to JSON
 	 * @param writer writer used to write objects to JSON
-	 * @throws IOException when there problems with writer
+	 * @throws IOException when the writer encounters a problem when writing JSON string with objects
 	 */
 	public void writeObjects(InformationTable informationTable, Writer writer) throws IOException {
 		notNull(informationTable, "Information table from which objects are to be written to JSON is null.");
@@ -104,5 +104,7 @@ public class InformationTableWriter {
 		
 		writer.write(gson.toJson(informationTable));
 	}
+	
+	//TODO: add writing objects to CSV
 
 }
