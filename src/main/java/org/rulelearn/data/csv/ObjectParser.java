@@ -24,20 +24,24 @@ import java.util.List;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableBuilder;
+import org.rulelearn.types.Field;
 
 /**
- * Parser of objects stored in CSV format.
+ * Converts a list of text-encoded objects returned by {@link org.rulelearn.data.csv.ObjectBuilder}
+ * to a corresponding {@link InformationTable information table}.
+ * In this process, each object built by {@link org.rulelearn.data.csv.ObjectBuilder}, represented as an array of {@link String strings},
+ * is converted to an array of {@link Field fields}. In this process,
+ * {@link InformationTableBuilder information table builder} is used - see {@link InformationTableBuilder#addObject(String[])}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
 public class ObjectParser {
 	
 	/**
 	 * All attributes which describe objects.
 	 */
-	protected Attribute [] attributes = null;
+	protected Attribute[] attributes = null;
 	
 	/**
 	 * Encoding of text data in CSV files.
@@ -71,7 +75,7 @@ public class ObjectParser {
 		/**
 		 * All attributes which describe objects.
 		 */
-		protected Attribute [] attributes = null;
+		protected Attribute[] attributes = null;
 		
 		/**
 		 * Encoding of text data in CSV files.
@@ -99,7 +103,7 @@ public class ObjectParser {
 		 * @param attributes array of attributes {@link Attribute} which describe parsed objects
 		 * @throws NullPointerException if all or some of the attributes describing data to be loaded have not been set
 		 */
-		public Builder (Attribute [] attributes) {
+		public Builder(Attribute[] attributes) {
 			if (attributes != null) {
 				for (Attribute attribute : attributes) {
 					if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
@@ -118,7 +122,7 @@ public class ObjectParser {
 		 * @throws NullPointerException if encoding has not been set
 		 * @return this builder
 		 */
-		public Builder encoding (String value) {
+		public Builder encoding(String value) {
 			notNull(value, "String representing encoding is null.");
 			this.encoding = value;
 			return this;
@@ -130,7 +134,7 @@ public class ObjectParser {
 		 * @param value indication of header in parsed CSV file
 		 * @return this builder 
 		 */
-		public Builder header (boolean value) {
+		public Builder header(boolean value) {
 			this.header = value;
 			return this;
 		}
@@ -141,7 +145,7 @@ public class ObjectParser {
 		 * @param value string representation of separator
 		 * @return this builder 
 		 */
-		public Builder separator (char value) {
+		public Builder separator(char value) {
 			this.separator = value;
 			return this;
 		}
@@ -153,7 +157,7 @@ public class ObjectParser {
 		 * @throws NullPointerException if representation of missing value has not been set
 		 * @return this builder
 		 */
-		public Builder missingValueString (String value) {
+		public Builder missingValueString(String value) {
 			notNull(value, "String representing missing values is null.");
 			this.missingValueString = value;
 			return this;
@@ -164,7 +168,7 @@ public class ObjectParser {
 		 * 
 		 * @return a new object parser
 		 */
-		public ObjectParser build () {
+		public ObjectParser build() {
 			return new ObjectParser(this);
 		}
 	}
@@ -189,21 +193,25 @@ public class ObjectParser {
 	 * @return information table {@link InformationTable} with parsed objects or {@code null} when the table cannot be constructed
 	 * @throws NullPointerException when the provided reader is null
 	 */
-	public InformationTable parseObjects (Reader reader) {
+	public InformationTable parseObjects(Reader reader) {
 		notNull(reader, "Reader is null.");
 		
+		//TODO: the code below is the same as in InformationTableBuilder.safelyBuildFromCSVFile(String, String, boolean, char) ...
+		
 		InformationTable informationTable = null;
-		List<String []> objects = null;
+		List<String[]> objects = null;
 		ObjectBuilder objectBuilder = new ObjectBuilder.Builder().attributes(this.attributes).encoding(this.encoding).header(this.header).separator(this.separator).build();
+		
 		if (objectBuilder != null) {
 			objects = objectBuilder.getObjects(reader);
 			if (objects != null) {
-				// separator passed to InforamtionTableBuilder is irrelevant here
-				InformationTableBuilder informationTableBuilder  = new InformationTableBuilder(this.attributes, ",", 
-														new String [] {this.missingValueString}); 
+				// separator passed to InformationTableBuilder is irrelevant here
+				InformationTableBuilder informationTableBuilder = new InformationTableBuilder(this.attributes, ",", new String[]{this.missingValueString}); 
 				for (int i = 0; i < objects.size(); i++) {
 					informationTableBuilder.addObject(objects.get(i));
 				}
+				
+				informationTableBuilder.clearVolatileCaches();
 				informationTable = informationTableBuilder.build();
 			}
 		}

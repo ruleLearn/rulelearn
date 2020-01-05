@@ -28,11 +28,12 @@ import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
- * Build objects from JSON.
- *
+ * Extracts from a block of text in JSON a list of objects, each represented as an array of evaluations,
+ * where each evaluation is a {@link String string}.
+ * Operates purely on the level of {@link String strings}, without interpreting their meaning.
+ * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
- *
  */
 public class ObjectBuilder {
 	
@@ -49,7 +50,7 @@ public class ObjectBuilder {
 	/**
 	 * All attributes which describe objects.
 	 */
-	protected Attribute [] attributes = null;
+	protected Attribute[] attributes = null;
 	
 	/**
 	 * Encoding of text data in JSON file.
@@ -68,7 +69,7 @@ public class ObjectBuilder {
 		/**
 		 * All attributes which describe objects.
 		 */
-		protected Attribute [] attributes = null;
+		protected Attribute[] attributes = null;
 		
 		/**
 		 * Encoding of text data in CSV files.
@@ -81,7 +82,7 @@ public class ObjectBuilder {
 		 * @param attributes array of attributes {@link Attribute} which describe parsed objects
 		 * @throws NullPointerException if all or some of the attributes describing data to be loaded have not been set
 		 */
-		public Builder (Attribute [] attributes) {
+		public Builder (Attribute[] attributes) {
 			if (attributes != null) {
 				for (Attribute attribute : attributes) {
 					if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
@@ -100,7 +101,7 @@ public class ObjectBuilder {
 		 * @throws NullPointerException if encoding has not been set
 		 * @return this builder
 		 */
-		public Builder encoding (String value) {
+		public Builder encoding(String value) {
 			notNull(value, "String representing encoding is null.");
 			this.encoding = value;
 			return this;
@@ -111,7 +112,7 @@ public class ObjectBuilder {
 		 * 
 		 * @return a new object builder
 		 */
-		public ObjectBuilder build () {
+		public ObjectBuilder build() {
 			return new ObjectBuilder(this);
 		}
 	}
@@ -133,7 +134,7 @@ public class ObjectBuilder {
 	 * @return a list of {@link String} arrays representing description of all objects in the file on all attributes
 	 */
 	public List<String[]> getObjects(JsonElement json) {
-		ObjectArrayList<String []> objectList = new ObjectArrayList<String []>();
+		ObjectArrayList<String[]> objectList = new ObjectArrayList<String[]>();
 	
 		if ((json != null) && (!json.isJsonNull())) {
 			if (json.isJsonArray()) {
@@ -154,7 +155,7 @@ public class ObjectBuilder {
 	 * @param json a JSON structure representing objects
 	 * @return a list of {@link String} arrays representing description of all objects in the file on all attributes
 	 */
-	protected String [] getObject (JsonElement json) {
+	protected String[] getObject(JsonElement json) {
 		String [] object = null;
 		
 		if (attributes != null) {

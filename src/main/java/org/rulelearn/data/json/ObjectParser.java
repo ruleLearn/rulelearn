@@ -43,7 +43,7 @@ public class ObjectParser {
 	/**
 	 * All attributes which describe objects.
 	 */
-	protected Attribute [] attributes = null;
+	protected Attribute[] attributes = null;
 	
 	/**
 	 * Encoding of text data in JSON.
@@ -56,7 +56,6 @@ public class ObjectParser {
 	protected String missingValueString = ObjectBuilder.DEFAULT_MISSING_VALUE_STRING;
 	
 	/**
-	 * 
 	 * Builder class for {@link ObjectParser}. 
 	 *
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
@@ -67,7 +66,7 @@ public class ObjectParser {
 		/**
 		 * All attributes which describe objects.
 		 */
-		protected Attribute [] attributes = null;
+		protected Attribute[] attributes = null;
 		
 		/**
 		 * Encoding of text data in JSON.
@@ -85,7 +84,7 @@ public class ObjectParser {
 		 * @param attributes array of attributes {@link Attribute} which describe parsed objects
 		 * @throws NullPointerException if all or some of the attributes describing data to be loaded have not been set
 		 */
-		public Builder (Attribute [] attributes) {
+		public Builder(Attribute[] attributes) {
 			if (attributes != null) {
 				for (Attribute attribute : attributes) {
 					if (attribute == null) throw new NullPointerException("At least one attribute is not set.");
@@ -104,7 +103,7 @@ public class ObjectParser {
 		 * @throws NullPointerException if encoding has not been set
 		 * @return this builder
 		 */
-		public Builder encoding (String value) {
+		public Builder encoding(String value) {
 			notNull(value, "String representing encoding is null.");
 			this.encoding = value;
 			return this;
@@ -117,7 +116,7 @@ public class ObjectParser {
 		 * @throws NullPointerException if representation of missing value has not been set
 		 * @return this builder
 		 */
-		public Builder missingValueString (String value) {
+		public Builder missingValueString(String value) {
 			notNull(value, "String representing missing values is null.");
 			this.missingValueString = value;
 			return this;
@@ -128,7 +127,7 @@ public class ObjectParser {
 		 * 
 		 * @return a new object parser
 		 */
-		public ObjectParser build () {
+		public ObjectParser build() {
 			return new ObjectParser(this);
 		}
 	}
@@ -151,14 +150,14 @@ public class ObjectParser {
 	 * @return information table {@link InformationTable} with parsed objects
 	 * @throws IOException when something goes wrong with {@link Reader}
 	 */
-	public InformationTable parseObjects (Reader reader) throws IOException {
+	public InformationTable parseObjects(Reader reader) throws IOException {
 		notNull(reader, "Reader with content to be parsed is null.");
 		InformationTable informationTable = null;
 		
 		JsonElement json = getJSON(reader);
 		if ((json != null) && (!json.isJsonNull())) {
 			// separator passed to InforamtionTableBuilder is irrelevant here
-			InformationTableBuilder informationTableBuilder  = new InformationTableBuilder(this.attributes, new String [] {this.missingValueString});
+			InformationTableBuilder informationTableBuilder = new InformationTableBuilder(this.attributes, new String[]{this.missingValueString});
 			if (json.isJsonArray()) {
 				for (int i = 0; i < ((JsonArray)json).size(); i++) {
 					informationTableBuilder.addObject(parseObject(((JsonArray)json).get(i).getAsJsonObject()));
@@ -167,6 +166,9 @@ public class ObjectParser {
 			else {
 				informationTableBuilder.addObject(parseObject(json));
 			}
+			
+			//clear volatile caches of all used evaluation field caching factories
+			informationTableBuilder.clearVolatileCaches();
 			informationTable = informationTableBuilder.build();
 		}
 		
@@ -180,7 +182,7 @@ public class ObjectParser {
 	 * @return parsed JSON structure {@link JsonElement}
 	 * @throws IOException when something goes wrong with {@link JsonReader}
 	 */
-	protected JsonElement getJSON (Reader reader) throws IOException {
+	protected JsonElement getJSON(Reader reader) throws IOException {
 		notNull(reader, "Reader with content to be parsed is null.");
 		try (JsonReader jsonReader = new JsonReader(reader)) {
 			JsonParser jsonParser = new JsonParser();			
@@ -194,9 +196,9 @@ public class ObjectParser {
 	 * @param json a JSON structure representing objects
 	 * @return a list of {@link String} arrays representing description of all objects in the file on all attributes
 	 */
-	protected String [] parseObject (JsonElement json) {
+	protected String[] parseObject(JsonElement json) {
 		notNull(json, "JSON strucure with objects to be parsed is null.");
-		String [] object = null;
+		String[] object = null;
 		
 		if (attributes != null) {
 			object = new String [attributes.length];
