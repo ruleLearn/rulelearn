@@ -1,0 +1,35 @@
+@relation eucalyptus-weka.filters.unsupervised.attribute.ReplaceMissingValues-weka.filters.supervised.instance.StratifiedRemoveFolds-S268568908-N4-F1
+
+@attribute   	 Abbrev 	 	{ 	Cra , "Cly 2"	,	Nga ,  Wai		,K81,     Wak,K82,WSp, 	 	K83,	Lon 	 	, 	 	Puk,Paw,K81a,Mor,Wen,   		  WSh	  }   		
+@attribute   		 Rep   		  	numeric
+@attribute Locality { 'Central_Hawkes_Bay',"Northern_Hawkes_Bay",Southern_Hawkes_Bay,Central_Hawkes_Bay_(coastal),  'Central Wairarapa'		,South_Wairarapa , 	"Southern Hawkes Bay (coastal)"   ,Central_Poverty_Bay}
+@attribute Map_Ref {N135_382/137,N116_848/985,N145_874/586,N142_377/957,N158_344/626,N162_081/300,N158_343/625,N151_912/221,N162_097/424,N166_063/197,N146_273/737,N141_295/063,N98_539/567,N151_922/226}
+@attribute Latitude {39__38,39__00,40__11,39__50,40__57,41__12,40__36,41__08,41__16,40__00,39__43,82__32}
+@attribute Altitude numeric
+@attribute Rainfall numeric
+@attribute Frosts numeric
+@attribute Year numeric
+@attribute Sp {co,fr,ma,nd,ni,ob,ov,pu,rd,si,mn,ag,bxs,br,el,fa,jo,ka,re,sm,ro,nc,am,cr,pa,ra,te}
+@attribute PMCno numeric
+@attribute DBH numeric
+@attribute Ht numeric
+@attribute Surv numeric
+@attribute Vig numeric
+@attribute Ins_res numeric
+@attribute Stem_Fm numeric
+@attribute Crown_Fm numeric
+@attribute 	 	 Brnch_Fm    numeric 		 	
+@attribute  	    Utility  	{    none 	,  		low 	,  average,			good,        best		}		  
+
+@data
+
+K82,3,   'Central Wairarapa'		,  "N158_343/625" 	,		40__57,180,1080,-3,  1982,re,2574,	15.26,14.08		,25,  3  ,4,4,4,3,best
+Wak,1,South_Wairarapa,N162_081/300,41__12,160,1000,-3,1981,nd,1596,11.6,8.9,100,4,3,4,4,4,best
+Wak, 	 3,	South_Wairarapa,N162_081/300,   41__12,160,	   1000,-3,1981,nd,1596,10.4,9.4,100,4,3,2,3.5,3,best
+WSp,2,Southern_Hawkes_Bay,N151_912/221,40__36,150,1250,-3,1983,co,2562,18.81,19.09,75,3,3,3,4,3,best
+Wak,3,"South_Wairarapa",N162_081/300,41__12,160,1000,-3,1981,re,2428,12.3,8.2,75,4,3,3,2,2,best
+K81,1,"Central Wairarapa",N158_344/626,40__57,180,1080,-3,1981,nd,1596,6.38,5.07,88,3,4,3,4,4,best
+Wai,3,Central_Hawkes_Bay_(coastal),N142_377/957,39__50,70,1000,-2,1981,ob,1337,24.5,13.5,75,5,3,4,4,2,best
+Cra,2,	'Central_Hawkes_Bay'  ,N135_382/137,39__38,100,850,-2,1980,ob,1522,13.08,9.79,90,5,4.5,5,4,4,best
+WSp,2,Southern_Hawkes_Bay,N151_912/221,40__36,150,1250,-3,1983,pu,2573,23.29,17.74,75,3,3,3,3.5,2,best
+Paw,2, "Southern Hawkes Bay (coastal)", 	'N146_273/737',       40__00,150,1300,-2,1983,ni,2547,46.36,19.09,40,4.3,2.6,3,2.9,2,best

@@ -27,10 +27,13 @@ import java.util.List;
 import java.util.UUID;
 
 import org.rulelearn.core.FieldParseException;
+import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.data.arff.ArffReader;
 import org.rulelearn.data.json.AttributeDeserializer;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
 import org.rulelearn.types.IdentificationField;
+import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.TextIdentificationField;
 import org.rulelearn.types.UUIDIdentificationField;
 
@@ -45,7 +48,11 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Builder for {@link InformationTable}. Allows building of an information table by setting attributes first, and then iteratively adding objects (rows).
- * Attributes are set using a JSON string. Objects are set using CSV strings.
+ * This builder optimizes memory footprint of the constructed information table by employing a volatile cache of objects' evaluations. For example,
+ * if the same integer number is an evaluation of two different objects, even with respect to two different attributes (but both having {@link IntegerField}
+ * {@link EvaluationAttribute#getValueType() value type} and the same {@link AttributePreferenceType preference type}),
+ * then a single instance of {@link IntegerField} will be used to store that evaluation. This strategy employs the fact that particular
+ * {@link EvaluationField evaluation fields} stored in the information table are read-only.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -197,11 +204,11 @@ public class InformationTableBuilder {
 	 * 
 	 * @param objectDescriptions single object's identifiers/evaluations
 	 * 
-	 * @throws IndexOutOfBoundsException if given attribute index does not correspond to any attribute of the constructed information table
+	 * @throws IndexOutOfBoundsException if object has different number of descriptions than the number of attributes declared
 	 */
 	public void addObject(String[] objectDescriptions) {
 		if (objectDescriptions.length != attributes.length)
-			throw new IndexOutOfBoundsException("Object has different number of evaluations than the number of attributes declared.");
+			throw new IndexOutOfBoundsException("Object has different number of descriptions than the number of attributes declared.");
 		
 		Field[] object = new Field[this.attributes.length];
 		for (int i = 0; i < this.attributes.length; i++) {
@@ -417,6 +424,8 @@ public class InformationTableBuilder {
 			
 			// construct information table builder
 			if (attributes != null) {
+				//TODO: the code below is the same as in ObjectParser.parseObjects(Reader) ...
+				
 				// load objects 
 				org.rulelearn.data.csv.ObjectBuilder ob = new org.rulelearn.data.csv.ObjectBuilder.Builder().attributes(attributes).header(header).separator(separator).build();
 				objects = ob.getObjects(pathToCSVObjectFile);
@@ -426,14 +435,14 @@ public class InformationTableBuilder {
 					for (int i = 0; i < objects.size(); i++) {
 						informationTableBuilder.addObject(objects.get(i)); //uses volatile caches
 					}
-					//clear volatile caches of all used evaluation field caching factories
-					informationTableBuilder.clearVolatileCaches();
 				}
 			}
 		}
 		
 		// build information table
 		if (informationTableBuilder != null) {
+			//clear volatile caches of all used evaluation field caching factories
+			informationTableBuilder.clearVolatileCaches();
 			informationTable = informationTableBuilder.build();
 		}
 		
@@ -481,7 +490,7 @@ public class InformationTableBuilder {
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		
-		try(JsonReader jsonAttributesReader = new JsonReader(new FileReader(pathToJSONAttributeFile))) {
+		try (JsonReader jsonAttributesReader = new JsonReader(new FileReader(pathToJSONAttributeFile))) {
 			attributes = gson.fromJson(jsonAttributesReader, Attribute[].class);
 			// load objects
 			JsonElement json = null;
@@ -499,15 +508,14 @@ public class InformationTableBuilder {
 					for (int i = 0; i < objects.size(); i++) {
 						informationTableBuilder.addObject(objects.get(i)); //uses volatile cache
 					}
-					
-					//clear volatile caches of all used evaluation field caching factories
-					informationTableBuilder.clearVolatileCaches();
 				}
 			}
 		}
 		
 		// build information table
 		if (informationTableBuilder != null) {
+			//clear volatile caches of all used evaluation field caching factories
+			informationTableBuilder.clearVolatileCaches();
 			informationTable = informationTableBuilder.build();
 		}
 
@@ -515,11 +523,31 @@ public class InformationTableBuilder {
 	}
 	
 	/**
-	 * Clears volatile caches of all used evaluation field caching factories.
-	 *  
-	 * @param attributes attributes of the information table being built
+	 * Reads attributes and objects from a text file in WEKA's ARFF format and returns corresponding {@link InformationTable information table}.
+	 * The last attribute will be the decision one, with preference type set to {@code decisionAttributePreferenceType}.<br>
+	 * <br>
+	 * Warning! This method may have limitations as to supported ARFF syntax - please refer to {@link ArffReader#read(String, AttributePreferenceType)} for details.
+	 * 
+	 * @param arffFilePath path to a file (expected to be in ARFF format)
+	 * @param decisionAttributePreferenceType attribute preference type to be set for the decision attribute read from the ARFF file.
+	 *        The option of setting value other than the default value {@link AttributePreferenceType#NONE} is useful, e.g., when reading ordinal classification problems.
+	 *
+	 * @return information table containing data stored in the processed ARFF file
+	 * 
+	 * @throws NullPointerException see {@link ArffReader#read(String, AttributePreferenceType)}
+	 * @throws FileNotFoundException see {@link ArffReader#read(String, AttributePreferenceType)}
+	 * @throws InvalidValueException see {@link ArffReader#read(String, AttributePreferenceType)}
+	 * @throws UnsupportedOperationException see {@link ArffReader#read(String, AttributePreferenceType)}
 	 */
-	void clearVolatileCaches() {
+	public static InformationTable safelyBuildFromARFFFile(String arffFilePath, AttributePreferenceType decisionAttributePreferenceType) throws IOException, FileNotFoundException {
+		return (new ArffReader()).read(arffFilePath, decisionAttributePreferenceType);
+	}
+	
+	/**
+	 * Clears volatile caches of all evaluation field caching factories used by this builder
+	 * when parsing strings representing objects' evaluations into {@link EvaluationField evaluation fields}.
+	 */
+	public void clearVolatileCaches() {
 		//clear volatile caches of all used evaluation field caching factories
 		for (int i = 0; i < attributes.length; i++) {
 			if (attributes[i] instanceof EvaluationAttribute) {
