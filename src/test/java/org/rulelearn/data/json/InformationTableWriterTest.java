@@ -16,7 +16,7 @@
 
 package org.rulelearn.data.json;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -29,7 +29,7 @@ import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.csv.ObjectParser;
 
 /**
- * Tests from {@link InformationTableWriter}.
+ * Tests for {@link InformationTableWriter}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -39,108 +39,110 @@ class InformationTableWriterTest {
 	/**
 	 * Test method for {@link InformationTableWriter#writeAttributes(InformationTable, java.io.Writer)} and 
 	 * {@link InformationTableWriter#writeObjects(InformationTable, java.io.Writer)}.
+	 * Tests if an information table can be saved as a pair of JSON + JSON files, with pretty printing.
 	 */
 	@Test
 	void testInformationTableWriter01() {
 		Attribute [] attributes = null;
-		
 		AttributeParser attributeParser = new AttributeParser();
+		
 		try (FileReader attributesReader = new FileReader("src/test/resources/data/csv/windsor.json")) {
 			attributes = attributeParser.parseAttributes(attributesReader);
 			if (attributes != null) {
 				ObjectParser objectParser = new ObjectParser.Builder(attributes).header(false).separator('\t').build();
 				InformationTable informationTable = null;
+				
 				try (FileReader objectsReader = new FileReader("src/test/resources/data/csv/windsor-mv.csv")) {
 					informationTable = objectParser.parseObjects(objectsReader);
 					if (informationTable != null) {
 						InformationTableWriter informationTableWriter = new InformationTableWriter();
+						
 						try (FileWriter fileWriter = new FileWriter("src/test/resources/data/json/windsor-metadata-generated.json")) {
 							informationTableWriter.writeAttributes(informationTable, fileWriter);
 						}
-						catch (IOException ex) {
-							System.out.println(ex.toString());
+						catch (IOException exception) {
+							fail(exception.toString());
 						}
+						
 						try (FileWriter fileWriter = new FileWriter("src/test/resources/data/json/windsor-generated.json")) {
 							informationTableWriter.writeObjects(informationTable, fileWriter);
 						}
-						catch (IOException ex) {
-							System.out.println(ex.toString());
+						catch (IOException exception) {
+							fail(exception.toString());
 						}
 					}
 					else {
-						fail("Unable to load CSV test file with definition of objects");
+						fail("Unable to load CSV test file with definition of objects.");
 					}
 				}
-				catch (FileNotFoundException ex) {
-					System.out.println(ex.toString());
-				}
-				catch (IOException ex) {
-					System.out.println(ex.toString());
+				catch (FileNotFoundException exception) {
+					fail(exception.toString());
 				}
 			}
 			else {
-				fail("Unable to load JSON test file with definition of attributes");
+				fail("Unable to load JSON test file with definition of attributes.");
 			}
 		}
-		catch (FileNotFoundException ex) {
-			System.out.println(ex.toString());
+		catch (FileNotFoundException exception) {
+			fail(exception.toString());
 		}
-		catch (IOException ex) {
-			System.out.println(ex.toString());
+		catch (IOException exception) {
+			fail(exception.toString());
 		}
 	}
 	
 	/**
 	 * Test method for {@link InformationTableWriter#writeAttributes(InformationTable, java.io.Writer)} and 
 	 * {@link InformationTableWriter#writeObjects(InformationTable, java.io.Writer)}.
+	 * Tests if an information table can be saved as a pair of JSON + JSON files, without pretty printing.
 	 */
 	@Test
 	void testInformationTableWriter02() {
 		Attribute [] attributes = null;
-		
 		AttributeParser attributeParser = new AttributeParser();
+		
 		try (FileReader attributesReader = new FileReader("src/test/resources/data/csv/windsor.json")) {
 			attributes = attributeParser.parseAttributes(attributesReader);
 			if (attributes != null) {
 				ObjectParser objectParser = new ObjectParser.Builder(attributes).header(false).separator('\t').build();
 				InformationTable informationTable = null;
+				
 				try (FileReader objectsReader = new FileReader("src/test/resources/data/csv/windsor-mv.csv")) {
 					informationTable = objectParser.parseObjects(objectsReader);
 					if (informationTable != null) {
 						InformationTableWriter informationTableWriter = new InformationTableWriter(false);
+						
 						try (FileWriter fileWriter = new FileWriter("src/test/resources/data/json/windsor-metadata-no-pp-generated.json")) {
 							informationTableWriter.writeAttributes(informationTable, fileWriter);
 						}
-						catch (IOException ex) {
-							System.out.println(ex.toString());
+						catch (IOException exception) {
+							fail(exception.toString());
 						}
+						
 						try (FileWriter fileWriter = new FileWriter("src/test/resources/data/json/windsor-no-pp-generated.json")) {
 							informationTableWriter.writeObjects(informationTable, fileWriter);
 						}
-						catch (IOException ex) {
-							System.out.println(ex.toString());
+						catch (IOException exception) {
+							fail(exception.toString());
 						}
 					}
 					else {
-						fail("Unable to load CSV test file with definition of objects");
+						fail("Unable to load CSV test file with definition of objects.");
 					}
 				}
-				catch (FileNotFoundException ex) {
-					System.out.println(ex.toString());
-				}
-				catch (IOException ex) {
-					System.out.println(ex.toString());
+				catch (FileNotFoundException exception) {
+					fail(exception.toString());
 				}
 			}
 			else {
-				fail("Unable to load JSON test file with definition of attributes");
+				fail("Unable to load JSON test file with definition of attributes.");
 			}
 		}
-		catch (FileNotFoundException ex) {
-			System.out.println(ex.toString());
+		catch (FileNotFoundException exception) {
+			fail(exception.toString());
 		}
-		catch (IOException ex) {
-			System.out.println(ex.toString());
+		catch (IOException exception) {
+			fail(exception.toString());
 		}
 	}
 

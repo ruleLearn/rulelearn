@@ -14,84 +14,61 @@
  * limitations under the License.
  */
 
-package org.rulelearn.data.json;
-
-import static org.rulelearn.core.Precondition.notNull;
+package org.rulelearn.data.csv;
 
 import java.io.IOException;
 import java.io.Writer;
 
+import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.Precondition;
 import org.rulelearn.data.Attribute;
-import org.rulelearn.data.EvaluationAttribute;
-import org.rulelearn.data.IdentificationAttribute;
 import org.rulelearn.data.InformationTable;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
- * Writes {@link Attribute attributes} and objects from an {@link InformationTable information table} to JSON.
+ * Writes {@link Attribute attributes} and objects from an {@link InformationTable information table} to a pair of text files.
+ * Attributes are stored in JSON format, and objects are stored in CSV format.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class InformationTableWriter {
 	
-	/** 
-	 * Gson builder.
-	 */
-	GsonBuilder gsonBuilder;
-	
 	/**
-	 * Gson.
+	 * Internal writer used to write attributes to a JSON file.
 	 */
-	Gson gson;
+	org.rulelearn.data.json.InformationTableWriter jsonInformationTableWriter;
 	
 	/**
 	 * Tells if writers passed as parameters to {@link #writeAttributes(InformationTable, Writer)}
-	 * and {@link #writeObjects(InformationTable, Writer)} methods
+	 * and {@link #writeObjects(InformationTable, Writer, String)} methods
 	 * should be automatically closed by these methods to force content flushing and release of blocked resources (like file handles).
 	 * Initially set to {@code true}.
 	 */
 	boolean autoCloseWriters = true;
 	
 	/**
-	 * Constructs this writer and initializes {@link GsonBuilder Gson builder}, as well as {@link Gson gson} itself.
-	 * Turns on pretty printing in produced JSON files.
+	 * Constructs this writer. See {@link org.rulelearn.data.json.InformationTableWriter#InformationTableWriter()}.
 	 * Ensures that {@code autoCloseWriters} property is set to {@code true}.
 	 */
 	public InformationTableWriter() {
-		gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(InformationTable.class, new InformationTableSerializer());
-		gsonBuilder.registerTypeAdapter(IdentificationAttribute.class, new IdentificationAttributeSerializer());
-		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
-		gson = gsonBuilder.setPrettyPrinting().create();
+		jsonInformationTableWriter = new org.rulelearn.data.json.InformationTableWriter();
 		autoCloseWriters = true;
 	}
 	
 	/**
-	 * Constructs this writer and initializes {@link GsonBuilder Gson builder} (optionally setting pretty printing), 
-	 * as well as {@link Gson gson instance} itself.
+	 * Constructs this writer. See {@link org.rulelearn.data.json.InformationTableWriter#InformationTableWriter(boolean)}.
 	 * Ensures that {@code autoCloseWriters} property is set to {@code true}.
 	 * 
 	 * @param setPrettyPrinting indicator of pretty printing in written JSON
 	 */
 	public InformationTableWriter(boolean setPrettyPrinting) {
-		gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(InformationTable.class, new InformationTableSerializer());
-		gsonBuilder.registerTypeAdapter(IdentificationAttribute.class, new IdentificationAttributeSerializer());
-		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
-		if (setPrettyPrinting) {
-			gson = gsonBuilder.setPrettyPrinting().create();
-		}
-		else {
-			gson = gsonBuilder.create();
-		}
+		jsonInformationTableWriter = new org.rulelearn.data.json.InformationTableWriter(setPrettyPrinting);
 		autoCloseWriters = true;
 	}
 	
 	/**
 	 * Writes attributes from the information table passed as parameter to JSON using the writer passed as parameter.
+	 * Calls {@link org.rulelearn.data.json.InformationTableWriter#writeAttributes(InformationTable, Writer)}.
 	 * If {@code autoCloseWriters} property is {@code true}, closes given writer after all attributes are written.
 	 * 
 	 * @param informationTable information table with attributes to be written to JSON
@@ -101,10 +78,7 @@ public class InformationTableWriter {
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public void writeAttributes(InformationTable informationTable, Writer writer) throws IOException {
-		notNull(informationTable, "Information table from which attributes are to be written to JSON is null.");
-		notNull(writer, "Writer for attributes from information table to JSON is null.");
-		
-		writer.write(gson.toJson(informationTable.getAttributes()));
+		jsonInformationTableWriter.writeAttributes(informationTable, writer);
 		
 		if (autoCloseWriters) {
 			writer.close(); //release resources
@@ -112,29 +86,53 @@ public class InformationTableWriter {
 	}
 	
 	/**
-	 * Writes objects from information table passed as parameter to JSON using writer passed as parameter.
+	 * Writes objects from the information table passed as parameter to CSV using the writer passed as parameter.
+	 * Uses given delimiter.
 	 * If {@code autoCloseWriters} property is {@code true}, closes given writer after all objects are written.
 	 * 
-	 * @param informationTable information table with objects to be written to JSON
-	 * @param writer writer used to write objects to JSON
+	 * @param informationTable information table with objects to be written to CSV
+	 * @param writer writer used to write objects to CSV
+	 * @param delimiter delimiter for subsequent fields in a row
 	 * 
-	 * @throws IOException when the writer encounters a problem when writing JSON string with objects
+	 * @throws IOException when the writer encounters a problem when writing CSV string with objects
 	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws InvalidValueException if given {@code delimiter} is an empty string
 	 */
-	public void writeObjects(InformationTable informationTable, Writer writer) throws IOException {
-		notNull(informationTable, "Information table from which objects are to be written to JSON is null.");
-		notNull(writer, "Writer for objects from information table to JSON is null.");
+	public void writeObjects(InformationTable informationTable, Writer writer, String delimiter) throws IOException {
+		Precondition.notNull(informationTable, "Cannot write to CSV objects of a null information table.");
+		Precondition.notNull(writer, "Writer for objects of an information table in CSV format is null.");
+		Precondition.notNull(delimiter, "Delimiter for evaluations of objects of an information table in CSV format is null.");
 		
-		writer.write(gson.toJson(informationTable));
+		if (delimiter.isEmpty()) {
+			throw new InvalidValueException("Delimiter for evaluations of objects of an information table in CSV format is an empty string.");
+		}
+		
+		int numberOfAttrs = informationTable.getNumberOfAttributes();
+		int numberOfObjs = informationTable.getNumberOfObjects();
+		
+		StringBuilder stringBuilder;
+		
+		for (int i = 0; i < numberOfObjs; i++) {
+			stringBuilder = new StringBuilder();
+			for (int j = 0; j < numberOfAttrs; j++) {
+				stringBuilder.append(informationTable.getField(i, j));
+				if (j < numberOfAttrs - 1) { //not the last  attribute
+					stringBuilder.append(delimiter);
+				} else { //last attribute
+					stringBuilder.append("\n");
+				}
+			}
+			writer.write(stringBuilder.toString()); //write one line of text
+		}
 		
 		if (autoCloseWriters) {
 			writer.close(); //release resources
 		}
 	}
-	
+
 	/**
 	 * Tells if writers passed as parameters to {@link #writeAttributes(InformationTable, Writer)}
-	 * and {@link #writeObjects(InformationTable, Writer)} methods
+	 * and {@link #writeObjects(InformationTable, Writer, String)} methods
 	 * should be automatically closed by these methods to force content flushing and release of blocked resources (like file handles).
 
 	 * @return value of {@code autoCloseWriters} property determining if writers
@@ -153,5 +151,4 @@ public class InformationTableWriter {
 	public void setAutoCloseWriters(boolean autoCloseWriters) {
 		this.autoCloseWriters = autoCloseWriters;
 	}
-
 }

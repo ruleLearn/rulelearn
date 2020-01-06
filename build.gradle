@@ -28,7 +28,7 @@ apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'maven-publish'
 
 group = 'org.rulelearn'
-version = '0.15.0'
+version = '0.17.0'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -150,7 +150,7 @@ jar {
 	}
 }
 
-task all(dependsOn: ["junitPlatformTest", "jar", "javadoc"], description: "Performs all tasks") {
+task all(dependsOn: ["clean", "junitPlatformTest", "jar", "javadoc"], description: "Performs all tasks") {
 	group 'aggregate'
 	description 'Run tests, generate javadoc, build jar'
 	
