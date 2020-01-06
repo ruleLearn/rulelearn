@@ -39,24 +39,37 @@ public class InformationTableWriter {
 	org.rulelearn.data.json.InformationTableWriter jsonInformationTableWriter;
 	
 	/**
+	 * Tells if writers passed as parameters to {@link #writeAttributes(InformationTable, Writer)}
+	 * and {@link #writeObjects(InformationTable, Writer, String)} methods
+	 * should be automatically closed by these methods to force content flushing and release of blocked resources (like file handles).
+	 * Initially set to {@code true}.
+	 */
+	boolean autoCloseWriters = true;
+	
+	/**
 	 * Constructs this writer. See {@link org.rulelearn.data.json.InformationTableWriter#InformationTableWriter()}.
+	 * Ensures that {@code autoCloseWriters} property is set to {@code true}.
 	 */
 	public InformationTableWriter() {
 		jsonInformationTableWriter = new org.rulelearn.data.json.InformationTableWriter();
+		autoCloseWriters = true;
 	}
 	
 	/**
 	 * Constructs this writer. See {@link org.rulelearn.data.json.InformationTableWriter#InformationTableWriter(boolean)}.
+	 * Ensures that {@code autoCloseWriters} property is set to {@code true}.
 	 * 
 	 * @param setPrettyPrinting indicator of pretty printing in written JSON
 	 */
 	public InformationTableWriter(boolean setPrettyPrinting) {
 		jsonInformationTableWriter = new org.rulelearn.data.json.InformationTableWriter(setPrettyPrinting);
+		autoCloseWriters = true;
 	}
 	
 	/**
 	 * Writes attributes from the information table passed as parameter to JSON using the writer passed as parameter.
 	 * Calls {@link org.rulelearn.data.json.InformationTableWriter#writeAttributes(InformationTable, Writer)}.
+	 * If {@code autoCloseWriters} property is {@code true}, closes given writer after all attributes are written.
 	 * 
 	 * @param informationTable information table with attributes to be written to JSON
 	 * @param writer writer used to write attributes to JSON
@@ -66,11 +79,16 @@ public class InformationTableWriter {
 	 */
 	public void writeAttributes(InformationTable informationTable, Writer writer) throws IOException {
 		jsonInformationTableWriter.writeAttributes(informationTable, writer);
+		
+		if (autoCloseWriters) {
+			writer.close(); //release resources
+		}
 	}
 	
 	/**
 	 * Writes objects from the information table passed as parameter to CSV using the writer passed as parameter.
-	 * Uses given delimiter. Closes given writer in the end.
+	 * Uses given delimiter.
+	 * If {@code autoCloseWriters} property is {@code true}, closes given writer after all objects are written.
 	 * 
 	 * @param informationTable information table with objects to be written to CSV
 	 * @param writer writer used to write objects to CSV
@@ -107,6 +125,30 @@ public class InformationTableWriter {
 			writer.write(stringBuilder.toString()); //write one line of text
 		}
 		
-		writer.close(); //release resources
+		if (autoCloseWriters) {
+			writer.close(); //release resources
+		}
+	}
+
+	/**
+	 * Tells if writers passed as parameters to {@link #writeAttributes(InformationTable, Writer)}
+	 * and {@link #writeObjects(InformationTable, Writer, String)} methods
+	 * should be automatically closed by these methods to force content flushing and release of blocked resources (like file handles).
+
+	 * @return value of {@code autoCloseWriters} property determining if writers
+	 *         used to write attributes and objects should be automatically closed
+	 */
+	public boolean isAutoCloseWriters() {
+		return autoCloseWriters;
+	}
+
+	/**
+	 * Sets value of {@code autoCloseWriters} property determining if writers
+	 * used to write attributes and objects should be automatically closed.
+	 *  
+	 * @param autoCloseWriters new value of {@code autoCloseWriters} property
+	 */
+	public void setAutoCloseWriters(boolean autoCloseWriters) {
+		this.autoCloseWriters = autoCloseWriters;
 	}
 }

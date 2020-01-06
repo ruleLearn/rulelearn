@@ -48,8 +48,17 @@ public class InformationTableWriter {
 	Gson gson;
 	
 	/**
-	 * Constructs this writer and initializes {@link GsonBuilder Gson builder}, as well as, {@link Gson gson} itself.
+	 * Tells if writers passed as parameters to {@link #writeAttributes(InformationTable, Writer)}
+	 * and {@link #writeObjects(InformationTable, Writer)} methods
+	 * should be automatically closed by these methods to force content flushing and release of blocked resources (like file handles).
+	 * Initially set to {@code true}.
+	 */
+	boolean autoCloseWriters = true;
+	
+	/**
+	 * Constructs this writer and initializes {@link GsonBuilder Gson builder}, as well as {@link Gson gson} itself.
 	 * Turns on pretty printing in produced JSON files.
+	 * Ensures that {@code autoCloseWriters} property is set to {@code true}.
 	 */
 	public InformationTableWriter() {
 		gsonBuilder = new GsonBuilder();
@@ -57,11 +66,13 @@ public class InformationTableWriter {
 		gsonBuilder.registerTypeAdapter(IdentificationAttribute.class, new IdentificationAttributeSerializer());
 		gsonBuilder.registerTypeAdapter(EvaluationAttribute.class, new EvaluationAttributeSerializer());
 		gson = gsonBuilder.setPrettyPrinting().create();
+		autoCloseWriters = true;
 	}
 	
 	/**
 	 * Constructs this writer and initializes {@link GsonBuilder Gson builder} (optionally setting pretty printing), 
 	 * as well as {@link Gson gson instance} itself.
+	 * Ensures that {@code autoCloseWriters} property is set to {@code true}.
 	 * 
 	 * @param setPrettyPrinting indicator of pretty printing in written JSON
 	 */
@@ -76,10 +87,12 @@ public class InformationTableWriter {
 		else {
 			gson = gsonBuilder.create();
 		}
+		autoCloseWriters = true;
 	}
 	
 	/**
 	 * Writes attributes from the information table passed as parameter to JSON using the writer passed as parameter.
+	 * If {@code autoCloseWriters} property is {@code true}, closes given writer after all attributes are written.
 	 * 
 	 * @param informationTable information table with attributes to be written to JSON
 	 * @param writer writer used to write attributes to JSON
@@ -92,10 +105,15 @@ public class InformationTableWriter {
 		notNull(writer, "Writer for attributes from information table to JSON is null.");
 		
 		writer.write(gson.toJson(informationTable.getAttributes()));
+		
+		if (autoCloseWriters) {
+			writer.close(); //release resources
+		}
 	}
 	
 	/**
 	 * Writes objects from information table passed as parameter to JSON using writer passed as parameter.
+	 * If {@code autoCloseWriters} property is {@code true}, closes given writer after all objects are written.
 	 * 
 	 * @param informationTable information table with objects to be written to JSON
 	 * @param writer writer used to write objects to JSON
@@ -108,6 +126,32 @@ public class InformationTableWriter {
 		notNull(writer, "Writer for objects from information table to JSON is null.");
 		
 		writer.write(gson.toJson(informationTable));
+		
+		if (autoCloseWriters) {
+			writer.close(); //release resources
+		}
+	}
+	
+	/**
+	 * Tells if writers passed as parameters to {@link #writeAttributes(InformationTable, Writer)}
+	 * and {@link #writeObjects(InformationTable, Writer)} methods
+	 * should be automatically closed by these methods to force content flushing and release of blocked resources (like file handles).
+
+	 * @return value of {@code autoCloseWriters} property determining if writers
+	 *         used to write attributes and objects should be automatically closed
+	 */
+	public boolean isAutoCloseWriters() {
+		return autoCloseWriters;
+	}
+
+	/**
+	 * Sets value of {@code autoCloseWriters} property determining if writers
+	 * used to write attributes and objects should be automatically closed.
+	 *  
+	 * @param autoCloseWriters new value of {@code autoCloseWriters} property
+	 */
+	public void setAutoCloseWriters(boolean autoCloseWriters) {
+		this.autoCloseWriters = autoCloseWriters;
 	}
 
 }
