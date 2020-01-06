@@ -60,8 +60,8 @@ public class InformationTableWriter {
 	}
 	
 	/**
-	 * Constructs this writer and initializes {@link GsonBuilder Gson builder} (optinally setting pretty printing), 
-	 * as well as, {@link Gson gson} itself.
+	 * Constructs this writer and initializes {@link GsonBuilder Gson builder} (optionally setting pretty printing), 
+	 * as well as {@link Gson gson instance} itself.
 	 * 
 	 * @param setPrettyPrinting indicator of pretty printing in written JSON
 	 */
@@ -83,7 +83,9 @@ public class InformationTableWriter {
 	 * 
 	 * @param informationTable information table with attributes to be written to JSON
 	 * @param writer writer used to write attributes to JSON
+	 * 
 	 * @throws IOException when the writer encounters a problem when writing JSON string with attributes
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public void writeAttributes(InformationTable informationTable, Writer writer) throws IOException {
 		notNull(informationTable, "Information table from which attributes are to be written to JSON is null.");
@@ -97,7 +99,9 @@ public class InformationTableWriter {
 	 * 
 	 * @param informationTable information table with objects to be written to JSON
 	 * @param writer writer used to write objects to JSON
+	 * 
 	 * @throws IOException when the writer encounters a problem when writing JSON string with objects
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public void writeObjects(InformationTable informationTable, Writer writer) throws IOException {
 		notNull(informationTable, "Information table from which objects are to be written to JSON is null.");

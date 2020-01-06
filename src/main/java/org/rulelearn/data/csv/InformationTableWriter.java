@@ -19,6 +19,8 @@ package org.rulelearn.data.csv;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.Precondition;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 
@@ -58,7 +60,9 @@ public class InformationTableWriter {
 	 * 
 	 * @param informationTable information table with attributes to be written to JSON
 	 * @param writer writer used to write attributes to JSON
+	 * 
 	 * @throws IOException when the writer encounters a problem when writing JSON string with attributes
+	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public void writeAttributes(InformationTable informationTable, Writer writer) throws IOException {
 		jsonInformationTableWriter.writeAttributes(informationTable, writer);
@@ -66,16 +70,25 @@ public class InformationTableWriter {
 	
 	/**
 	 * Writes objects from the information table passed as parameter to CSV using the writer passed as parameter.
-	 * Uses comma (,) as a delimiter.
-	 * Closes given writer in the end.
+	 * Uses given delimiter. Closes given writer in the end.
 	 * 
 	 * @param informationTable information table with objects to be written to CSV
 	 * @param writer writer used to write objects to CSV
 	 * @param delimiter delimiter for subsequent fields in a row
 	 * 
 	 * @throws IOException when the writer encounters a problem when writing CSV string with objects
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws InvalidValueException if given {@code delimiter} is an empty string
 	 */
 	public void writeObjects(InformationTable informationTable, Writer writer, String delimiter) throws IOException {
+		Precondition.notNull(informationTable, "Cannot write to CSV objects of a null information table.");
+		Precondition.notNull(writer, "Writer for objects of an information table in CSV format is null.");
+		Precondition.notNull(delimiter, "Delimiter for evaluations of objects of an information table in CSV format is null.");
+		
+		if (delimiter.isEmpty()) {
+			throw new InvalidValueException("Delimiter for evaluations of objects of an information table in CSV format is an empty string.");
+		}
+		
 		int numberOfAttrs = informationTable.getNumberOfAttributes();
 		int numberOfObjs = informationTable.getNumberOfObjects();
 		
@@ -91,9 +104,9 @@ public class InformationTableWriter {
 					stringBuilder.append("\n");
 				}
 			}
-			writer.write(stringBuilder.toString()); //write one line
+			writer.write(stringBuilder.toString()); //write one line of text
 		}
 		
-		writer.close();
+		writer.close(); //release resources
 	}
 }
