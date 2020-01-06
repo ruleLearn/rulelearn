@@ -30,7 +30,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * Writes {@link Attribute attributes} and objects from {@link InformationTable} to JSON.
+ * Writes {@link Attribute attributes} and objects from an {@link InformationTable information table} to JSON.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -48,7 +48,8 @@ public class InformationTableWriter {
 	Gson gson;
 	
 	/**
-	 * Constructs this writer and initializes {@link GsonBuilder Gson builder}, as well as, {@link Gson gson} itself. 
+	 * Constructs this writer and initializes {@link GsonBuilder Gson builder}, as well as, {@link Gson gson} itself.
+	 * Turns on pretty printing in produced JSON files.
 	 */
 	public InformationTableWriter() {
 		gsonBuilder = new GsonBuilder();
@@ -78,7 +79,7 @@ public class InformationTableWriter {
 	}
 	
 	/**
-	 * Writes attributes from information table passed as parameter to JSON using writer passed as parameter.
+	 * Writes attributes from the information table passed as parameter to JSON using the writer passed as parameter.
 	 * 
 	 * @param informationTable information table with attributes to be written to JSON
 	 * @param writer writer used to write attributes to JSON
@@ -104,7 +105,5 @@ public class InformationTableWriter {
 		
 		writer.write(gson.toJson(informationTable));
 	}
-	
-	//TODO: add writing objects to CSV
 
 }
