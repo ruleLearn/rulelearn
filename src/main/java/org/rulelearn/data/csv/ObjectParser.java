@@ -191,7 +191,7 @@ public class ObjectParser {
 	 * 
 	 * @param reader a reader with content to be parsed
 	 * @return information table {@link InformationTable} with parsed objects or {@code null} when the table cannot be constructed
-	 * @throws NullPointerException when the provided reader is null
+	 * @throws NullPointerException when the provided reader is {@code null}
 	 */
 	public InformationTable parseObjects(Reader reader) {
 		notNull(reader, "Reader is null.");
