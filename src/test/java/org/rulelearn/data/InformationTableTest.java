@@ -317,6 +317,44 @@ class InformationTableTest {
 			}
 		}
 	}
+	
+	/**
+	 * Test for {@link InformationTable#getFields(int)} method.
+	 */
+	@Test
+	public void testGetFields01() {
+		InformationTable informationTable = configuration01.getInformationTable(true);
+		
+		List<Field[]> listOfFields = configuration01.getListOfFields();
+		Field[] fields;
+		
+		for (int i = 0; i < listOfFields.size(); i++) { //for each object
+			fields = informationTable.getFields(i); //get fields of the current object
+			assertEquals(fields.length, listOfFields.get(i).length);
+			for (int j = 0; j < fields.length; j++) {
+				assertEquals(fields[j], listOfFields.get(i)[j]);
+			}
+		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#getFields(int)} method.
+	 */
+	@Test
+	public void testGetFields02() {
+		InformationTable informationTable = configuration02.getInformationTable(true);
+		
+		List<Field[]> listOfFields = configuration02.getListOfFields();
+		Field[] fields;
+		
+		for (int i = 0; i < listOfFields.size(); i++) { //for each object
+			fields = informationTable.getFields(i); //get fields of the current object
+			assertEquals(fields.length, listOfFields.get(i).length);
+			for (int j = 0; j < fields.length; j++) {
+				assertEquals(fields[j], listOfFields.get(i)[j]);
+			}
+		}
+	}
 
 	/**
 	 * Test for {@link InformationTable#select(int[], boolean)} method.

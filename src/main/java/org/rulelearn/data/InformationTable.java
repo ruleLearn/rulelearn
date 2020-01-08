@@ -25,10 +25,15 @@ import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.core.TernaryLogicValue;
+import org.rulelearn.types.ElementList;
+import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.Field;
 import org.rulelearn.types.IdentificationField;
+import org.rulelearn.types.IntegerField;
+import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.KnownSimpleField;
+import org.rulelearn.types.RealField;
 import org.rulelearn.types.TextIdentificationField;
 import org.rulelearn.types.UUIDIdentificationField;
 
@@ -98,8 +103,8 @@ public class InformationTable {
 	/**
 	 * Maps global index of an attribute of this information table to encoded local index of an active condition attribute (called AC-attribute)
 	 * or to encoded local index of a non-active/description attribute (called NA/D-attribute).
-	 * Encoding of a local index of an AC-attribute is done by adding 1.
-	 * Encoding of a local index of a NA/D-attribute is done by taking negative value and then subtracting 1.<br>
+	 * Encoding of a local index of an AC-attribute is done by adding 1 - see {@link #encodeActiveConditionAttributeIndex(int)}. 
+	 * Encoding of a local index of a NA/D-attribute is done by taking negative value and then subtracting 1 - see {@link #encodeNotActiveOrDescriptionAttributeIndex(int)}.<br>
 	 * <br>
 	 * Suppose that the 3-rd global attribute (having global index 2) is the first AC-attribute (having local index 0).
 	 * Then, {@code attributeMap[2]} encodes 0, so it will be equal to 0+1=1.<br>
@@ -126,7 +131,7 @@ public class InformationTable {
 	 * Then, the map should be the following:<br>
 	 * attributeMap = [1, -1, -2, 2, 0, -3, -4, 0, -5].
 	 */
-	protected int[] attributeMap;
+	int[] attributeMap;
 	
 	/**
 	 * Maps local index of an active condition attribute (called AC-attribute) to the global index of this attribute
@@ -735,10 +740,10 @@ public class InformationTable {
 	}
 	
 	/**
-	 * Tells if given attribute is an active condition attribute.
+	 * Tells if given attribute is an active condition {@link EvaluationAttribute evaluation attribute}.
 	 * 
 	 * @param attribute attribute to check
-	 * @return {@code true} if given attribute is an active condition attribute, {@code false otherwise}
+	 * @return {@code true} if given attribute is an active condition evaluation attribute, {@code false otherwise}
 	 */
 	private boolean isActiveConditionAttribute(Attribute attribute) {
 		if (attribute instanceof EvaluationAttribute) {
@@ -750,10 +755,10 @@ public class InformationTable {
 	}
 	
 	/**
-	 * Tells if given attribute is an active decision attribute.
+	 * Tells if given attribute is an active decision {@link EvaluationAttribute evaluation attribute}.
 	 * 
 	 * @param attribute attribute to check
-	 * @return {@code true} if given attribute is an active decision attribute, {@code false otherwise}
+	 * @return {@code true} if given attribute is an active decision evaluation attribute, {@code false otherwise}
 	 */
 	private boolean isActiveDecisionAttribute(Attribute attribute) {
 		if (attribute instanceof EvaluationAttribute) {
@@ -765,7 +770,7 @@ public class InformationTable {
 	}
 	
 	/**
-	 * Tells if given attribute is an active identification attribute.
+	 * Tells if given attribute is an active {@link IdentificationAttribute identification attribute}.
 	 * 
 	 * @param attribute attribute to check
 	 * @return {@code true} if given attribute is an active identification attribute, {@code false otherwise}
@@ -895,12 +900,326 @@ public class InformationTable {
 	}
 	
 	/**
+	 * Processes this information table to assure that it does not contain active condition {@link EvaluationAttribute evaluation attributes}
+	 * with unknown preference type, i.e., attributes with {@link AttributePreferenceType preference type}
+	 * equal to {@link AttributePreferenceType#NONE}.<br>
+	 * <br>
+	 * If this information table contains no such attributes, it is returned by this method (no new information table is created).
+	 * Otherwise, new information table is created based on this one, and returned by this method.<br>
+	 * <br>
+	 * Each evaluation attribute with unknown preference type is replaced with two, or sometimes more, new evaluation attributes,
+	 * depending on its {@link EvaluationAttribute#getValueType() value type}.<br>
+	 * <br>
+	 * If attribute's {@link EvaluationAttribute#getValueType() value type} if different than {@link EnumerationField}
+	 * (e.g., {@link IntegerField} or {@link RealField}), then the attribute is replaced by just two new attributes - one with assumed
+	 * {@link AttributePreferenceType#GAIN gain-type preference}, and another with assumed
+	 * {@link AttributePreferenceType#COST cost-type preference}.<br>
+	 * <br>
+	 * If attribute's {@link EvaluationAttribute#getValueType() value type} if {@link EnumerationField}, it is first checked if attribute's
+	 * domain contains two or more values. The former case (with just two values in attribute's domain) is simpler, and requires no additional
+	 * treatment at this point. The latter case (with more than two values in attribute's domain) is handled by a binarization procedure,
+	 * where each domain value yields a new binary attribute (with 0/1 evaluations).
+	 * Finally, each attribute with just two values in its domain gets doubled, as described above, i.e.,
+	 * replaced by two new attributes - one with assumed  {@link AttributePreferenceType#GAIN gain-type preference},
+	 * and another with assumed {@link AttributePreferenceType#COST cost-type preference}. So, for example,
+	 * an attribute with unknown preference order, {@link EnumerationField} value type, and three values in its domain,
+	 * will result in six new binary (0/1) attributes.<br>
+	 * <br>
+	 * This method does not modify any other attributes than the ones described above. In particular, it does not modify decision attribute(s).
+	 * 
+	 * @return information table with all evaluation attributes having known preference order (original or imposed);
+	 *         the result may be this information table, if it matches that criterion,
+	 *         or a new information table with more attributes, each having known preference order (original or imposed)
+	 */
+	public InformationTable imposePreferenceOrders() {
+		PreferenceOrdersHelper helper = new PreferenceOrdersHelper(); //counts preferenceOrderedAttributesCount
+		
+		if (helper.preferenceOrderedAttributesCount == getNumberOfAttributes()) { //this information table does not need to be transformed
+			return this; //return this information table!
+		} else {
+			EvaluationAttribute evaluationAttribute;
+			ElementList elementList;
+			int oldAttributesCount = getNumberOfAttributes();
+			int elementListSize;
+
+			for (helper.oldAttributeIndex = 0; helper.oldAttributeIndex < oldAttributesCount; helper.oldAttributeIndex++) {
+				if (isActiveConditionAttribute(attributes[helper.oldAttributeIndex])) { //active condition evaluation attribute
+					evaluationAttribute = (EvaluationAttribute)attributes[helper.oldAttributeIndex];
+					if (evaluationAttribute.getPreferenceType() == AttributePreferenceType.NONE) { //processing necessary
+						if (evaluationAttribute.getValueType() instanceof EnumerationField) {
+							elementList = ((EnumerationField)evaluationAttribute.getValueType()).getElementList();
+							if ((elementListSize = elementList.getSize()) > 2) { // initial 0/1 binarization necessary, followed by duplication + preference order imposition
+								for (int elementListIndex = 0; elementListIndex < elementListSize; elementListIndex++) {
+									helper.create01AttributeAndCalculateItsFields(elementListIndex, AttributePreferenceType.GAIN);
+									helper.create01AttributeAndCalculateItsFields(elementListIndex, AttributePreferenceType.COST);
+								}
+							} else { //only duplication + preference order imposition necessary (we assume two evaluations on element list, but also works for just one)
+								helper.cloneNoneAttribute2GainAndCostAttributesAndSetTheirFields();
+							}
+							//follow with duplication + preference order imposition
+						} else { //only duplication + preference order imposition necessary
+							helper.cloneNoneAttribute2GainAndCostAttributesAndSetTheirFields();
+						}
+					} else { //leave attribute "as is"
+						helper.copyAttributeAndItsFields();
+					}
+				} else { //leave attribute "as is"
+					helper.copyAttributeAndItsFields();
+				}
+			}
+			
+			InformationTable newInformationTable = new InformationTable(helper.newAttributes, helper.newListOfFields, true);
+			newInformationTable.mapper = this.mapper; //preserve globally unique ids of objects (as the objects did not change, only their representation!) //TODO: OK?
+			newInformationTable.orderedUniqueFullyDeterminedDecisions = this.orderedUniqueFullyDeterminedDecisions; //use if already calculated
+			newInformationTable.uniqueDecisions = this.uniqueDecisions; //use if already calculated
+			
+			return newInformationTable;			
+		}
+	}
+	
+	/**
+	 * Helper class for {@link InformationTable#imposePreferenceOrders()} method.
+	 * Groups supplementary methods invoked by {@link InformationTable#imposePreferenceOrders()},
+	 * and stores as properties variables shared by these supplementary methods.
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	private class PreferenceOrdersHelper {
+		
+		/**
+		 * Number of attributes after imposing preference orders to all attributes.
+		 */
+		int preferenceOrderedAttributesCount;
+		
+		String nameSuffixGain; //constant
+		String nameSuffixCost; //constant
+		
+		IntegerField binaryField0Gain; //singleton
+		IntegerField binaryField0Cost; //singleton
+		IntegerField binaryField1Gain; //singleton
+		IntegerField binaryField1Cost; //singleton
+		
+		Attribute[] oldAttributes; //attributes from the information table; constant
+		Attribute[] newAttributes; //attributes with imposed preference orders
+
+		int oldAttributeIndex; //where to take old attribute from; this index is set externally, by the information table, not by the methods of this objects
+		int newAttributeIndex; //where to put new attribute to
+
+		int numberOfObjects; //constant
+		List<Field[]> newListOfFields;
+		
+		/**
+		 * Constructs this object and first calculates {@link #preferenceOrderedAttributesCount}.
+		 * This value is necessary to tell if imposing preference orders would
+		 * change any attributes of the information table.<br>
+		 * <br>
+		 * If calculated value of {@link #preferenceOrderedAttributesCount} is greater than
+		 * the number of attributes of the information table, invokes {@link #init()}
+		 * on this object to initialize all other properties of this object.
+		 */
+		private PreferenceOrdersHelper() {
+			preferenceOrderedAttributesCount = countAttributesIfImposingPreferenceOrders();
+			if (preferenceOrderedAttributesCount > getNumberOfAttributes()) {
+				init();
+			}
+		}
+		
+		/**
+		 * Counts number of attributes in a derived information table with all active condition {@link EvaluationAttribute evaluation attributes}
+		 * having gain or cost preference type.
+		 * 
+		 * @return number of attributes in a derived information table with all active condition {@link EvaluationAttribute evaluation attributes}
+		 *         having gain or cost preference type.
+		 */
+		private int countAttributesIfImposingPreferenceOrders() {
+			EvaluationAttribute evaluationAttribute;
+			int elementListSize;
+			
+			int numberOfAttributes = getNumberOfAttributes();
+			int preferenceOrderedAttributesCount = 0;
+			
+			for (int i = 0; i < numberOfAttributes; i++) {
+				if (isActiveConditionAttribute(attributes[i])) {
+					evaluationAttribute = (EvaluationAttribute)attributes[i];
+					if (evaluationAttribute.getPreferenceType() == AttributePreferenceType.NONE) { //processing necessary
+						if (evaluationAttribute.getValueType() instanceof EnumerationField) {
+							elementListSize = ((EnumerationField)evaluationAttribute.getValueType()).getElementList().getSize();
+							if (elementListSize > 2) { // initial 0/1 binarization necessary, followed by duplication + preference order imposition
+								preferenceOrderedAttributesCount += 2 * elementListSize;
+							} else { //only duplication + preference order imposition necessary
+								preferenceOrderedAttributesCount += 2;
+							}
+							//follow with duplication + preference order imposition
+						} else { //only duplication + preference order imposition necessary
+							preferenceOrderedAttributesCount += 2;
+						}
+					} else { //leave attribute "as is"
+						preferenceOrderedAttributesCount++;
+					}
+				} else { //leave attribute "as is"
+					preferenceOrderedAttributesCount++;
+				}
+			}
+			
+			return preferenceOrderedAttributesCount;
+		}
+		
+		/**
+		 * Initializes properties of this object, except for {@link #preferenceOrderedAttributesCount}, which is calculated already in class constructor.
+		 */
+		private void init() {
+			nameSuffixGain = "_g"; //constant
+			nameSuffixCost = "_c"; //constant
+			
+			binaryField0Gain = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN); //singleton
+			binaryField0Cost = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST); //singleton
+			binaryField1Gain = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN); //singleton
+			binaryField1Cost = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST); //singleton
+			
+			oldAttributes = attributes; //constant (variable name changed for convenience)
+			newAttributes = new Attribute[preferenceOrderedAttributesCount];
+			
+			oldAttributeIndex = 0;
+			newAttributeIndex = 0;
+			
+			numberOfObjects = getNumberOfObjects();  //constant
+			newListOfFields = new ObjectArrayList<Field[]>();
+			
+			//initialized storage for fields
+			for (int i = 0; i < numberOfObjects; i++) {
+				newListOfFields.add(new Field[preferenceOrderedAttributesCount]);
+			}
+		}
+		
+		//gets suffix of the name of a new attribute having given preference type
+		private String getNameSuffix(AttributePreferenceType newPreferenceType) {
+			switch(newPreferenceType) {
+			case GAIN:
+				return nameSuffixGain;
+			case COST:
+				return nameSuffixCost;
+			default:
+				throw new InvalidValueException("Name suffix is only defined for GAIN or COST attribute preference type.");
+			}
+		}
+		
+		//gets already created field (corresponding to value 0 or 1) of a binary attribute with given preference type
+		private IntegerField getBinaryField(int binaryValue, AttributePreferenceType newPreferenceType) {
+			switch (binaryValue) {
+			case 0:
+				switch (newPreferenceType) {
+				case GAIN:
+					return binaryField0Gain;
+				case COST:
+					return binaryField0Cost;
+				default:
+					throw new InvalidValueException("Binary field should have defined preference order.");
+				}
+			case 1:
+				switch (newPreferenceType) {
+				case GAIN:
+					return binaryField1Gain;
+				case COST:
+					return binaryField1Cost;
+				default:
+					throw new InvalidValueException("Binary field should have defined preference order.");
+				}
+			default:
+				throw new InvalidValueException("Binary value shuld be 0 or 1.");
+			}
+		}
+		
+		//copies an attribute and respective fields (1 column) from old to new information table
+		private void copyAttributeAndItsFields() {
+			newAttributes[newAttributeIndex] = oldAttributes[oldAttributeIndex];
+			
+			for (int objectIndex = 0; objectIndex < numberOfObjects; objectIndex++) { //copy fields between columns of old and new information table
+				newListOfFields.get(objectIndex)[newAttributeIndex] = getField(objectIndex, oldAttributeIndex);
+			}
+			
+			newAttributeIndex++;
+		}
+		
+		//builds a "similar" attribute - differing only by name and preference type
+		private EvaluationAttribute cloneAttributeUsingNewPreferenceType(AttributePreferenceType newPreferenceType) {
+			EvaluationAttribute duplicatedOldAttribute = (EvaluationAttribute)oldAttributes[oldAttributeIndex];
+			return new EvaluationAttribute(
+					duplicatedOldAttribute.getName() + getNameSuffix(newPreferenceType), //add name suffix
+					duplicatedOldAttribute.isActive(),
+					duplicatedOldAttribute.getType(),
+					duplicatedOldAttribute.getValueType().clone(newPreferenceType), //clone value type but with preference type modification 
+					duplicatedOldAttribute.getMissingValueType(),
+					newPreferenceType);
+		}
+		
+		//transforms a NONE evaluation attribute to two (GAIN and COST) new attributes and sets respective fields (1 column -> 2 columns)
+		private void cloneNoneAttribute2GainAndCostAttributesAndSetTheirFields() {
+			AttributePreferenceType attributePreferenceType;
+			for (int i = 0; i < 2; i++) { //two iterations, each with different attribute preference type
+				attributePreferenceType = (i == 0 ? AttributePreferenceType.GAIN : AttributePreferenceType.COST);
+				newAttributes[newAttributeIndex] = cloneAttributeUsingNewPreferenceType(attributePreferenceType); //create new attribute
+				
+				for (int objectIndex = 0; objectIndex < numberOfObjects; objectIndex++) { //copy fields between columns of old and new information table
+					newListOfFields.get(objectIndex)[newAttributeIndex] = ((EvaluationField)getField(objectIndex, oldAttributeIndex)).clone(attributePreferenceType);
+				}
+				
+				newAttributeIndex++;
+			}
+		}
+		
+		//creates new binary attribute corresponding to particular element in the domain of an old enumeration attribute
+		private EvaluationAttribute create01Attribute(int elementListIndex, AttributePreferenceType newPreferenceType) { //current old attribute has enumeration field value type
+			EvaluationAttribute binarizedOldAttribute = (EvaluationAttribute)oldAttributes[oldAttributeIndex];
+			String domainValue = ((EnumerationField)binarizedOldAttribute.getValueType()).getElementList().getElement(elementListIndex);
+			
+			return new EvaluationAttribute(
+					(new StringBuilder()).append(binarizedOldAttribute.getName()).append("_").append(domainValue).append(getNameSuffix(newPreferenceType)).toString(),
+					binarizedOldAttribute.isActive(),
+					binarizedOldAttribute.getType(),
+					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, newPreferenceType), //binary attribute is created with IntegerField value type
+					binarizedOldAttribute.getMissingValueType(),
+					newPreferenceType);
+		}
+		
+		//creates new binary attribute corresponding to a particular element in the domain of an old enumeration attribute
+		//and calculates new fields corresponding to that new binary attribute
+		private void create01AttributeAndCalculateItsFields(int elementListIndex, AttributePreferenceType newPreferenceType) {
+			newAttributes[newAttributeIndex] = create01Attribute(elementListIndex, newPreferenceType); //create new binary attribute
+			
+			for (int objectIndex = 0; objectIndex < numberOfObjects; objectIndex++) { //calculate fields in the new column
+				newListOfFields.get(objectIndex)[newAttributeIndex] = (((EnumerationField)getField(objectIndex, oldAttributeIndex)).getValue() == elementListIndex) ?
+						getBinaryField(1, newPreferenceType) : getBinaryField(0, newPreferenceType);
+			}
+			
+			newAttributeIndex++;
+		}
+		
+	}
+	
+	/**
 	 * Gets number of objects stored in this information table.
 	 * 
 	 * @return number of objects stored in this information table
 	 */
 	public int getNumberOfObjects() {
-		return this.activeConditionAttributeFields != null ? this.activeConditionAttributeFields.getNumberOfObjects() : 0;
+		if (this.activeConditionAttributeFields != null) {
+			return this.activeConditionAttributeFields.getNumberOfObjects();
+		} else {
+			if (this.notActiveOrDescriptionAttributeFields != null) {
+				return this.notActiveOrDescriptionAttributeFields.getNumberOfObjects();
+			} else {
+				if (this.decisions != null) {
+					return this.decisions.length;
+				} else {
+					if (this.activeIdentificationAttributeFields != null) {
+						return this.activeIdentificationAttributeFields.length;
+					} else {
+						return 0;
+					}
+				}
+			}
+		}
 	}
 	
 	/**
@@ -960,6 +1279,36 @@ public class InformationTable {
 		} else {
 			return -1;
 		}
+	}
+	
+	/**
+	 * Gets all fields of the object with given index.
+	 * 
+	 * @param objectIndex index of an object from this information table
+	 * @return all fields of the object with given index
+	 * @throws IndexOutOfBoundsException if given object index does not correspond to any object for which this table stores fields
+	 */
+	public Field[] getFields(int objectIndex) {
+		int numberOfAttributes = getNumberOfAttributes();
+		Field[] fields = new Field[numberOfAttributes];
+		
+		for (int i = 0; i < numberOfAttributes; i++) {
+			if (attributeMap[i] > 0) { //active condition evaluation attribute
+				fields[i] = activeConditionAttributeFields.getField(objectIndex, decodeActiveConditionAttributeIndex(attributeMap[i]));
+			} else {
+				if (attributeMap[i] < 0) { //non-active or description attribute
+					fields[i] = notActiveOrDescriptionAttributeFields.getField(objectIndex, decodeNotActiveOrDescriptionAttributeIndex(attributeMap[i]));
+				} else { //attributeMap[i] == 0
+					if (i == activeIdentificationAttributeIndex) { //the only active identification (condition) attribute
+						fields[i] = activeIdentificationAttributeFields[objectIndex];
+					} else { //active decision evaluation attribute
+						fields[i] = decisions[objectIndex].getEvaluation(i);
+					}
+				}
+			}
+		}
+		
+		return fields;
 	}
 
 }

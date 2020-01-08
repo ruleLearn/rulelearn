@@ -19,6 +19,7 @@ package org.rulelearn.types;
 import org.rulelearn.core.ComparableExt;
 import org.rulelearn.core.EvaluationFieldCalculator;
 import org.rulelearn.core.TernaryLogicValue;
+import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.EvaluationAttribute;
 
 /**
@@ -88,5 +89,23 @@ public abstract class EvaluationField extends Field implements ComparableExt<Eva
 	 * @return evaluation representing unknown (empty) value of this field
 	 */
 	public abstract EvaluationField getUnknownEvaluation(UnknownSimpleField missingValueType);
+	
+	/**
+	 * Clones this evaluation field, ensuring that the resulting evaluation field is constructed
+	 * taking into account given {@link AttributePreferenceType attribute preference type}.
+	 * This may imply that this and cloned objects are not equal.<br>
+	 * <br>
+	 * This method is useful if a new {@link EvaluationAttribute evaluation attribute} with different
+	 * preference type is constructed based on an existing evaluation attribute, and one needs to determine
+	 * what is the correct {@link EvaluationAttribute#getValueType() value type} for that new attribute.<br>
+	 * <br>
+	 * The implementing method is free to use the supplied preference type, or to ignore it,
+	 * depending on the fact if the preference information is actually used when creating
+	 * instances of particular subtype of {@link EvaluationField}. 
+	 * 
+	 * @param attributePreferenceType {@link AttributePreferenceType attribute preference type} that should be taken into account when cloning this evaluation field
+	 * @return new evaluation field, cloned from this one taking into account given {@link AttributePreferenceType attribute preference type}
+	 */
+	public abstract EvaluationField clone(AttributePreferenceType attributePreferenceType);
 	
 }
