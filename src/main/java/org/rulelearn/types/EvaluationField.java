@@ -106,6 +106,6 @@ public abstract class EvaluationField extends Field implements ComparableExt<Eva
 	 * @param attributePreferenceType {@link AttributePreferenceType attribute preference type} that should be taken into account when cloning this evaluation field
 	 * @return new evaluation field, cloned from this one taking into account given {@link AttributePreferenceType attribute preference type}
 	 */
-	public abstract EvaluationField clone(AttributePreferenceType attributePreferenceType);
+	public abstract EvaluationField clone(AttributePreferenceType attributePreferenceType); //TODO: version of cloning using a caching factory
 	
 }

@@ -150,6 +150,17 @@ public class InformationTable {
 	private Decision[] uniqueDecisions = null;
 	
 	/**
+	 * Suffix of any new gain-type evaluation attribute created by {@link #imposePreferenceOrders()} when cloning an existing
+	 * evaluation attribute {@link AttributePreferenceType#NONE without preference type} and setting for each clone opposite preference order.
+	 */
+	public static final String attributeNameSuffixGain = "_g"; //constant
+	/**
+	 * Suffix of any new cost-type evaluation attribute created by {@link #imposePreferenceOrders()} when cloning an existing
+	 * evaluation attribute {@link AttributePreferenceType#NONE without preference type} and setting for each clone opposite preference order.
+	 */
+	public static final String attributeNameSuffixCost = "_c"; //constant
+	
+	/**
 	 * Protected copy constructor for internal use only. Sets all data fields of this information table.
 	 * 
 	 * @param attributes all attributes of constructed information table (identification and evaluation (condition/decision/description) ones, both active and non-active)
@@ -918,12 +929,14 @@ public class InformationTable {
 	 * If attribute's {@link EvaluationAttribute#getValueType() value type} if {@link EnumerationField}, it is first checked if attribute's
 	 * domain contains two or more values. The former case (with just two values in attribute's domain) is simpler, and requires no additional
 	 * treatment at this point. The latter case (with more than two values in attribute's domain) is handled by a binarization procedure,
-	 * where each domain value yields a new binary attribute (with 0/1 evaluations).
+	 * where each domain value yields a new binary attribute (having 0/1 evaluations) with {@link IntegerField} value type.
 	 * Finally, each attribute with just two values in its domain gets doubled, as described above, i.e.,
 	 * replaced by two new attributes - one with assumed  {@link AttributePreferenceType#GAIN gain-type preference},
 	 * and another with assumed {@link AttributePreferenceType#COST cost-type preference}. So, for example,
-	 * an attribute with unknown preference order, {@link EnumerationField} value type, and three values in its domain,
-	 * will result in six new binary (0/1) attributes.<br>
+	 * an attribute "color" with unknown preference order, {@link EnumerationField} value type, and three values in its domain: "red", "green", "blue",
+	 * will result in six new binary (0/1) attributes, with {@link IntegerField} value type. These attributes will be the following:
+	 * "color_red_g", "color_red_c", "color_green_g", "color_green_c", "color_blue_g", "color_blue_c". See {@link InformationTable#attributeNameSuffixGain}
+	 * and {@link InformationTable#attributeNameSuffixCost}.<br>
 	 * <br>
 	 * This method does not modify any other attributes than the ones described above. In particular, it does not modify decision attribute(s).
 	 * 
@@ -946,7 +959,7 @@ public class InformationTable {
 				if (isActiveConditionAttribute(attributes[helper.oldAttributeIndex])) { //active condition evaluation attribute
 					evaluationAttribute = (EvaluationAttribute)attributes[helper.oldAttributeIndex];
 					if (evaluationAttribute.getPreferenceType() == AttributePreferenceType.NONE) { //processing necessary
-						if (evaluationAttribute.getValueType() instanceof EnumerationField) {
+						if (evaluationAttribute.getValueType() instanceof EnumerationField) { //nominal attribute
 							elementList = ((EnumerationField)evaluationAttribute.getValueType()).getElementList();
 							if ((elementListSize = elementList.getSize()) > 2) { // initial 0/1 binarization necessary, followed by duplication + preference order imposition
 								for (int elementListIndex = 0; elementListIndex < elementListSize; elementListIndex++) {
@@ -957,7 +970,7 @@ public class InformationTable {
 								helper.cloneNoneAttribute2GainAndCostAttributesAndSetTheirFields();
 							}
 							//follow with duplication + preference order imposition
-						} else { //only duplication + preference order imposition necessary
+						} else { //numerical (ordinal) attribute - only duplication + preference order imposition necessary
 							helper.cloneNoneAttribute2GainAndCostAttributesAndSetTheirFields();
 						}
 					} else { //leave attribute "as is"
@@ -988,12 +1001,9 @@ public class InformationTable {
 	private class PreferenceOrdersHelper {
 		
 		/**
-		 * Number of attributes after imposing preference orders to all attributes.
+		 * Number of attributes after imposing preference orders to all attributes. Calculated before imposing anything.
 		 */
 		int preferenceOrderedAttributesCount;
-		
-		String nameSuffixGain; //constant
-		String nameSuffixCost; //constant
 		
 		IntegerField binaryField0Gain; //singleton
 		IntegerField binaryField0Cost; //singleton
@@ -1001,13 +1011,13 @@ public class InformationTable {
 		IntegerField binaryField1Cost; //singleton
 		
 		Attribute[] oldAttributes; //attributes from the information table; constant
-		Attribute[] newAttributes; //attributes with imposed preference orders
+		Attribute[] newAttributes; //attributes with imposed preference orders; to be used in InformationTable constructor
 
 		int oldAttributeIndex; //where to take old attribute from; this index is set externally, by the information table, not by the methods of this objects
 		int newAttributeIndex; //where to put new attribute to
 
 		int numberOfObjects; //constant
-		List<Field[]> newListOfFields;
+		List<Field[]> newListOfFields; //to be used in InformationTable constructor
 		
 		/**
 		 * Constructs this object and first calculates {@link #preferenceOrderedAttributesCount}.
@@ -1037,7 +1047,7 @@ public class InformationTable {
 			int elementListSize;
 			
 			int numberOfAttributes = getNumberOfAttributes();
-			int preferenceOrderedAttributesCount = 0;
+			int preferenceOrderedAttributesCount = 0; //number of all attributes if preference orders were imposed for all these attributes, where it was missing
 			
 			for (int i = 0; i < numberOfAttributes; i++) {
 				if (isActiveConditionAttribute(attributes[i])) {
@@ -1069,9 +1079,6 @@ public class InformationTable {
 		 * Initializes properties of this object, except for {@link #preferenceOrderedAttributesCount}, which is calculated already in class constructor.
 		 */
 		private void init() {
-			nameSuffixGain = "_g"; //constant
-			nameSuffixCost = "_c"; //constant
-			
 			binaryField0Gain = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN); //singleton
 			binaryField0Cost = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST); //singleton
 			binaryField1Gain = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN); //singleton
@@ -1096,9 +1103,9 @@ public class InformationTable {
 		private String getNameSuffix(AttributePreferenceType newPreferenceType) {
 			switch(newPreferenceType) {
 			case GAIN:
-				return nameSuffixGain;
+				return attributeNameSuffixGain;
 			case COST:
-				return nameSuffixCost;
+				return attributeNameSuffixCost;
 			default:
 				throw new InvalidValueException("Name suffix is only defined for GAIN or COST attribute preference type.");
 			}
@@ -1160,8 +1167,8 @@ public class InformationTable {
 				attributePreferenceType = (i == 0 ? AttributePreferenceType.GAIN : AttributePreferenceType.COST);
 				newAttributes[newAttributeIndex] = cloneAttributeUsingNewPreferenceType(attributePreferenceType); //create new attribute
 				
-				for (int objectIndex = 0; objectIndex < numberOfObjects; objectIndex++) { //copy fields between columns of old and new information table
-					newListOfFields.get(objectIndex)[newAttributeIndex] = ((EvaluationField)getField(objectIndex, oldAttributeIndex)).clone(attributePreferenceType);
+				for (int objectIndex = 0; objectIndex < numberOfObjects; objectIndex++) { //copy fields between columns of old and new information table, changing just attribute's preference type
+					newListOfFields.get(objectIndex)[newAttributeIndex] = ((EvaluationField)getField(objectIndex, oldAttributeIndex)).clone(attributePreferenceType); //TODO: use cloning with caching factory to spare some memory
 				}
 				
 				newAttributeIndex++;
