@@ -23,6 +23,7 @@ import org.rulelearn.core.EvaluationFieldCalculator;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.core.TernaryLogicValue;
+import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.EvaluationAttribute;
 
 /**
@@ -408,6 +409,17 @@ public class UnknownSimpleFieldMV2 extends UnknownSimpleField {
 		} else {
 			throw new InvalidTypeException("Missing value is not of type 2.");
 		}
+	}
+	
+	/**
+	 * Returns the only instance of this class - see {@link #getInstance()}.
+	 * 
+	 * @param attributePreferenceType {@link AttributePreferenceType attribute preference type} that should be taken into account
+	 *        when cloning this evaluation field
+	 * @return the only instance of this class
+	 */
+	public UnknownSimpleFieldMV2 clone(AttributePreferenceType attributePreferenceType) {
+		return getInstance();
 	}
 
 }

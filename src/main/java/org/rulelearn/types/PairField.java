@@ -22,6 +22,7 @@ import org.rulelearn.core.EvaluationFieldCalculator;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
+import org.rulelearn.data.AttributePreferenceType;
 
 /**
  * Composite field composed of two simple fields. If both simple fields are known, then they should be instances of the same sub-type of {@link KnownSimpleField}.
@@ -265,6 +266,16 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	@Override
 	public EvaluationField getUnknownEvaluation(UnknownSimpleField missingValueType) {
 		return new PairField<UnknownSimpleField>(missingValueType, missingValueType);
+	}
+
+	/**
+	 * {@inheritDoc}<br>
+	 * <br>
+	 * Just returns a clone of this pair, ignoring the parameter.
+	 */
+	@Override
+	public PairField<T> clone(AttributePreferenceType attributePreferenceType) {
+		return selfClone();
 	}
 
 }

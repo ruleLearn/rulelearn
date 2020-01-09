@@ -19,6 +19,7 @@ package org.rulelearn.types;
 import java.util.Objects;
 
 import org.rulelearn.core.EvaluationFieldCalculator;
+import org.rulelearn.data.AttributePreferenceType;
 
 /**
  * Field representing a real number value.
@@ -166,6 +167,16 @@ public abstract class RealField extends KnownSimpleField {
 	 */
 	public UnknownSimpleField getUnknownEvaluation(UnknownSimpleField missingValueType) {
 		return missingValueType;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @throws NullPointerException if given attribute's preference type is {@code null}
+	 */
+	@Override
+	public RealField clone(AttributePreferenceType attributePreferenceType) {
+		return RealFieldFactory.getInstance().create(value, attributePreferenceType);
 	}
 	
 }

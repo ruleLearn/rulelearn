@@ -20,6 +20,7 @@ import java.util.Objects;
 
 import org.rulelearn.core.EvaluationFieldCalculator;
 import org.rulelearn.core.TernaryLogicValue;
+import org.rulelearn.data.AttributePreferenceType;
 
 /**
  * Field representing enumeration value.
@@ -226,6 +227,16 @@ public abstract class EnumerationField extends KnownSimpleField {
 	 */
 	public UnknownSimpleField getUnknownEvaluation(UnknownSimpleField missingValueType) {
 		return missingValueType;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @throws NullPointerException if given attribute's preference type is {@code null}
+	 */
+	@Override
+	public EnumerationField clone(AttributePreferenceType attributePreferenceType) {
+		return EnumerationFieldFactory.getInstance().create(list, value, attributePreferenceType);
 	}
 	
 }

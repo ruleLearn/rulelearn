@@ -168,4 +168,14 @@ public abstract class IntegerField extends KnownSimpleField {
 		return missingValueType;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @throws NullPointerException if given attribute's preference type is {@code null}
+	 */
+	@Override
+	public IntegerField clone(AttributePreferenceType attributePreferenceType) {
+		return IntegerFieldFactory.getInstance().create(value, attributePreferenceType);
+	}
+	
 }

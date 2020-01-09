@@ -18,6 +18,7 @@ package org.rulelearn.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -52,33 +53,36 @@ class InformationTableTest {
 	
 	private InformationTableTestConfiguration configuration01;
 	private InformationTableTestConfiguration configuration02;
+	private InformationTableTestConfiguration configuration03; //for testing imposition of preference orders
+	private InformationTableTestConfiguration configuration04; //for testing imposition of preference orders
 	
 	/**
 	 * Sole constructor initializing information table test configurations.
 	 */
 	public InformationTableTest() {
+		UnknownSimpleFieldMV2 mv2 = UnknownSimpleFieldMV2.getInstance();
+		UnknownSimpleFieldMV15 mv15 = UnknownSimpleFieldMV15.getInstance();
+		AttributePreferenceType attrPrefType; //temporary variable
+		
 		//<CONFIGURATION 01>
-		AttributePreferenceType[] attributePreferenceTypes01 = {
-				AttributePreferenceType.GAIN, AttributePreferenceType.COST, AttributePreferenceType.GAIN, AttributePreferenceType.NONE,
-				AttributePreferenceType.NONE, AttributePreferenceType.COST, AttributePreferenceType.GAIN, AttributePreferenceType.GAIN}; //supplementary variable
 		this.configuration01 = new InformationTableTestConfiguration (
 				new Attribute[] {
 						new EvaluationAttribute("a0", true, AttributeType.CONDITION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes01[0]), new UnknownSimpleFieldMV2(), attributePreferenceTypes01[0]),
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv2, attrPrefType),
 						new EvaluationAttribute("a1", false, AttributeType.DESCRIPTION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes01[1]), new UnknownSimpleFieldMV15(), attributePreferenceTypes01[1]),
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType),
 						new EvaluationAttribute("a2", true, AttributeType.DESCRIPTION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes01[2]), new UnknownSimpleFieldMV2(), attributePreferenceTypes01[2]),
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv2, attrPrefType),
 						new EvaluationAttribute("a3", false, AttributeType.CONDITION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes01[3]), new UnknownSimpleFieldMV2(), attributePreferenceTypes01[3]),
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv2, attrPrefType),
 						new EvaluationAttribute("a4", true, AttributeType.CONDITION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes01[4]), new UnknownSimpleFieldMV15(), attributePreferenceTypes01[4]),
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv15, attrPrefType),
 						new EvaluationAttribute("a5", true, AttributeType.DECISION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes01[5]), new UnknownSimpleFieldMV2(), attributePreferenceTypes01[5]),
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv2, attrPrefType),
 						new EvaluationAttribute("a6", false, AttributeType.CONDITION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes01[6]), new UnknownSimpleFieldMV2(), attributePreferenceTypes01[6]),
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv2, attrPrefType),
 						new EvaluationAttribute("a7", false, AttributeType.DECISION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes01[7]), new UnknownSimpleFieldMV2(), attributePreferenceTypes01[7])
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv2, attrPrefType)
 					}, //attributeMap = [1, -1, -2, -3, 2, 0, -4, -5]
 				new String[][] {
 						{ "3",  "0",   "1", "15",  "32",  "35",   "28", "4"},
@@ -90,30 +94,27 @@ class InformationTableTest {
 		//</CONFIGURATION 01>
 		
 		//<CONFIGURATION 02>
-		AttributePreferenceType[] attributePreferenceTypes02 = {
-				AttributePreferenceType.GAIN, AttributePreferenceType.NONE, AttributePreferenceType.GAIN, AttributePreferenceType.NONE,
-				AttributePreferenceType.COST, AttributePreferenceType.NONE, AttributePreferenceType.NONE, AttributePreferenceType.GAIN}; //supplementary variable
 		try {
 		this.configuration02 = new InformationTableTestConfiguration (
 				new Attribute[] {
 						new EvaluationAttribute("a0", true, AttributeType.CONDITION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes02[0]), new UnknownSimpleFieldMV2(), attributePreferenceTypes02[0]),
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv2, attrPrefType),
 						new EvaluationAttribute("a1", true, AttributeType.DESCRIPTION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes02[1]), new UnknownSimpleFieldMV15(), attributePreferenceTypes02[1]),
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv15, attrPrefType),
 						new EvaluationAttribute("a2", false, AttributeType.CONDITION,
-								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, attributePreferenceTypes02[2]), new UnknownSimpleFieldMV2(), attributePreferenceTypes02[2]),
+								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv2, attrPrefType),
 						new EvaluationAttribute("a3", true, AttributeType.CONDITION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes02[3]), new UnknownSimpleFieldMV2(), attributePreferenceTypes02[3]),
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv2, attrPrefType),
 						new EvaluationAttribute("a4", true, AttributeType.DECISION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes02[4]), new UnknownSimpleFieldMV15(), attributePreferenceTypes02[4]),
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType),
 						new EvaluationAttribute("a5", false, AttributeType.DECISION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes02[5]), new UnknownSimpleFieldMV2(), attributePreferenceTypes02[5]),
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv2, attrPrefType),
 						new EvaluationAttribute("a6", false, AttributeType.DESCRIPTION,
-								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attributePreferenceTypes02[6]), new UnknownSimpleFieldMV2(), attributePreferenceTypes02[6]),
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv2, attrPrefType),
 						new IdentificationAttribute("a7", true, new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE)),
 						new IdentificationAttribute("a8", false, new UUIDIdentificationField(UUIDIdentificationField.DEFAULT_VALUE)),
 						new EvaluationAttribute("a9", true, AttributeType.CONDITION,
-								EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"low", "medium", "high"}), EnumerationField.DEFAULT_VALUE, attributePreferenceTypes02[7]), new UnknownSimpleFieldMV2(), attributePreferenceTypes02[7]),
+								EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"low", "medium", "high"}), EnumerationField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv2, attrPrefType),
 					}, //attributeMap = [1, -1, -2, 2, 0, -3, -4, 0, -5, 3]
 				new String[][] {
 						{ "3",  "0",   "1.2", "15",  "32",  "35",   "28", "o1", UUIDIdentificationField.getRandomValue().toString(), "low"},
@@ -128,6 +129,89 @@ class InformationTableTest {
 			throw new InvalidValueException("NoSuchAlgorithmException thrown by when creating domain of an enumeration field.");
 		}
 		//</CONFIGURATION 02>
+		
+		//<CONFIGURATION 03>
+		try {
+		this.configuration03 = new InformationTableTestConfiguration (
+				new Attribute[] {
+						new EvaluationAttribute("na-cond-enum3-none", false, AttributeType.CONDITION, //!active
+								EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"l", "m", "h"}), EnumerationField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv2, attrPrefType),
+						new EvaluationAttribute("a-dec-enum3-none", true, AttributeType.DECISION, //!CONDITION
+								EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"l", "m", "h"}), EnumerationField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv15, attrPrefType),
+						new EvaluationAttribute("a-desc-enum3-none", true, AttributeType.DESCRIPTION, //!CONDITION
+								EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"l", "m", "h"}), EnumerationField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv2, attrPrefType),
+						
+						new IdentificationAttribute("a-neval-text", true, new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE)), //!EvaluationAttribute
+						new IdentificationAttribute("a-neval-uuid", false, new UUIDIdentificationField(UUIDIdentificationField.DEFAULT_VALUE)), //!EvaluationAttribute, !active
+						
+						new EvaluationAttribute("a-cond-enum3-gain", true, AttributeType.CONDITION, //!NONE
+								EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"l", "m", "h"}), EnumerationField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv2, attrPrefType),
+						new EvaluationAttribute("a-cond-enum3-cost", true, AttributeType.CONDITION, //!NONE
+								EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"l", "m", "h"}), EnumerationField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType),
+						
+						new EvaluationAttribute("a-cond-int-gain", true, AttributeType.CONDITION, //!NONE
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv2, attrPrefType),
+						new EvaluationAttribute("a-cond-real-cost", true, AttributeType.CONDITION, //!NONE
+								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType),
+					},
+				new String[][] {
+						{ "l", "m", "h",  "o1", UUIDIdentificationField.getRandomValue().toString(),  "l", "m",  "1", "2.0"},
+						{ "m", "h", "l",  "o2", UUIDIdentificationField.getRandomValue().toString(),  "m", "h",  "2", "3.0"},
+						{ "h", "m", "l",  "o3", UUIDIdentificationField.getRandomValue().toString(),  "h", "l",  "3", "4.0"},
+				});
+		} catch (NoSuchAlgorithmException exception) {
+			throw new InvalidValueException("NoSuchAlgorithmException thrown by when creating domain of an enumeration field.");
+		}
+		//</CONFIGURATION 03>
+		
+		//<CONFIGURATION 04>
+		try {
+		this.configuration04 = new InformationTableTestConfiguration (
+				new Attribute[] {
+						//attributes that do not change when imposing preference orders:
+						
+						new EvaluationAttribute("na-cond-enum3-none", false, AttributeType.CONDITION, //!active
+								EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"l", "m", "h"}), EnumerationField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv2, attrPrefType),
+						new EvaluationAttribute("a-dec-enum3-none", true, AttributeType.DECISION, //!CONDITION
+								EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"l", "m", "h"}), EnumerationField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv15, attrPrefType),
+						new EvaluationAttribute("a-desc-enum3-none", true, AttributeType.DESCRIPTION, //!CONDITION
+								EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"l", "m", "h"}), EnumerationField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv2, attrPrefType),
+						
+						new IdentificationAttribute("a-neval-text", true, new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE)), //!EvaluationAttribute
+						new IdentificationAttribute("a-neval-uuid", false, new UUIDIdentificationField(UUIDIdentificationField.DEFAULT_VALUE)), //!EvaluationAttribute, !active
+						
+						new EvaluationAttribute("a-cond-enum3-gain", true, AttributeType.CONDITION, //!NONE
+								EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"l", "m", "h"}), EnumerationField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv2, attrPrefType),
+						new EvaluationAttribute("a-cond-enum3-cost", true, AttributeType.CONDITION, //!NONE
+								EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"l", "m", "h"}), EnumerationField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType),
+						
+						new EvaluationAttribute("a-cond-int-gain", true, AttributeType.CONDITION, //!NONE
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv2, attrPrefType),
+						new EvaluationAttribute("a-cond-real-cost", true, AttributeType.CONDITION, //!NONE
+								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType),
+						
+						//attributes that change when imposing preference orders:
+						
+						new EvaluationAttribute("a-cond-int-none", true, AttributeType.CONDITION, //NONE, int => 2 attributes with inverse preference orders
+								IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv2, attrPrefType),
+						new EvaluationAttribute("a-cond-real-none", true, AttributeType.CONDITION, //NONE, real => 2 attributes with inverse preference orders
+								RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv15, attrPrefType),
+						
+						new EvaluationAttribute("a-cond-enum2-none", true, AttributeType.CONDITION, //NONE, enum, 2 domain values => 2 enum attributes with inverse preference orders
+								EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"a", "b"}), EnumerationField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv2, attrPrefType),
+						
+						new EvaluationAttribute("a-cond-enum3-none", true, AttributeType.CONDITION, //NONE, enum, 3 domain values => 3 pairs of int attributes with inverse preference orders
+								EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"l", "m", "h"}), EnumerationField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv15, attrPrefType),
+					},
+				new String[][] {
+						{ "l", "m", "h",  "o1", "00000000-0000-0000-0000-000000000000",  "l", "m",  "1", "2.0",  "3", "1.0",  "a",  "l"},
+						{ "m", "h", "l",  "o2", "00000000-0000-0000-0000-000000000001",  "m", "h",  "2", "3.0",  "4", "2.0",  "b",  "m"},
+						{ "h", "m", "l",  "o3", "00000000-0000-0000-0000-000000000002",  "h", "l",  "3", "4.0",  "5", "3.0",  "a",  "h"},
+				});
+		} catch (NoSuchAlgorithmException exception) {
+			throw new InvalidValueException("NoSuchAlgorithmException thrown by when creating domain of an enumeration field.");
+		}
+		//</CONFIGURATION 04>
 	}
 	
 	/**
@@ -314,6 +398,44 @@ class InformationTableTest {
 		for (int i = 0; i < listOfFields.size(); i++) {
 			for (int j = 0; j < listOfFields.get(i).length; j++) {
 				assertEquals(informationTable.getField(i, j), listOfFields.get(i)[j]);
+			}
+		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#getFields(int)} method.
+	 */
+	@Test
+	public void testGetFields01() {
+		InformationTable informationTable = configuration01.getInformationTable(true);
+		
+		List<Field[]> listOfFields = configuration01.getListOfFields();
+		Field[] fields;
+		
+		for (int i = 0; i < listOfFields.size(); i++) { //for each object
+			fields = informationTable.getFields(i); //get fields of the current object
+			assertEquals(fields.length, listOfFields.get(i).length);
+			for (int j = 0; j < fields.length; j++) {
+				assertEquals(fields[j], listOfFields.get(i)[j]);
+			}
+		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#getFields(int)} method.
+	 */
+	@Test
+	public void testGetFields02() {
+		InformationTable informationTable = configuration02.getInformationTable(true);
+		
+		List<Field[]> listOfFields = configuration02.getListOfFields();
+		Field[] fields;
+		
+		for (int i = 0; i < listOfFields.size(); i++) { //for each object
+			fields = informationTable.getFields(i); //get fields of the current object
+			assertEquals(fields.length, listOfFields.get(i).length);
+			for (int j = 0; j < fields.length; j++) {
+				assertEquals(fields[j], listOfFields.get(i)[j]);
 			}
 		}
 	}
@@ -601,6 +723,8 @@ class InformationTableTest {
 		InformationTable informationTable = configuration02.getInformationTable(true);
 		assertEquals(informationTable.getNumberOfObjects(), configuration02.getNumberOfObjects());
 	}
+	
+	//TODO: write more tests for InformationTable#getNumberOfObjects, for the case when there are no active condition evaluation attributes
 
 	/**
 	 * Test for {@link InformationTable#getNumberOfAttributes()} method}.
@@ -873,7 +997,7 @@ class InformationTableTest {
 				new SimpleDecision(IntegerFieldFactory.getInstance().create(1, preferenceType), activeDecisionAttributeIndex),
 				new SimpleDecision(IntegerFieldFactory.getInstance().create(1, preferenceType), activeDecisionAttributeIndex),
 				new SimpleDecision(IntegerFieldFactory.getInstance().create(-2, preferenceType), activeDecisionAttributeIndex),
-				new SimpleDecision(new UnknownSimpleFieldMV2(), activeDecisionAttributeIndex),
+				new SimpleDecision(UnknownSimpleFieldMV2.getInstance(), activeDecisionAttributeIndex),
 				new SimpleDecision(IntegerFieldFactory.getInstance().create(5, preferenceType), activeDecisionAttributeIndex),
 				new SimpleDecision(IntegerFieldFactory.getInstance().create(5, preferenceType), activeDecisionAttributeIndex),
 				new SimpleDecision(IntegerFieldFactory.getInstance().create(-3, preferenceType), activeDecisionAttributeIndex),
@@ -915,11 +1039,11 @@ class InformationTableTest {
 		AttributePreferenceType preferenceType2 = AttributePreferenceType.GAIN;
 		
 		Decision[] allDecisions = {
-				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(2, preferenceType1), new UnknownSimpleFieldMV2()},
+				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(2, preferenceType1), UnknownSimpleFieldMV2.getInstance()},
 						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
 				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(1, preferenceType1), IntegerFieldFactory.getInstance().create(4, preferenceType2)},
 						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
-				new CompositeDecision(new EvaluationField[] {new UnknownSimpleFieldMV2(), IntegerFieldFactory.getInstance().create(3, preferenceType2)},
+				new CompositeDecision(new EvaluationField[] {UnknownSimpleFieldMV2.getInstance(), IntegerFieldFactory.getInstance().create(3, preferenceType2)},
 						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
 				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(0, preferenceType1), IntegerFieldFactory.getInstance().create(5, preferenceType2)},
 						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
@@ -927,7 +1051,7 @@ class InformationTableTest {
 						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
 				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(1, preferenceType1), IntegerFieldFactory.getInstance().create(4, preferenceType2)},
 						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}), //again (1,4),
-				new CompositeDecision(new EvaluationField[] {new UnknownSimpleFieldMV2(), new UnknownSimpleFieldMV2()},
+				new CompositeDecision(new EvaluationField[] {UnknownSimpleFieldMV2.getInstance(), UnknownSimpleFieldMV2.getInstance()},
 						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2})
 		};
 		
@@ -971,13 +1095,13 @@ class InformationTableTest {
 		AttributePreferenceType preferenceType2 = AttributePreferenceType.GAIN;
 		
 		Decision[] allDecisions = {
-				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(2, preferenceType1), new UnknownSimpleFieldMV2()},
+				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(2, preferenceType1), UnknownSimpleFieldMV2.getInstance()},
 						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
-				new CompositeDecision(new EvaluationField[] {new UnknownSimpleFieldMV2(), IntegerFieldFactory.getInstance().create(4, preferenceType2)},
+				new CompositeDecision(new EvaluationField[] {UnknownSimpleFieldMV2.getInstance(), IntegerFieldFactory.getInstance().create(4, preferenceType2)},
 						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
-				new CompositeDecision(new EvaluationField[] {new UnknownSimpleFieldMV2(), IntegerFieldFactory.getInstance().create(3, preferenceType2)},
+				new CompositeDecision(new EvaluationField[] {UnknownSimpleFieldMV2.getInstance(), IntegerFieldFactory.getInstance().create(3, preferenceType2)},
 						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
-				new CompositeDecision(new EvaluationField[] {new UnknownSimpleFieldMV2(), new UnknownSimpleFieldMV2()},
+				new CompositeDecision(new EvaluationField[] {UnknownSimpleFieldMV2.getInstance(), UnknownSimpleFieldMV2.getInstance()},
 						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2})
 		};
 		
@@ -1011,13 +1135,13 @@ class InformationTableTest {
 		AttributePreferenceType preferenceType2 = AttributePreferenceType.GAIN;
 		
 		Decision[] allDecisions = {
-				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(2, preferenceType1), new UnknownSimpleFieldMV2()},
+				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(2, preferenceType1), UnknownSimpleFieldMV2.getInstance()},
 						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
-				new CompositeDecision(new EvaluationField[] {new UnknownSimpleFieldMV2(), IntegerFieldFactory.getInstance().create(4, preferenceType2)},
+				new CompositeDecision(new EvaluationField[] {UnknownSimpleFieldMV2.getInstance(), IntegerFieldFactory.getInstance().create(4, preferenceType2)},
 						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
 				new CompositeDecision(new EvaluationField[] {IntegerFieldFactory.getInstance().create(3, preferenceType1), IntegerFieldFactory.getInstance().create(3, preferenceType2)},
 						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2}),
-				new CompositeDecision(new EvaluationField[] {new UnknownSimpleFieldMV2(), new UnknownSimpleFieldMV2()},
+				new CompositeDecision(new EvaluationField[] {UnknownSimpleFieldMV2.getInstance(), UnknownSimpleFieldMV2.getInstance()},
 						new int[] {activeDecisionAttributeIndex1, activeDecisionAttributeIndex2})
 		};
 		
@@ -1063,6 +1187,118 @@ class InformationTableTest {
 		
 		for (int i = 0; i < numberOfObjects; i++) {
 			assertEquals(identifiers[i], expectedIdentifiers[i]);
+		}
+	}
+	
+	/**
+	 * Test for {@link InformationTable#imposePreferenceOrders()} method}.
+	 * Tests information table that does not change after imposition of preference orders.
+	 */
+	@Test
+	public void testImposePreferenceOrders01() {
+		InformationTable informationTable = configuration03.getInformationTable(false);
+		assertSame(informationTable, informationTable.imposePreferenceOrders());
+	}
+	
+	/**
+	 * Test for {@link InformationTable#imposePreferenceOrders()} method}.
+	 * Tests information table that changes after imposition of preference orders.
+	 */
+	@Test
+	public void testImposePreferenceOrders02() {
+		EvaluationAttribute expectedAttribute;
+		UnknownSimpleFieldMV2 mv2 = UnknownSimpleFieldMV2.getInstance();
+		UnknownSimpleFieldMV15 mv15 = UnknownSimpleFieldMV15.getInstance();
+		AttributePreferenceType attrPrefType; //temporary variable
+		int i;
+		String gainSuffix = InformationTable.attributeNameSuffixGain;
+		String costSuffix = InformationTable.attributeNameSuffixCost;
+		
+		InformationTable informationTable = configuration04.getInformationTable(false);
+		InformationTable newInformationTable = informationTable.imposePreferenceOrders();
+		
+		assertEquals(newInformationTable.getNumberOfAttributes(), 21);
+		
+		//------------------------------
+		//Compare old and new attributes
+		//------------------------------
+		
+		//the same attributes
+		assertEquals(newInformationTable.getAttribute(i = 0), informationTable.getAttribute(i));
+		assertEquals(newInformationTable.getAttribute(i = 1), informationTable.getAttribute(i));
+		assertEquals(newInformationTable.getAttribute(i = 2), informationTable.getAttribute(i));
+		assertEquals(newInformationTable.getAttribute(i = 3), informationTable.getAttribute(i));
+		assertEquals(newInformationTable.getAttribute(i = 4), informationTable.getAttribute(i));
+		assertEquals(newInformationTable.getAttribute(i = 5), informationTable.getAttribute(i));
+		assertEquals(newInformationTable.getAttribute(i = 6), informationTable.getAttribute(i));
+		assertEquals(newInformationTable.getAttribute(i = 7), informationTable.getAttribute(i));
+		assertEquals(newInformationTable.getAttribute(i = 8), informationTable.getAttribute(i));
+		
+		//new attributes
+		expectedAttribute = new EvaluationAttribute("a-cond-int-none"+gainSuffix, true, AttributeType.CONDITION, //NONE, int => 2 attributes with inverse preference orders
+				IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv2, attrPrefType);
+		assertEquals(newInformationTable.getAttribute(i = 9), expectedAttribute); //the same attribute
+		expectedAttribute = new EvaluationAttribute("a-cond-int-none"+costSuffix, true, AttributeType.CONDITION, //NONE, int => 2 attributes with inverse preference orders
+				IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv2, attrPrefType);
+		assertEquals(newInformationTable.getAttribute(i = 10), expectedAttribute); //the same attribute
+		//
+		expectedAttribute = new EvaluationAttribute("a-cond-real-none"+gainSuffix, true, AttributeType.CONDITION, //NONE, real => 2 attributes with inverse preference orders
+				RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv15, attrPrefType);
+		assertEquals(newInformationTable.getAttribute(i = 11), expectedAttribute); //the same attribute
+		expectedAttribute = new EvaluationAttribute("a-cond-real-none"+costSuffix, true, AttributeType.CONDITION, //NONE, real => 2 attributes with inverse preference orders
+				RealFieldFactory.getInstance().create(RealField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType);
+		assertEquals(newInformationTable.getAttribute(i = 12), expectedAttribute); //the same attribute
+		
+		try {
+			expectedAttribute = new EvaluationAttribute("a-cond-enum2-none"+gainSuffix, true, AttributeType.CONDITION, //NONE, enum, 2 domain values => 2 enum attributes with inverse preference orders
+					EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"a", "b"}), EnumerationField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv2, attrPrefType);
+			assertEquals(newInformationTable.getAttribute(i = 13), expectedAttribute); //the same attribute
+		} catch (NoSuchAlgorithmException exception) {
+			throw new InvalidValueException("NoSuchAlgorithmException thrown by when creating domain of an enumeration field.");
+		}
+		try {
+			expectedAttribute = new EvaluationAttribute("a-cond-enum2-none"+costSuffix, true, AttributeType.CONDITION, //NONE, enum, 2 domain values => 2 enum attributes with inverse preference orders
+					EnumerationFieldFactory.getInstance().create(new ElementList(new String[] {"a", "b"}), EnumerationField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv2, attrPrefType);
+			assertEquals(newInformationTable.getAttribute(i = 14), expectedAttribute); //the same attribute
+		} catch (NoSuchAlgorithmException exception) {
+			throw new InvalidValueException("NoSuchAlgorithmException thrown by when creating domain of an enumeration field.");
+		}
+		
+		//NONE, enum, 3 domain values => 3 pairs of int attributes with inverse preference orders
+		expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_l"+gainSuffix, true, AttributeType.CONDITION,
+				IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv15, attrPrefType);
+		assertEquals(newInformationTable.getAttribute(i = 15), expectedAttribute); //the same attribute
+		expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_l"+costSuffix, true, AttributeType.CONDITION,
+				IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType);
+		assertEquals(newInformationTable.getAttribute(i = 16), expectedAttribute); //the same attribute
+		//
+		expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_m"+gainSuffix, true, AttributeType.CONDITION,
+				IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv15, attrPrefType);
+		assertEquals(newInformationTable.getAttribute(i = 17), expectedAttribute); //the same attribute
+		expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_m"+costSuffix, true, AttributeType.CONDITION,
+				IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType);
+		assertEquals(newInformationTable.getAttribute(i = 18), expectedAttribute); //the same attribute
+		//
+		expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_h"+gainSuffix, true, AttributeType.CONDITION,
+				IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv15, attrPrefType);
+		assertEquals(newInformationTable.getAttribute(i = 19), expectedAttribute); //the same attribute
+		expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_h"+costSuffix, true, AttributeType.CONDITION,
+				IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType);
+		assertEquals(newInformationTable.getAttribute(i = 20), expectedAttribute); //the same attribute
+		
+		//--------------------------
+		//Compare old and new fields (by comparing their text representations - simpler approach)
+		//--------------------------
+		String[][] expectedFieldsAsText = new String[][] {
+			{ "l", "m", "h",  "o1", "00000000-0000-0000-0000-000000000000",  "l", "m",  "1", "2.0",  "3","3", "1.0","1.0",  "a","a",  "1","1","0","0","0","0"},
+			{ "m", "h", "l",  "o2", "00000000-0000-0000-0000-000000000001",  "m", "h",  "2", "3.0",  "4","4", "2.0","2.0",  "b","b",  "0","0","1","1","0","0"},
+			{ "h", "m", "l",  "o3", "00000000-0000-0000-0000-000000000002",  "h", "l",  "3", "4.0",  "5","5", "3.0","3.0",  "a","a",  "0","0","0","0","1","1"},
+		};
+		
+		for (int objectIndex = 0; objectIndex < expectedFieldsAsText.length; objectIndex++) {
+			for (int attributeIndex = 0; attributeIndex < expectedFieldsAsText[objectIndex].length; attributeIndex++) {
+				assertEquals(expectedFieldsAsText[objectIndex][attributeIndex], newInformationTable.getField(objectIndex, attributeIndex).toString());
+			}
 		}
 	}
 
