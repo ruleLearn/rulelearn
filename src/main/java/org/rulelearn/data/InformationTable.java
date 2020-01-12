@@ -33,7 +33,6 @@ import org.rulelearn.types.IdentificationField;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.KnownSimpleField;
-import org.rulelearn.types.RealField;
 import org.rulelearn.types.TextIdentificationField;
 import org.rulelearn.types.UUIDIdentificationField;
 
@@ -150,15 +149,21 @@ public class InformationTable {
 	private Decision[] uniqueDecisions = null;
 	
 	/**
-	 * Suffix of any new gain-type evaluation attribute created by {@link #imposePreferenceOrders(boolean)} when cloning an existing
+	 * Suffix of any new {@link AttributePreferenceType#GAIN gain-type} evaluation attribute created by {@link #imposePreferenceOrders(boolean)} when cloning an existing
 	 * evaluation attribute {@link AttributePreferenceType#NONE without preference type} and setting for each clone opposite preference order.
 	 */
 	public static final String attributeNameSuffixGain = "_g"; //constant
 	/**
-	 * Suffix of any new cost-type evaluation attribute created by {@link #imposePreferenceOrders(boolean)} when cloning an existing
+	 * Suffix of any new {@link AttributePreferenceType#COST cost-type} evaluation attribute created by {@link #imposePreferenceOrders(boolean)} when cloning an existing
 	 * evaluation attribute {@link AttributePreferenceType#NONE without preference type} and setting for each clone opposite preference order.
 	 */
 	public static final String attributeNameSuffixCost = "_c"; //constant
+	/**
+	 * Suffix of any new binary evaluation attribute {@link AttributePreferenceType#NONE without preference type} created by {@link #imposePreferenceOrders(boolean)}
+	 * when binarizing an existing evaluation attribute {@link AttributePreferenceType#NONE without preference type},
+	 * with {@link EnumerationField} {@link EvaluationAttribute#getValueType() value type}, and with at least 3 values in its domain.
+	 */
+	public static final String attributeNameSuffixNone = ""; //constant
 	
 	/**
 	 * Protected copy constructor for internal use only. Sets all data fields of this information table.
@@ -911,54 +916,62 @@ public class InformationTable {
 	}
 	
 	/**
-	 * Verifies attributes of this information table for their eligibility to preference order imposition. If there are no such attributes, then just returns this object.
+	 * Verifies attributes of this information table for their eligibility to preference order imposition or binarization.
+	 * If there are no such attributes, then just returns this object.
 	 * Otherwise, pursues a transformation of this object and returns a new information table (for a new array of attributes).<br>
 	 * <br>
 	 * An attribute is eligible to preference order imposition if it (jointly) fulfills the following conditions:
 	 * <ul>
 	 * <li>is active,</li>
-	 * <li>has {@link AttributeType#CONDITION} {@link EvaluationAttribute#getType() type},</li>
+	 * <li>its {@link EvaluationAttribute#getType() type} equals {@link AttributeType#CONDITION},</li>
 	 * <li>is an instance of {@link EvaluationAttribute},</li>
-	 * <li>has {@link AttributePreferenceType#NONE unknown} {@link EvaluationAttribute#getPreferenceType() preference type},</li>
-	 * <li>has {@link EvaluationAttribute#getValueType() value type} other than {@link EnumerationField} or (jointly) fulfills the following conditions:
-	 *   <ul>
-	 *     <li>has {@link EnumerationField} {@link EvaluationAttribute#getValueType() value type},</li>
-	 *     <li>parameter {@code transformNominalAttributesWith3PlusValues} is {@code true},</li> 
-	 *     <li>there are more than two values in {@link EnumerationField#getElementList() attributes' domain}.</li>
-	 *   </ul>
-	 * </li>
-	 * </ul> 
+	 * <li>its {@link EvaluationAttribute#getPreferenceType() preference type} equals {@link AttributePreferenceType#NONE},</li>
+	 * <li>has {@link EvaluationAttribute#getValueType() value type} other than {@link EnumerationField}.</li>
+	 * </ul>
+	 * An attribute is eligible to binarization if it (jointly) fulfills the following conditions:
+	 * <ul>
+	 * <li>is active,</li>
+	 * <li>its {@link EvaluationAttribute#getType() type} equals {@link AttributeType#CONDITION},</li>
+	 * <li>is an instance of {@link EvaluationAttribute},</li>
+	 * <li>its {@link EvaluationAttribute#getPreferenceType() preference type} equals {@link AttributePreferenceType#NONE},</li>
+	 * <li>its {@link EvaluationAttribute#getValueType() value type} equals {@link EnumerationField},
+	 * <li>parameter {@code transformNominalAttributesWith3PlusValues} is {@code true},</li>
+	 * <li>there are more than two values in {@link EnumerationField#getElementList() attributes' domain}.</li>
+	 * </ul>
 	 * Each eligible attribute is replaced with two, or sometimes more, new evaluation attributes, depending on its {@link EvaluationAttribute#getValueType() value type}.<br>
 	 * <br>
-	 * If attribute's {@link EvaluationAttribute#getValueType() value type} if different than {@link EnumerationField}
-	 * (e.g., {@link IntegerField} or {@link RealField}), then the attribute is replaced by just two new attributes - one with assumed
-	 * {@link AttributePreferenceType#GAIN gain-type preference}, and another with assumed {@link AttributePreferenceType#COST cost-type preference}.<br>
+	 * An attribute eligible to preference order imposition is replaced by two new attributes - one with assumed
+	 * {@link AttributePreferenceType#GAIN gain-type preference}, and another with assumed {@link AttributePreferenceType#COST cost-type preference}.
+	 * For example, attribute "age" with unknown preference order and {@link IntegerField} value type will result in two new evaluation attributes.
+	 * The first one will have {@link IntegerField} value type, {@link AttributePreferenceType#GAIN} preference type,
+	 * and name "age&lt;{@link InformationTable#attributeNameSuffixGain}&gt;".
+	 * The second one will have {@link IntegerField} value type, {@link AttributePreferenceType#COST} preference type,
+	 * and name "age&lt;{@link InformationTable#attributeNameSuffixCost}&gt;".
+	 * See also {@link InformationTable#attributeNameSuffixGain} and {@link InformationTable#attributeNameSuffixCost}.<br>
 	 * <br>
-	 * If attribute's {@link EvaluationAttribute#getValueType() value type} is {@link EnumerationField}, a binarization procedure is applied,
+	 * An attribute eligible to binarization undergoes a binarization procedure,
 	 * where each domain value yields a new binary attribute (having 0/1 evaluations) with {@link IntegerField} {@link EvaluationAttribute#getValueType() value type}.
-	 * Then, each resulting binary attribute is replaced by two new binary attributes - one with assumed  {@link AttributePreferenceType#GAIN gain-type preference},
-	 * and another with assumed {@link AttributePreferenceType#COST cost-type preference}. So, for example,
-	 * an attribute "color" with unknown preference order, {@link EnumerationField} value type, and three values in its domain: "red", "green", "blue",
-	 * will result in six new binary (0/1) attributes, with {@link IntegerField} value type. These attributes will be the following:
-	 * "color_red_g", "color_red_c", "color_green_g", "color_green_c", "color_blue_g", "color_blue_c". See {@link InformationTable#attributeNameSuffixGain}
-	 * and {@link InformationTable#attributeNameSuffixCost}.<br>
+	 * For example, attribute "color" with unknown preference order, {@link EnumerationField} value type, and three values in its domain: "red", "green", "blue",
+	 * will result in three new binary (0/1) attributes, with {@link IntegerField} value type. These attributes will have the following names:
+	 * "color_red&lt;{@link InformationTable#attributeNameSuffixNone}&gt;", "color_green&lt;{@link InformationTable#attributeNameSuffixNone}&gt;",
+	 * "color_blue&lt;{@link InformationTable#attributeNameSuffixNone}&gt;". See also {@link InformationTable#attributeNameSuffixNone}.<br>
 	 * <br>
 	 * This method does not modify any other attributes than the eligible ones defined above. In particular, it does not modify decision attribute(s).
 	 * 
-	 * @param transformNominalAttributesWith3PlusValues tells if active {@link AttributeType#CONDITION condition} nominal {@link EvaluationAttribute evaluation attributes},
+	 * @param binarizeNominalAttributesWith3PlusValues tells if active {@link AttributeType#CONDITION condition} nominal {@link EvaluationAttribute evaluation attributes},
 	 *        (i.e., attributes with {@link EnumerationField} {@link EvaluationAttribute#getValueType() value type}
 	 *        and {@link AttributePreferenceType#NONE without preference type}) having 3+ values in their {@link EnumerationField#getElementList() domain},
-	 *        should be binarized, and then each resulting ordinal binary (0-1) attribute should be replaced by two new binary attributes,
-	 *        one with {@link AttributePreferenceType#GAIN gain-type preference} and the other with {@link AttributePreferenceType#COST cost-type preference}
+	 *        should be binarized
 	 *        
 	 * 
-	 * @return this information table, if there are no attributes eligible to preference order imposition, or a new information table (with new array of attributes)
-	 *         resulting from preference order imposition for eligible attributes
+	 * @return this information table, if there are no attributes eligible to preference order imposition or binarization,
+	 *         or a new information table (with new array of attributes)
+	 *         resulting from imposition of preference order or binarization for each eligible attribute
 	 */
-	public InformationTable imposePreferenceOrders(boolean transformNominalAttributesWith3PlusValues) {
-		PreferenceOrdersImpositionHelper helper = new PreferenceOrdersImpositionHelper(transformNominalAttributesWith3PlusValues);
+	public InformationTable imposePreferenceOrders(boolean binarizeNominalAttributesWith3PlusValues) {
+		PreferenceOrdersImpositionHelper helper = new PreferenceOrdersImpositionHelper(binarizeNominalAttributesWith3PlusValues);
 		
-		if (helper.attributesCountAfterPreferenceOrdersImposition == getNumberOfAttributes()) { //this information table does not need to be transformed
+		if (helper.attributesCountAfterImposition == getNumberOfAttributes()) { //this information table does not need to be transformed
 			return this; //just return this information table!
 		} else {
 			EvaluationAttribute evaluationAttribute;
@@ -973,10 +986,12 @@ public class InformationTable {
 						if (evaluationAttribute.getValueType() instanceof EnumerationField) { //nominal attribute that potentially should be binarized if has more than two values
 							elementList = ((EnumerationField)evaluationAttribute.getValueType()).getElementList();
 							
-							if ((elementListSize = elementList.getSize()) > 2 && transformNominalAttributesWith3PlusValues) { //initial 0/1 binarization necessary, followed by duplication + preference order imposition
+							if ((elementListSize = elementList.getSize()) > 2 && binarizeNominalAttributesWith3PlusValues) { //0/1 binarization necessary
 								for (int elementListIndex = 0; elementListIndex < elementListSize; elementListIndex++) {
-									helper.create01AttributeAndCalculateItsFields(elementListIndex, AttributePreferenceType.GAIN);
-									helper.create01AttributeAndCalculateItsFields(elementListIndex, AttributePreferenceType.COST);
+									//helper.create01AttributeAndCalculateItsFields(elementListIndex, AttributePreferenceType.GAIN);
+									//helper.create01AttributeAndCalculateItsFields(elementListIndex, AttributePreferenceType.COST);
+									//just binarize the attribute to enable meaningful equality conditions
+									helper.create01AttributeAndCalculateItsFields(elementListIndex, AttributePreferenceType.NONE);
 								}
 							} else {
 								//transformNominalAttributesWith3PlusValues == false - leave the enumeration attribute "as is"
@@ -1021,21 +1036,23 @@ public class InformationTable {
 		 * Tells if active {@link AttributeType#CONDITION condition} nominal {@link EvaluationAttribute evaluation attributes},
 		 * (i.e., attributes with {@link EnumerationField} {@link EvaluationAttribute#getValueType() value type}
 		 * and {@link AttributePreferenceType#NONE without preference type}) having 3+ values in their {@link EnumerationField#getElementList() domain},
-		 * should be binarized, and then each resulting ordinal binary (0-1) attribute should be replaced by two new binary attributes,
-		 * one with {@link AttributePreferenceType#GAIN gain-type preference} and the other with {@link AttributePreferenceType#COST cost-type preference}.
-		 * Note that nominal attributes with less than three values in their domain are not processed (leaved "as is").
+		 * should be binarized.
+		 * It is worth noting that nominal attributes with less than three values in their domain are not processed (leaved "as is").
 		 */
-		boolean transformNominalAttributesWith3PlusValues;
+		boolean binarizeNominalAttributesWith3PlusValues;
 		
 		/**
-		 * Number of attributes after imposing preference orders to eligible active condition evaluation attributes. Calculated before imposing preference orders.
+		 * Number of attributes after imposing preference order or binarization to eligible active condition evaluation attributes.
+		 * Calculated before imposing anything.
 		 */
-		int attributesCountAfterPreferenceOrdersImposition;
+		int attributesCountAfterImposition;
 		
 		IntegerField binaryField0Gain; //singleton
 		IntegerField binaryField0Cost; //singleton
+		IntegerField binaryField0None; //singleton
 		IntegerField binaryField1Gain; //singleton
 		IntegerField binaryField1Cost; //singleton
+		IntegerField binaryField1None; //singleton
 		
 		Attribute[] oldAttributes; //attributes from the information table; constant
 		Attribute[] newAttributes; //attributes resulting from the transformation of the information table; to be used when constructing a new information table
@@ -1047,40 +1064,41 @@ public class InformationTable {
 		List<Field[]> newListOfFields; //to be used when constructing a new information table
 		
 		/**
-		 * Constructs this object. First sets {@link #transformNominalAttributesWith3PlusValues} property according to the given parameter,
-		 * and then calculates {@link #attributesCountAfterPreferenceOrdersImposition}.
-		 * This value is necessary to tell if imposing preference orders would change any attributes of the information table.<br>
+		 * Constructs this object. First sets {@link #binarizeNominalAttributesWith3PlusValues} property according to the given parameter,
+		 * and then calculates {@link #attributesCountAfterImposition}.
+		 * This calculation is necessary to tell if any attributes of the information table are eligible to imposing preference order or binarization.<br>
 		 * <br>
-		 * If calculated value of {@link #attributesCountAfterPreferenceOrdersImposition} is greater than
+		 * If calculated value of {@link #attributesCountAfterImposition} is greater than
 		 * {@link InformationTable#getNumberOfAttributes() the number of attributes of the information table},
 		 * invokes {@link #init()} to initialize all other properties of this helper.
 		 * 
-		 * @param transformNominalAttributesWith3PlusValues tells if active {@link AttributeType#CONDITION condition} nominal {@link EvaluationAttribute evaluation attributes},
+		 * @param binarizeNominalAttributesWith3PlusValues tells if active {@link AttributeType#CONDITION condition} nominal {@link EvaluationAttribute evaluation attributes},
 		 *        (i.e., attributes with {@link EnumerationField} {@link EvaluationAttribute#getValueType() value type}
 		 *        and {@link AttributePreferenceType#NONE without preference type}) having 3+ values in their {@link EnumerationField#getElementList() domain},
-		 *        should be binarized, and then each resulting ordinal binary (0-1) attribute should be replaced by two new binary attributes,
-		 *        one with {@link AttributePreferenceType#GAIN gain-type preference} and the other with {@link AttributePreferenceType#COST cost-type preference}
+		 *        should be binarized
 		 */
-		private PreferenceOrdersImpositionHelper(boolean transformNominalAttributesWith3PlusValues) {
-			this.transformNominalAttributesWith3PlusValues = transformNominalAttributesWith3PlusValues;
-			this.attributesCountAfterPreferenceOrdersImposition = countAttributesAfterPreferenceOrdersImposition();
+		private PreferenceOrdersImpositionHelper(boolean binarizeNominalAttributesWith3PlusValues) {
+			this.binarizeNominalAttributesWith3PlusValues = binarizeNominalAttributesWith3PlusValues;
+			this.attributesCountAfterImposition = countAttributesAfterImposition();
 			
-			if (attributesCountAfterPreferenceOrdersImposition > getNumberOfAttributes()) {
+			if (attributesCountAfterImposition > getNumberOfAttributes()) {
 				init();
 			}
 		}
 		
 		/**
-		 * Counts number of attributes in an information table that would result from imposing preference orders to eligible attributes of the information table.
+		 * Counts number of attributes in an information table that would result from imposing preference order to eligible attributes of the information table
+		 * and from binarizing eligible attributes of the information table.
 		 * 
-		 * @return number of attributes in an information table that would result from imposing preference orders to eligible attributes of the information table
+		 * @return number of attributes in an information table that would result from imposing preference order to eligible attributes of the information table
+		 *         and from binarizing eligible attributes of the information table
 		 */
-		private int countAttributesAfterPreferenceOrdersImposition() {
+		private int countAttributesAfterImposition() {
 			EvaluationAttribute evaluationAttribute;
 			int elementListSize;
 			
 			int numberOfAttributes = getNumberOfAttributes();
-			int attributesCountAfterPreferenceOrdersImposition = 0; //number of all attributes if preference orders were imposed for eligible attributes
+			int attributesCountAfterImposition = 0; //number of all attributes if preference order / binarization was imposed for eligible attributes 
 			
 			for (int i = 0; i < numberOfAttributes; i++) {
 				if (isActiveConditionAttribute(attributes[i])) {
@@ -1089,42 +1107,44 @@ public class InformationTable {
 						if (evaluationAttribute.getValueType() instanceof EnumerationField) { //nominal attribute that potentially should be binarized if has more than two values
 							elementListSize = ((EnumerationField)evaluationAttribute.getValueType()).getElementList().getSize();
 							
-							if (elementListSize > 2 && transformNominalAttributesWith3PlusValues) { //initial 0/1 binarization necessary, followed by duplication + preference order imposition
-								attributesCountAfterPreferenceOrdersImposition += 2 * elementListSize;
+							if (elementListSize > 2 && binarizeNominalAttributesWith3PlusValues) { //0/1 binarization necessary
+								attributesCountAfterImposition += elementListSize;
 							} else {
 								//transformNominalAttributesWith3PlusValues == false - leave the enumeration attribute "as is"
 								//or
 								//just two values (already binary attribute) - leave the enumeration attribute "as is" (duplication + preference order imposition would
 								//not introduce added value over this what can be achieved by just working with this nominal attribute and using equality conditions in rules)
-								attributesCountAfterPreferenceOrdersImposition++;
+								attributesCountAfterImposition++;
 							}
 							//follow with duplication + preference order imposition
 						} else { //only duplication + preference order imposition necessary
-							attributesCountAfterPreferenceOrdersImposition += 2;
+							attributesCountAfterImposition += 2;
 						}
 					} else { //leave attribute "as is"
-						attributesCountAfterPreferenceOrdersImposition++;
+						attributesCountAfterImposition++;
 					}
 				} else { //leave attribute "as is"
-					attributesCountAfterPreferenceOrdersImposition++;
+					attributesCountAfterImposition++;
 				}
 			}
 			
-			return attributesCountAfterPreferenceOrdersImposition;
+			return attributesCountAfterImposition;
 		}
 		
 		/**
-		 * Initializes properties of this object, except for {@link #transformNominalAttributesWith3PlusValues} and
-		 * {@link #attributesCountAfterPreferenceOrdersImposition}, which are set already in class constructor.
+		 * Initializes properties of this object, except for {@link #binarizeNominalAttributesWith3PlusValues} and
+		 * {@link #attributesCountAfterImposition}, which are set already in class constructor.
 		 */
 		private void init() {
 			binaryField0Gain = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN); //singleton
 			binaryField0Cost = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.COST); //singleton
+			binaryField0None = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.NONE); //singleton
 			binaryField1Gain = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN); //singleton
 			binaryField1Cost = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.COST); //singleton
+			binaryField1None = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.NONE); //singleton
 			
 			oldAttributes = attributes; //constant (variable name changed for convenience)
-			newAttributes = new Attribute[attributesCountAfterPreferenceOrdersImposition];
+			newAttributes = new Attribute[attributesCountAfterImposition];
 			
 			oldAttributeIndex = 0;
 			newAttributeIndex = 0;
@@ -1134,7 +1154,7 @@ public class InformationTable {
 			
 			//initialized storage for fields
 			for (int i = 0; i < numberOfObjects; i++) {
-				newListOfFields.add(new Field[attributesCountAfterPreferenceOrdersImposition]);
+				newListOfFields.add(new Field[attributesCountAfterImposition]);
 			}
 		}
 		
@@ -1145,6 +1165,8 @@ public class InformationTable {
 				return attributeNameSuffixGain;
 			case COST:
 				return attributeNameSuffixCost;
+			case NONE:
+				return attributeNameSuffixNone;
 			default:
 				throw new InvalidValueException("Name suffix is only defined for GAIN or COST attribute preference type.");
 			}
@@ -1159,8 +1181,10 @@ public class InformationTable {
 					return binaryField0Gain;
 				case COST:
 					return binaryField0Cost;
+				case NONE:
+					return binaryField0None;
 				default:
-					throw new InvalidValueException("Binary field should have defined preference order.");
+					throw new InvalidValueException("Cannot get binary field 0 for null attribute's preference type.");
 				}
 			case 1:
 				switch (newPreferenceType) {
@@ -1168,11 +1192,13 @@ public class InformationTable {
 					return binaryField1Gain;
 				case COST:
 					return binaryField1Cost;
+				case NONE:
+					return binaryField1None;
 				default:
-					throw new InvalidValueException("Binary field should have defined preference order.");
+					throw new InvalidValueException("Cannot get binary field 1 for null attribute's preference type.");
 				}
 			default:
-				throw new InvalidValueException("Binary value shuld be 0 or 1.");
+				throw new InvalidValueException("Binary value should be 0 or 1.");
 			}
 		}
 		
@@ -1214,7 +1240,7 @@ public class InformationTable {
 			}
 		}
 		
-		//creates new binary attribute corresponding to particular element in the domain of an old enumeration attribute
+		//creates new binary IntegerField attribute corresponding to particular element in the domain of an old enumeration attribute
 		private EvaluationAttribute create01Attribute(int elementListIndex, AttributePreferenceType newPreferenceType) { //current old attribute has enumeration field value type
 			EvaluationAttribute binarizedOldAttribute = (EvaluationAttribute)oldAttributes[oldAttributeIndex];
 			String domainValue = ((EnumerationField)binarizedOldAttribute.getValueType()).getElementList().getElement(elementListIndex);
@@ -1228,7 +1254,7 @@ public class InformationTable {
 					newPreferenceType);
 		}
 		
-		//creates new binary attribute corresponding to a particular element in the domain of an old enumeration attribute
+		//creates new binary IntegerField attribute corresponding to a particular element in the domain of an old enumeration attribute
 		//and calculates new fields corresponding to that new binary attribute
 		private void create01AttributeAndCalculateItsFields(int elementListIndex, AttributePreferenceType newPreferenceType) {
 			newAttributes[newAttributeIndex] = create01Attribute(elementListIndex, newPreferenceType); //create new binary attribute

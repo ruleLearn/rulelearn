@@ -1225,13 +1225,14 @@ class InformationTableTest {
 		int i;
 		String gainSuffix = InformationTable.attributeNameSuffixGain;
 		String costSuffix = InformationTable.attributeNameSuffixCost;
+		String noneSuffix = InformationTable.attributeNameSuffixNone;
 		
 		String[][] expectedFieldsAsText;
 		
 		InformationTable informationTable = configuration04.getInformationTable(false);
 		InformationTable newInformationTable = informationTable.imposePreferenceOrders(transformNominalAttributesWith3PlusValues);
 		
-		assertEquals(newInformationTable.getNumberOfAttributes(), transformNominalAttributesWith3PlusValues ? 20 : 15);
+		assertEquals(newInformationTable.getNumberOfAttributes(), transformNominalAttributesWith3PlusValues ? 17 : 15);
 		
 		//------------------------------
 		//Compare old and new attributes
@@ -1281,35 +1282,52 @@ class InformationTableTest {
 		assertEquals(newInformationTable.getAttribute(i = 13), informationTable.getAttribute(11)); //the same nominal 2-valued attribute
 		
 		if (transformNominalAttributesWith3PlusValues) {
-			//NONE, enum, 3 domain values => 3 pairs of int attributes with inverse preference orders
-			expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_l"+gainSuffix, true, AttributeType.CONDITION,
-					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv15, attrPrefType);
+//			//NONE, enum, 3 domain values => 3 pairs of int attributes with inverse preference orders
+//			expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_l"+gainSuffix, true, AttributeType.CONDITION,
+//					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv15, attrPrefType);
+//			assertEquals(newInformationTable.getAttribute(i = 14), expectedAttribute); //the same attribute
+//			expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_l"+costSuffix, true, AttributeType.CONDITION,
+//					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType);
+//			assertEquals(newInformationTable.getAttribute(i = 15), expectedAttribute); //the same attribute
+			
+			//NONE, enum, 3 domain values => 3 int attributes without preference orders
+			expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_l"+noneSuffix, true, AttributeType.CONDITION,
+					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv15, attrPrefType);
 			assertEquals(newInformationTable.getAttribute(i = 14), expectedAttribute); //the same attribute
-			expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_l"+costSuffix, true, AttributeType.CONDITION,
-					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType);
+			
+			//
+			
+//			expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_m"+gainSuffix, true, AttributeType.CONDITION,
+//					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv15, attrPrefType);
+//			assertEquals(newInformationTable.getAttribute(i = 16), expectedAttribute); //the same attribute
+//			expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_m"+costSuffix, true, AttributeType.CONDITION,
+//					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType);
+//			assertEquals(newInformationTable.getAttribute(i = 17), expectedAttribute); //the same attribute
+			
+			expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_m"+noneSuffix, true, AttributeType.CONDITION,
+					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv15, attrPrefType);
 			assertEquals(newInformationTable.getAttribute(i = 15), expectedAttribute); //the same attribute
+			
 			//
-			expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_m"+gainSuffix, true, AttributeType.CONDITION,
-					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv15, attrPrefType);
+			
+//			expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_h"+gainSuffix, true, AttributeType.CONDITION,
+//					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv15, attrPrefType);
+//			assertEquals(newInformationTable.getAttribute(i = 18), expectedAttribute); //the same attribute
+//			expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_h"+costSuffix, true, AttributeType.CONDITION,
+//					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType);
+//			assertEquals(newInformationTable.getAttribute(i = 19), expectedAttribute); //the same attribute
+			
+			expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_h"+noneSuffix, true, AttributeType.CONDITION,
+					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.NONE), mv15, attrPrefType);
 			assertEquals(newInformationTable.getAttribute(i = 16), expectedAttribute); //the same attribute
-			expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_m"+costSuffix, true, AttributeType.CONDITION,
-					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType);
-			assertEquals(newInformationTable.getAttribute(i = 17), expectedAttribute); //the same attribute
-			//
-			expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_h"+gainSuffix, true, AttributeType.CONDITION,
-					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.GAIN), mv15, attrPrefType);
-			assertEquals(newInformationTable.getAttribute(i = 18), expectedAttribute); //the same attribute
-			expectedAttribute = new EvaluationAttribute("a-cond-enum3-none"+"_h"+costSuffix, true, AttributeType.CONDITION,
-					IntegerFieldFactory.getInstance().create(IntegerField.DEFAULT_VALUE, attrPrefType = AttributePreferenceType.COST), mv15, attrPrefType);
-			assertEquals(newInformationTable.getAttribute(i = 19), expectedAttribute); //the same attribute
 			
 			//--------------------------
 			//Compare old and new fields (by comparing their text representations - simpler approach)
 			//--------------------------
 			expectedFieldsAsText = new String[][] {
-				{ "l", "m", "h",  "o1", "00000000-0000-0000-0000-000000000000",  "l", "m",  "1", "2.0",  "3","3", "1.0","1.0",  "a",  "1","1","0","0","0","0"},
-				{ "m", "h", "l",  "o2", "00000000-0000-0000-0000-000000000001",  "m", "h",  "2", "3.0",  "4","4", "2.0","2.0",  "b",  "0","0","1","1","0","0"},
-				{ "h", "m", "l",  "o3", "00000000-0000-0000-0000-000000000002",  "h", "l",  "3", "4.0",  "5","5", "3.0","3.0",  "a",  "0","0","0","0","1","1"},
+				{ "l", "m", "h",  "o1", "00000000-0000-0000-0000-000000000000",  "l", "m",  "1", "2.0",  "3","3", "1.0","1.0",  "a",  "1","0","0"},
+				{ "m", "h", "l",  "o2", "00000000-0000-0000-0000-000000000001",  "m", "h",  "2", "3.0",  "4","4", "2.0","2.0",  "b",  "0","1","0"},
+				{ "h", "m", "l",  "o3", "00000000-0000-0000-0000-000000000002",  "h", "l",  "3", "4.0",  "5","5", "3.0","3.0",  "a",  "0","0","1"},
 			};
 		} else { //transformNominalAttributesWith3PlusValues == false
 			try {
