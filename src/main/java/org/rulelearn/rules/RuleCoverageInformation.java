@@ -18,7 +18,9 @@ package org.rulelearn.rules;
 
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
+import org.rulelearn.data.Decision;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -55,6 +57,12 @@ public class RuleCoverageInformation {
 	IntList indicesOfCoveredObjects;
 	
 	/**
+	 * Decisions of objects from rule's learning information table that are covered by the rule.
+	 * Maps object index to its decision.
+	 */
+	Int2ObjectMap<Decision> decisionsOfCoveredObjects;
+	
+	/**
 	 * Number of all objects in rule's learning information table.
 	 */
 	int allObjectsCount;
@@ -68,17 +76,26 @@ public class RuleCoverageInformation {
 	 *        is neither positive nor negative with respect to the considered approximated set
 	 *        for the approximated set used to induce the rule
 	 * @param indicesOfCoveredObjects indices of all objects from rule's learning information table that are covered by the rule
+	 * @param decisionsOfCoveredObjects decisions of objects from rule's learning information table that are covered by the rule; maps
+	 *        object index to its decision
 	 * @param allObjectsCount number of all objects in rule's learning information table
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws InvalidValueException if given number of all objects is less than zero
+	 * @throws InvalidValueException if the number of indices of covered objects and the number of decisions of covered objects are different
 	 */
-	public RuleCoverageInformation(IntSet indicesOfPositiveObjects, IntSet indicesOfNeutralObjects, IntList indicesOfCoveredObjects, int allObjectsCount) {
+	public RuleCoverageInformation(IntSet indicesOfPositiveObjects, IntSet indicesOfNeutralObjects, IntList indicesOfCoveredObjects,
+			Int2ObjectMap<Decision> decisionsOfCoveredObjects, int allObjectsCount) {
 		super();
 		this.indicesOfPositiveObjects = Precondition.notNull(indicesOfPositiveObjects, "Positive objects are null.");
 		this.indicesOfNeutralObjects = Precondition.notNull(indicesOfNeutralObjects, "Neutral objects are null.");
 		this.indicesOfCoveredObjects = Precondition.notNull(indicesOfCoveredObjects, "Covered objects are null.");
+		this.decisionsOfCoveredObjects = Precondition.notNull(decisionsOfCoveredObjects, "Decisions of covered objects are null.");
 		this.allObjectsCount = Precondition.nonNegative(allObjectsCount, "Number of objects is less than zero.");
+		
+		if (indicesOfCoveredObjects.size() != decisionsOfCoveredObjects.size()) {
+			throw new InvalidValueException("Different number of indices of covered objects and decisions of covered objects.");
+		}
 	}
 
 	/**
@@ -110,6 +127,16 @@ public class RuleCoverageInformation {
 	public IntList getIndicesOfCoveredObjects() {
 		return indicesOfCoveredObjects;
 	}
+	
+	/**
+	 * Gets decisions of objects from rule's learning information table that are covered by the rule.
+	 * Decision of particular object can be obtained from the map using object's index as the key.
+	 * 
+	 * @return decisions of objects from rule's learning information table that are covered by the rule
+	 */
+	public Int2ObjectMap<Decision> getDecisionsOfCoveredObjects() {
+		return decisionsOfCoveredObjects;
+	}
 
 	/**
 	 * Gets number of all objects in rule's learning information table.
@@ -119,4 +146,5 @@ public class RuleCoverageInformation {
 	public int getAllObjectsCount() {
 		return allObjectsCount;
 	}
+
 }
