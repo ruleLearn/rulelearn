@@ -90,7 +90,7 @@ public class ModeCalculator extends MeanCalculator { //TODO override more method
 			}
 			else if (firstField.hasEqualHashOfElementList(secondField) == TernaryLogicValue.TRUE) {
 				int firstFieldCount = fieldDistribution.getCount(firstField);
-				int secondFieldCount = fieldDistribution.getCount(firstField);
+				int secondFieldCount = fieldDistribution.getCount(secondField);
 				
 				if (firstFieldCount > secondFieldCount) {
 					return firstField;
