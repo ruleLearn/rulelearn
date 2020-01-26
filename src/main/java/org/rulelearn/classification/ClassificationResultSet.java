@@ -16,19 +16,18 @@
 
 package org.rulelearn.classification;
 
-import org.rulelearn.data.Attribute;
-import org.rulelearn.data.InformationTable;
-import org.rulelearn.types.Field;
-
-import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
 import static org.rulelearn.core.Precondition.notNull;
 
 import java.util.List;
 
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
+import org.rulelearn.data.Attribute;
+import org.rulelearn.data.InformationTable;
+import org.rulelearn.types.Field;
+
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Structure grouping a classifier, an information table, and classification results obtained by this classifier on that information table.
@@ -107,7 +106,7 @@ public class ClassificationResultSet {
 
 	/**
 	 * Gets an information table with all classification results included. The information table 
-	 * is constructed from constructed from scratch (i.e., it is a new copy of the information table,
+	 * is constructed from scratch (i.e., it is a new copy of the information table,
 	 * for which classification results are stored).
 	 * 
 	 * @return the informationTable information with all classification results included

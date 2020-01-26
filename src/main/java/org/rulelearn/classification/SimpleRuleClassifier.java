@@ -29,6 +29,13 @@ import org.rulelearn.types.EvaluationField;
 
 /**
  * Simple classifier using decision rules to classify each object from an information table to exactly one decision class.
+ * If no rule matches an object, returns for that object a {@link #getDefaultClassificationResult() default classification result}.
+ * Calculates intersection of covering at least / at most rules.
+ * For example, if there are covering rules with the following decisions: "&gt;= 2", "&gt;= 3",
+ * then the classification result will be "3". Analogously, if there are covering rules with the following decisions: "&lt;= 1", "&lt;= 2",
+ * then the classification result will be "1". If there are covering rules of both types, then first calculates value
+ * resulting from the intersection of all &gt;= rules, and also value resulting from intersection of all &lt;= rules.
+ * Then returns a mean value of the two values, as calculated by {@link MeanCalculator}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -38,7 +45,7 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 	/**
 	 * Mean calculator {@link MeanCalculator}.
 	 */
-	MeanCalculator meanCalculator = null;
+	private MeanCalculator meanCalculator = null;
 	
 	/**
 	 * Constructs this classifier.
@@ -75,16 +82,18 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 	 */
 	@Override
 	public SimpleClassificationResult classify(int objectIndex, InformationTable informationTable) {
-		SimpleClassificationResult result = this.getDefaultClassificationResult();
+		SimpleClassificationResult result = this.getDefaultClassificationResult(); //set default result, returned if no rule covers considered object
 		int decisionAttributeIndex = -1;
 		
-		// calculate classification interval [downLimit, upLimit]
-		Condition<EvaluationField> decision = null;
+		Condition<EvaluationField> decision = null; //decision condition of the current rule
 		EvaluationField upLimit = null, downLimit = null;
-		for (int i = 0; i < this.ruleSet.size(); i++) {
+		
+		int rulesCount = this.ruleSet.size();
+		
+		for (int i = 0; i < rulesCount; i++) {
 			if (this.ruleSet.getRule(i).covers(objectIndex, informationTable)) {
 				decision = this.ruleSet.getRule(i).getDecision();
-				if (decisionAttributeIndex == -1) { // TODO what if decision attribute index changes (for now index from the first covering rule is assigned)
+				if (decisionAttributeIndex == -1) { //TODO: what if decision attribute index changes (for now index from the first covering rule is assigned)
 					decisionAttributeIndex = decision.getAttributeWithContext().getAttributeIndex();
 				}
 				if (decision instanceof ConditionAtLeast<?>) {
@@ -98,7 +107,8 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 							}
 						}
 						catch (UncomparableException ex) {
-							System.out.println("Uncomparable decision values detected during comparison: " + ex.toString());
+							//TODO: should we throw an exception here?
+							System.out.println("Uncomparable decision value detected during comparison: " + ex.toString());
 						}
 					}
 				}
@@ -113,19 +123,22 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 							}
 						}
 						catch (UncomparableException ex) {
-							System.out.println("Uncomparable decision values detected during comparison: " + ex.toString());
+							System.out.println("Uncomparable decision value detected during comparison: " + ex.toString());
+							//TODO: should we throw an exception here?
 						}
 					}
 				}
 			}
 		}
+		
 		// set the result
 		if (upLimit != null) {
 			if (downLimit != null) {
 				if (upLimit.isEqualTo(downLimit) == TernaryLogicValue.TRUE) {
 					result = new SimpleClassificationResult(new SimpleDecision(upLimit, decisionAttributeIndex));
 				}	
-				else {
+				else { //both limits set
+					//remark that not necessarily downLimit <= upLimit! We can have, e.g., <=2 && >=6 or >=2 && <=6
 					result = new SimpleClassificationResult(new SimpleDecision(downLimit.calculate(this.meanCalculator, upLimit), decisionAttributeIndex));
 				}
 			}
@@ -139,7 +152,7 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 		
 		return result;
 	}
-
+	
 	/**
 	 * Classifies all objects from the given information table.
 	 * 

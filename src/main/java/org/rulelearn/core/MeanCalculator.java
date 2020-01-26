@@ -32,7 +32,8 @@ import org.rulelearn.types.UnknownSimpleFieldMV15;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 /**
- * Central tendency (mean) calculator for different field {@link EvaluationField} types. Contributes to realization of visitor design pattern.
+ * Central tendency (mean) calculator for different {@link EvaluationField evaluation fields} of the same type.
+ * Contributes to realization of visitor design pattern.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -40,11 +41,11 @@ import org.rulelearn.types.UnknownSimpleFieldMV2;
 public class MeanCalculator implements EvaluationFieldCalculator {
 
 	/**
-	 * Calculates mean for integer fields {@link IntegerField}. 
-	 * The preference type {@link AttributePreferenceType} of returned field is the same as the preference type of the first field.
+	 * Calculates mean for {@link IntegerField integer fields}. 
+	 * The {@link AttributePreferenceType preference type} of returned field is the same as the preference type of the first field.
 	 * 
-	 * @param firstField first filed to make calculations 
-	 * @param secondField second filed to make calculations
+	 * @param firstField first field to make calculations 
+	 * @param secondField second field to make calculations
 	 * @return mean of arguments or {@link UnknownSimpleField} if second field is unknown
 	 * @throws ClassCastException when it is impossible to cast second field to {@link IntegerField}
 	 * @throws NullPointerException when at least one of fields is {@code null}
@@ -70,11 +71,11 @@ public class MeanCalculator implements EvaluationFieldCalculator {
 	}
 
 	/**
-	 * Calculates mean for real fields {@link RealField}.
-	 * The preference type {@link AttributePreferenceType} of returned field is the same as the preference type of the first field.
+	 * Calculates mean for {@link RealField real fields}.
+	 * The {@link AttributePreferenceType preference type} of returned field is the same as the preference type of the first field.
 	 * 
-	 * @param firstField first filed to make calculations 
-	 * @param secondField second filed to make calculations
+	 * @param firstField first field to make calculations 
+	 * @param secondField second field to make calculations
 	 * @return mean of arguments or {@link UnknownSimpleField} if second field is unknown
 	 * @throws ClassCastException when it is impossible to cast second field to {@link RealField}
 	 * @throws NullPointerException when at least one of fields is {@code null}
@@ -100,11 +101,11 @@ public class MeanCalculator implements EvaluationFieldCalculator {
 	}
 
 	/**
-	 * Calculates mean for enumeration fields {@link EnumerationField}. 
-	 * The preference type {@link AttributePreferenceType} of returned field is the same as the preference type of the first field.
+	 * Calculates mean for {@link EnumerationField enumeration fields}. 
+	 * The {@link AttributePreferenceType preference type} of returned field is the same as the preference type of the first field.
 	 * 
-	 * @param firstField first filed to make calculations 
-	 * @param secondField second filed to make calculations
+	 * @param firstField first field to make calculations 
+	 * @param secondField second field to make calculations
 	 * @return mean of arguments or {@link UnknownSimpleField} if second field is unknown
 	 * @throws ClassCastException when it is impossible to cast second field to {@link EnumerationField}
 	 * @throws NullPointerException when at least one of fields is {@code null}
@@ -129,7 +130,10 @@ public class MeanCalculator implements EvaluationFieldCalculator {
 				}
 			}
 			else if (firstField.hasEqualHashOfElementList((EnumerationField)secondField) == TernaryLogicValue.TRUE) {
-				mean = EnumerationFieldFactory.getInstance().create(firstField.getElementList(), (firstField.getValue() + ((EnumerationField)secondField).getValue())/2, firstField.getPreferenceType());
+				//calculate mean value
+				mean = EnumerationFieldFactory.getInstance().create(firstField.getElementList(),
+						(firstField.getValue() + ((EnumerationField)secondField).getValue())/2,
+						firstField.getPreferenceType());
 			}
 			else {
 				throw new InvalidValueException("Fields have different element lists.");
@@ -139,11 +143,12 @@ public class MeanCalculator implements EvaluationFieldCalculator {
 	}
 	
 	/**
-	 * Calculates mean for integer fields {@link PairField}. 
-	 * The preference type {@link AttributePreferenceType} of returned field is the same as the preference type of the first field.
+	 * Calculates mean for {@link PairField pair fields}. 
+	 * The {@link AttributePreferenceType preference type} of returned field is the same as the preference type of the first field.
+	 * Throws {@link UnsupportedOperationException}.
 	 * 
-	 * @param firstField first filed to make calculations 
-	 * @param secondField second filed to make calculations
+	 * @param firstField first field to make calculations 
+	 * @param secondField second field to make calculations
 	 * @return mean of arguments or {@link UnknownSimpleField} if second field is unknown
 	 * @throws ClassCastException when it is impossible to cast second field to {@link PairField}
 	 */
@@ -155,17 +160,19 @@ public class MeanCalculator implements EvaluationFieldCalculator {
 		}
 		else if (secondField instanceof UnknownSimpleField) {
 			mean = secondField;
+		} else {
+			// TODO implementation
+			throw new UnsupportedOperationException("Not implemented yet!");
 		}
-		// TODO implementation
 		
 		return mean;
 	}
 
 	/**
-	 * Calculates mean as equal to first field passed as parameter. 
+	 * Calculates mean as equal to the first field passed as parameter. 
 	 * 
-	 * @param firstField first filed to make calculations 
-	 * @param secondField second filed to make calculations
+	 * @param firstField first field to make calculations 
+	 * @param secondField second field to make calculations
 	 * @return first field {@link UnknownSimpleFieldMV15}
 	 */
 	@Override
@@ -174,10 +181,10 @@ public class MeanCalculator implements EvaluationFieldCalculator {
 	}
 
 	/**
-	 * Calculates mean as equal to first field passed as parameter.
+	 * Calculates mean as equal to the first field passed as parameter.
 	 * 
-	 * @param firstField first filed to make calculations 
-	 * @param secondField second filed to make calculations
+	 * @param firstField first field to make calculations 
+	 * @param secondField second field to make calculations
 	 * @return first field {@link UnknownSimpleFieldMV2}
 	 */
 	@Override
