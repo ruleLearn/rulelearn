@@ -16,10 +16,12 @@
 
 package org.rulelearn.data;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
 
@@ -98,7 +100,7 @@ class FieldDistributionTest {
 	 * Test method for {@link FieldDistribution#increaseCount(org.rulelearn.types.Field)}.
 	 */
 	@Test
-	void testIncreaseCount() {
+	void testIncreaseCount01() {
 		int attributeIndex = 0;
 		InformationTable informationTableMock = Mockito.mock(InformationTable.class);
 		Mockito.when(informationTableMock.getNumberOfObjects()).thenReturn(2);
@@ -113,5 +115,62 @@ class FieldDistributionTest {
 		fieldDistribution.increaseCount(field0.selfClone());
 		assertEquals(fieldDistribution.getCount(field0), 2);
 	}
-
+	
+	
+	/**
+	 * Test method for {@link FieldDistribution#increaseCount(org.rulelearn.types.Field, int))}.
+	 */
+	@Test
+	void testIncreaseCount02() {
+		IntegerField field0 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+				
+		FieldDistribution fieldDistribution = new FieldDistribution();
+		
+		assertEquals(fieldDistribution.getCount(field0), 0);
+		
+		fieldDistribution.increaseCount(field0.selfClone(), 5);
+		assertEquals(fieldDistribution.getCount(field0), 5);
+	}
+	
+	/**
+	 * Test method for {@link FieldDistribution#increaseCount(org.rulelearn.types.Field, int))}.
+	 * Tests if negative increase causes an exception.
+	 */
+	@Test
+	void testIncreaseCount03() {
+		IntegerField field0 = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+				
+		FieldDistribution fieldDistribution = new FieldDistribution();
+		
+		try {
+			fieldDistribution.increaseCount(field0, -1);
+			fail("Should not decrease count.");
+		} catch (InvalidValueException exception) {
+			//OK
+		}
+	}
+	
+	/**
+	 * Test method for {@link FieldDistribution#getDifferentFieldsCount())}.
+	 */
+	@Test
+	void testGetDifferentFieldsCount01() {
+		IntegerField field0 = IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN);
+		IntegerField field1a = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN);
+		IntegerField field1b = IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN); //the same as above
+		
+		FieldDistribution fieldDistribution = new FieldDistribution();
+		
+		fieldDistribution.increaseCount(field0);
+		fieldDistribution.increaseCount(field0.selfClone(), 5);
+		
+		fieldDistribution.increaseCount(field1a);
+		fieldDistribution.increaseCount(field1a.selfClone(), 6);
+		
+		fieldDistribution.increaseCount(field1b);
+		fieldDistribution.increaseCount(field1b.selfClone(), 7);
+		
+		assertEquals(fieldDistribution.getDifferentFieldsCount(), 2);
+	}
+	
 }

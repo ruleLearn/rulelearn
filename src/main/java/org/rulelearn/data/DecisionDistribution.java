@@ -80,7 +80,7 @@ public class DecisionDistribution {
 	/**
 	 * Gets all decisions, which are present in the distribution.
 	 * 
-	 * @return set {@link Set} of decisions
+	 * @return {@link Set set} of decisions
 	 */
 	public Set<Decision> getDecisions() {
 		return this.decision2CountMap.keySet();
@@ -132,6 +132,15 @@ public class DecisionDistribution {
 		} else {
 			return false;
 		}
+	}
+	
+	/**
+	 * Gets number of different decisions in this distribution.
+	 * 
+	 * @return number of different decisions in this distribution
+	 */
+	public int getDifferentDecisionsCount() {
+		return this.decision2CountMap.size();
 	}
 
 }

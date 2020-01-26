@@ -16,7 +16,8 @@
 
 package org.rulelearn.data;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -220,6 +221,28 @@ class DecisionDistributionTest {
 		
 		assertEquals(decisionDistribution.hashCode(), decisionDistribution.hashCode());
 		assertEquals(decisionDistribution.hashCode(), decisionDistributionCopy.hashCode());
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.DecisionDistribution#getDifferentDecisionsCount()}.
+	 */
+	@Test
+	void testGetDifferentDecisionsCount01() {
+		DecisionDistribution decisionDistribution = new DecisionDistribution();
+		
+		Decision decision1  = new SimpleDecision(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN), 2);
+		Decision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN), 2); //equal decision
+		
+		Decision decision3 = new SimpleDecision(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), 2);
+		Decision decision4 = new SimpleDecision(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), 2); //equal decision
+		
+		decisionDistribution.increaseCount(decision1);
+		decisionDistribution.increaseCount(decision2);
+		
+		decisionDistribution.increaseCount(decision3);
+		decisionDistribution.increaseCount(decision4);
+		
+		assertEquals(decisionDistribution.getDifferentDecisionsCount(), 2);
 	}
 
 }

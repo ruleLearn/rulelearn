@@ -16,8 +16,12 @@
 
 package org.rulelearn.data;
 
+import static org.rulelearn.core.Precondition.nonNegative;
 import static org.rulelearn.core.Precondition.notNull;
+
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.types.Field;
+
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
@@ -35,7 +39,7 @@ public class FieldDistribution {
 	protected Object2IntMap<Field> field2CountMap;
 	
 	/**
-	 * Sole constructor.
+	 * Sole constructor. Initializes an empty distribution.
 	 */
 	public FieldDistribution() {
 		this.field2CountMap = new Object2IntOpenHashMap<Field>();
@@ -79,6 +83,28 @@ public class FieldDistribution {
 	public void increaseCount(Field field) {
 		int count = this.field2CountMap.containsKey(field) ? this.field2CountMap.getInt(field) : 0;
 		this.field2CountMap.put(field, ++count);
+	}
+	
+	/**
+	 * Increases by given increase the number of objects having given field.
+	 * 
+	 * @param field field from the considered column of an information table; should not be {@code null}
+	 * @param increase increase of the number of objects having given field; should not be negative
+	 * 
+	 * @throws InvalidValueException if given increase is smaller than zero
+	 */
+	public void increaseCount(Field field, int increase) {
+		int count = this.field2CountMap.containsKey(field) ? this.field2CountMap.getInt(field) : 0;
+		this.field2CountMap.put(field, count + nonNegative(increase, "Increase should not be null."));
+	}
+	
+	/**
+	 * Gets number of different fields in this distribution.
+	 * 
+	 * @return number of different fields in this distribution
+	 */
+	public int getDifferentFieldsCount() {
+		return this.field2CountMap.size();
 	}
 	
 }
