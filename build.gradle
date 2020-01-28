@@ -28,7 +28,7 @@ apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'maven-publish'
 
 group = 'org.rulelearn'
-version = '0.19.0'
+version = '0.20.0'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
