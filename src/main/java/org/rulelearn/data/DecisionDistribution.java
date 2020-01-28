@@ -18,14 +18,18 @@ package org.rulelearn.data;
 
 import static org.rulelearn.core.Precondition.notNull;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import org.rulelearn.core.InvalidSizeException;
 
 //import org.rulelearn.approximations.Union;
 //import org.rulelearn.core.TernaryLogicValue;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Distribution (histogram) of decisions in the set of considered objects (information table). For any decision observed in an information table,
@@ -88,6 +92,7 @@ public class DecisionDistribution {
 	
 	/**
 	 * Gets number of objects having given decision.
+	 * If there are no such objects, returns zero.
 	 * 
 	 * @param decision decision of interest; should not be {@code null}
 	 * @return number of objects having given decision
@@ -141,6 +146,81 @@ public class DecisionDistribution {
 	 */
 	public int getDifferentDecisionsCount() {
 		return this.decision2CountMap.size();
+	}
+	
+	/**
+	 * Gets list of most frequent decisions in this distribution.
+	 * The decisions are not returned in any particular order.
+	 * 
+	 * @return list of most frequent decisions in this distribution
+	 *         or {@code null} if this distribution contains no decision
+	 */
+	public List<Decision> getMode() {
+		Set<Decision> decisions = getDecisions();
+		int count;
+		int maxCount = 0;
+		List<Decision> mostFrequentDecisions = null;
+		
+		for (Decision decision : decisions) {
+			count = getCount(decision);
+			if (count > maxCount) {
+				maxCount = count;
+			}
+		}
+		
+		if (maxCount > 0) {
+			mostFrequentDecisions = new ObjectArrayList<Decision>();
+			for (Decision decision : decisions) {
+				count = getCount(decision);
+				if (count == maxCount) { //one of the most frequent classes
+					mostFrequentDecisions.add(decision);
+				}
+			}
+		}
+		
+		return mostFrequentDecisions;
+	}
+
+	/**
+	 * Gets median value in this distribution, concerning given order of the decisions contained in this distribution.
+	 * For example, if the distribution is: class 1 - 100 objects, class 2 - 99 object, then median will be class 1.
+	 * If the distribution is: class 1 - 100 objects, class 2 - 100 object, then median will also be class 1.
+	 * So, if the number of objects is even, and median decision falls between two decisions, than left decision is chosen.
+	 * 
+	 * @param orderedUniqueFullyDeterminedDecisions array with ordered unique fully-determined decisions;
+	 *        such array can be obtained, e.g., from information table using method {@link InformationTable#getOrderedUniqueFullyDeterminedDecisions()}
+	 * @return median value in this distribution, with respect to given order of the decisions contained in this distribution
+	 * 
+	 * @throws NullPointerException if supplied ordered unique fully determined decisions are {@code null}
+	 * @throws InvalidSizeException if the number supplied of ordered unique fully determined decisions is different than the number of different decisions present in this distribution
+	 */
+	public Decision getMedian(Decision[] orderedUniqueFullyDeterminedDecisions) {
+		notNull(orderedUniqueFullyDeterminedDecisions, "Supplied ordered unique fully determined decisions are null.");
+		if (this.getDifferentDecisionsCount() != orderedUniqueFullyDeterminedDecisions.length) {
+			throw new InvalidSizeException("Supplied number of ordered unique fully determined decisions is different than number of different decisions present in decision distribution.");
+		}
+		Decision median;
+		
+		int[] cumulativeSums = new int[orderedUniqueFullyDeterminedDecisions.length];
+		int cumulativeSum = 0;
+
+		for (int i = 0; i < cumulativeSums.length; i++) {
+			cumulativeSum += getCount(orderedUniqueFullyDeterminedDecisions[i]);
+			cumulativeSums[i] = cumulativeSum;
+		}
+
+		int roundedHalfOfCumulativeSum = (int)Math.round((double)cumulativeSum / 2); //rounds 0.5 upwards, to point to a proper decision if cumulativeSum is odd
+		median = null;
+
+		for (int i = 0; i < cumulativeSums.length; i++) {
+			//TODO: if cumulativeSum is even, and there is a switch of decision between element cumulativeSum / 2 and cumulativeSum / 2 + 1, then take median randomly, using seed
+			if (cumulativeSums[i] >= roundedHalfOfCumulativeSum) { //median decision found
+				median = orderedUniqueFullyDeterminedDecisions[i];
+				break;
+			}
+		}
+		
+		return median;
 	}
 
 }

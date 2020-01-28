@@ -485,7 +485,8 @@ public class InformationTable {
 	}
 	
 	/**
-	 * Calculates array of all unique decisions assigned to objects of this information table.<br>
+	 * Calculates array of all unique decisions assigned to objects of this information table. The decisions are arranged
+	 * in the order in which they appear in the information table.<br>
 	 * <br>
 	 * For any two decisions from the returned array, {@code decision1.equals(decision2)} should return {@code false}.
 	 * If {@link #getDecisions()} returns {@code null}, then result of this method is {@code null}.
@@ -523,7 +524,10 @@ public class InformationTable {
 	 * <br>
 	 * For any two decisions from the returned array, {@code decision1.equals(decision2)} should return {@code false}.
 	 * If {@link #getDecisions()} returns {@code null}, then result of this method is {@code null}.
-	 * This may be the case if the information table stores evaluations of test objects (for which decisions are unknown).
+	 * This may be the case if the information table stores evaluations of test objects (for which decisions are unknown).<br>
+	 * <br>
+	 * If returned array contains {@link CompositeDecision composite decisions}, it is possible that some of its elements are pairwise incomparable.
+	 * In such case, their mutual order is not constrained and may be any.
 	 * 
 	 * @return array with unique fully-determined decisions ordered from the worst to the best,
 	 *         or {@code null} if this information table does not store any decisions ({@link #getDecisions()} returns {@code null})

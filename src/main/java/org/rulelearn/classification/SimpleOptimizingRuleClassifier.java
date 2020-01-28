@@ -16,6 +16,8 @@
 
 package org.rulelearn.classification;
 
+import java.util.List;
+
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.ModeCalculator;
 import org.rulelearn.core.TernaryLogicValue;
@@ -40,13 +42,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 /**
  * Simple classifier using decision rules to classify each object from an information table to exactly one decision class.
  * If no rule matches an object, returns for that object a {@link #getDefaultClassificationResult() default classification result}.
- * Calculates intersection of covering at least / at most rules.<br>
+ * Calculates intersection of covering at least / at most rules, just like "standard" DRSA classifier.<br>
  * <br>
  * For example, if there are covering "at least" rules with the following decisions: "&gt;= 2", "&gt;= 3",
- * then the classification result will be "3". Analogously, if there are covering "at most" rules with the following decisions: "&lt;= 1", "&lt;= 2",
- * then the classification result will be "1". If there are covering rules of both types, then first calculates value
- * resulting from the intersection of all &gt;= rules, and also value resulting from intersection of all &lt;= rules.
- * Then returns one of these values, depending on the number of different objects supporting the rules that contribute to assignment to each of these classes.<br>
+ * then the classification result will be "3".
+ * Analogously, if there are covering "at most" rules with the following decisions: "&lt;= 1", "&lt;= 2",
+ * then the classification result will be "1".
+ * If there are covering rules of both types, then first calculates value resulting from the intersection of all &gt;= rules,
+ * and also value resulting from intersection of all &lt;= rules.
+ * Then returns one of these values, depending on the number of different objects supporting the rules and contributing to assignment to each of these classes.<br>
  * <br>
  * For example, if there are two covering "at least" rules with the following decisions: "&gt;= 2", "&gt;= 3", supported, respectively, by objects
  * {1, 2, 5, 17, 19, 20} and {3, 6, 17, 18, 19, 21}, where objects 1 and 5 belong to class "2", objects 2, 3, 6, 17 and 19 belong to class "3", and objects 18, 20, and 21 belong to class "4",
@@ -56,13 +60,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * {2, 7, 21} and {4, 7, 33}, where object 2 belongs to class "0", objects 7 and 21 belong to class "1", and objects 4 and 33 belong to class "2",
  * then decision "1" is supported by objects {7, 21} (remark that object 7 is counted only once!), so the a posteriori frequency of class 1
  * (i.e., frequency observed among "at most" rules covering class 1 with their decision part) is 2.
- * Then, the classification result returned by this classifier will be the mode, i.e., class "3", as this class has higher support (5 objects) than class 1 (2 objects).<br>
+ * Then, the classification result returned by this classifier will be the mode, i.e., class "3", as this class has higher support (5 objects) than class 1 (2 objects).
+ * Remark, that the modal value is equal to the median value of the class distribution composed of just these two classes.<br>
  * <br>
  * The approach adopted by this classifier aims at two goals:
  * <ul>
  * <li>proper reclassification of objects from consistent data set (remark, e.g., that presence of rules with the following decisions: "&gt;= 2", "&gt;= 3",
  * combined with absence of "at least" rules for higher classes, suggests that the classified object should be assigned to class "3"),</li>
- * <li>maximization of both accuracy (ACC) and mean absolute error (MAE) when this classifier is applied on test data drawn from the same probability distribution.</li>
+ * <li>maximization of both accuracy (ACC) and mean absolute error (MAE) when this classifier is applied on test data drawn from the same probability distribution as train data.</li>
  * </ul>
  * <br>
  * One should construct this classifier with proper default classification result, returned when no rule matches classified object. If the goal is to classify
@@ -76,23 +81,28 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	
 	/**
-	 * Flag indicating if rule set has computable rule characteristics.
+	 * Flag indicating if rule set has computable rule characteristics. Set in class constructor.
 	 */
 	boolean hasComputableRuleCharacteristics;
 	
 	/**
 	 * Learning information table for checking which objects support rules that cover classified object, used only if the rule set does not contain
-	 * computable rule characteristics. Otherwise is {@code null}.
+	 * computable rule characteristics. Otherwise is {@code null}. Set in class constructor.
 	 */
 	InformationTable learningInformationTable;
 	
 	/**
 	 * Constructs this classifier using rule set with computable rule characteristics.
 	 * This is a preferred constructor as it enables fast calculation of classification results.
+	 * One should construct this classifier with proper default classification result, returned when no rule matches classified object.
 	 * 
 	 * @param ruleSet set of decision rules to be used to classify objects from an information table
 	 * @param defaultClassificationResult default classification result, to be returned by this classifier
-	 *        if it is unable to calculate such result using stored decision rules
+	 *        if it is unable to calculate such result using stored decision rules;
+	 *        if the goal is to classify each object to the most probable class, then modal value in a priori distribution of decision classes
+	 *        should be supplied as a default classification result;
+	 *        if the goal is to classify each object so as to minimize mean absolute error criterion,
+	 *        then median value in a priori distribution of decision classes should be supplied as a default classification result
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
@@ -104,6 +114,7 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	
 	/**
 	 * Constructs this classifier using a rule set and learning information table, for which rules from the given rule set have been calculated.
+	 * One should construct this classifier with proper default classification result, returned when no rule matches classified object.
 	 * 
 	 * @param ruleSet set of decision rules to be used to classify objects from an information table
 	 * @param defaultClassificationResult default classification result, to be returned by this classifier
@@ -139,8 +150,9 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 		EvaluationField downLimit = null; //intersection of limiting evaluations of decision conditions of type ConditionAtMost
 		
 		int rulesCount = this.ruleSet.size();
-		//take decision attribute index from the first rule -- all rules are expected to be defined for the same decision attibute
+		//take decision attribute index from the first rule -- all rules are expected to be defined for the same decision attribute
 		int decisionAttributeIndex = (rulesCount > 0 ? this.ruleSet.getRule(0).getDecision().getAttributeWithContext().getAttributeIndex() : -1);
+		
 		IntList indicesOfCoveringAtLeastRules = new IntArrayList();
 		IntList indicesOfCoveringAtMostRules = new IntArrayList();
 		
@@ -189,7 +201,7 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 				if (upLimit.isEqualTo(downLimit) == TernaryLogicValue.TRUE) {
 					result = new SimpleClassificationResult(new SimpleDecision(upLimit, decisionAttributeIndex));
 				}	
-				else { //both limits set
+				else { //both limits are set
 					//remark that not necessarily downLimit <= upLimit! We can have, e.g., >=2 && <=6 or <=2 && >=6 
 					result = new SimpleClassificationResult(new SimpleDecision(calculateModalDecisionEvaluation(
 							downLimit, upLimit, indicesOfCoveringAtMostRules, indicesOfCoveringAtLeastRules),
@@ -218,7 +230,7 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	 * 
 	 * @return modal value of the two given evaluations of decision attribute
 	 */
-	EvaluationField calculateModalDecisionEvaluation(EvaluationField downLimit, EvaluationField upLimit, IntList indicesOfCoveringAtMostRules, IntList indicesOfCoveringAtLeastRules) {
+	EvaluationField calculateModalDecisionEvaluation(EvaluationField downLimit, EvaluationField upLimit, List<Integer> indicesOfCoveringAtMostRules, List<Integer> indicesOfCoveringAtLeastRules) {
 		FieldDistribution fieldDistribution = new FieldDistribution();
 		
 		if (hasComputableRuleCharacteristics) {
@@ -237,26 +249,27 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	 * Browses rules from the rule set having indices on the given list and gathers indices of those learning objects covered by these rules
 	 * whose simple decision has evaluation equal to given {@code evaluation}. In other words, gathers indices of covered learning objects supporting simple decision with given evaluation.
 	 * 
-	 * @param evaluation evaluation of interest, searched among simple decisions of covered learning objects
+	 * @param decisionEvaluation decision evaluation of interest, searched among simple decisions of covered learning objects
 	 * @param indicesOfCoveringRules indices of "at least" or "at most" rules (from the rule set) covering classified test object
 	 * @return set of indices of learning objects covered by the rules with given indices
 	 *         and having simple decision with {@link SimpleDecision#getEvaluation() evaluation} equal to given {@code evaluation}
+	 * @throws ClassCastException if decision of some considered learning object is not of type {@link SimpleDecision}
 	 */
-	IntSet getIndicesOfCoveredLearningObjectsWithDecisionEvaluation(EvaluationField evaluation, IntList indicesOfCoveringRules) {
+	IntSet getIndicesOfCoveredLearningObjectsWithDecisionEvaluation(EvaluationField decisionEvaluation, List<Integer> indicesOfCoveringRules) {
 		RuleSetWithComputableCharacteristics ruleSet = (RuleSetWithComputableCharacteristics)this.ruleSet;
 		
-		IntList indicesOfCoveredObjects;
-		Int2ObjectMap<Decision> decisionsOfCoveredObjects;
-		IntSet indicesOfCoveredLearningObjectsWithDecisionEvaluation = new IntOpenHashSet();
+		IntList indicesOfCoveredLearningObjects;
+		Int2ObjectMap<Decision> decisionsOfCoveredLearningObjects;
+		IntSet indicesOfCoveredLearningObjectsWithDecisionEvaluation = new IntOpenHashSet(); //result of this method
 		
 		for (int ruleIndex : indicesOfCoveringRules) {
-			indicesOfCoveredObjects = ruleSet.getRuleCharacteristics(ruleIndex).getRuleCoverageInformation().getIndicesOfCoveredObjects();
-			decisionsOfCoveredObjects = ruleSet.getRuleCharacteristics(ruleIndex).getRuleCoverageInformation().getDecisionsOfCoveredObjects();
+			indicesOfCoveredLearningObjects = ruleSet.getRuleCharacteristics(ruleIndex).getRuleCoverageInformation().getIndicesOfCoveredObjects();
+			decisionsOfCoveredLearningObjects = ruleSet.getRuleCharacteristics(ruleIndex).getRuleCoverageInformation().getDecisionsOfCoveredObjects();
 			
-			for (int coveredObjectIndex : indicesOfCoveredObjects) {
+			for (int coveredObjectIndex : indicesOfCoveredLearningObjects) {
 				//decision of object covered by current rule is equal to downLimit 
-				if (((SimpleDecision)decisionsOfCoveredObjects.get(coveredObjectIndex)).getEvaluation().isEqualTo(evaluation) == TernaryLogicValue.TRUE) {
-					indicesOfCoveredLearningObjectsWithDecisionEvaluation.add(coveredObjectIndex);
+				if (((SimpleDecision)decisionsOfCoveredLearningObjects.get(coveredObjectIndex)).getEvaluation().isEqualTo(decisionEvaluation) == TernaryLogicValue.TRUE) {
+					indicesOfCoveredLearningObjectsWithDecisionEvaluation.add(coveredObjectIndex); //ensure learning object is in the set (will do nothing if already present there)
 				}
 			}
 		}

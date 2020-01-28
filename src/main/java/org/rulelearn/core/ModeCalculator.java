@@ -16,11 +16,14 @@
 
 package org.rulelearn.core;
 
-import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.FieldDistribution;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.IntegerField;
+import org.rulelearn.types.PairField;
+import org.rulelearn.types.RealField;
+import org.rulelearn.types.SimpleField;
 import org.rulelearn.types.UnknownSimpleField;
 
 /**
@@ -34,7 +37,7 @@ import org.rulelearn.types.UnknownSimpleField;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class ModeCalculator extends MeanCalculator { //TODO override more methods - calculate mode also for integer and real fields, etc.
+public class ModeCalculator extends MeanCalculator {
 	
 	/**
 	 * Distribution of {@link EvaluationField evaluation fields} in a subset of domain (value set) of considered evaluation attribute.
@@ -51,19 +54,137 @@ public class ModeCalculator extends MeanCalculator { //TODO override more method
 		super();
 		this.fieldDistribution = Precondition.notNull(fieldDistribution, "Field distribution for mode calculator is null.");
 	}
-
+	
 	/**
-	 * Calculates modal value of the given two {@link EnumerationField enumeration fields} (in any order). 
-	 * The {@link AttributePreferenceType preference type} of returned field is the same as the preference type of the first field.
+	 * Chooses more frequent evaluations of the two.
+	 * If both evaluations have the same number of occurrences in the distribution, then returns the first evaluation.
+	 * 
+	 * @param firstField first field
+	 * @param secondField second field
+	 * 
+	 * @return more frequent evaluation field of the two
+	 * @throws ValueNotFoundException if both given evaluations for calculating modal value have not been found in the {@link #getFieldDistribution() field distribution}
+	 *         set in {@link #ModeCalculator(FieldDistribution) class constructor}
+	 */
+	private EvaluationField chooseMoreFrequentEvaluationField(EvaluationField firstField, EvaluationField secondField) {
+		int firstFieldCount = fieldDistribution.getCount(firstField);
+		int secondFieldCount = fieldDistribution.getCount(secondField);
+		
+		if (firstFieldCount == 0 && secondFieldCount == 0) {
+			throw new ValueNotFoundException("None of the evaluations for calculating modal value have been found in the field distribution.");
+		}
+		
+		if (firstFieldCount > secondFieldCount) {
+			return firstField;
+		} else {
+			if (firstFieldCount < secondFieldCount) {
+				return secondField;
+			} else { //firstFieldCount == secondFieldCount
+				return firstField; //TODO: draw one of the two fields, make result deterministic using a seed
+			}
+		}
+	}
+	
+	/**
+	 * Calculates modal value of the given two {@link IntegerField integer fields} (in any order). Uses {@link #getFieldDistribution() field distribution} set in constructor. 
+	 * If both evaluations have the same number of occurrences in the distribution, then returns the first evaluation.
 	 * 
 	 * @param firstField first field to make calculations
 	 * @param secondEvaluationField second field to make calculations
-	 * @return modal value of the arguments or {@link UnknownSimpleField} if second field is unknown
+	 * @return modal value of the arguments, or second field if it is an instance of {@link UnknownSimpleField},
+	 *         or {@code null} if both given evaluations for calculating modal value have not been found in the {@link #getFieldDistribution() field distribution}
+	 *         set in {@link #ModeCalculator(FieldDistribution) class constructor}
 	 * 
-	 * @throws ClassCastException when it is impossible to cast second field to {@link EnumerationField}
-	 * @throws NullPointerException when at least one of the given fields is {@code null}
-	 * @throws InvalidValueException when given fields have different {@link ElementList element lists}
-	 * @throws ValueNotFoundException if any of the enumeration fields for calculating median value is not found in the {@link #getFieldDistribution() field distribution}
+	 * @throws ClassCastException if it is impossible to cast second field to {@link IntegerField}
+	 * @throws NullPointerException if at least one of the given fields is {@code null}
+	 * @throws ValueNotFoundException if both given evaluations for calculating modal value have not been found in the {@link #getFieldDistribution() field distribution}
+	 *         set in {@link #ModeCalculator(FieldDistribution) class constructor}
+	 */
+	@Override
+	public EvaluationField calculate(IntegerField firstField, EvaluationField secondEvaluationField) {
+		EvaluationField mode;
+		IntegerField secondField;
+		
+		if ((firstField == null) || (secondEvaluationField == null)) {
+			throw new NullPointerException("At least one of integer fields for calculating modal value is null.");
+		}
+		else if (secondEvaluationField instanceof UnknownSimpleField) {
+			mode = secondEvaluationField;
+		}
+		else {
+			secondField = (IntegerField)secondEvaluationField;
+			
+			if ((firstField.isEqualTo(secondField) == TernaryLogicValue.TRUE)) {
+				mode = firstField;
+			}
+			else {
+				try {
+					mode = chooseMoreFrequentEvaluationField(firstField, secondField);
+				} catch (ValueNotFoundException exception) {
+					return null;
+				}
+			}
+		}
+		return mode;
+	}
+	
+	/**
+	 * Calculates modal value of the given two {@link RealField real fields} (in any order). Uses {@link #getFieldDistribution() field distribution} set in constructor. 
+	 * If both evaluations have the same number of occurrences in the distribution, then returns the first evaluation.
+	 * 
+	 * @param firstField first field to make calculations
+	 * @param secondEvaluationField second field to make calculations
+	 * @return modal value of the arguments, or second field if it is an instance of {@link UnknownSimpleField},
+	 *         or {@code null} if both given evaluations for calculating modal value have not been found in the {@link #getFieldDistribution() field distribution}
+	 *         set in {@link #ModeCalculator(FieldDistribution) class constructor}
+	 * 
+	 * @throws ClassCastException if it is impossible to cast second field to {@link RealField}
+	 * @throws NullPointerException if at least one of the given fields is {@code null}
+	 * @throws ValueNotFoundException if both given evaluations for calculating modal value have not been found in the {@link #getFieldDistribution() field distribution}
+	 *         set in {@link #ModeCalculator(FieldDistribution) class constructor}
+	 */
+	@Override
+	public EvaluationField calculate(RealField firstField, EvaluationField secondEvaluationField) {
+		EvaluationField mode;
+		RealField secondField;
+		
+		if ((firstField == null) || (secondEvaluationField == null)) {
+			throw new NullPointerException("At least one of real fields for calculating modal value is null.");
+		}
+		else if (secondEvaluationField instanceof UnknownSimpleField) {
+			mode = secondEvaluationField;
+		}
+		else {
+			secondField = (RealField)secondEvaluationField;
+			
+			if ((firstField.isEqualTo(secondField) == TernaryLogicValue.TRUE)) {
+				mode = firstField;
+			}
+			else {
+				try {
+					mode = chooseMoreFrequentEvaluationField(firstField, secondField);
+				} catch (ValueNotFoundException exception) {
+					return null;
+				}
+			}
+		}
+		return mode;
+	}
+
+	/**
+	 * Calculates modal value of the given two {@link EnumerationField enumeration fields} (in any order). Uses {@link #getFieldDistribution() field distribution} set in constructor. 
+	 * If both evaluations have the same number of occurrences in the distribution, then returns the first evaluation.
+	 * 
+	 * @param firstField first field to make calculations
+	 * @param secondEvaluationField second field to make calculations
+	 * @return modal value of the arguments, or second field if it is an instance of {@link UnknownSimpleField},
+	 *         or {@code null} if both given evaluations for calculating modal value have not been found in the {@link #getFieldDistribution() field distribution}
+	 *         set in {@link #ModeCalculator(FieldDistribution) class constructor}
+	 * 
+	 * @throws ClassCastException if it is impossible to cast second field to {@link EnumerationField}
+	 * @throws NullPointerException if at least one of the given fields is {@code null}
+	 * @throws InvalidValueException if given fields have different {@link ElementList element lists}
+	 * @throws ValueNotFoundException if both given evaluations for calculating modal value have not been found in the {@link #getFieldDistribution() field distribution}
 	 *         set in {@link #ModeCalculator(FieldDistribution) class constructor}
 	 */
 	@Override
@@ -72,7 +193,7 @@ public class ModeCalculator extends MeanCalculator { //TODO override more method
 		EnumerationField secondField;
 		
 		if ((firstField == null) || (secondEvaluationField == null)) {
-			throw new NullPointerException("At least one of enumeration fields for calculating median value is null.");
+			throw new NullPointerException("At least one of enumeration fields for calculating modal value is null.");
 		}
 		else if (secondEvaluationField instanceof UnknownSimpleField) {
 			mode = secondEvaluationField;
@@ -89,21 +210,60 @@ public class ModeCalculator extends MeanCalculator { //TODO override more method
 				}
 			}
 			else if (firstField.hasEqualHashOfElementList(secondField) == TernaryLogicValue.TRUE) {
-				int firstFieldCount = fieldDistribution.getCount(firstField);
-				int secondFieldCount = fieldDistribution.getCount(secondField);
-				
-				if (firstFieldCount > secondFieldCount) {
-					return firstField;
-				} else {
-					if (firstFieldCount < secondFieldCount) {
-						return secondField;
-					} else { //firstFieldCount == secondFieldCount
-						return firstField; //TODO: draw one of the two fields, make result deterministic using a seed
-					}
+				try {
+					mode = chooseMoreFrequentEvaluationField(firstField, secondField);
+				} catch (ValueNotFoundException exception) {
+					return null;
 				}
 			} //else if
 			else {
 				throw new InvalidValueException("Enumeration fields have different element lists.");
+			}
+		}
+		return mode;
+	}
+	
+	/**
+	 * Calculates modal value of the given two {@link PairField pair fields} (in any order). Uses {@link #getFieldDistribution() field distribution} set in constructor. 
+	 * If both evaluations have the same number of occurrences in the distribution, then returns the first evaluation.
+	 * 
+	 * @param firstField first field to make calculations
+	 * @param secondEvaluationField second field to make calculations
+	 * @return modal value of the arguments,
+	 *         or {@code null} if both given evaluations for calculating modal value have not been found in the {@link #getFieldDistribution() field distribution}
+	 *         set in {@link #ModeCalculator(FieldDistribution) class constructor}
+	 * 
+	 * @throws InvalidTypeException if second field is an instance of {@link UnknownSimpleField}
+	 * @throws ClassCastException if second field is not an instance of {@link PairField}
+	 * @throws NullPointerException if at least one of the given fields is {@code null}
+	 * @throws ValueNotFoundException if both given evaluations for calculating modal value have not been found in the {@link #getFieldDistribution() field distribution}
+	 *         set in {@link #ModeCalculator(FieldDistribution) class constructor}
+	 */
+	@Override
+	public EvaluationField calculate(PairField<? extends SimpleField> firstField, EvaluationField secondEvaluationField) {
+		EvaluationField mode;
+		
+		if ((firstField == null) || (secondEvaluationField == null)) {
+			throw new NullPointerException("At least one of pair fields for calculating modal value is null.");
+		}
+		else if (secondEvaluationField instanceof UnknownSimpleField) {
+			//mode = secondEvaluationField;
+			throw new InvalidTypeException("Pair field should not be compared in mode calculator with an unknown field.");
+		}
+		else {
+			if (secondEvaluationField instanceof PairField<?>) {
+				if ((firstField.isEqualTo(secondEvaluationField) == TernaryLogicValue.TRUE)) {
+					mode = firstField;
+				}
+				else {
+					try {
+						mode = chooseMoreFrequentEvaluationField(firstField, secondEvaluationField);
+					} catch (ValueNotFoundException exception) {
+						return null;
+					}
+				}
+			} else {
+				throw new ClassCastException("Second evaluation field for calculating modal value is not a pair field.");
 			}
 		}
 		return mode;
