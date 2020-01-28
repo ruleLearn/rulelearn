@@ -27,15 +27,21 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.Decision;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.data.SimpleDecision;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.IntegerField;
 import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
@@ -638,6 +644,59 @@ class RuleConditionsTest {
 		assertTrue(ruleConditions.containsCondition(condition1));
 		assertFalse(ruleConditions.containsCondition(condition2)); //!
 		assertTrue(ruleConditions.containsCondition(condition3));
+	}
+	
+	/**
+	 * Test method for {@link RuleConditions#getRuleCoverageInformation()}.
+	 */
+	@Test
+	void testGetRuleCoverageInformation() {
+		int positiveObjectIndices[] = {0, 2, 5}; //union "class at least 4"
+		
+		int coveredObjectIndices[] = {0, 1, 2, 3, 4, 5}; //3 positive, 3 negative objects
+		Decision[] coveredObjectsDecisions = {
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.GAIN), 4),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN), 4),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(6, AttributePreferenceType.GAIN), 4),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN), 4),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), 4),
+				new SimpleDecision(IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.GAIN), 4)
+		};
+		if (coveredObjectIndices.length != coveredObjectsDecisions.length) {
+			fail("Different number of indices of covered objects and their decisions.");
+		}
+		IntList expectedIndicesOfCoveredObjects = new IntArrayList();
+		Int2ObjectMap<Decision> expectedDecisionsOfCoveredObjects = new Int2ObjectOpenHashMap<Decision>();
+		
+		InformationTable informationTable = Mockito.mock(InformationTable.class);
+		int informationTableSize = coveredObjectIndices.length;
+		Mockito.when(informationTable.getNumberOfObjects()).thenReturn(informationTableSize);
+		
+		int objectIndex;
+		for (int i = 0; i < coveredObjectIndices.length; i++) {
+			objectIndex = coveredObjectIndices[i];
+			Mockito.when(informationTable.getDecision(objectIndex)).thenReturn(coveredObjectsDecisions[i]);
+			expectedIndicesOfCoveredObjects.add(objectIndex);
+			expectedDecisionsOfCoveredObjects.put(objectIndex, coveredObjectsDecisions[i]);
+		}
+		
+		IntSet indicesOfPositiveObjects = new IntOpenHashSet();
+		for (int positiveObjectIndex : positiveObjectIndices) {
+			indicesOfPositiveObjects.add(positiveObjectIndex);
+		}
+		
+		//empty rule conditions cover all the objects from learning information table
+		RuleConditions ruleConditions = new RuleConditions(informationTable, indicesOfPositiveObjects, indicesOfPositiveObjects, indicesOfPositiveObjects, RuleType.CERTAIN, RuleSemantics.AT_LEAST);
+		RuleCoverageInformation ruleCoverageInformation = ruleConditions.getRuleCoverageInformation();
+		
+		assertEquals(ruleCoverageInformation.getIndicesOfPositiveObjects(), indicesOfPositiveObjects);
+		assertEquals(ruleCoverageInformation.getIndicesOfNeutralObjects().size(), 0);
+		assertEquals(ruleCoverageInformation.getIndicesOfCoveredObjects(), expectedIndicesOfCoveredObjects);
+		assertEquals(ruleCoverageInformation.getAllObjectsCount(), informationTableSize);
+		
+		Int2ObjectMap<Decision> decisionsOfCoveredObjects = ruleCoverageInformation.getDecisionsOfCoveredObjects();
+		
+		assertEquals(decisionsOfCoveredObjects, expectedDecisionsOfCoveredObjects);
 	}
 
 }

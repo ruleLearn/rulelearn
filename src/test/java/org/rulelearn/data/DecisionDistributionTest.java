@@ -17,7 +17,11 @@
 package org.rulelearn.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -230,7 +234,7 @@ class DecisionDistributionTest {
 	void testGetDifferentDecisionsCount01() {
 		DecisionDistribution decisionDistribution = new DecisionDistribution();
 		
-		Decision decision1  = new SimpleDecision(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN), 2);
+		Decision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN), 2);
 		Decision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN), 2); //equal decision
 		
 		Decision decision3 = new SimpleDecision(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), 2);
@@ -243,6 +247,307 @@ class DecisionDistributionTest {
 		decisionDistribution.increaseCount(decision4);
 		
 		assertEquals(decisionDistribution.getDifferentDecisionsCount(), 2);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.DecisionDistribution#getMode()}.
+	 */
+	@Test
+	void testGetMode01() {
+		DecisionDistribution decisionDistribution = new DecisionDistribution();
+		int decisionAttributeIndex = 2;
+		
+		Decision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		Decision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN), decisionAttributeIndex); //equal decision
+		
+		Decision decision3 = new SimpleDecision(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		Decision decision4 = new SimpleDecision(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), decisionAttributeIndex); //equal decision
+		Decision decision5 = new SimpleDecision(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), decisionAttributeIndex); //equal decision
+		
+		decisionDistribution.increaseCount(decision1);
+		decisionDistribution.increaseCount(decision2);
+		
+		decisionDistribution.increaseCount(decision3);
+		decisionDistribution.increaseCount(decision4);
+		decisionDistribution.increaseCount(decision5);
+		
+		List<Decision> mode = decisionDistribution.getMode();
+		assertEquals(mode.size(), 1);
+		assertEquals(mode.get(0), decision3);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.DecisionDistribution#getMode()}.
+	 */
+	@Test
+	void testGetMode02() {
+		DecisionDistribution decisionDistribution = new DecisionDistribution();
+		int decisionAttributeIndex = 2;
+		
+		Decision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 2; i++) {
+			decisionDistribution.increaseCount(decision1);
+		}
+		
+		Decision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 4; i++) {
+			decisionDistribution.increaseCount(decision2);
+		}
+		
+		Decision decision3 = new SimpleDecision(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 3; i++) {
+			decisionDistribution.increaseCount(decision3);
+		}
+		
+		List<Decision> mode = decisionDistribution.getMode();
+		assertEquals(mode.size(), 1);
+		assertEquals(mode.get(0), decision2);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.DecisionDistribution#getMode()}.
+	 */
+	@Test
+	void testGetMode03() {
+		DecisionDistribution decisionDistribution = new DecisionDistribution();
+		int decisionAttributeIndex = 2;
+		
+		Decision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 5; i++) {
+			decisionDistribution.increaseCount(decision1);
+		}
+		
+		Decision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 4; i++) {
+			decisionDistribution.increaseCount(decision2);
+		}
+		
+		Decision decision3 = new SimpleDecision(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 5; i++) {
+			decisionDistribution.increaseCount(decision3);
+		}
+		
+		List<Decision> mode = decisionDistribution.getMode();
+		assertEquals(mode.size(), 2);
+		assertTrue(mode.contains(decision1));
+		assertTrue(mode.contains(decision3));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.DecisionDistribution#getMode()}.
+	 */
+	@Test
+	void testGetMode04() {
+		DecisionDistribution decisionDistribution = new DecisionDistribution();
+		int decisionAttributeIndex = 2;
+		
+		Decision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 5; i++) {
+			decisionDistribution.increaseCount(decision1);
+		}
+		
+		Decision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 3; i++) {
+			decisionDistribution.increaseCount(decision2);
+		}
+		
+		Decision decision3 = new SimpleDecision(IntegerFieldFactory.getInstance().create(3, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 5; i++) {
+			decisionDistribution.increaseCount(decision3);
+		}
+		
+		Decision decision4 = new SimpleDecision(IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 6; i++) {
+			decisionDistribution.increaseCount(decision4);
+		}
+		
+		Decision decision5 = new SimpleDecision(IntegerFieldFactory.getInstance().create(5, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 6; i++) {
+			decisionDistribution.increaseCount(decision5);
+		}
+		
+		List<Decision> mode = decisionDistribution.getMode();
+		assertEquals(mode.size(), 2);
+		assertTrue(mode.contains(decision4));
+		assertTrue(mode.contains(decision5));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.DecisionDistribution#getMode()}.
+	 */
+	@Test
+	void testGetMode05() {
+		DecisionDistribution decisionDistribution = new DecisionDistribution();
+		assertNull(decisionDistribution.getMode()); //no mode for an empty distribution
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.DecisionDistribution#getMedian(Decision[])}.
+	 */
+	@Test
+	void testGetMedian01() {
+		DecisionDistribution decisionDistribution = new DecisionDistribution();
+		int decisionAttributeIndex = 4;
+		
+		Decision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 6; i++) {
+			decisionDistribution.increaseCount(decision1);
+		}
+		
+		Decision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 5; i++) {
+			decisionDistribution.increaseCount(decision2);
+		}
+		
+		Decision median = decisionDistribution.getMedian(new Decision[] {decision1, decision2});
+		assertEquals(median, decision1);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.DecisionDistribution#getMedian(Decision[])}.
+	 */
+	@Test
+	void testGetMedian02() {
+		DecisionDistribution decisionDistribution = new DecisionDistribution();
+		int decisionAttributeIndex = 4;
+		
+		Decision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 5; i++) {
+			decisionDistribution.increaseCount(decision1);
+		}
+		
+		Decision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 6; i++) {
+			decisionDistribution.increaseCount(decision2);
+		}
+		
+		Decision median = decisionDistribution.getMedian(new Decision[] {decision1, decision2});
+		assertEquals(median, decision2);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.DecisionDistribution#getMedian(Decision[])}.
+	 */
+	@Test
+	void testGetMedian03() {
+		DecisionDistribution decisionDistribution = new DecisionDistribution();
+		int decisionAttributeIndex = 4;
+		
+		Decision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 5; i++) {
+			decisionDistribution.increaseCount(decision1);
+		}
+		
+		Decision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 5; i++) {
+			decisionDistribution.increaseCount(decision2);
+		}
+		
+		Decision median = decisionDistribution.getMedian(new Decision[] {decision1, decision2});
+		assertEquals(median, decision1);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.DecisionDistribution#getMedian(Decision[])}.
+	 */
+	@Test
+	void testGetMedian04() {
+		DecisionDistribution decisionDistribution = new DecisionDistribution();
+		int decisionAttributeIndex = 6;
+		
+		Decision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 100; i++) {
+			decisionDistribution.increaseCount(decision1);
+		}
+		
+		Decision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(100, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 100; i++) {
+			decisionDistribution.increaseCount(decision2);
+		}
+		
+		Decision median = decisionDistribution.getMedian(new Decision[] {decision1, decision2});
+		assertEquals(median, decision1);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.DecisionDistribution#getMedian(Decision[])}.
+	 */
+	@Test
+	void testGetMedian05() {
+		DecisionDistribution decisionDistribution = new DecisionDistribution();
+		int decisionAttributeIndex = 6;
+		
+		Decision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 100; i++) {
+			decisionDistribution.increaseCount(decision1);
+		}
+		
+		Decision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 100; i++) {
+			decisionDistribution.increaseCount(decision2);
+		}
+		
+		Decision decision3 = new SimpleDecision(IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 100; i++) {
+			decisionDistribution.increaseCount(decision3);
+		}
+		
+		Decision median = decisionDistribution.getMedian(new Decision[] {decision1, decision2, decision3});
+		assertEquals(median, decision2);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.DecisionDistribution#getMedian(Decision[])}.
+	 */
+	@Test
+	void testGetMedian06() {
+		DecisionDistribution decisionDistribution = new DecisionDistribution();
+		int decisionAttributeIndex = 6;
+		
+		Decision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 100; i++) {
+			decisionDistribution.increaseCount(decision1);
+		}
+		
+		Decision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 99; i++) {
+			decisionDistribution.increaseCount(decision2);
+		}
+		
+		Decision decision3 = new SimpleDecision(IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 200; i++) {
+			decisionDistribution.increaseCount(decision3);
+		}
+		
+		Decision median = decisionDistribution.getMedian(new Decision[] {decision1, decision2, decision3});
+		assertEquals(median, decision3);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.data.DecisionDistribution#getMedian(Decision[])}.
+	 */
+	@Test
+	void testGetMedian07() {
+		DecisionDistribution decisionDistribution = new DecisionDistribution();
+		int decisionAttributeIndex = 6;
+		
+		Decision decision1 = new SimpleDecision(IntegerFieldFactory.getInstance().create(0, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 100; i++) {
+			decisionDistribution.increaseCount(decision1);
+		}
+		
+		Decision decision2 = new SimpleDecision(IntegerFieldFactory.getInstance().create(1, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 100; i++) {
+			decisionDistribution.increaseCount(decision2);
+		}
+		
+		Decision decision3 = new SimpleDecision(IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN), decisionAttributeIndex);
+		for (int i = 0; i < 200; i++) {
+			decisionDistribution.increaseCount(decision3);
+		}
+		
+		Decision median = decisionDistribution.getMedian(new Decision[] {decision1, decision2, decision3});
+		assertEquals(median, decision2);
 	}
 
 }

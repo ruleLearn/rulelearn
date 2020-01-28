@@ -22,7 +22,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.rulelearn.data.Decision;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -44,20 +47,28 @@ class ComputableRuleCharacteristicsTest {
 		IntSet indicesOfPositiveObjects = new IntLinkedOpenHashSet(new int[] {0, 2, 3, 7, 10, 12});
 		IntSet indicesOfNeutralObjects = new IntLinkedOpenHashSet(new int[] {1, 8, 11});
 		IntList indicesOfCoveredObjects = new IntArrayList(new int[] {0, 1, 3, 5, 7, 8, 9, 11, 12});
+		@SuppressWarnings("unchecked")
+		Int2ObjectMap<Decision> decisionsOfCoveredObjects = Mockito.mock(Int2ObjectOpenHashMap.class);
+		Mockito.when(decisionsOfCoveredObjects.size()).thenReturn(indicesOfCoveredObjects.size());
 		int allObjectsCount = 13;
 		
 		computableRuleCharacteristics01 = new ComputableRuleCharacteristics(
-				new RuleCoverageInformation(indicesOfPositiveObjects, indicesOfNeutralObjects, indicesOfCoveredObjects, allObjectsCount));
+				new RuleCoverageInformation(indicesOfPositiveObjects, indicesOfNeutralObjects, indicesOfCoveredObjects,
+						decisionsOfCoveredObjects, allObjectsCount));
 		
 		//-----
 		
 		indicesOfPositiveObjects = new IntLinkedOpenHashSet(new int[] {0, 3, 6, 7, 9, 12, 14, 15});
 		indicesOfNeutralObjects = new IntLinkedOpenHashSet(new int[] {1, 4, 10, 16});
 		indicesOfCoveredObjects = new IntArrayList(new int[] {0, 1, 2, 3, 4, 5, 7, 9, 10, 11, 12, 13, 15});
+		@SuppressWarnings("unchecked")
+		Int2ObjectMap<Decision> decisionsOfCoveredObjects2 = Mockito.mock(Int2ObjectOpenHashMap.class);
+		Mockito.when(decisionsOfCoveredObjects2.size()).thenReturn(indicesOfCoveredObjects.size());
 		allObjectsCount = 18;
 		
 		computableRuleCharacteristics02 = new ComputableRuleCharacteristics(
-				new RuleCoverageInformation(indicesOfPositiveObjects, indicesOfNeutralObjects, indicesOfCoveredObjects, allObjectsCount));
+				new RuleCoverageInformation(indicesOfPositiveObjects, indicesOfNeutralObjects, indicesOfCoveredObjects,
+						decisionsOfCoveredObjects2, allObjectsCount));
 	}
 
 	/**

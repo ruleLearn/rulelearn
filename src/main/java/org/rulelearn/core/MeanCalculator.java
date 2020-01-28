@@ -46,9 +46,9 @@ public class MeanCalculator implements EvaluationFieldCalculator {
 	 * 
 	 * @param firstField first field to make calculations 
 	 * @param secondField second field to make calculations
-	 * @return mean of arguments or {@link UnknownSimpleField} if second field is unknown
-	 * @throws ClassCastException when it is impossible to cast second field to {@link IntegerField}
-	 * @throws NullPointerException when at least one of fields is {@code null}
+	 * @return mean of arguments, or second field if it is an instance of {@link UnknownSimpleField}
+	 * @throws ClassCastException if it is impossible to cast second field to {@link IntegerField}
+	 * @throws NullPointerException if at least one of fields is {@code null}
 	 */
 	@Override
 	public EvaluationField calculate(IntegerField firstField, EvaluationField secondField) {
@@ -76,9 +76,9 @@ public class MeanCalculator implements EvaluationFieldCalculator {
 	 * 
 	 * @param firstField first field to make calculations 
 	 * @param secondField second field to make calculations
-	 * @return mean of arguments or {@link UnknownSimpleField} if second field is unknown
-	 * @throws ClassCastException when it is impossible to cast second field to {@link RealField}
-	 * @throws NullPointerException when at least one of fields is {@code null}
+	 * @return mean of arguments, or second field if it is an instance of {@link UnknownSimpleField}
+	 * @throws ClassCastException if it is impossible to cast second field to {@link RealField}
+	 * @throws NullPointerException if at least one of fields is {@code null}
 	 */
 	@Override
 	public EvaluationField calculate(RealField firstField, EvaluationField secondField) {
@@ -106,10 +106,10 @@ public class MeanCalculator implements EvaluationFieldCalculator {
 	 * 
 	 * @param firstField first field to make calculations 
 	 * @param secondField second field to make calculations
-	 * @return mean of arguments or {@link UnknownSimpleField} if second field is unknown
-	 * @throws ClassCastException when it is impossible to cast second field to {@link EnumerationField}
-	 * @throws NullPointerException when at least one of fields is {@code null}
-	 * @throws InvalidValueException when fields have different element lists {@link ElementList}
+	 * @return mean of arguments, or second field if it is an instance of {@link UnknownSimpleField}
+	 * @throws ClassCastException if it is impossible to cast second field to {@link EnumerationField}
+	 * @throws NullPointerException if at least one of fields is {@code null}
+	 * @throws InvalidValueException if fields have different element lists {@link ElementList}
 	 */
 	@Override
 	public EvaluationField calculate(EnumerationField firstField, EvaluationField secondField) {
@@ -145,12 +145,12 @@ public class MeanCalculator implements EvaluationFieldCalculator {
 	/**
 	 * Calculates mean for {@link PairField pair fields}. 
 	 * The {@link AttributePreferenceType preference type} of returned field is the same as the preference type of the first field.
-	 * Throws {@link UnsupportedOperationException}.
+	 * Currently throws {@link UnsupportedOperationException}.
 	 * 
 	 * @param firstField first field to make calculations 
 	 * @param secondField second field to make calculations
-	 * @return mean of arguments or {@link UnknownSimpleField} if second field is unknown
-	 * @throws ClassCastException when it is impossible to cast second field to {@link PairField}
+	 * @return mean of arguments, or second field if it is an instance of {@link UnknownSimpleField}
+	 * @throws ClassCastException if it is impossible to cast second field to {@link PairField}
 	 */
 	@Override
 	public EvaluationField calculate(PairField<? extends SimpleField> firstField, EvaluationField secondField) {
@@ -173,7 +173,7 @@ public class MeanCalculator implements EvaluationFieldCalculator {
 	 * 
 	 * @param firstField first field to make calculations 
 	 * @param secondField second field to make calculations
-	 * @return first field {@link UnknownSimpleFieldMV15}
+	 * @return first field
 	 */
 	@Override
 	public EvaluationField calculate(UnknownSimpleFieldMV15 firstField, EvaluationField secondField) {
@@ -185,7 +185,7 @@ public class MeanCalculator implements EvaluationFieldCalculator {
 	 * 
 	 * @param firstField first field to make calculations 
 	 * @param secondField second field to make calculations
-	 * @return first field {@link UnknownSimpleFieldMV2}
+	 * @return first field
 	 */
 	@Override
 	public EvaluationField calculate(UnknownSimpleFieldMV2 firstField, EvaluationField secondField) {

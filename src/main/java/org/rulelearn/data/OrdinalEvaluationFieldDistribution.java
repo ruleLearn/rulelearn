@@ -109,13 +109,14 @@ public class OrdinalEvaluationFieldDistribution extends FieldDistribution {
 			cumulativeSums[i] = cumulativeSum;
 		}
 
-		int roundedHalfOfCumulativeSum = Math.round(cumulativeSum / 2); //rounds 0.5 upwards
+		int roundedHalfOfCumulativeSum = (int)Math.round((double)cumulativeSum / 2); //rounds 0.5 upwards, to point to a proper value if cumulativeSum is odd 
 		median = null;
 
 		for (int i = 0; i < cumulativeSums.length; i++) {
-			//TODO: for cumulativeSums[i] == (cumulativeSum / 2) take median randomly
+			//TODO: if cumulativeSum is even, and there is a switch of decision between element cumulativeSum / 2 and cumulativeSum / 2 + 1, then take median randomly, using seed
 			if (cumulativeSums[i] >= roundedHalfOfCumulativeSum) { //median value found
 				median = getEvaluationField(i);
+				break;
 			}
 		}
 		
