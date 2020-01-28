@@ -22,6 +22,9 @@ import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 //TODO: set complementary unions, if possible
 //TODO: constructor allowing to set different thresholds for different upward/downward unions
 
@@ -106,13 +109,28 @@ public abstract class Unions extends ApproximatedSets {
 
 	/**
 	 * Gets quality of approximation of all unions which can be defined for the information table.
+	 * As in general (in presence of missing values) the theorem concerning identity of boundaries
+	 * does not hold, counts an object as inconsistent if it belongs to the boundary of any upward
+	 * or downward union from this container.
 	 * 
 	 * @return quality of approximation of all unions which can be defined for the information table
 	 */
 	@Override
 	public double getQualityOfApproximation() {
-		// TODO: implement
-		return -1;
+		Union[] upwardUnions = getUpwardUnions(true);
+		Union[] downwardUnions = getDownwardUnions(true);
+		
+		int allObjectCount = getInformationTable().getNumberOfObjects();
+		IntSet inconsistentObjectIndices = new IntOpenHashSet();
+		
+		for (Union union : upwardUnions) {
+			inconsistentObjectIndices.addAll(union.getBoundary());
+		}
+		for (Union union : downwardUnions) {
+			inconsistentObjectIndices.addAll(union.getBoundary());
+		}
+		
+		return (double)(allObjectCount - inconsistentObjectIndices.size()) / (double)allObjectCount;
 	}
 	
 	/**
