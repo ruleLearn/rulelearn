@@ -48,14 +48,6 @@ import org.rulelearn.types.UnknownSimpleFieldMV2;
 class UnionsWithSingleLimitingDecisionTest {
 
 	/**
-	 * Test method for {@link Unions#getQualityOfApproximation()}.
-	 */
-	@Test
-	void testGetQualityOfApproximation() {
-		//TODO: implement test
-	}
-
-	/**
 	 * Test method for {@link UnionsWithSingleLimitingDecision#UnionsWithSingleLimitingDecision(InformationTableWithDecisionDistributions, DominanceBasedRoughSetCalculator)}.
 	 * Tests if {@link NullPointerException} is thrown when one of the constructor parameters is {@code null}.
 	 */

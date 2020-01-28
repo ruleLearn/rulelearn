@@ -210,16 +210,19 @@ public abstract class ApproximatedSet {
 			IntSortedSet upperApproximation = this.getUpperApproximation();
 			IntSortedSet lowerApproximation = this.getLowerApproximation();
 			IntSortedSet boundary;
+			int boundarySize = upperApproximation.size() - lowerApproximation.size();
 			
-			boundary = new IntLinkedOpenHashSet(upperApproximation.size() - lowerApproximation.size());
+			boundary = new IntLinkedOpenHashSet(boundarySize);
 			
-			IntBidirectionalIterator iterator = upperApproximation.iterator();
-			int objectIndex;
-			
-			while (iterator.hasNext()) {
-				objectIndex = iterator.nextInt();
-				if (!lowerApproximation.contains(objectIndex)) {
-					boundary.add(objectIndex);
+			if (boundarySize > 0) {
+				IntBidirectionalIterator iterator = upperApproximation.iterator();
+				int objectIndex;
+				
+				while (iterator.hasNext()) {
+					objectIndex = iterator.nextInt();
+					if (!lowerApproximation.contains(objectIndex)) {
+						boundary.add(objectIndex);
+					}
 				}
 			}
 			
