@@ -19,6 +19,7 @@ package org.rulelearn.rules;
 import static org.rulelearn.core.Precondition.notNull;
 
 import org.rulelearn.core.InvalidSizeException;
+import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 
@@ -35,6 +36,21 @@ public class RuleSetWithComputableCharacteristics extends RuleSetWithCharacteris
 	 * Array with rule coverage information for each decision rule stored in this rule set.
 	 */
 	RuleCoverageInformation[] ruleCoverageInformationArray;
+	
+	/**
+	 * Private constructor used to compose rule set with computable characteristics from components.
+	 * Assumes all parameters are correct. Used by {@link #join(RuleSetWithComputableCharacteristics, RuleSetWithComputableCharacteristics)}.
+	 * 
+	 * @param rules rules to be set in constructed rule set
+	 * @param ruleCoverageInformationArray {@link RuleCoverageInformation rule coverage information} array to be set in constructed rule set
+	 * @param computableRuleCharacteristicsArray array of {@link ComputableRuleCharacteristics computable rule characteristics} to be set in constructed rule set;
+	 *        any element can be {@code null}
+	 */
+	private RuleSetWithComputableCharacteristics(Rule[] rules, RuleCoverageInformation[] ruleCoverageInformationArray, ComputableRuleCharacteristics[] computableRuleCharacteristicsArray) {
+		super(rules, true);
+		this.ruleCoverageInformationArray = ruleCoverageInformationArray;
+		this.ruleCharacteristics = computableRuleCharacteristicsArray;
+	}
 	
 	/**
 	 * Constructor storing given rules and rule coverage information for each rule (given arrays get cloned).
@@ -99,6 +115,49 @@ public class RuleSetWithComputableCharacteristics extends RuleSetWithCharacteris
 		for (int i = 0; i < rules.length; i++) {
 			getRuleCharacteristics(i).calculateAllCharacteristics();
 		}
+	}
+	
+	/**
+	 * Gets a new rule set with computable characteristics by joining given two rule sets (with computable rule characteristics).
+	 * The resulting rule set contains rules in the order of given rule sets, i.e., first the rules from the first rule set,
+	 * then the rules from the second rule set. 
+	 * 
+	 * @param ruleSet1 first rule set (with computable rule characteristics) to join
+	 * @param ruleSet2 second rule set (with computable rule characteristics) to join
+	 * @return a new rule set (with computable rule characteristics) composing of rules from the two given rule sets (with computable rule characteristics)
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 */
+	public static RuleSetWithComputableCharacteristics join(RuleSetWithComputableCharacteristics ruleSet1, RuleSetWithComputableCharacteristics ruleSet2) {
+		Precondition.notNull(ruleSet1, "First rule set to join is null.");
+		Precondition.notNull(ruleSet2, "Second rule set to join is null.");
+		
+		int size1 = ruleSet1.size();
+		int size2 = ruleSet2.size();
+		
+		//join rules
+		Rule[] rules = new Rule[size1 + size2];
+		for (int i = 0; i < size1; i++) {
+			rules[i] = ruleSet1.getRule(i);
+		}
+		for (int i = 0; i < size2; i++) {
+			rules[size1 + i] = ruleSet2.getRule(i);
+		}
+		
+		//join rule coverage informations and computable rule characteristics
+		RuleCoverageInformation[] ruleCoverageInformationArray = new RuleCoverageInformation[size1 + size2];
+		ComputableRuleCharacteristics[] computableRuleCharacteristics = new ComputableRuleCharacteristics[size1 + size2];
+		
+		for (int i = 0; i < size1; i++) {
+			ruleCoverageInformationArray[i] = ruleSet1.ruleCoverageInformationArray[i];
+			computableRuleCharacteristics[i] = (ComputableRuleCharacteristics)ruleSet1.ruleCharacteristics[i]; //this cast is safe
+		}
+		for (int i = 0; i < size2; i++) {
+			ruleCoverageInformationArray[size1 + i] = ruleSet2.ruleCoverageInformationArray[i];
+			computableRuleCharacteristics[size1 + i] = (ComputableRuleCharacteristics)ruleSet2.ruleCharacteristics[i]; //this cast is safe
+		}
+		
+		return new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, computableRuleCharacteristics);
 	}
 	
 }

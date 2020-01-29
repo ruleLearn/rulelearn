@@ -16,6 +16,7 @@
 
 package org.rulelearn.rules;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -188,7 +189,73 @@ class RuleSetWithComputableCharacteristicsTest {
 		assertTrue(computableRuleCharacteristics.getRuleCoverageInformation() == ruleCoverageInformation1);
 		
 		assertTrue(computableRuleCharacteristics == ruleSetWithComputableCharacteristics.getRuleCharacteristics(1)); //test if existing object is returned
+	}
+	
+	/**
+	 * Test method for {@link RuleSetWithComputableCharacteristics#join(RuleSetWithComputableCharacteristics, RuleSetWithComputableCharacteristics)}.
+	 */
+	@Test
+	void testJoin() {
+		int size1 = 5; //>=1
+		Rule[] rules1 = new Rule[size1];
+		RuleCoverageInformation[] ruleCoverageInformationArray1 = new RuleCoverageInformation[size1];
+		ComputableRuleCharacteristics[] computableRuleCharacteristics1 = new ComputableRuleCharacteristics[size1];
+		for (int i = 0; i < size1; i++) {
+			rules1[i] = Mockito.mock(Rule.class);
+			ruleCoverageInformationArray1[i] = Mockito.mock(RuleCoverageInformation.class);
+			computableRuleCharacteristics1[i] = Mockito.mock(ComputableRuleCharacteristics.class);
+		}
+		computableRuleCharacteristics1[0] = null; //assume first computable rule characteristics have not been calculated yet
+		computableRuleCharacteristics1[size1 - 1] = null; //assume last computable rule characteristics have not been calculated yet
 		
+		int size2 = 4; //>=1
+		Rule[] rules2 = new Rule[size2];
+		RuleCoverageInformation[] ruleCoverageInformationArray2 = new RuleCoverageInformation[size2];
+		ComputableRuleCharacteristics[] computableRuleCharacteristics2 = new ComputableRuleCharacteristics[size2];
+		for (int i = 0; i < size2; i++) {
+			rules2[i] = Mockito.mock(Rule.class);
+			ruleCoverageInformationArray2[i] = Mockito.mock(RuleCoverageInformation.class);
+			computableRuleCharacteristics2[i] = Mockito.mock(ComputableRuleCharacteristics.class);
+		}
+		computableRuleCharacteristics2[0] = null; //assume first computable rule characteristics have not been calculated yet
+		computableRuleCharacteristics2[size2 - 1] = null; //assume second computable rule characteristics have not been calculated yet
+		
+		RuleSetWithComputableCharacteristics ruleSet1 = new RuleSetWithComputableCharacteristics(rules1, ruleCoverageInformationArray1, true);
+		ruleSet1.ruleCharacteristics = computableRuleCharacteristics1; //override computable rule characteristics
+		
+		RuleSetWithComputableCharacteristics ruleSet2 = new RuleSetWithComputableCharacteristics(rules2, ruleCoverageInformationArray2, true);
+		ruleSet2.ruleCharacteristics = computableRuleCharacteristics2; //override computable rule characteristics
+		
+		RuleSetWithComputableCharacteristics jointRuleSet = RuleSetWithComputableCharacteristics.join(ruleSet1, ruleSet2);
+		
+		assertEquals(jointRuleSet.size(), size1 + size2);
+		assertEquals(jointRuleSet.getRule(0), ruleSet1.getRule(0));
+		assertEquals(jointRuleSet.getRule(1), ruleSet1.getRule(1));
+		assertEquals(jointRuleSet.getRule(2), ruleSet1.getRule(2));
+		assertEquals(jointRuleSet.getRule(3), ruleSet1.getRule(3));
+		assertEquals(jointRuleSet.getRule(4), ruleSet1.getRule(4));
+		assertEquals(jointRuleSet.getRule(5), ruleSet2.getRule(0));
+		assertEquals(jointRuleSet.getRule(6), ruleSet2.getRule(1));
+		assertEquals(jointRuleSet.getRule(7), ruleSet2.getRule(2));
+		assertEquals(jointRuleSet.getRule(8), ruleSet2.getRule(3));
+		assertEquals(jointRuleSet.ruleCoverageInformationArray[0], ruleSet1.ruleCoverageInformationArray[0]);
+		assertEquals(jointRuleSet.ruleCoverageInformationArray[1], ruleSet1.ruleCoverageInformationArray[1]);
+		assertEquals(jointRuleSet.ruleCoverageInformationArray[2], ruleSet1.ruleCoverageInformationArray[2]);
+		assertEquals(jointRuleSet.ruleCoverageInformationArray[3], ruleSet1.ruleCoverageInformationArray[3]);
+		assertEquals(jointRuleSet.ruleCoverageInformationArray[4], ruleSet1.ruleCoverageInformationArray[4]);
+		assertEquals(jointRuleSet.ruleCoverageInformationArray[5], ruleSet2.ruleCoverageInformationArray[0]);
+		assertEquals(jointRuleSet.ruleCoverageInformationArray[6], ruleSet2.ruleCoverageInformationArray[1]);
+		assertEquals(jointRuleSet.ruleCoverageInformationArray[7], ruleSet2.ruleCoverageInformationArray[2]);
+		assertEquals(jointRuleSet.ruleCoverageInformationArray[8], ruleSet2.ruleCoverageInformationArray[3]);
+		assertEquals(jointRuleSet.ruleCharacteristics[0], null);
+		assertEquals(jointRuleSet.ruleCharacteristics[1], ruleSet1.ruleCharacteristics[1]);
+		assertEquals(jointRuleSet.ruleCharacteristics[2], ruleSet1.ruleCharacteristics[2]);
+		assertEquals(jointRuleSet.ruleCharacteristics[3], ruleSet1.ruleCharacteristics[3]);
+		assertEquals(jointRuleSet.ruleCharacteristics[4], null);
+		assertEquals(jointRuleSet.ruleCharacteristics[5], null);
+		assertEquals(jointRuleSet.ruleCharacteristics[6], ruleSet2.ruleCharacteristics[1]);
+		assertEquals(jointRuleSet.ruleCharacteristics[7], ruleSet2.ruleCharacteristics[2]);
+		assertEquals(jointRuleSet.ruleCharacteristics[8], null);
 	}
 
 }
