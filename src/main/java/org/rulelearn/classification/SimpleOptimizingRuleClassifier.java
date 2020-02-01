@@ -118,7 +118,11 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	 * 
 	 * @param ruleSet set of decision rules to be used to classify objects from an information table
 	 * @param defaultClassificationResult default classification result, to be returned by this classifier
-	 *        if it is unable to calculate such result using stored decision rules
+	 *        if it is unable to calculate such result using stored decision rules;
+	 *        if the goal is to classify each object to the most probable class, then modal value in a priori distribution of decision classes
+	 *        should be supplied as a default classification result;
+	 *        if the goal is to classify each object so as to minimize mean absolute error criterion,
+	 *        then median value in a priori distribution of decision classes should be supplied as a default classification result
 	 * @param learningInformationTable learning information table, for which rules from the given rule set have been calculated;
 	 *        this table is necessary for checking which objects support rules that cover classified object
 	 * 
@@ -143,8 +147,6 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	 */
 	@Override
 	public SimpleClassificationResult classify(int objectIndex, InformationTable informationTable) {
-		SimpleClassificationResult result = this.getDefaultClassificationResult(); //set default result, returned if no rule covers considered object
-		
 		Condition<EvaluationField> decisionCondition = null; //decision condition of the current rule
 		EvaluationField upLimit = null; //intersection of limiting evaluations of decision conditions of type ConditionAtLeast
 		EvaluationField downLimit = null; //intersection of limiting evaluations of decision conditions of type ConditionAtMost
@@ -195,27 +197,48 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 			}
 		}
 		
-		// set the result
+		return resolveClassificationResult(upLimit, downLimit, decisionAttributeIndex, indicesOfCoveringAtLeastRules, indicesOfCoveringAtMostRules);
+	}
+	
+	/**
+	 * Computes classification result.
+	 * 
+	 * @param upLimit most cautious common class in the intersection of rules with decision of type {@link ConditionAtLeast}
+	 * @param downLimit most cautious common class in the intersection of rules with decision of type {@link ConditionAtMost}
+	 * @param decisionAttributeIndex index of decision attribute
+	 * @param indicesOfCoveringAtLeastRules indices of at least rules (with decision of type {@link ConditionAtLeast}) from the rule set that cover classified object
+	 * @param indicesOfCoveringAtMostRules indices of at most rules (with decision of type {@link ConditionAtMost}) from the rule set that cover classified object
+	 * 
+	 * @return computed classification result
+	 */
+	SimpleClassificationResult resolveClassificationResult(EvaluationField upLimit, EvaluationField downLimit, int decisionAttributeIndex,
+			IntList indicesOfCoveringAtLeastRules, IntList indicesOfCoveringAtMostRules) {
+		SimpleClassificationResult result;
+		
+		//set the result
 		if (upLimit != null) {
 			if (downLimit != null) {
-				if (upLimit.isEqualTo(downLimit) == TernaryLogicValue.TRUE) {
+				if (upLimit.isEqualTo(downLimit) == TernaryLogicValue.TRUE) { //both limits are set and equal to each other
 					result = new SimpleClassificationResult(new SimpleDecision(upLimit, decisionAttributeIndex));
 				}	
-				else { //both limits are set
+				else { //both limits are set but different
 					//remark that not necessarily downLimit <= upLimit! We can have, e.g., >=2 && <=6 or <=2 && >=6 
 					result = new SimpleClassificationResult(new SimpleDecision(calculateModalDecisionEvaluation(
 							downLimit, upLimit, indicesOfCoveringAtMostRules, indicesOfCoveringAtLeastRules),
 							decisionAttributeIndex));
 				}
 			}
-			else {
+			else { //only upLimit is set
 				result = new SimpleClassificationResult(new SimpleDecision(upLimit, decisionAttributeIndex));
 			}
 		}
-		else if (downLimit != null) {
+		else if (downLimit != null) { //only downLimit is set
 			result = new SimpleClassificationResult(new SimpleDecision(downLimit, decisionAttributeIndex));
 		}
-		
+		else { //no limit is set
+			result = this.getDefaultClassificationResult(); //set default result, returned if no rule covers considered object;
+		}
+
 		return result;
 	}
 	

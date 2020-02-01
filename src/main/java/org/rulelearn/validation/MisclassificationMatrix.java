@@ -98,12 +98,12 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	/**
 	 * Stores number of unknown classification assigned decisions.
 	 */
-	double numberOfUnknownAssignmnets;
+	double numberOfUnknownAssignments;
 	
 	/**
 	 * Stores variance of number of unknown classification assigned decisions.
 	 */
-	double varNumberOfUnknownAssignmnets;
+	double varNumberOfUnknownAssignments;
 	
 	/**
 	 * Stores number of unknown classification original decisions.
@@ -161,8 +161,8 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		varNumberOfCorrectAssignments = 0.0;
 		numberOfIncorrectAssignments = 0.0;
 		varNumberOfIncorrectAssignments = 0.0;
-		numberOfUnknownAssignmnets = 0.0;
-		varNumberOfUnknownAssignmnets = 0.0;
+		numberOfUnknownAssignments = 0.0;
+		varNumberOfUnknownAssignments = 0.0;
 		numberOfUnknownOriginalDecisions = 0.0;
 		varNumberOfUnknownOriginalDecisions = 0.0;
 		numberOfObjectsWithAssignedDecision = 0.0;
@@ -221,7 +221,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 				}
 			}
 			else {
-				numberOfUnknownAssignmnets++;
+				numberOfUnknownAssignments++;
 				// set value in matrix
 				if (!originalDecisions[i].hasAllMissingEvaluations()) { // original decision is known (at least partially) but assigned is not
 					if (unknownAssignedDecisionsCount.containsKey(originalDecisions[i])) {
@@ -264,8 +264,8 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		varNumberOfCorrectAssignments = 0.0;
 		numberOfIncorrectAssignments = 0.0;
 		varNumberOfIncorrectAssignments = 0.0;
-		numberOfUnknownAssignmnets = 0.0;
-		varNumberOfUnknownAssignmnets = 0.0;
+		numberOfUnknownAssignments = 0.0;
+		varNumberOfUnknownAssignments = 0.0;
 		numberOfUnknownOriginalDecisions = 0.0;
 		varNumberOfUnknownOriginalDecisions = 0.0;
 		numberOfObjectsWithAssignedDecision = 0.0;
@@ -351,7 +351,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 			numberOfBothUnknownDecisions += (matrix.numberOfBothUnknownDecisions/n);
 			numberOfCorrectAssignments += (matrix.numberOfCorrectAssignments/n);
 			numberOfIncorrectAssignments += (matrix.numberOfIncorrectAssignments/n);
-			numberOfUnknownAssignmnets += (matrix.numberOfUnknownAssignmnets/n);
+			numberOfUnknownAssignments += (matrix.numberOfUnknownAssignments/n);
 			numberOfUnknownOriginalDecisions += (matrix.numberOfUnknownOriginalDecisions/n);
 			numberOfObjectsWithAssignedDecision += (matrix.numberOfObjectsWithAssignedDecision/n);
 		}
@@ -439,7 +439,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 				varNumberOfBothUnknownDecisions += squareDifferenceAndDivide(numberOfBothUnknownDecisions, matrix.numberOfBothUnknownDecisions, n1);
 				varNumberOfCorrectAssignments += squareDifferenceAndDivide(numberOfCorrectAssignments, matrix.numberOfCorrectAssignments, n1);
 				varNumberOfIncorrectAssignments += squareDifferenceAndDivide(numberOfIncorrectAssignments, matrix.numberOfIncorrectAssignments, n1);
-				varNumberOfUnknownAssignmnets += squareDifferenceAndDivide(numberOfUnknownAssignmnets, matrix.numberOfUnknownAssignmnets, n1);
+				varNumberOfUnknownAssignments += squareDifferenceAndDivide(numberOfUnknownAssignments, matrix.numberOfUnknownAssignments, n1);
 				varNumberOfUnknownOriginalDecisions += squareDifferenceAndDivide(numberOfUnknownOriginalDecisions, matrix.numberOfUnknownOriginalDecisions, n1);
 				varNumberOfObjectsWithAssignedDecision += squareDifferenceAndDivide(numberOfObjectsWithAssignedDecision, matrix.numberOfObjectsWithAssignedDecision, n1);
 			}
@@ -662,7 +662,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	 */
 	@Override
 	public double getNumberOfUnknownAssignments() {
-		return numberOfUnknownAssignmnets;
+		return numberOfUnknownAssignments;
 	}
 	
 	/**
@@ -671,7 +671,7 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 	 * @return standard deviation of number of no (unknown) assignments
 	 */
 	public double getDeviationOfNumberOfUnknownAssignments() {
-		return Math.sqrt(varNumberOfUnknownAssignmnets);
+		return Math.sqrt(varNumberOfUnknownAssignments);
 	}
 	
 	/**

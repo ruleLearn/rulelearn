@@ -966,7 +966,6 @@ public class InformationTable {
 	 *        (i.e., attributes with {@link EnumerationField} {@link EvaluationAttribute#getValueType() value type}
 	 *        and {@link AttributePreferenceType#NONE without preference type}) having 3+ values in their {@link EnumerationField#getElementList() domain},
 	 *        should be binarized
-	 *        
 	 * 
 	 * @return this information table, if there are no attributes eligible to preference order imposition or binarization,
 	 *         or a new information table (with new array of attributes)
