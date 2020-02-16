@@ -113,7 +113,7 @@ class CrossValidatorRealTest {
 							// debug
 							// System.out.println(decisions[k] + " : " + validationTable.getDecision(k));
 						}
-						mMatrices[i] = new OrdinalMisclassificationMatrix(validationTable.getOrderedUniqueFullyDeterminedDecisions(), decisions, validationTable.getDecisions());
+						mMatrices[i] = new OrdinalMisclassificationMatrix(validationTable.getOrderedUniqueFullyDeterminedDecisions(), validationTable.getDecisions(), decisions);
 						System.out.println("Validation table " + ((j*10)+i) + " accuracy: " + mMatrices[i].getAccuracy() + ", MAE: " + mMatrices[i].getMAE());
 					}
 				}
@@ -201,7 +201,7 @@ class CrossValidatorRealTest {
 							// debug
 							// System.out.println(decisions[k] + " : " + validationTable.getDecision(k));
 						}
-						mMatrices[i] = new OrdinalMisclassificationMatrix(validationTable.getOrderedUniqueFullyDeterminedDecisions(), decisions, validationTable.getDecisions());
+						mMatrices[i] = new OrdinalMisclassificationMatrix(validationTable.getOrderedUniqueFullyDeterminedDecisions(), validationTable.getDecisions(), decisions);
 						System.out.println("Validation table " + ((j*10)+i) + " accuracy: " + mMatrices[i].getAccuracy() + ", MAE: " + mMatrices[i].getMAE());
 					}
 				}
@@ -289,7 +289,7 @@ class CrossValidatorRealTest {
 							// debug
 							// System.out.println(decisions[k] + " : " + validationTable.getDecision(k));
 						}
-						mMatrices[i] = new OrdinalMisclassificationMatrix(validationTable.getOrderedUniqueFullyDeterminedDecisions(), decisions, validationTable.getDecisions());
+						mMatrices[i] = new OrdinalMisclassificationMatrix(validationTable.getOrderedUniqueFullyDeterminedDecisions(), validationTable.getDecisions(), decisions);
 						System.out.println("Validation table " + ((j*10)+i) + " accuracy: " + mMatrices[i].getAccuracy() + ", MAE: " + mMatrices[i].getMAE());
 					}
 				}
