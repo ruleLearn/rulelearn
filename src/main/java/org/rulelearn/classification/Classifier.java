@@ -43,6 +43,7 @@ public interface Classifier {
 	 * 
 	 * @param informationTable information table with objects to classify
 	 * @return array with classification results for subsequent objects from the given information table
+	 * 
 	 * @throws NullPointerException if given information table is {@code null}
 	 */
 	public ClassificationResult[] classifyAll(InformationTable informationTable);

@@ -16,10 +16,11 @@
 
 package org.rulelearn.classification;
 
+import static org.rulelearn.core.Precondition.notNull;
+
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.SimpleDecision;
-import static org.rulelearn.core.Precondition.notNull;
 
 /**
  * Simple result of classification of an object from an information table, reflecting its classification to exactly one decision class.
@@ -38,6 +39,7 @@ public class SimpleClassificationResult extends ClassificationResult {
 	 * Constructs this classification result.
 	 * 
 	 * @param suggestedDecision evaluation of an object on the decision attribute (i.e., decision) suggested by a classifier
+	 * @throws NullPointerException if given suggested decision in {@code null}
 	 */
 	public SimpleClassificationResult(SimpleDecision suggestedDecision) {
 		super();

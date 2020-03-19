@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.ModeCalculator;
+import org.rulelearn.core.Precondition;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.Decision;
@@ -108,7 +109,7 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	 */
 	public SimpleOptimizingRuleClassifier(RuleSetWithComputableCharacteristics ruleSet, SimpleClassificationResult defaultClassificationResult) {
 		super(ruleSet, defaultClassificationResult);
-		hasComputableRuleCharacteristics = true;
+		this.hasComputableRuleCharacteristics = true;
 		this.learningInformationTable = null;
 	}
 	
@@ -130,23 +131,31 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	 */
 	public SimpleOptimizingRuleClassifier(RuleSet ruleSet, SimpleClassificationResult defaultClassificationResult, InformationTable learningInformationTable) {
 		super(ruleSet, defaultClassificationResult);
-		hasComputableRuleCharacteristics = false;
+		this.hasComputableRuleCharacteristics = false;
 		this.learningInformationTable = learningInformationTable;
 	}
-	
+
 	/**
-	 * Classifies an object from an information table using rules stored in this classifier.
+	 * {@inheritDoc}
 	 * 
 	 * @param objectIndex {@inheritDoc}
-	 * @param informationTable {@inheritDoc}
+	 * @param informationTable {@inheritDoc} 
+	 * @param rememberIndicesOfCoveringRules {@inheritDoc}
+	 * @param indicesOfCoveringRules {@inheritDoc}
+	 * 
 	 * @return {@inheritDoc}
 	 * 
-	 * @throws NullPointerException {@inheritDoc}
+	 * @throws NullPointerException if given information table is {@code null}
+	 * @throws NullPointerException if {@code rememberIndicesOfCoveringRules == true} and given list is {@code null}
 	 * @throws IndexOutOfBoundsException {@inheritDoc}
-	 * @throws InvalidValueException if limiting evaluations of decision conditions of two rules covering considered object cannot be compared
+	 * @throws InvalidValueException {@inheritDoc} 
 	 */
 	@Override
-	public SimpleClassificationResult classify(int objectIndex, InformationTable informationTable) {
+	SimpleClassificationResult classify(int objectIndex, InformationTable informationTable, boolean rememberIndicesOfCoveringRules, IntList indicesOfCoveringRules) {
+		if (rememberIndicesOfCoveringRules) {
+			Precondition.notNull(indicesOfCoveringRules, "List for remembering indices of covering rules is null.");
+		}
+		
 		Condition<EvaluationField> decisionCondition = null; //decision condition of the current rule
 		EvaluationField upLimit = null; //intersection of limiting evaluations of decision conditions of type ConditionAtLeast
 		EvaluationField downLimit = null; //intersection of limiting evaluations of decision conditions of type ConditionAtMost
@@ -174,7 +183,7 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 							}
 						}
 						catch (UncomparableException ex) {
-							throw new InvalidValueException("Cannot compare limiting evaluations of two decisions of type at least."); 
+							throw new InvalidValueException("Cannot compare limiting evaluations of two decisions of type at least.");
 						}
 					}
 				}
@@ -195,6 +204,11 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 					}
 				}
 			}
+		}
+		
+		if (rememberIndicesOfCoveringRules) { //append to given list indices of all covering rules
+			indicesOfCoveringRules.addAll(indicesOfCoveringAtLeastRules);
+			indicesOfCoveringRules.addAll(indicesOfCoveringAtMostRules);
 		}
 		
 		return resolveClassificationResult(upLimit, downLimit, decisionAttributeIndex, indicesOfCoveringAtLeastRules, indicesOfCoveringAtMostRules);

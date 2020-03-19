@@ -16,8 +16,12 @@
 
 package org.rulelearn.classification;
 
-import org.rulelearn.rules.RuleSet;
 import static org.rulelearn.core.Precondition.notNull;
+
+import org.rulelearn.data.InformationTable;
+import org.rulelearn.rules.RuleSet;
+
+import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Classifier using decision rules to classify objects from an information table.
@@ -30,7 +34,7 @@ public abstract class RuleClassifier extends AbstractClassifier {
 	/**
 	 * Set of decision rules used to classify objects from any information table to which this classifier is applied.
 	 */
-	protected RuleSet ruleSet;
+	RuleSet ruleSet;
 
 	/**
 	 * Constructs this classifier.
@@ -53,5 +57,23 @@ public abstract class RuleClassifier extends AbstractClassifier {
 	public RuleSet getRuleSet() {
 		return ruleSet;
 	}
+	
+	/**
+	 * Classifies an object from an information table, recording indices of covering rules at the given list.
+	 * 
+	 * @param objectIndex index of an object from the given information table
+	 * @param informationTable information table containing the object of interest
+	 * @param indicesOfCoveringRules list to which there are going to be appended indices of rules from the rule set that cover the object indicated by given index (ideally a new empty list);
+	 *        this list has to be not {@code null} and is going to be extended by this method with indices of covering rules (if there are any covering rules);
+	 *        if the list is not empty, existing integer numbers will be left unchanged, and indices of covering rules are going to be appended at the end of the list
+	 * 
+	 * @return classification result for the considered object
+	 * 
+	 * @throws NullPointerException if given information table or list is {@code null}
+	 * @throws IndexOutOfBoundsException if given object index does not correspond to any object (row) stored in the given information table
+	 */
+	public abstract ClassificationResult classify(int objectIndex, InformationTable informationTable, IntList indicesOfCoveringRules);
+	
+//	public abstract ClassificationResult[] classifyAll(InformationTable informationTable, IntList[] arrayOfIndicesOfCoveringRules); //TODO
 
 }

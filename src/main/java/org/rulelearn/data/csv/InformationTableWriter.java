@@ -86,9 +86,10 @@ public class InformationTableWriter {
 	}
 	
 	/**
-	 * Writes objects from the information table passed as parameter to CSV using the writer passed as parameter.
+	 * Writes objects from given information table to CSV using given writer.
 	 * Uses given delimiter.
 	 * If {@code autoCloseWriters} property is {@code true}, closes given writer after all objects are written.
+	 * Calls {@link #writeObjects(InformationTable, Writer, String, boolean)} with the last parameter set to {@code false}.
 	 * 
 	 * @param informationTable information table with objects to be written to CSV
 	 * @param writer writer used to write objects to CSV
@@ -99,6 +100,25 @@ public class InformationTableWriter {
 	 * @throws InvalidValueException if given {@code delimiter} is an empty string
 	 */
 	public void writeObjects(InformationTable informationTable, Writer writer, String delimiter) throws IOException {
+		writeObjects(informationTable, writer, delimiter, false);
+	}
+	
+	/**
+	 * Writes objects from given information table to CSV using given writer.
+	 * Uses given delimiter.
+	 * If {@code autoCloseWriters} property is {@code true}, closes given writer after all objects are written.
+	 * If {@code header} is {@code true}, writes leading header row with names of subsequent attributes.
+	 * 
+	 * @param informationTable information table with objects to be written to CSV
+	 * @param writer writer used to write objects to CSV
+	 * @param delimiter delimiter for subsequent fields in a row
+	 * @param header tells if the first row in produced CSV should be a header row, containing names of subsequent attributes.
+	 * 
+	 * @throws IOException when the writer encounters a problem when writing CSV string with objects
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws InvalidValueException if given {@code delimiter} is an empty string
+	 */
+	public void writeObjects(InformationTable informationTable, Writer writer, String delimiter, boolean header) throws IOException {
 		Precondition.notNull(informationTable, "Cannot write to CSV objects of a null information table.");
 		Precondition.notNull(writer, "Writer for objects of an information table in CSV format is null.");
 		Precondition.notNull(delimiter, "Delimiter for evaluations of objects of an information table in CSV format is null.");
@@ -112,13 +132,25 @@ public class InformationTableWriter {
 		
 		StringBuilder stringBuilder;
 		
+		if (header) { //add header row with attributes' names
+			stringBuilder = new StringBuilder();
+			for (int j = 0; j < numberOfAttrs; j++) {
+				stringBuilder.append(informationTable.getAttribute(j).getName());
+				if (j < numberOfAttrs - 1) { //not the last attribute
+					stringBuilder.append(delimiter);
+				} else { //the last attribute
+					stringBuilder.append("\n");
+				}
+			}
+		}
+		
 		for (int i = 0; i < numberOfObjs; i++) {
 			stringBuilder = new StringBuilder();
 			for (int j = 0; j < numberOfAttrs; j++) {
 				stringBuilder.append(informationTable.getField(i, j));
-				if (j < numberOfAttrs - 1) { //not the last  attribute
+				if (j < numberOfAttrs - 1) { //not the last attribute
 					stringBuilder.append(delimiter);
-				} else { //last attribute
+				} else { //the last attribute
 					stringBuilder.append("\n");
 				}
 			}

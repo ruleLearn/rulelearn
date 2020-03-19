@@ -16,7 +16,9 @@
 
 package org.rulelearn.classification;
 
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.MeanCalculator;
+import org.rulelearn.core.Precondition;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.InformationTable;
@@ -26,6 +28,8 @@ import org.rulelearn.rules.ConditionAtLeast;
 import org.rulelearn.rules.ConditionAtMost;
 import org.rulelearn.rules.RuleSet;
 import org.rulelearn.types.EvaluationField;
+
+import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Simple classifier using decision rules to classify each object from an information table to exactly one decision class.
@@ -71,17 +75,28 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 	}
 	
 	/**
-	 * Classifies an object from an information table using rules stored in this classifier.
+	 * Classifies an object from an information table using rules stored in this classifier. Can remember on the given list indices of covering rules from the rule set.
 	 * 
-	 * @param objectIndex {@inheritDoc}
-	 * @param informationTable {@inheritDoc}
-	 * @return {@inheritDoc}
+	 * @param objectIndex index of an object from the given information table
+	 * @param informationTable information table containing the object of interest 
+	 * @param rememberIndicesOfCoveringRules flag indicating if indices of covering rules should be added to the given list
+	 * @param indicesOfCoveringRules reference to a list where indices of covering rules should be added;
+	 *        if no rule from the rule set covers given object, then no index will be added to the list;
+	 *        used only if {@code rememberIndicesOfCoveringRules == true} - in such case has to be not {@code null} (otherwise a {@link NullPointerException} will be thrown);
+	 *        not used if {@code rememberIndicesOfCoveringRules == false} - in such case may be {@code null}
 	 * 
-	 * @throws NullPointerException {@inheritDoc}
-	 * @throws IndexOutOfBoundsException {@inheritDoc}
+	 * @return simple classification result for the considered object
+	 * 
+	 * @throws NullPointerException if given information table is {@code null}
+	 * @throws NullPointerException if {@code rememberIndicesOfCoveringRules == true} and given list is {@code null}
+	 * @throws IndexOutOfBoundsException if given object index does not correspond to any object (row) stored in the given information table
+	 * @throws InvalidValueException if limiting evaluations of decision conditions of two rules covering considered object cannot be compared
 	 */
-	@Override
-	public SimpleClassificationResult classify(int objectIndex, InformationTable informationTable) {
+	SimpleClassificationResult classify(int objectIndex, InformationTable informationTable, boolean rememberIndicesOfCoveringRules, IntList indicesOfCoveringRules) {
+		if (rememberIndicesOfCoveringRules) {
+			Precondition.notNull(indicesOfCoveringRules, "List for remembering indices of covering rules is null.");
+		}
+		
 		SimpleClassificationResult result = this.getDefaultClassificationResult(); //set default result, returned if no rule covers considered object
 		int decisionAttributeIndex = -1;
 		
@@ -92,7 +107,11 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 		
 		for (int i = 0; i < rulesCount; i++) {
 			if (this.ruleSet.getRule(i).covers(objectIndex, informationTable)) {
+				if (rememberIndicesOfCoveringRules) {
+					indicesOfCoveringRules.add(i); //remember index of covering rule
+				}
 				decision = this.ruleSet.getRule(i).getDecision();
+				
 				if (decisionAttributeIndex == -1) { //TODO: what if decision attribute index changes (for now index from the first covering rule is assigned)
 					decisionAttributeIndex = decision.getAttributeWithContext().getAttributeIndex();
 				}
@@ -107,8 +126,8 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 							}
 						}
 						catch (UncomparableException ex) {
-							//TODO: should we throw an exception here?
-							System.out.println("Uncomparable decision value detected during comparison: " + ex.toString());
+							throw new InvalidValueException("Cannot compare limiting evaluations of two decisions of type at least.");
+							//System.out.println("Uncomparable decision value detected during comparison: " + ex.toString());
 						}
 					}
 				}
@@ -123,8 +142,8 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 							}
 						}
 						catch (UncomparableException ex) {
-							System.out.println("Uncomparable decision value detected during comparison: " + ex.toString());
-							//TODO: should we throw an exception here?
+							throw new InvalidValueException("Cannot compare limiting evaluations of two decisions of type at most.");
+							//System.out.println("Uncomparable decision value detected during comparison: " + ex.toString());
 						}
 					}
 				}
@@ -154,12 +173,29 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 	}
 	
 	/**
+	 * Classifies an object from an information table using rules stored in this classifier.
+	 * 
+	 * @param objectIndex {@inheritDoc}
+	 * @param informationTable {@inheritDoc}
+	 * @return {@inheritDoc}
+	 * 
+	 * @throws NullPointerException {@inheritDoc}
+	 * @throws IndexOutOfBoundsException {@inheritDoc}
+	 * @throws InvalidValueException if limiting evaluations of decision conditions of two rules covering considered object cannot be compared
+	 */
+	@Override
+	public SimpleClassificationResult classify(int objectIndex, InformationTable informationTable) {
+		return classify(objectIndex, informationTable, false, null);
+	}
+	
+	/**
 	 * Classifies all objects from the given information table.
 	 * 
 	 * @param informationTable {@inheritDoc}
 	 * @return {@inheritDoc}
 	 * 
 	 * @throws NullPointerException {@inheritDoc}
+	 * @throws InvalidValueException if limiting evaluations of decision conditions of two rules covering any considered object cannot be compared
 	 */
 	@Override
 	public SimpleClassificationResult[] classifyAll(InformationTable informationTable) {
@@ -169,5 +205,26 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 		}
 		return classificationResults;
 	}
+	
+	/**
+	 * Classifies an object from an information table, recording indices of covering rules at the given list.
+	 * 
+	 * @param objectIndex {@inheritDoc}
+	 * @param informationTable {@inheritDoc}
+	 * @param indicesOfCoveringRules {@inheritDoc}
+	 * 
+	 * @return simple classification result for the considered object
+	 * 
+	 * @throws NullPointerException {@inheritDoc}
+	 * @throws IndexOutOfBoundsException {@inheritDoc}
+	 * @throws InvalidValueException if limiting evaluations of decision conditions of two rules covering considered object cannot be compared
+	 */
+	public SimpleClassificationResult classify(int objectIndex, InformationTable informationTable, IntList indicesOfCoveringRules) {
+		return classify(objectIndex, informationTable, true, indicesOfCoveringRules);
+	}
+	
+//	public SimpleClassificationResult[] classifyAll(InformationTable informationTable, IntList[] arrayOfIndicesOfCoveringRules) { //size of the array should be equal to the number of objects
+//		return null; //TODO
+//	}
 
 }

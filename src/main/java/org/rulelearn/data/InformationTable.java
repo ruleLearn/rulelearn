@@ -25,6 +25,7 @@ import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.core.TernaryLogicValue;
+import org.rulelearn.rules.VCDomLEM;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EvaluationField;
@@ -35,6 +36,7 @@ import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.KnownSimpleField;
 import org.rulelearn.types.TextIdentificationField;
 import org.rulelearn.types.UUIDIdentificationField;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -70,8 +72,8 @@ public class InformationTable {
 	protected Index2IdMapper mapper;
 	
 	/**
-	 * Sub-table, corresponding to active condition attributes only.
-	 * This sub-table is used in calculations. Equals to {@code null} if there are no active condition attributes.
+	 * Sub-table, corresponding to active condition evaluation attributes only.
+	 * This sub-table is used in calculations. Equals to {@code null} if there are no active condition evaluation attributes.
 	 */
 	protected Table<EvaluationAttribute, EvaluationField> activeConditionAttributeFields = null;
 	/**
@@ -407,10 +409,10 @@ public class InformationTable {
 	}
 	
 	/**
-	 * Gets sub-table of this information table, corresponding to active condition attributes only.
+	 * Gets sub-table of this information table, corresponding to active condition evaluation attributes only.
 	 * If there are no such attributes, then returns {@code null}.
 	 * 
-	 * @return sub-table of this information table, corresponding to active condition attributes only
+	 * @return sub-table of this information table, corresponding to active condition evaluation attributes only
 	 */
 	public Table<EvaluationAttribute, EvaluationField> getActiveConditionAttributeFields() {
 		return this.activeConditionAttributeFields;
@@ -1384,6 +1386,38 @@ public class InformationTable {
 		}
 		
 		return fields;
+	}
+	
+	/**
+	 * Tells if it is safe to use this information table to induce possible decision rules, considered in rough set approaches.
+	 * The result is {@code false} if learning data contain missing attribute values that can lead to non-transitivity of dominance/indiscernibility relation,
+	 * for example of type {@link UnknownSimpleFieldMV2}. Otherwise the result is {@code true}.<br>
+	 * <br>
+	 * See the disclaimer in {@link VCDomLEM} class. 
+	 * 
+	 * @return {@code false} if learning data contain missing attribute values that can lead to non-transitivity of dominance/indiscernibility relation,
+	 *         for example of type {@link UnknownSimpleFieldMV2},
+	 *         {@code true} otherwise
+	 * @see VCDomLEM
+	 */
+	public boolean isSuitableForInductionOfPossibleRules() {
+		EvaluationAttribute[] attributes = activeConditionAttributeFields.getAttributes(true);
+		int numObj = activeConditionAttributeFields.getNumberOfObjects();
+		int numAttr = activeConditionAttributeFields.getNumberOfAttributes();
+		
+		for (int j = 0; j < numAttr; j++) {
+			//TODO: make the check more generic (i.e., check property of missing value type rather than particular sub-type)
+			if (attributes[j].getMissingValueType() instanceof UnknownSimpleFieldMV2) { //there is a possibility of problematic MV for current active condition evaluation attribute
+				for (int i = 0; i < numObj; i++) {
+					if (activeConditionAttributeFields.getField(i, j) instanceof UnknownSimpleFieldMV2) { //problematic MV does appear
+						return false;
+					}
+				}
+			}
+			
+		}
+		
+		return true;
 	}
 
 }
