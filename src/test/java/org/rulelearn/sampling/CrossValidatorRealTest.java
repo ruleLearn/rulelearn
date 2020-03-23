@@ -16,6 +16,7 @@
 
 package org.rulelearn.sampling;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileNotFoundException;
@@ -50,6 +51,8 @@ import org.rulelearn.wrappers.VCDomLEMWrapper;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 class CrossValidatorRealTest {
+	
+	private final double delta = 0.1;
 	
 	/**
 	 * Test cross validation on windsor data set.
@@ -113,7 +116,7 @@ class CrossValidatorRealTest {
 							// debug
 							// System.out.println(decisions[k] + " : " + validationTable.getDecision(k));
 						}
-						mMatrices[i] = new OrdinalMisclassificationMatrix(validationTable.getOrderedUniqueFullyDeterminedDecisions(), validationTable.getDecisions(), decisions);
+						mMatrices[i] = new OrdinalMisclassificationMatrix(windsor.getOrderedUniqueFullyDeterminedDecisions(), validationTable.getDecisions(), decisions);
 						System.out.println("Validation table " + ((j*10)+i) + " accuracy: " + mMatrices[i].getAccuracy() + ", MAE: " + mMatrices[i].getMAE());
 					}
 				}
@@ -127,7 +130,9 @@ class CrossValidatorRealTest {
 			avgMMatrix = new OrdinalMisclassificationMatrix(windsor.getOrderedUniqueFullyDeterminedDecisions(), aMatrices);
 			System.out.println("===");
 			System.out.println("Averaged validation table accuracy: " + avgMMatrix.getAccuracy() + ", deviation: " + avgMMatrix.getDeviationOfAccuracy());
+			assertEquals(0.51, avgMMatrix.getAccuracy(), delta);
 			System.out.println("Averaged validation table MAE: " + avgMMatrix.getMAE());
+			assertEquals(0.56, avgMMatrix.getMAE(), delta);
 			for (Decision decision : windsor.getOrderedUniqueFullyDeterminedDecisions()) {
 				System.out.println("Averaged validation table, TP for decision: " + decision + ": " + avgMMatrix.getTruePositiveRate(decision) + ", deviation: " + avgMMatrix.getDeviationOfTruePositiveRate(decision));
 			}
@@ -201,7 +206,7 @@ class CrossValidatorRealTest {
 							// debug
 							// System.out.println(decisions[k] + " : " + validationTable.getDecision(k));
 						}
-						mMatrices[i] = new OrdinalMisclassificationMatrix(validationTable.getOrderedUniqueFullyDeterminedDecisions(), validationTable.getDecisions(), decisions);
+						mMatrices[i] = new OrdinalMisclassificationMatrix(learningSet.getOrderedUniqueFullyDeterminedDecisions(), validationTable.getDecisions(), decisions);
 						System.out.println("Validation table " + ((j*10)+i) + " accuracy: " + mMatrices[i].getAccuracy() + ", MAE: " + mMatrices[i].getMAE());
 					}
 				}
@@ -289,7 +294,7 @@ class CrossValidatorRealTest {
 							// debug
 							// System.out.println(decisions[k] + " : " + validationTable.getDecision(k));
 						}
-						mMatrices[i] = new OrdinalMisclassificationMatrix(validationTable.getOrderedUniqueFullyDeterminedDecisions(), validationTable.getDecisions(), decisions);
+						mMatrices[i] = new OrdinalMisclassificationMatrix(learningSet.getOrderedUniqueFullyDeterminedDecisions(), validationTable.getDecisions(), decisions);
 						System.out.println("Validation table " + ((j*10)+i) + " accuracy: " + mMatrices[i].getAccuracy() + ", MAE: " + mMatrices[i].getMAE());
 					}
 				}
