@@ -142,6 +142,7 @@ public class InformationTableWriter {
 					stringBuilder.append("\n");
 				}
 			}
+			writer.write(stringBuilder.toString()); //write one line of text
 		}
 		
 		for (int i = 0; i < numberOfObjs; i++) {
