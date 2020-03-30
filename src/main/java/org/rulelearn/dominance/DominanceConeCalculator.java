@@ -16,7 +16,12 @@
 
 package org.rulelearn.dominance;
 
+import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.data.Table;
+import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.UnknownSimpleField;
+
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 
@@ -32,6 +37,54 @@ public enum DominanceConeCalculator {
 	 * The only instance of this calculator.
 	 */
 	INSTANCE;
+	
+	/**
+	 * Tells if for any object from the given information table both positive dominance cones, as returned by methods {@link #calculatePositiveDCone(int, InformationTable)}
+	 * and {@link #calculatePositiveInvDCone(int, InformationTable)}, are equal (which happens if the fact that object a dominates object b implies that object b is dominated by object a,
+	 * and vice versa.
+	 * 
+	 * @param informationTable information table containing objects for which dominance cones are to be calculated
+	 * @return {@code true} if the definition of active condition evaluation attributes of the given information table (and particularly of their {@link EvaluationAttribute#getMissingValueType()
+	 *         missing value types} is such, that the fact that object a dominates object b is equivalent to the fact that object b is dominated by object a
+	 * @throws NullPointerException if given information table is {@code null}
+	 */
+	public boolean positiveDominanceConesEqual(InformationTable informationTable) {
+		Table<EvaluationAttribute, EvaluationField> activeConditionAttributeFields = informationTable.getActiveConditionAttributeFields();
+		
+		EvaluationAttribute[] attributes = activeConditionAttributeFields.getAttributes(true);
+		int numObj = activeConditionAttributeFields.getNumberOfObjects();
+		int numAttr = activeConditionAttributeFields.getNumberOfAttributes();
+		UnknownSimpleField missingValueType;
+		
+		for (int j = 0; j < numAttr; j++) {
+			missingValueType = attributes[j].getMissingValueType();
+			//missing value type can cause lack of symmetry (e.g. ? eq 8, but not 8 eq ?), like UnknownSimpleFieldMV15;
+			//lack of symmetry implies that both D and invD cones are necessary
+			if (!(missingValueType.equalWhenComparedToAnyEvaluation() && missingValueType.equalWhenReverseComparedToAnyEvaluation())) {
+				for (int i = 0; i < numObj; i++) {
+					if (activeConditionAttributeFields.getField(i, j) instanceof UnknownSimpleField) { //problematic MV does appear
+						return false;
+					}
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Tells if for any object from the given information table both negative dominance cones, as returned by methods {@link #calculateNegativeDCone(int, InformationTable)}
+	 * and {@link #calculateNegativeInvDCone(int, InformationTable)}, are equal (which happens if the fact that object a dominates object b implies that object b is dominated by object a,
+	 * and vice versa.
+	 * 
+	 * @param informationTable information table containing objects for which dominance cones are to be calculated
+	 * @return {@code true} if the definition of active condition evaluation attributes of the given information table (and particularly of their {@link EvaluationAttribute#getMissingValueType()
+	 *         missing value types} is such, that the fact that object a dominates object b is equivalent to the fact that object b is dominated by object a
+	 * @throws NullPointerException if given information table is {@code null}
+	 */
+	public boolean negativeDominanceConesEqual(InformationTable informationTable) {
+		return positiveDominanceConesEqual(informationTable); //redirect - principle of checking equality of positive and negative dominance cones is the same
+	}
 	
 	/**
 	 * Calculates, for object having index x, set of indices of objects in its positive dominance cone w.r.t. (straight) dominance relation D.

@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * <br>
  * [DISCLAIMER]<br>
  * This algorithm is not suitable for induction of possible rules if learning data contain missing attribute values
- * that cause non-transitivity of dominance relation, for example of type {@link UnknownSimpleFieldMV2}.
+ * that cause non-transitivity of dominance/indiscernibility relation, for example of type {@link UnknownSimpleFieldMV2}.
  * 
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

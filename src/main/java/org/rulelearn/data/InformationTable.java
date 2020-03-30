@@ -36,6 +36,7 @@ import org.rulelearn.types.IntegerFieldFactory;
 import org.rulelearn.types.KnownSimpleField;
 import org.rulelearn.types.TextIdentificationField;
 import org.rulelearn.types.UUIDIdentificationField;
+import org.rulelearn.types.UnknownSimpleField;
 import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -1404,12 +1405,15 @@ public class InformationTable {
 		EvaluationAttribute[] attributes = activeConditionAttributeFields.getAttributes(true);
 		int numObj = activeConditionAttributeFields.getNumberOfObjects();
 		int numAttr = activeConditionAttributeFields.getNumberOfAttributes();
+		UnknownSimpleField missingValueType;
 		
 		for (int j = 0; j < numAttr; j++) {
-			//TODO: make the check more generic (i.e., check property of missing value type rather than particular sub-type)
-			if (attributes[j].getMissingValueType() instanceof UnknownSimpleFieldMV2) { //there is a possibility of problematic MV for current active condition evaluation attribute
+			missingValueType = attributes[j].getMissingValueType();
+			//missing value type can cause lack of transitivity (e.g. 8 eq ?, ? eq 5, but not 8 eq 5), like UnknownSimpleFieldMV2;
+			//lack of transitivity can yield a problem with induction of possible rules
+			if (missingValueType.equalWhenComparedToAnyEvaluation() && missingValueType.equalWhenReverseComparedToAnyEvaluation()) {
 				for (int i = 0; i < numObj; i++) {
-					if (activeConditionAttributeFields.getField(i, j) instanceof UnknownSimpleFieldMV2) { //problematic MV does appear
+					if (activeConditionAttributeFields.getField(i, j) instanceof UnknownSimpleField) { //problematic MV does appear
 						return false;
 					}
 				}
