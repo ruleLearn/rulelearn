@@ -53,5 +53,22 @@ public class NonOrdinalMisclassificationMatrix extends MisclassificationMatrix {
 		super();
 		calculateMeanAndVariance(matrices);
 	}
-
+	
+	/**
+	 * Constructor calculating sum or mean and variance of all values in misclassification matrix.
+	 *
+	 * @param sum indication whether sum or mean and variance should be applied 
+	 * @param matrices an array with {@link NonOrdinalMisclassificationMatrix misclassification matrices} to be summed or averaged
+	 * 
+	 * @throws NullPointerException when array with misclassification matrices passed as parameters or any of its elements is null
+	 */
+	public NonOrdinalMisclassificationMatrix(boolean sum, NonOrdinalMisclassificationMatrix... matrices) {
+		super();
+		if (sum) {
+			calculateSum(matrices);
+		}
+		else {
+			calculateMeanAndVariance(matrices);
+		}
+	}
 }

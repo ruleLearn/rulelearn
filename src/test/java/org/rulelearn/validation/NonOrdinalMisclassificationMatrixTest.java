@@ -609,6 +609,130 @@ class NonOrdinalMisclassificationMatrixTest {
 	}
 	
 	/**
+	 * Tests of adding multiple misclassification matrices.
+	 */
+	@Test
+	void testAll05s() {
+		setUp2();
+		originalDecisions = new SimpleDecision[] {decision1, decision1, decision1,
+				decision2, decision2, decision2,
+				decision3, decision3, decision3};
+		assignedDecisions = new SimpleDecision[] {decision1, decision2, decision3,
+				decision1, decision2, decision3,
+				decision1, decision2, decision3};
+		NonOrdinalMisclassificationMatrix misclassificationMatrix1 = new NonOrdinalMisclassificationMatrix(originalDecisions, assignedDecisions);
+		assertEquals(3.0, misclassificationMatrix1.getNumberOfCorrectAssignments(), delta);
+		assertEquals(6.0, misclassificationMatrix1.getNumberOfIncorrectAssignments(), delta);
+		assertEquals(0.0, misclassificationMatrix1.getNumberOfUnknownAssignments(), delta);
+		assertEquals(9.0, misclassificationMatrix1.getNumberObjectsWithAssignedDecision(), delta);
+		assertEquals(0.0, misclassificationMatrix1.getNumberOfUnknownOriginalDecisions(decision1), delta);
+		assertEquals(0.0, misclassificationMatrix1.getNumberOfUnknownOriginalDecisions(decision2), delta);
+		assertEquals(0.0, misclassificationMatrix1.getNumberOfUnknownOriginalDecisions(decision3), delta);
+		assertEquals(0.0, misclassificationMatrix1.getNumberOfUnknownAssignedDecisions(decision1), delta);
+		assertEquals(0.0, misclassificationMatrix1.getNumberOfUnknownAssignedDecisions(decision2), delta);
+		assertEquals(0.0, misclassificationMatrix1.getNumberOfUnknownAssignedDecisions(decision3), delta);
+		assertEquals(0.0, misclassificationMatrix1.getNumberOfUnknownOriginalDecisions(), delta);
+		assertEquals(0.0, misclassificationMatrix1.getNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions(), delta);
+		assertEquals(1.0, misclassificationMatrix1.getValue(decision1, decision1), delta);
+		assertEquals(1.0, misclassificationMatrix1.getValue(decision1, decision2), delta);
+		assertEquals(1.0, misclassificationMatrix1.getValue(decision1, decision3), delta);
+		assertEquals(1.0, misclassificationMatrix1.getValue(decision2, decision1), delta);
+		assertEquals(1.0, misclassificationMatrix1.getValue(decision2, decision2), delta);
+		assertEquals(1.0, misclassificationMatrix1.getValue(decision2, decision3), delta);
+		assertEquals(1.0, misclassificationMatrix1.getValue(decision3, decision1), delta);
+		assertEquals(1.0, misclassificationMatrix1.getValue(decision3, decision2), delta);
+		assertEquals(1.0, misclassificationMatrix1.getValue(decision3, decision3), delta);
+		assertEquals(1.0/3, misclassificationMatrix1.getTruePositiveRate(decision1), delta);
+		assertEquals(1.0/3, misclassificationMatrix1.getTruePositiveRate(decision2), delta);
+		assertEquals(1.0/3, misclassificationMatrix1.getTruePositiveRate(decision3), delta);
+		assertEquals((3.0)/9, misclassificationMatrix1.getAccuracy(), delta);
+		assertEquals(Math.pow((1.0/3)*(1.0/3)*(1.0/3), 1.0/3), misclassificationMatrix1.getGmean(), delta);
+		// check deviations
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfAccuracy(), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfNumberObjectsWithAssignedDecision(), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfNumberOfCorrectAssignments(), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfNumberOfIncorrectAssignments(), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfNumberOfUnknownAssignedDecisions(decision1), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfNumberOfUnknownAssignedDecisions(decision2), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfNumberOfUnknownAssignedDecisions(decision3), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions(), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfNumberOfUnknownAssignments(), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfNumberOfUnknownOriginalDecisions(), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfNumberOfUnknownOriginalDecisions(decision1), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfNumberOfUnknownOriginalDecisions(decision2), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfNumberOfUnknownOriginalDecisions(decision3), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfTruePositiveRate(decision1), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfTruePositiveRate(decision2), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfTruePositiveRate(decision3), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfValue(decision1, decision1), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfValue(decision1, decision2), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfValue(decision1, decision3), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfValue(decision2, decision1), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfValue(decision2, decision2), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfValue(decision2, decision3), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfValue(decision3, decision1), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfValue(decision3, decision2), delta);
+		assertEquals(0.0, misclassificationMatrix1.getDeviationOfValue(decision3, decision3), delta);
+		
+		NonOrdinalMisclassificationMatrix misclassificationMatrix2 = new NonOrdinalMisclassificationMatrix(originalDecisions, assignedDecisions);
+		NonOrdinalMisclassificationMatrix misclassificationMatrix3 = new NonOrdinalMisclassificationMatrix(originalDecisions, assignedDecisions);
+		NonOrdinalMisclassificationMatrix misclassificationMatrixA = new NonOrdinalMisclassificationMatrix(true, misclassificationMatrix1, misclassificationMatrix2, misclassificationMatrix3);
+		// check averages
+		assertEquals(9.0, misclassificationMatrixA.getNumberOfCorrectAssignments(), delta);
+		assertEquals(18.0, misclassificationMatrixA.getNumberOfIncorrectAssignments(), delta);
+		assertEquals(0.0, misclassificationMatrixA.getNumberOfUnknownAssignments(), delta);
+		assertEquals(27.0, misclassificationMatrixA.getNumberObjectsWithAssignedDecision(), delta);
+		assertEquals(0.0, misclassificationMatrixA.getNumberOfUnknownOriginalDecisions(decision1), delta);
+		assertEquals(0.0, misclassificationMatrixA.getNumberOfUnknownOriginalDecisions(decision2), delta);
+		assertEquals(0.0, misclassificationMatrixA.getNumberOfUnknownOriginalDecisions(decision3), delta);
+		assertEquals(0.0, misclassificationMatrixA.getNumberOfUnknownAssignedDecisions(decision1), delta);
+		assertEquals(0.0, misclassificationMatrixA.getNumberOfUnknownAssignedDecisions(decision2), delta);
+		assertEquals(0.0, misclassificationMatrixA.getNumberOfUnknownAssignedDecisions(decision3), delta);
+		assertEquals(0.0, misclassificationMatrixA.getNumberOfUnknownOriginalDecisions(), delta);
+		assertEquals(0.0, misclassificationMatrixA.getNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions(), delta);
+		assertEquals(3.0, misclassificationMatrixA.getValue(decision1, decision1), delta);
+		assertEquals(3.0, misclassificationMatrixA.getValue(decision1, decision2), delta);
+		assertEquals(3.0, misclassificationMatrixA.getValue(decision1, decision3), delta);
+		assertEquals(3.0, misclassificationMatrixA.getValue(decision2, decision1), delta);
+		assertEquals(3.0, misclassificationMatrixA.getValue(decision2, decision2), delta);
+		assertEquals(3.0, misclassificationMatrixA.getValue(decision2, decision3), delta);
+		assertEquals(3.0, misclassificationMatrixA.getValue(decision3, decision1), delta);
+		assertEquals(3.0, misclassificationMatrixA.getValue(decision3, decision2), delta);
+		assertEquals(3.0, misclassificationMatrixA.getValue(decision3, decision3), delta);
+		assertEquals(1.0/3, misclassificationMatrixA.getTruePositiveRate(decision1), delta);
+		assertEquals(1.0/3, misclassificationMatrixA.getTruePositiveRate(decision2), delta);
+		assertEquals(1.0/3, misclassificationMatrixA.getTruePositiveRate(decision3), delta);
+		assertEquals((3.0)/9, misclassificationMatrixA.getAccuracy(), delta);
+		assertEquals(Math.pow((1.0/3)*(1.0/3)*(1.0/3), 1.0/3), misclassificationMatrixA.getGmean(), delta);
+		// check deviations
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfAccuracy(), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfNumberObjectsWithAssignedDecision(), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfNumberOfCorrectAssignments(), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfNumberOfIncorrectAssignments(), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfNumberOfUnknownAssignedDecisions(decision1), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfNumberOfUnknownAssignedDecisions(decision2), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfNumberOfUnknownAssignedDecisions(decision3), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions(), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfNumberOfUnknownAssignments(), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfNumberOfUnknownOriginalDecisions(), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfNumberOfUnknownOriginalDecisions(decision1), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfNumberOfUnknownOriginalDecisions(decision2), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfNumberOfUnknownOriginalDecisions(decision3), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfTruePositiveRate(decision1), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfTruePositiveRate(decision2), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfTruePositiveRate(decision3), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfValue(decision1, decision1), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfValue(decision1, decision2), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfValue(decision1, decision3), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfValue(decision2, decision1), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfValue(decision2, decision2), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfValue(decision2, decision3), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfValue(decision3, decision1), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfValue(decision3, decision2), delta);
+		assertEquals(0.0, misclassificationMatrixA.getDeviationOfValue(decision3, decision3), delta);
+	}
+	
+	/**
 	 * Tests of averaging multiple misclassification matrices.
 	 */
 	@Test
