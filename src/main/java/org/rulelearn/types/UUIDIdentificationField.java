@@ -18,6 +18,7 @@ package org.rulelearn.types;
 
 import java.util.Objects;
 import java.util.UUID;
+
 import org.rulelearn.core.TernaryLogicValue;
 
 /**
@@ -106,6 +107,16 @@ public class UUIDIdentificationField extends IdentificationField {
 	@Override
 	public String toString() {
 		return this.value.toString();
+	}
+	
+	/**
+	 * Gets text representation of type of this field (i.e., {@link UUIDIdentificationField}).
+	 * 
+	 * @return text representation of type of this field
+	 */
+	@Override
+	public String getTypeDescriptor() {
+		return "uuid";
 	}
 
 }

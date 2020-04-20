@@ -164,6 +164,16 @@ public class IntegerFieldFactory implements EvaluationFieldFactory {
 		public AttributePreferenceType getPreferenceType() {
 			return AttributePreferenceType.NONE;
 		}
+		
+		/**
+		 * Gets text representation of type of this field (i.e., {@link NoneIntegerField}).
+		 * 
+		 * @return text representation of type of this field
+		 */
+		@Override
+		public String getTypeDescriptor() {
+			return "noneInt";
+		}
 
 	}
 	
@@ -241,6 +251,16 @@ public class IntegerFieldFactory implements EvaluationFieldFactory {
 		 */
 		public AttributePreferenceType getPreferenceType() {
 			return AttributePreferenceType.GAIN;
+		}
+		
+		/**
+		 * Gets text representation of type of this field (i.e., {@link GainIntegerField}).
+		 * 
+		 * @return text representation of type of this field
+		 */
+		@Override
+		public String getTypeDescriptor() {
+			return "gainInt";
 		}
 
 	}
@@ -321,6 +341,16 @@ public class IntegerFieldFactory implements EvaluationFieldFactory {
 		@Override
 		public AttributePreferenceType getPreferenceType() {
 			return AttributePreferenceType.COST;
+		}
+		
+		/**
+		 * Gets text representation of type of this field (i.e., {@link CostIntegerField}).
+		 * 
+		 * @return text representation of type of this field
+		 */
+		@Override
+		public String getTypeDescriptor() {
+			return "costInt";
 		}
 	}
 

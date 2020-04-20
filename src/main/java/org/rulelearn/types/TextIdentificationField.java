@@ -119,5 +119,15 @@ public class TextIdentificationField extends IdentificationField {
 	public String toString() {
 		return this.value;
 	}
+	
+	/**
+	 * Gets text representation of type of this field (i.e., {@link TextIdentificationField}).
+	 * 
+	 * @return text representation of type of this field
+	 */
+	@Override
+	public String getTypeDescriptor() {
+		return "textId";
+	}
 
 }

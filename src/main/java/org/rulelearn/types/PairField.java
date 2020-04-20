@@ -277,5 +277,18 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	public PairField<T> clone(AttributePreferenceType attributePreferenceType) {
 		return selfClone();
 	}
+	
+	/**
+	 * Gets text representation of type of this field, taking into account type descriptors of the first and the second value.
+	 * 
+	 * @return text representation of type of this field
+	 */
+	@Override
+	public String getTypeDescriptor() {
+		StringBuilder builder = new StringBuilder("pair(");
+		builder.append(firstValue.getTypeDescriptor()).append(";").append(secondValue.getTypeDescriptor()).append(")");
+		
+		return builder.toString();
+	}
 
 }

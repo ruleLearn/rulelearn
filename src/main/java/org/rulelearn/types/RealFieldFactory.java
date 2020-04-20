@@ -165,6 +165,16 @@ public class RealFieldFactory implements EvaluationFieldFactory {
 		public AttributePreferenceType getPreferenceType() {
 			return AttributePreferenceType.NONE;
 		}
+		
+		/**
+		 * Gets text representation of type of this field (i.e., {@link NoneRealField}).
+		 * 
+		 * @return text representation of type of this field
+		 */
+		@Override
+		public String getTypeDescriptor() {
+			return "noneReal";
+		}
 	}
 	
 	/**
@@ -242,6 +252,16 @@ public class RealFieldFactory implements EvaluationFieldFactory {
 		@Override
 		public AttributePreferenceType getPreferenceType() {
 			return AttributePreferenceType.GAIN;
+		}
+		
+		/**
+		 * Gets text representation of type of this field (i.e., {@link GainRealField}).
+		 * 
+		 * @return text representation of type of this field
+		 */
+		@Override
+		public String getTypeDescriptor() {
+			return "gainReal";
 		}
 
 	}
@@ -321,6 +341,16 @@ public class RealFieldFactory implements EvaluationFieldFactory {
 		@Override
 		public AttributePreferenceType getPreferenceType() {
 			return AttributePreferenceType.COST;
+		}
+		
+		/**
+		 * Gets text representation of type of this field (i.e., {@link CostRealField}).
+		 * 
+		 * @return text representation of type of this field
+		 */
+		@Override
+		public String getTypeDescriptor() {
+			return "costReal";
 		}
 
 	}

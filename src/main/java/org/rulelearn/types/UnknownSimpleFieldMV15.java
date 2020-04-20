@@ -446,5 +446,15 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 	public UnknownSimpleFieldMV15 clone(AttributePreferenceType attributePreferenceType) {
 		return getInstance();
 	}
+	
+	/**
+	 * Gets text representation of type of this field (i.e., {@link UnknownSimpleFieldMV15}).
+	 * 
+	 * @return text representation of type of this field
+	 */
+	@Override
+	public String getTypeDescriptor() {
+		return "mv1.5";
+	}
 
 }

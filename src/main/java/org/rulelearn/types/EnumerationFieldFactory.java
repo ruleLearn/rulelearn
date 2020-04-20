@@ -16,12 +16,12 @@
 
 package org.rulelearn.types;
 
-import org.rulelearn.core.TernaryLogicValue;
-import org.rulelearn.data.AttributePreferenceType;
-import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.core.FieldParseException;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.Precondition;
+import org.rulelearn.core.TernaryLogicValue;
+import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.EvaluationAttribute;
 
 /**
  * Factory for {@link EnumerationField}, employing abstract factory and singleton design patterns.
@@ -167,6 +167,19 @@ public class EnumerationFieldFactory implements EvaluationFieldFactory {
 		public AttributePreferenceType getPreferenceType() {
 			return AttributePreferenceType.NONE;
 		}
+		
+		/**
+		 * Gets text representation of type of this field (i.e., {@link NoneEnumerationField}) and its domain.
+		 * 
+		 * @return text representation of type of this field and its domain
+		 */
+		@Override
+		public String getTypeDescriptor() {
+			StringBuilder builder = (new StringBuilder("noneEnum"));
+			builder.append(list.serialize());
+			
+			return builder.toString();
+		}
 	}
 	
 	/**
@@ -258,6 +271,19 @@ public class EnumerationFieldFactory implements EvaluationFieldFactory {
 		@Override
 		public AttributePreferenceType getPreferenceType() {
 			return AttributePreferenceType.GAIN;
+		}
+		
+		/**
+		 * Gets text representation of type of this field (i.e., {@link GainEnumerationField}) and its domain.
+		 * 
+		 * @return text representation of type of this field and its domain
+		 */
+		@Override
+		public String getTypeDescriptor() {
+			StringBuilder builder = (new StringBuilder("gainEnum"));
+			builder.append(list.serialize());
+			
+			return builder.toString();
 		}
 
 	}
@@ -352,6 +378,19 @@ public class EnumerationFieldFactory implements EvaluationFieldFactory {
 		@Override
 		public AttributePreferenceType getPreferenceType() {
 			return AttributePreferenceType.COST;
+		}
+		
+		/**
+		 * Gets text representation of type of this field (i.e., {@link CostEnumerationField}) and its domain.
+		 * 
+		 * @return text representation of type of this field and its domain
+		 */
+		@Override
+		public String getTypeDescriptor() {
+			StringBuilder builder = (new StringBuilder("costEnum"));
+			builder.append(list.serialize());
+			
+			return builder.toString();
 		}
 	}
 

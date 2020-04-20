@@ -79,9 +79,28 @@ public abstract class Field implements SelfCloneable<Field> {
 	
 	/**
 	 * Gets text representation of this field.
+	 * This text representation is used in {@link org.rulelearn.data.InformationTable#serialize(boolean)} method, which, in turn, is used in
+	 * {@link org.rulelearn.data.InformationTable#getHash()} method to produce hash of information table consistent among multiple program runs.<br>
+	 * <br>
+	 * Proceed with caution! Changing implementation of this method in any subclass may invalidate already calculated hashes, being stored in unit tests and RuleML files.
 	 * 
 	 * @return text representation of this field
+	 * 
+	 * @see org.rulelearn.data.InformationTable#serialize(boolean)
+	 * @see org.rulelearn.data.InformationTable#getHash()
 	 */
 	public abstract String toString();
+	
+	/**
+	 * Gets plain text representation of type (and possibly domain) of this field.
+	 * Resulting text should take into account both semantics of the actual Java type of the field and content of its domain, if domain values are enumerated.
+	 * This method is useful, e.g., for comparing two {@link org.rulelearn.data.Attribute#getValueType() value types of an attribute}.
+	 * Then, by comparing type descriptors of the two value types, it is possible to decide whether these value types are the same or different.<br>
+	 * <br>
+	 * IMPLEMENTATION NOTE: All implementing methods have to return a different value!
+	 * 
+	 * @return plain text representation of type (and possibly domain) of this field
+	 */
+	public abstract String getTypeDescriptor();
 	
 }
