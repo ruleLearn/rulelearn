@@ -115,6 +115,13 @@ public abstract class Decision {
     public abstract String toString();
 	
 	/**
+     * Gets plain text representation of this decision.
+     *
+     * @return plain text representation of this decision
+     */
+    public abstract String serialize();
+	
+	/**
 	 * Tells if this decision is fully-determined, i.e., all its contributing evaluations are non-missing (are instances of {@link KnownSimpleField}).
 	 * 
 	 * @return {@code true} if this decision is fully-determined, i.e., all its contributing evaluations are non-missing (are instances of {@link KnownSimpleField})

@@ -16,21 +16,20 @@
 
 package org.rulelearn.data;
 
-import org.rulelearn.types.EvaluationField;
-import org.rulelearn.types.KnownSimpleField;
-import org.rulelearn.types.UnknownSimpleField;
-
-import it.unimi.dsi.fastutil.ints.IntArraySet;
-import it.unimi.dsi.fastutil.ints.IntSet;
-
-import static org.rulelearn.core.Precondition.notNull;
 import static org.rulelearn.core.Precondition.nonNegative;
+import static org.rulelearn.core.Precondition.notNull;
 
 import java.util.Objects;
 import java.util.function.BiPredicate;
 
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.TernaryLogicValue;
+import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.KnownSimpleField;
+import org.rulelearn.types.UnknownSimpleField;
+
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Simple decision reflecting {@link EvaluationField} evaluation of a single object on an active decision attribute of an information table.
@@ -219,6 +218,20 @@ public class SimpleDecision extends Decision {
 		StringBuilder sb = new StringBuilder();
 		sb.append(attributeIndex);
 		sb.append("=>");
+		sb.append(evaluation);
+		return sb.toString();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public String serialize() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(attributeIndex);
+		sb.append(":");
 		sb.append(evaluation);
 		return sb.toString();
 	}

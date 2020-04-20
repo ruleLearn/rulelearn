@@ -16,11 +16,15 @@
 
 package org.rulelearn.data;
 
-import static org.rulelearn.core.Precondition.notNull;
 import static org.rulelearn.core.Precondition.nonNegative;
+import static org.rulelearn.core.Precondition.notNull;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiPredicate;
+
+import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.types.KnownSimpleField;
 import org.rulelearn.types.UnknownSimpleField;
@@ -28,9 +32,6 @@ import org.rulelearn.types.UnknownSimpleField;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
-
-import org.rulelearn.core.InvalidValueException;
-import org.rulelearn.core.TernaryLogicValue;
 
 /**
  * Composite decision reflecting a set of at least two evaluations of a single object on active decision attributes of an information table.
@@ -236,6 +237,31 @@ public class CompositeDecision extends Decision {
 	@Override
 	public String toString() {
 		return attributeIndex2EvaluationMap.toString();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * Preserves order of attributes.
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public String serialize() {
+		IntSet indices = attributeIndex2EvaluationMap.keySet();
+		StringBuilder builder = new StringBuilder();
+		int[] indicesSorted = indices.toIntArray();
+		Arrays.sort(indicesSorted); //sort attribute indices in ascending order
+		
+		int i = 0;
+		for (int index : indicesSorted) {
+			if (i > 0) {
+				builder.append(",");
+			}
+			builder.append(index).append(":").append(attributeIndex2EvaluationMap.get(index));
+			i++;
+		}
+		
+		return builder.toString();
 	}
 	
 	/**
