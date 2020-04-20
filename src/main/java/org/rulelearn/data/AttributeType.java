@@ -34,5 +34,23 @@ public enum AttributeType {
 	/**
 	 * Type of a decision attribute.
 	 */
-	DECISION
+	DECISION;
+	
+	/**
+	 * Gets text representation of this instance.
+	 * 
+	 * @return text representation of this instance
+	 */
+	public String serialize() {
+		switch(this) {
+		case DESCRIPTION:
+			return "description";
+		case CONDITION:
+			return "condition";
+		case DECISION:
+			return "decision";
+		default:
+			return null;
+		}
+	}
 }

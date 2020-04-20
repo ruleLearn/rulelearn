@@ -33,5 +33,23 @@ public enum AttributePreferenceType {
 	/**
 	 * Type of gain-type criterion.
 	 */
-	GAIN
+	GAIN;
+	
+	/**
+	 * Gets text representation of this instance.
+	 * 
+	 * @return text representation of this instance
+	 */
+	public String serialize() {
+		switch(this) {
+		case NONE:
+			return "none";
+		case COST:
+			return "cost";
+		case GAIN:
+			return "gain";
+		default:
+			return null;
+		}
+	}
 }

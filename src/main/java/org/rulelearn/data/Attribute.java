@@ -77,6 +77,13 @@ public abstract class Attribute {
 	}
 	
 	/**
+	 * Gets plain text representation of this attribute, taking into account all of its properties.
+	 * 
+	 * @return plain text representation of this attribute, taking into account all of its properties.
+	 */
+	abstract public String serialize();
+	
+	/**
 	 * Tells if this attribute object is equal to the other object.
 	 * 
 	 * @param otherObject other object that this object should be compared with

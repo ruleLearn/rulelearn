@@ -228,4 +228,14 @@ public class ElementListTest {
 		assertEquals(list1.hashCode(), hashCode);
 	}
 	
+	/**
+	 * Test for {@link ElementList#serialize()} method.
+	 */
+	@Test
+	public void testSerialize() {
+		this.setUp01();
+		assertEquals(list1.serialize(), "(1,2,3)");
+	}
+	
+	
 }

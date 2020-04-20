@@ -16,7 +16,12 @@
 
 package org.rulelearn.data;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.core.InvalidValueException;
@@ -27,8 +32,6 @@ import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.UnknownSimpleFieldMV15;
 
 import it.unimi.dsi.fastutil.ints.IntSet;
-
-import static org.mockito.Mockito.*;
 
 /**
  * 
@@ -363,6 +366,24 @@ class CompositeDecisionTest {
 		assertTrue(decisionText.indexOf("6=>4") > -1);
 		assertTrue(decisionText.indexOf("3=>2") > -1);
 	}
+	
+	/**
+	 * Test for {@link CompositeDecision#serialize()} method.
+	 */
+	@Test
+	void testSerialize() {
+		EvaluationField[] evaluations1 = {
+				IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN),
+				IntegerFieldFactory.getInstance().create(4, AttributePreferenceType.COST),
+				RealFieldFactory.getInstance().create(3.5, AttributePreferenceType.GAIN)};
+		int[] attributeIndices1 = {3, 6, 7};
+		
+		CompositeDecision decision = new CompositeDecision(evaluations1, attributeIndices1);
+		
+		String decisionText = decision.serialize();
+		assertEquals(decisionText, "3:2,6:4,7:3.5");
+		System.out.println(decisionText);
+	}	
 	
 	/**
 	 * Test for {@link CompositeDecision#hasNoMissingEvaluation()} method.

@@ -105,7 +105,7 @@ public class ElementList {
 			this.elements = new String [size];
 			int [] indices = new int [size];
 			for (int i=0; i < elements.length; i++) {
-				this.elements[i] = new String(elements[i]);
+				this.elements[i] = elements[i];
 				indices[i] = i;
 			}
 			this.map = new Object2IntOpenHashMap<String>(this.elements, indices);
@@ -280,5 +280,37 @@ public class ElementList {
 		}
 		else
 			return TernaryLogicValue.UNCOMPARABLE;
+	}
+	
+	/**
+	 * Gets text representation of this element list (comma separated list of elements).
+	 * 
+	 * @return text representation of this element list
+	 * @see #serialize()
+	 */
+	@Override
+	public String toString() {
+		return serialize();
+	}
+	
+	/**
+	 * Gets plain text representation of this element list.
+	 * 
+	 * @return plain text representation of this element list
+	 */
+	public String serialize() {
+		StringBuilder builder = new StringBuilder("(");
+		String separator = ",";
+		
+		for (int i = 0; i < elements.length; i++) {
+			builder.append(elements[i]);
+			if (i < elements.length - 1) {
+				builder.append(separator);
+			}
+		}
+		
+		builder.append(")");
+		
+		return builder.toString();
 	}
 }

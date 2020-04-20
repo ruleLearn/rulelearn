@@ -66,6 +66,23 @@ public class IdentificationAttribute extends Attribute {
 	}
 	
 	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
+	@Override
+	public String serialize() {
+		StringBuilder builder = new StringBuilder ();
+		String separator = ";";
+		
+		builder.append(this.active ? "+": "-").append(separator);
+		builder.append(this.name).append(separator);
+		builder.append(this.valueType.getTypeDescriptor());
+		
+		return builder.toString();
+	}
+	
+	/**
 	 * Tells if this attribute object is equal to the other object.
 	 * 
 	 * @param otherObject other object that this object should be compared with

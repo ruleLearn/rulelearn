@@ -16,7 +16,10 @@
 
 package org.rulelearn.data;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.Test;
@@ -273,6 +276,17 @@ class SimpleDecisionTest {
 		int attributeIndex = 1;
 		Decision decision = new SimpleDecision(evaluation, attributeIndex);
 		assertEquals(decision.toString(), "1=>2");
+	}
+	
+	/**
+	 * Test for {@link SimpleDecision#serialize()} method.
+	 */
+	@Test
+	void testSerialize() {
+		EvaluationField evaluation = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN);
+		int attributeIndex = 1;
+		Decision decision = new SimpleDecision(evaluation, attributeIndex);
+		assertEquals(decision.serialize(), "1:2");
 	}
 	
 	/**
