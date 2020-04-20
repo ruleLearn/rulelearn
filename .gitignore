@@ -7,3 +7,4 @@ lib
 .project
 *generated.json
 *generated.csv
+/src/test/resources/data/ruleml/ERA-train-0-hash.xml

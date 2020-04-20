@@ -1,0 +1,535 @@
+[
+  {
+    "name": "a1cx_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a1cx_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a1cy_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a1cy_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a1sx_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a1sx_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a1sy_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a1sy_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a1rho_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a1rho_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a1pop_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a1pop_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a2cx_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a2cx_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a2cy_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a2cy_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a2sx_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a2sx_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a2sy_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a2sy_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a2rho_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a2rho_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a2pop_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a2pop_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a3cx_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a3cx_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a3cy_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a3cy_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a3sx_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a3sx_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a3sy_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a3sy_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a3rho_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a3rho_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a3pop_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "a3pop_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "temp_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "temp_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b1x_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b1x_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b1y_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b1y_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b1call_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b1call_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b1eff_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b1eff_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b2x_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b2x_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b2y_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b2y_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b2call_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b2call_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b2eff_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b2eff_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b3x_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b3x_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b3y_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b3y_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b3call_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b3call_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b3eff_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "b3eff_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "mxql_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "mxql_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "rej_disc_10",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "decision",
+    "valueType": "enumeration",
+    "domain": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    "algorithm": "SHA-256",
+    "missingValueType": "mv2"
+  }
+]

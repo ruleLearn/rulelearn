@@ -1,0 +1,86 @@
+[
+  {
+    "name": "in1_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "in1_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "in2_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "in2_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "in3_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "in3_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "in4_g",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "in4_c",
+    "active": true,
+    "preferenceType": "cost",
+    "type": "condition",
+    "valueType": "real",
+    "missingValueType": "mv2"
+  },
+  {
+    "name": "out1",
+    "active": true,
+    "preferenceType": "gain",
+    "type": "decision",
+    "valueType": "enumeration",
+    "domain": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "algorithm": "SHA-256",
+    "missingValueType": "mv2"
+  }
+]
