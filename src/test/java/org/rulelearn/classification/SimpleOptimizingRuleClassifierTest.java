@@ -17,6 +17,7 @@
 package org.rulelearn.classification;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -185,7 +186,7 @@ class SimpleOptimizingRuleClassifierTest {
 		SimpleOptimizingRuleClassifier simpleOptimizingRuleClassifier =
 				new SimpleOptimizingRuleClassifier(Mockito.mock(RuleSetWithComputableCharacteristics.class), Mockito.mock(SimpleClassificationResult.class));
 		assertEquals(simpleOptimizingRuleClassifier.hasComputableRuleCharacteristics, true);
-		assertNull(simpleOptimizingRuleClassifier.learningInformationTable);
+		assertNull(simpleOptimizingRuleClassifier.ruleCoverageInformations);
 	}
 
 	/**
@@ -197,7 +198,7 @@ class SimpleOptimizingRuleClassifierTest {
 		SimpleOptimizingRuleClassifier simpleOptimizingRuleClassifier =
 				new SimpleOptimizingRuleClassifier(Mockito.mock(RuleSet.class), Mockito.mock(SimpleClassificationResult.class), informationTableMock);
 		assertEquals(simpleOptimizingRuleClassifier.hasComputableRuleCharacteristics, false);
-		assertEquals(simpleOptimizingRuleClassifier.learningInformationTable, informationTableMock);
+		assertNotNull(simpleOptimizingRuleClassifier.ruleCoverageInformations);
 	}
 	
 	/**

@@ -133,14 +133,20 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	}
 	
 	/**
-	 * Gets coverage factor of the decision rule in the context of the information table.
+	 * Gets coverage factor of the decision rule in the context of the information table.<br>
+	 * <br>
+	 * If {@link #getRuleCoverageInformation() rule coverage information} does not store indices of positive objects
+	 * (method {@link RuleCoverageInformation#getIndicesOfPositiveObjects()} returns {@code null}), then result of this
+	 * method cannot be calculated, and will default to {@link RuleCharacteristics#UNKNOWN_DOUBLE_VALUE}.
 	 * 
 	 * @return coverage factor of the decision rule in the context of the information table
 	 */
 	@Override
 	public double getCoverageFactor() {
 		if (coverageFactor == UNKNOWN_DOUBLE_VALUE) {
-			coverageFactor = ((double)getSupport()) / ((double)this.ruleCoverageInformation.getIndicesOfPositiveObjects().size());
+			if (this.ruleCoverageInformation.getIndicesOfPositiveObjects() != null) {
+				coverageFactor = ((double)getSupport()) / ((double)this.ruleCoverageInformation.getIndicesOfPositiveObjects().size());
+			}
 		}
 		return coverageFactor;
 	}
@@ -160,16 +166,25 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	
 	/**
 	 * Gets negative coverage of the decision rule (number of negative objects covered by the rule) in the context of the information table.
-	 * An object is negative, if its decision does not match rule's decision part.
+	 * An object is negative, if its decision does not match rule's decision part.<br>
+	 * <br>
+	 * If {@link #getRuleCoverageInformation() rule coverage information} does not store indices of positive or neutral objects
+	 * (method {@link RuleCoverageInformation#getIndicesOfPositiveObjects()} returns {@code null}, or
+	 * method {@link RuleCoverageInformation#getIndicesOfNeutralObjects()} returns {@code null}), then result of this
+	 * method cannot be calculated, and will default to {@link RuleCharacteristics#UNKNOWN_INT_VALUE}.
 	 * 
 	 * @return negative coverage of the decision rule (number of negative objects covered by the rule) in the context of the information table
 	 */
 	@Override
 	public int getNegativeCoverage() {
 		if (negativeCoverage == UNKNOWN_INT_VALUE) {
-			negativeCoverage = OperationsOnCollections.getNumberOfElementsFromListNotPresentInSets(
-					this.ruleCoverageInformation.getIndicesOfCoveredObjects(),
-					this.ruleCoverageInformation.getIndicesOfPositiveObjects(), this.ruleCoverageInformation.getIndicesOfNeutralObjects());
+			if (this.ruleCoverageInformation.getIndicesOfPositiveObjects() != null &&
+					this.ruleCoverageInformation.getIndicesOfNeutralObjects() != null) {
+			
+				negativeCoverage = OperationsOnCollections.getNumberOfElementsFromListNotPresentInSets(
+						this.ruleCoverageInformation.getIndicesOfCoveredObjects(),
+						this.ruleCoverageInformation.getIndicesOfPositiveObjects(), this.ruleCoverageInformation.getIndicesOfNeutralObjects());
+			}
 		}
 		return negativeCoverage;
 	}

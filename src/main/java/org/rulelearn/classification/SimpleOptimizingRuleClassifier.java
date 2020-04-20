@@ -30,6 +30,7 @@ import org.rulelearn.data.SimpleDecision;
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.ConditionAtLeast;
 import org.rulelearn.rules.ConditionAtMost;
+import org.rulelearn.rules.RuleCoverageInformation;
 import org.rulelearn.rules.RuleSet;
 import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
 import org.rulelearn.types.EvaluationField;
@@ -87,10 +88,10 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	boolean hasComputableRuleCharacteristics;
 	
 	/**
-	 * Learning information table for checking which objects support rules that cover classified object, used only if the rule set does not contain
-	 * computable rule characteristics. Otherwise is {@code null}. Set in class constructor.
+	 * Array with rule coverage information objects for each rule from the rule set.
+	 * Used only if the rule set does not contain computable rule characteristics. Otherwise is {@code null}. Set in class constructor.
 	 */
-	InformationTable learningInformationTable;
+	RuleCoverageInformation[] ruleCoverageInformations;
 	
 	/**
 	 * Constructs this classifier using rule set with computable rule characteristics.
@@ -110,7 +111,7 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	public SimpleOptimizingRuleClassifier(RuleSetWithComputableCharacteristics ruleSet, SimpleClassificationResult defaultClassificationResult) {
 		super(ruleSet, defaultClassificationResult);
 		this.hasComputableRuleCharacteristics = true;
-		this.learningInformationTable = null;
+		this.ruleCoverageInformations = null;
 	}
 	
 	/**
@@ -132,7 +133,13 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	public SimpleOptimizingRuleClassifier(RuleSet ruleSet, SimpleClassificationResult defaultClassificationResult, InformationTable learningInformationTable) {
 		super(ruleSet, defaultClassificationResult);
 		this.hasComputableRuleCharacteristics = false;
-		this.learningInformationTable = learningInformationTable;
+		
+		int size = ruleSet.size();
+		this.ruleCoverageInformations = new RuleCoverageInformation[size];
+		
+		for (int i = 0; i < size; i++) {
+			this.ruleCoverageInformations[i] = new RuleCoverageInformation(ruleSet.getRule(i), learningInformationTable);
+		}
 	}
 
 	/**
@@ -270,13 +277,9 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	EvaluationField calculateModalDecisionEvaluation(EvaluationField downLimit, EvaluationField upLimit, List<Integer> indicesOfCoveringAtMostRules, List<Integer> indicesOfCoveringAtLeastRules) {
 		FieldDistribution fieldDistribution = new FieldDistribution();
 		
-		if (hasComputableRuleCharacteristics) {
-			//indices of objects that: i) are covered by at least one rule covering classified object, ii) have decision with evaluation equal to limit
-			fieldDistribution.increaseCount(downLimit, getIndicesOfCoveredLearningObjectsWithDecisionEvaluation(downLimit, indicesOfCoveringAtMostRules).size());
-			fieldDistribution.increaseCount(upLimit, getIndicesOfCoveredLearningObjectsWithDecisionEvaluation(upLimit, indicesOfCoveringAtLeastRules).size());
-		} else {
-			throw new UnsupportedOperationException("Calculation of modal value not implemented for rule set without computable rule characteristics."); //TODO: implement
-		}
+		//indices of objects that: i) are covered by at least one rule covering classified object, ii) have decision with evaluation equal to limit
+		fieldDistribution.increaseCount(downLimit, getIndicesOfCoveredLearningObjectsWithDecisionEvaluation(downLimit, indicesOfCoveringAtMostRules).size());
+		fieldDistribution.increaseCount(upLimit, getIndicesOfCoveredLearningObjectsWithDecisionEvaluation(upLimit, indicesOfCoveringAtLeastRules).size());
 		
 		ModeCalculator modeCalculator = new ModeCalculator(fieldDistribution);
 		return downLimit.calculate(modeCalculator, upLimit);
@@ -293,15 +296,13 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	 * @throws ClassCastException if decision of some considered learning object is not of type {@link SimpleDecision}
 	 */
 	IntSet getIndicesOfCoveredLearningObjectsWithDecisionEvaluation(EvaluationField decisionEvaluation, List<Integer> indicesOfCoveringRules) {
-		RuleSetWithComputableCharacteristics ruleSet = (RuleSetWithComputableCharacteristics)this.ruleSet;
-		
 		IntList indicesOfCoveredLearningObjects;
 		Int2ObjectMap<Decision> decisionsOfCoveredLearningObjects;
 		IntSet indicesOfCoveredLearningObjectsWithDecisionEvaluation = new IntOpenHashSet(); //result of this method
 		
 		for (int ruleIndex : indicesOfCoveringRules) {
-			indicesOfCoveredLearningObjects = ruleSet.getRuleCharacteristics(ruleIndex).getRuleCoverageInformation().getIndicesOfCoveredObjects();
-			decisionsOfCoveredLearningObjects = ruleSet.getRuleCharacteristics(ruleIndex).getRuleCoverageInformation().getDecisionsOfCoveredObjects();
+			indicesOfCoveredLearningObjects = getRuleCoverageInformation(ruleIndex).getIndicesOfCoveredObjects();
+			decisionsOfCoveredLearningObjects = getRuleCoverageInformation(ruleIndex).getDecisionsOfCoveredObjects();
 			
 			for (int coveredObjectIndex : indicesOfCoveredLearningObjects) {
 				//decision of object covered by current rule is equal to downLimit 
@@ -312,6 +313,20 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 		}
 		
 		return indicesOfCoveredLearningObjectsWithDecisionEvaluation;
+	}
+	
+	/**
+	 * Gets {@link RuleCoverageInformation rule coverage information} for the rule with given index
+	 * 
+	 * @param ruleIndex index of the rule from the rule set
+	 * @return {@link RuleCoverageInformation rule coverage information} for the rule with given index
+	 */
+	RuleCoverageInformation getRuleCoverageInformation(int ruleIndex) {
+		if (hasComputableRuleCharacteristics) {
+			return ((RuleSetWithComputableCharacteristics)ruleSet).getRuleCharacteristics(ruleIndex).getRuleCoverageInformation();
+		} else {
+			return ruleCoverageInformations[ruleIndex];
+		}
 	}
 	
 }
