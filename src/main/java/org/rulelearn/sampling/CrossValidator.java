@@ -80,6 +80,21 @@ public class CrossValidator {
 	}
 	
 	/**
+	 * Sets the seed of the random number generator.
+	 * 
+	 * @param seed new seed of the random number generator
+	 * @return {@code true} if given seed has been successfully set, {@code false otherwise}
+	 */
+	public boolean setSeed(long seed) {
+		try {
+			this.random.setSeed(seed);
+			return true;
+		} catch (Exception exception) {
+			return false;
+		}
+	}
+	
+	/**
 	 * Randomly splits {@link InformationTable an information table} provided as a parameter into a given number k (also provided as a parameter) 
 	 * of {@link CrossValidationFold folds}. Each fold consists of two disjoint sub-tables of the information table. 
 	 *

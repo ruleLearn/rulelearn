@@ -19,8 +19,13 @@ package org.rulelearn.classification;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.rules.Condition;
+import org.rulelearn.rules.ConditionAtLeast;
+import org.rulelearn.rules.ConditionAtMost;
 import org.rulelearn.rules.RuleSet;
+import org.rulelearn.types.EvaluationField;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -62,12 +67,14 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	 * @param defaultClassificationResult default classification result, to be returned by this classifier
 	 *        if it is unable to calculate such result using stored decision rules
 	 * @param mode classification mode to be used by this classifier; {@link Mode#HYBRID} is expected to give better results on average
+	 * @param learningInformationTable learning (training) information table for which rules from the given rule set have been induced
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
-	public ScoringRuleClassifier(RuleSet ruleSet, SimpleEvaluatedClassificationResult defaultClassificationResult, Mode mode) {
+	public ScoringRuleClassifier(RuleSet ruleSet, SimpleEvaluatedClassificationResult defaultClassificationResult, Mode mode, InformationTable learningInformationTable) {
 		super(ruleSet, defaultClassificationResult);
 		this.mode = Precondition.notNull(mode, "Classification mode of scoring rule classifier is null.");
+		//TODO: check (and save?) learningInformationTable
 	}
 	
 	/**
@@ -139,6 +146,28 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	 */
 	@Override
 	public SimpleEvaluatedClassificationResult classify(int objectIndex, InformationTable informationTable, IntList indicesOfCoveringRules) {
+		Condition<EvaluationField> decisionCondition = null; //decision condition of the current rule
+		int rulesCount = this.ruleSet.size();
+		IntList indicesOfCoveringAtLeastRules = new IntArrayList();
+		IntList indicesOfCoveringAtMostRules = new IntArrayList();
+		
+		for (int i = 0; i < rulesCount; i++) {
+			if (this.ruleSet.getRule(i).covers(objectIndex, informationTable)) { //current rule covers considered object
+				decisionCondition = this.ruleSet.getRule(i).getDecision();
+				
+				if (decisionCondition instanceof ConditionAtLeast<?>) {
+					indicesOfCoveringAtLeastRules.add(i); //remember index of covering "at least" rule
+				}
+				else if (decisionCondition instanceof ConditionAtMost<?>) {
+					indicesOfCoveringAtMostRules.add(i); //remember index of covering "at most" rule
+				}
+			}
+		}
+		
+		//append to given list indices of all covering rules
+		indicesOfCoveringRules.addAll(indicesOfCoveringAtLeastRules);
+		indicesOfCoveringRules.addAll(indicesOfCoveringAtMostRules);
+		
 		return getDefaultClassificationResult(); //TODO: implement
 	}
 

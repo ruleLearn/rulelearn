@@ -122,4 +122,13 @@ public class OrdinalMisclassificationMatrix extends MisclassificationMatrix {
 		return rmse;
 	}
 	
+	/**
+	 * Serializes this ordinal misclassification matrix to a (multiline) text file.
+	 *  
+	 * @return serialized ordinal misclassification matrix
+	 */
+	public String serialize() {
+		return "Serialized ordinal misclassification matrix.";
+	}
+	
 }
