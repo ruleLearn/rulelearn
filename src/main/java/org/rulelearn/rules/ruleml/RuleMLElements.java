@@ -97,26 +97,44 @@ public class RuleMLElements {
     
     /**
      * Constructs RuleML beginning of a rule set tag, which should be placed at the beginning of each set of rules.
-     * @param ruleSetIndex index of the set of rules
      * 
-     * @return RuleML beginning of a rule set tag
+     * @param ruleSetIndex index of the set of rules
+     * @param learningInformationTableHash hash of the learning information table (if such hash should be written to file), or {@code null}
+     *        (if such hash has not been calculated and stored in rule set)
+     * 
+     * @return RuleML beginning of a rule set tag, containing also given hash of learning information table (if it is not {@code null})
      */
-    public static String getBeginningOfRuleSet (int ruleSetIndex) {
-    		StringBuffer buffer = new StringBuffer();
-    		buffer.append("<act index=\"").append(ruleSetIndex).append("\">").append(getNewLine());
-    		return buffer.toString();
+    public static String getBeginningOfRuleSet (int ruleSetIndex, String learningInformationTableHash) {
+    		StringBuilder builder = new StringBuilder();
+    		builder.append("<act index=\"").append(ruleSetIndex);
+    		
+    		if (learningInformationTableHash != null) {
+    			builder.append("\" learningDataHash=\"");
+    			builder.append(learningInformationTableHash);
+    		}
+    		
+    		return builder.append("\">").append(getNewLine()).toString();
     }
     
     /**
      * Constructs RuleML beginning of a rule set tag, which should be placed at the beginning of each set of rules.
-     * @param ruleSetIndex index of the set of rules
      * 
-     * @return RuleML beginning of a rule set tag
+     * @param ruleSetIndex index of the set of rules
+     * @param learningInformationTableHash hash of the learning information table (if such hash should be written to file), or {@code null}
+     *        (if such hash has not been calculated and stored in rule set)
+     * 
+     * @return RuleML beginning of a rule set tag, containing also given hash of learning information table (if it is not {@code null}) 
      */
-    public static String getBeginningOfRuleSet (UUID ruleSetIndex) {
-    		StringBuffer buffer = new StringBuffer();
-    		buffer.append("<act index=\"").append(ruleSetIndex.toString()).append("\">").append(getNewLine());
-    		return buffer.toString();
+    public static String getBeginningOfRuleSet (UUID ruleSetIndex, String learningInformationTableHash) {
+    		StringBuilder builder = new StringBuilder();
+    		builder.append("<act index=\"").append(ruleSetIndex.toString());
+    		
+    		if (learningInformationTableHash != null) {
+    			builder.append("\" learningDataHash=\"");
+    			builder.append(learningInformationTableHash);
+    		}
+    		
+    		return builder.append("\">").append(getNewLine()).toString();
     }
     
     /**

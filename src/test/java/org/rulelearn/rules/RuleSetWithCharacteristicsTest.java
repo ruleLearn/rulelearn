@@ -16,7 +16,9 @@
 
 package org.rulelearn.rules;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -249,6 +251,34 @@ class RuleSetWithCharacteristicsTest {
 		
 		assertTrue(ruleSetWithCharacteristics.getRuleCharacteristics(0) == ruleCharacteristics0);
 		assertTrue(ruleSetWithCharacteristics.getRuleCharacteristics(1) == ruleCharacteristics1);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleSetWithCharacteristics#serialize()}.
+	 */
+	@Test
+	void testSerialize() {
+		String ruleAsText = "(in3_g >= 13.0) & (in1_g >= 14.0) => (out1 >= 9)";
+		
+		Rule ruleMock = Mockito.mock(Rule.class);
+		Mockito.when(ruleMock.toString()).thenReturn(ruleAsText);
+		
+		RuleCharacteristics ruleCharacteristicsMock = Mockito.mock(RuleCharacteristics.class);
+		Mockito.when(ruleCharacteristicsMock.isSupportSet()).thenReturn(true);
+		Mockito.when(ruleCharacteristicsMock.getSupport()).thenReturn(10);
+		Mockito.when(ruleCharacteristicsMock.isStrengthSet()).thenReturn(true);
+		Mockito.when(ruleCharacteristicsMock.getStrength()).thenReturn(0.2);
+		Mockito.when(ruleCharacteristicsMock.isCoverageFactorSet()).thenReturn(true);
+		Mockito.when(ruleCharacteristicsMock.getCoverageFactor()).thenReturn(0.3);
+		Mockito.when(ruleCharacteristicsMock.isConfidenceSet()).thenReturn(false);
+		Mockito.when(ruleCharacteristicsMock.isEpsilonSet()).thenReturn(true);
+		Mockito.when(ruleCharacteristicsMock.getEpsilon()).thenReturn(0.1);
+		
+		RuleSetWithCharacteristics ruleSetWithCharacteristics = new RuleSetWithCharacteristics(new Rule[] {ruleMock}, new RuleCharacteristics[] {ruleCharacteristicsMock});
+		
+		String serializedRuleSet = ruleSetWithCharacteristics.serialize();
+		System.out.println(serializedRuleSet); //!
+		assertEquals(serializedRuleSet, ruleAsText+" [support=10, strength=0.2, coverage-factor=0.3, confidence=?, epsilon=0.1]"+System.lineSeparator());
 	}
 
 }

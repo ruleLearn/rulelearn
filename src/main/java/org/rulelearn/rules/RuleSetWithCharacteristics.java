@@ -143,4 +143,31 @@ public class RuleSetWithCharacteristics extends RuleSet {
 		
 		return new RuleSetWithCharacteristics(rules, characteristics, true);
 	}
+	
+	/**
+	 * Serializes this rule set to multiline plain text (rules + chosen, most important characteristics).
+	 * If for any rule some characteristics is unknown, prints "?" for its value.
+	 * 
+	 * @return multiline plain text representation of this rule set
+	 */
+	@Override
+	public String serialize() {
+		StringBuilder rulesTxtBuilder = new StringBuilder();
+		int size = size();
+		RuleCharacteristics ruleCharacteristics;
+		
+		for (int ruleIndex = 0; ruleIndex < size; ruleIndex++) {
+			ruleCharacteristics = getRuleCharacteristics(ruleIndex);
+			rulesTxtBuilder.append(getRule(ruleIndex))
+			.append(" [support=").append(ruleCharacteristics.isSupportSet() ? ruleCharacteristics.getSupport() : "?")
+			.append(", strength=").append(ruleCharacteristics.isStrengthSet() ? ruleCharacteristics.getStrength() : "?")
+			.append(", coverage-factor=").append(ruleCharacteristics.isCoverageFactorSet() ? ruleCharacteristics.getCoverageFactor() : "?")
+			.append(", confidence=").append(ruleCharacteristics.isConfidenceSet() ? ruleCharacteristics.getConfidence() : "?")
+			.append(", epsilon=").append(ruleCharacteristics.isEpsilonSet() ? ruleCharacteristics.getEpsilon() : "?")
+			.append("]")
+			.append(System.lineSeparator());
+		}
+		
+		return rulesTxtBuilder.toString();
+	}
 }

@@ -21,6 +21,7 @@ import static org.rulelearn.core.Precondition.notNull;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
+import org.rulelearn.data.InformationTable;
 
 /**
  * Set of decision rules, each identified by its index.
@@ -33,7 +34,14 @@ public class RuleSet {
 	/**
 	 * Array with subsequent rules stored in this rule set.
 	 */
-	protected Rule[] rules;
+	Rule[] rules;
+	
+	/**
+	 * {@link InformationTable#getHash() Hash of the learning information table} for which rules from this rule set have been induced.
+	 * If not set explicitly, equals {@code null}.
+	 * Is set, gets written to RuleML file when the rules are saved.
+	 */
+	String learningInformationTableHash = null;
 	
 	/**
 	 * Constructor storing rules from the given array in this rule set. 
@@ -104,4 +112,40 @@ public class RuleSet {
 		}
 		return new RuleSet(rules, true);
 	}
+	
+	/**
+	 * Gets the hash of the learning information table for which rules from this rule set have been induced.
+	 * 
+	 * @return hash of the learning information table for which rules from this rule set have been induced
+	 */
+	public String getLearningInformationTableHash() {
+		return learningInformationTableHash;
+	}
+
+	/**
+	 * Stores the hash of the learning information table for which rules from this rule set have been induced.
+	 * Hash gets written to RuleML file when the rules are saved.
+	 * 
+	 * @param learningInformationTableHash the hash of the learning information table for which rules from this rule set have been induced
+	 */
+	public void setLearningInformationTableHash(String learningInformationTableHash) {
+		this.learningInformationTableHash = learningInformationTableHash;
+	}
+	
+	/**
+	 * Serializes this rule set to multiline plain text.
+	 * 
+	 * @return multiline plain text representation of this rule set
+	 */
+	public String serialize() {
+		StringBuilder rulesTxtBuilder = new StringBuilder();
+		int size = size();
+		
+		for (int ruleIndex = 0; ruleIndex < size; ruleIndex++) {
+			rulesTxtBuilder.append(getRule(ruleIndex)).append(System.lineSeparator());
+		}
+		
+		return rulesTxtBuilder.toString();
+	}
+	
 }

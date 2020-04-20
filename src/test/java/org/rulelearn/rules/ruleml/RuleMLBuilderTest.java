@@ -732,4 +732,5 @@ class RuleMLBuilderTest {
 		String expectedRuleML = "<evaluation measure=\"s-ConfirmationMeasure\" value=\"1.0\"/>\n";
 		assertEquals(expectedRuleML, ruleMLBuilder.evaluationToRuleMLString("s-ConfirmationMeasure", this.notAllSetRuleCharacteristicsMock::getSConfirmation, 0));
 	}
+
 }

@@ -60,13 +60,14 @@ public class RuleMLBuilder {
 	 * 
 	 * @param ruleSet a set of rules {@link RuleSet} to be represented as a RuleML document
 	 * @param ruleSetIndex index of the set of rules to be specified in the document (i.e., identifier of a rule set represented as a RuleML document)
+	 * 
 	 * @return RuleML document string representing all rules  
 	 */
 	public String toRuleMLString(RuleSet ruleSet, int ruleSetIndex) {
 		notNull(ruleSet, "Rule set to be transfomed into a RuleML document string is null.");
 		StringBuilder result = new StringBuilder();
 		result.append(RuleMLElements.getHeader());
-		result.append(RuleMLElements.getBeginningOfRuleSet(ruleSetIndex));
+		result.append(RuleMLElements.getBeginningOfRuleSet(ruleSetIndex, ruleSet.getLearningInformationTableHash()));
 		result.append(toRuleMLString(ruleSet));
 		result.append(RuleMLElements.getEndOfRuleSet());
 		result.append(RuleMLElements.getFooter());
@@ -80,6 +81,7 @@ public class RuleMLBuilder {
 	 * 
 	 * @param ruleSet a set of rules {@link RuleSet} to be represented as a RuleML document
 	 * @param ruleSetIndex index of the set of rules to be specified in the document (i.e., identifier of a rule set represented as a RuleML document)
+	 * 
 	 * @return RuleML document string representing all rules  
 	 */
 	public String toRuleMLString(RuleSet ruleSet, UUID ruleSetIndex) {
@@ -87,7 +89,7 @@ public class RuleMLBuilder {
 		notNull(ruleSetIndex, "Rule set UUID is null.");
 		StringBuilder result = new StringBuilder();
 		result.append(RuleMLElements.getHeader());
-		result.append(RuleMLElements.getBeginningOfRuleSet(ruleSetIndex));
+		result.append(RuleMLElements.getBeginningOfRuleSet(ruleSetIndex, ruleSet.getLearningInformationTableHash()));
 		result.append(toRuleMLString(ruleSet));
 		result.append(RuleMLElements.getEndOfRuleSet());
 		result.append(RuleMLElements.getFooter());

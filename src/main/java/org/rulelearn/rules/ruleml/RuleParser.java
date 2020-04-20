@@ -210,6 +210,7 @@ public class RuleParser {
 			Element root = ruleMLDocument.getDocumentElement();
             int lowestAvailableIndex = 0;
             ruleSets = new Object2ObjectRBTreeMap<Integer, RuleSet>();
+            String learningDataHash;
             
             // iterate through sets of rules
             for (Node act : new NodeListWrapper(root.getElementsByTagName("act"))) {
@@ -220,10 +221,18 @@ public class RuleParser {
                     } catch (NumberFormatException ex) {
                         index = lowestAvailableIndex;
                     }
-                    if (index >= lowestAvailableIndex)
+                    if (index >= lowestAvailableIndex) {
                         lowestAvailableIndex = index + 1;
+                    }
+                    
+                    //try to parse learning data hash
+                    learningDataHash = null;
+                    if (act.getAttributes().getNamedItem("learningDataHash") != null) {
+                    	learningDataHash = act.getAttributes().getNamedItem("learningDataHash").getNodeValue();
+                    }
+                    
                     //parse set of rules
-                    List<Rule> rules = new ObjectArrayList<Rule> ();
+                    List<Rule> rules = new ObjectArrayList<Rule>();
                     for (Node actChild = ((Element)act).getFirstChild(); actChild != null; actChild = actChild.getNextSibling()) {
                         if (actChild.getNodeType() == Node.ELEMENT_NODE && "assert".equals(actChild.getNodeName())) {
                         		try {
@@ -236,6 +245,11 @@ public class RuleParser {
                     }
                     //add parsed set of rules to the map
                     ruleSets.put(index, new RuleSet(rules.toArray(new Rule[rules.size()])));
+                    
+                    //remember learning data hash, if it was parsed from file
+                    if (learningDataHash != null) {
+                    	ruleSets.get(index).setLearningInformationTableHash(learningDataHash);
+                    }
                 }
             }
 		}
@@ -261,6 +275,8 @@ public class RuleParser {
 			Element root = ruleMLDocument.getDocumentElement();
             int lowestAvailableIndex = 0;
             ruleSets = new Object2ObjectRBTreeMap<Integer, RuleSetWithCharacteristics> ();
+            String learningDataHash;
+            
             // iterate through sets of rules
             for (Node act : new NodeListWrapper(root.getElementsByTagName("act"))) {
                 if (act.getNodeType() == Node.ELEMENT_NODE) {
@@ -270,8 +286,16 @@ public class RuleParser {
                     } catch (NumberFormatException ex) {
                         index = lowestAvailableIndex;
                     }
-                    if (index >= lowestAvailableIndex)
+                    if (index >= lowestAvailableIndex) {
                         lowestAvailableIndex = index + 1;
+                    }
+                    
+                    //try to parse learning data hash
+                    learningDataHash = null;
+                    if (act.getAttributes().getNamedItem("learningDataHash") != null) {
+                    	learningDataHash = act.getAttributes().getNamedItem("learningDataHash").getNodeValue();
+                    }
+                    
                     //parse set of rules and rule characteristics
                     List<Rule> rules = new ObjectArrayList<Rule> ();
                     List<RuleCharacteristics> ruleCharacteristics = new ObjectArrayList<RuleCharacteristics> ();
@@ -289,6 +313,11 @@ public class RuleParser {
                     //add parsed sets of rules and rule characteristics to the map
                     ruleSets.put(index, new RuleSetWithCharacteristics(rules.toArray(new Rule[rules.size()]),
                     		ruleCharacteristics.toArray(new RuleCharacteristics[ruleCharacteristics.size()])));
+                    
+                    //remember learning data hash, if it was parsed from file
+                    if (learningDataHash != null) {
+                    	ruleSets.get(index).setLearningInformationTableHash(learningDataHash);
+                    }
                 }
             }
 		}
