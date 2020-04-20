@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.json.AttributeDeserializer;
@@ -526,6 +527,31 @@ class InformationTableBuilderTest {
 			System.out.println(ex);
 		}
 		assertTrue(informationTable == null);
+	}
+	
+	/**
+	 * Test for {@link InformationTable#getHash} method}.
+	 * Tests time of calculating hash.
+	 */
+	@Test
+	@Tag("integration")
+	public void testConstructionOfInformationTable15() {
+		InformationTable informationTable = null;
+		try {
+			informationTable = InformationTableBuilder.safelyBuildFromJSONFile("src/test/resources/data/json/metadata-prioritisation.json", "src/test/resources/data/json/learning-set-prioritisation-0609-full.json");
+		}
+		catch (IOException ex) {
+			fail(ex.toString());
+		}
+		assertTrue(informationTable != null);
+		assertEquals(11, informationTable.getNumberOfAttributes());
+		assertEquals(27824, informationTable.getNumberOfObjects());
+		
+		long startingTime = System.currentTimeMillis();
+		String hash = informationTable.getHash();
+		System.out.println("Time of calculating hash for learning-set-prioritisation-0609-full.json:" + (System.currentTimeMillis() - startingTime) + " [ms].");
+		System.out.println("Calculated hash of learning-set-prioritisation-0609-full.json: " + hash);
+		assertEquals(hash, "6088FC5932C53FEEEAAE8218407B0FA2CEB6F753EB1AF524D2B586E5960D628C"); //verifies if (once calculated) hash remain consistent for multiple test runs 
 	}
 	
 }

@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +56,39 @@ class InformationTableTest {
 	private InformationTableTestConfiguration configuration02;
 	private InformationTableTestConfiguration configuration03; //for testing imposition of preference orders
 	private InformationTableTestConfiguration configuration04; //for testing imposition of preference orders
+	
+	private String originalOnlyLearningAttributesSerialization = //concerns configuration04
+			"1:+;a-dec-enum3-none;decision;none;noneEnum(l,m,h);mv1.5|" +
+			"5:+;a-cond-enum3-gain;condition;gain;gainEnum(l,m,h);mv2|" +
+			"6:+;a-cond-enum3-cost;condition;cost;costEnum(l,m,h);mv1.5|" +
+			"7:+;a-cond-int-gain;condition;gain;gainInt;mv2|" +
+			"8:+;a-cond-real-cost;condition;cost;costReal;mv1.5|" +
+			"9:+;a-cond-int-none;condition;none;noneInt;mv2|" +
+			"10:+;a-cond-real-none;condition;none;noneReal;mv1.5|" +
+			"11:+;a-cond-enum2-none;condition;none;noneEnum(a,b);mv2|" +
+			"12:+;a-cond-enum3-none;condition;none;noneEnum(l,m,h);mv1.5\n" +
+			"m|l|m|1|2.0|3|1.0|a|l\n" + 
+			"h|m|h|2|3.0|4|2.0|b|m\n" + 
+			"m|h|l|3|4.0|5|3.0|a|h";
+	private String originalOnlyLearningAttributesHash = "9FDD19E3CE03DF538C42F2A146D6A7B56860FBC3303B1DF067C3D416BF57E169"; //hash for the above original only learning attributes serialization
+	
+	private String originalAllAttributesSerialization = //concerns configuration04
+			"0:-;na-cond-enum3-none;condition;none;noneEnum(l,m,h);mv2|" +
+			"1:+;a-dec-enum3-none;decision;none;noneEnum(l,m,h);mv1.5|" +
+			"2:+;a-desc-enum3-none;description;none;noneEnum(l,m,h);mv2|" +
+			"3:+;a-neval-text;textId|" +
+			"4:-;a-neval-uuid;uuid|" +
+			"5:+;a-cond-enum3-gain;condition;gain;gainEnum(l,m,h);mv2|" +
+			"6:+;a-cond-enum3-cost;condition;cost;costEnum(l,m,h);mv1.5|" +
+			"7:+;a-cond-int-gain;condition;gain;gainInt;mv2|" +
+			"8:+;a-cond-real-cost;condition;cost;costReal;mv1.5|" +
+			"9:+;a-cond-int-none;condition;none;noneInt;mv2|" +
+			"10:+;a-cond-real-none;condition;none;noneReal;mv1.5|" +
+			"11:+;a-cond-enum2-none;condition;none;noneEnum(a,b);mv2|" +
+			"12:+;a-cond-enum3-none;condition;none;noneEnum(l,m,h);mv1.5" + System.lineSeparator() +
+			"l|m|h|o1|00000000-0000-0000-0000-000000000000|l|m|1|2.0|3|1.0|a|l" + System.lineSeparator() + 
+			"m|h|l|o2|00000000-0000-0000-0000-000000000001|m|h|2|3.0|4|2.0|b|m" + System.lineSeparator() + 
+			"h|m|l|o3|00000000-0000-0000-0000-000000000002|h|l|3|4.0|5|3.0|a|h";
 	
 	/**
 	 * Sole constructor initializing information table test configurations.
@@ -1374,5 +1408,95 @@ class InformationTableTest {
 	public void testImposePreferenceOrders02False() {
 		testImposePreferenceOrders02(false);
 	}
-
+	
+	/**
+	 * Test for {@link InformationTable#serialize()} method}.
+	 * Tests serialization with only learning attributes.
+	 */
+	@Test
+	public void testSerialize01() {
+		InformationTable informationTable = configuration04.getInformationTable(false);
+		String expected = originalOnlyLearningAttributesSerialization;
+		String serialized = informationTable.serialize(true);
+		System.out.println(serialized); //!
+		assertEquals(serialized, expected);
+	}
+	
+	/**
+	 * Test for {@link InformationTable#serialize()} method}.
+	 * Tests serialization with all attributes.
+	 */
+	@Test
+	public void testSerialize02() {
+		InformationTable informationTable = configuration04.getInformationTable(false);
+		String expected = originalAllAttributesSerialization;
+		String serialized = informationTable.serialize(false);
+		System.out.println(serialized); //!
+		assertEquals(serialized, expected);
+	}
+	
+	/**
+	 * Test for {@link InformationTable#getHash} method}.
+	 * Tests if digest algorithm "SHA-256" is supported by {@link MessageDigest}. Moreover,
+	 * test if encoding "UTF-8" is supported by {@link String#getBytes(String)}. 
+	 */
+	@Test
+	public void testGetHash01() {
+		InformationTable informationTableMock = Mockito.mock(InformationTable.class);
+		Mockito.when(informationTableMock.serialize(true)).thenReturn(originalOnlyLearningAttributesSerialization);
+		Mockito.when(informationTableMock.getHash()).thenCallRealMethod();
+		String expected = originalOnlyLearningAttributesHash;
+		String hash = informationTableMock.getHash();
+		System.out.println(hash + " (original hash)"); //!
+		assertEquals(hash, expected);
+	}
+	
+	/**
+	 * Test for {@link InformationTable#getHash} method}.
+	 * Tests if slight modification of serialized string influences the hash.
+	 */
+	@Test
+	public void testGetHash02() {
+		InformationTable informationTableMock = Mockito.mock(InformationTable.class);
+		Mockito.when(informationTableMock.serialize(true)).thenReturn(originalOnlyLearningAttributesSerialization.replaceFirst(
+				"1:+;a-dec-enum3-none;decision;none;noneEnum(l,m,h);mv1.5|",
+				"1:+;a-dec-enum3-none;decision;none;noneEnum(l,m,h,vh);mv1.5|"));
+		Mockito.when(informationTableMock.getHash()).thenCallRealMethod();
+		String hash = informationTableMock.getHash();
+		System.out.println(hash); //!
+		assertNotEquals(hash, originalOnlyLearningAttributesHash);
+	}
+	
+	/**
+	 * Test for {@link InformationTable#getHash} method}.
+	 * Tests if slight modification of serialized string influences the hash.
+	 */
+	@Test
+	public void testGetHash03() {
+		InformationTable informationTableMock = Mockito.mock(InformationTable.class);
+		Mockito.when(informationTableMock.serialize(true)).thenReturn(originalOnlyLearningAttributesSerialization.replaceFirst(
+				"5:+;a-cond-enum3-gain;condition;gain;gainEnum(l,m,h);mv2|",
+				"5:-;a-cond-enum3-gain;condition;gain;gainEnum(l,m,h);mv2|"));
+		Mockito.when(informationTableMock.getHash()).thenCallRealMethod();
+		String hash = informationTableMock.getHash();
+		System.out.println(hash); //!
+		assertNotEquals(hash, originalOnlyLearningAttributesHash);
+	}
+	
+	/**
+	 * Test for {@link InformationTable#getHash} method}.
+	 * Tests if slight modification of serialized string influences the hash.
+	 */
+	@Test
+	public void testGetHash04() {
+		InformationTable informationTableMock = Mockito.mock(InformationTable.class);
+		Mockito.when(informationTableMock.serialize(true)).thenReturn(originalOnlyLearningAttributesSerialization.replaceFirst(
+				"m|l|m|1|2.0|3|1.0|a|l",
+				"m|l|m|1|2.0|3|1.01|a|l"));
+		Mockito.when(informationTableMock.getHash()).thenCallRealMethod();
+		String hash = informationTableMock.getHash();
+		System.out.println(hash); //!
+		assertNotEquals(hash, originalOnlyLearningAttributesHash);
+	}
+	
 }

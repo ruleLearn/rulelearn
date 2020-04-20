@@ -16,6 +16,9 @@
 
 package org.rulelearn.data;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +44,8 @@ import org.rulelearn.types.UnknownSimpleFieldMV2;
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -150,6 +155,11 @@ public class InformationTable {
 	 * Cached output of {@link #calculateUniqueDecisions()}.
 	 */
 	private Decision[] uniqueDecisions = null;
+	
+	/**
+	 * Cached hexadecimal hash of this information table (64 characters).
+	 */
+	private String hash = null;
 	
 	/**
 	 * Suffix of any new {@link AttributePreferenceType#GAIN gain-type} evaluation attribute created by {@link #imposePreferenceOrders(boolean)} when cloning an existing
@@ -1422,6 +1432,114 @@ public class InformationTable {
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * Gets (hexadecimal) hash of this information table, obtained by {@link MessageDigest} with "SHA-256" algorithm.
+	 * Digests byte array of text representation returned by {@link #serialize(boolean)} with parameter set to {@code true}.
+	 * Byte array is constructed using "UTF-8" encoding.
+	 * 
+	 * @return (hexadecimal) hash of this information table, consistent among multiple program runs
+	 *         or {@code null} if algorithm "SHA-256" is not on the list of algorithms provided in {@link MessageDigest}
+	 * @see #serialize(boolean)
+	 */
+	public String getHash() {
+		if (hash == null) {
+			MessageDigest md = null;
+			byte[] hashBytes;
+			
+			try {
+				md = MessageDigest.getInstance("SHA-256");
+			} catch (NoSuchAlgorithmException e) {
+				return null;
+			}
+			
+			md.update(serialize(true).getBytes(StandardCharsets.UTF_8));
+			hashBytes = md.digest();
+			
+			StringBuilder builder = new StringBuilder(hashBytes.length * 2);
+			for (byte b : hashBytes) {
+				builder.append(String.format("%02X", b));
+			}
+			
+			hash = builder.toString();
+		}
+		
+		return hash;
+	}
+	
+	/**
+	 * Gets plain text (multiline) representation of this information table, concerning both attributes and values of objects for particular attributes.
+	 * 
+	 * @param onlyLearningAttributes tells if only learning attributes of this information table, i.e., active condition/decision evaluation attributes, should be considered
+	 *        ({@code onlyLearningAttributes == true}), or all attributes should be serialized ({@code onlyLearningAttributes == false});
+	 *        depending on the parameter value, only values corresponding to the learning attributes, or, respectively, values corresponding to all attributes are serialized
+	 * 
+	 * @return plain text representation of this information table
+	 */
+	public String serialize(boolean onlyLearningAttributes) {
+		//0:-;na-cond-enum3-none;condition;none;noneEnum(l,m,h);mv2|1:+;a-dec-enum3-none;decision;none;noneEnum(l,m,h);mv1.5| ...
+		//...
+		//l|m|1|2.0|3|1.0|a|l|m
+		
+		int initialCapacity = attributes.length * 128; //TODO: better estimate initial capacity, taking into account also fields 
+		StringBuilder builder = new StringBuilder(initialCapacity);
+		
+		String columnSeparator = "|";
+		String rowSeparator = (onlyLearningAttributes ? "\n" : System.lineSeparator());
+		
+		boolean serializeAttribute;
+		int count; //number of already serialized columns
+		IntList serializedAttributesIndices = new IntArrayList();
+		
+		count = 0;
+		for (int j = 0; j < attributes.length; j++) {
+			serializeAttribute = false;
+			if (onlyLearningAttributes) {
+				if (isActiveConditionAttribute(attributes[j]) || isActiveDecisionAttribute(attributes[j])) {
+					serializeAttribute = true;
+				}
+			} else {
+				serializeAttribute = true;
+			}
+			
+			if (serializeAttribute) {
+				builder.append(count > 0 ? columnSeparator : "").append(j).append(":").append(attributes[j].serialize());
+				serializedAttributesIndices.add(j);
+				count++;
+			}
+		}
+		
+		if (count > 0) {
+			builder.append(rowSeparator);
+		}
+		
+		int numObjects = this.getNumberOfObjects();
+		
+		for (int i = 0; i < numObjects; i++) {
+			count = 0;
+			for (int j : serializedAttributesIndices) {
+				builder.append(count > 0 ? columnSeparator : "").append(getField(i, j).toString());
+				count++;
+			}
+			
+			if (i < numObjects - 1) {
+				builder.append(rowSeparator);
+			}
+		}
+		
+		return builder.toString();
+	}
+	
+	/**
+	 * Gets plain text (multiline) representation of this information table.
+	 * Calls {@link #serialize(boolean)} with parameter set to {@code false}.
+	 * 
+	 * @return plain text representation of this information table
+	 * @see #serialize(boolean)
+	 */
+	public String toString() {
+		return serialize(false);
 	}
 
 }
