@@ -17,7 +17,10 @@
 package org.rulelearn.dominance;
 
 import static org.rulelearn.core.Precondition.notNull;
+
 import java.util.function.BiPredicate;
+
+import org.rulelearn.core.AttributeNotFoundException;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTable;
@@ -51,21 +54,27 @@ public final class DominanceChecker {
 	 *        the first from the object indexed by {@code x}, and the second from the object indexed by {@code y}
 	 * @return {@code true} if the first given object ({@code x}) is in relation with the second given object ({@code y}) with respect to
 	 *         active condition attributes of the given information table, {@code false} otherwise
+	 * @throws AttributeNotFoundException if given information table does not contain any active condition evaluation attribute
 	 */
-	protected static boolean isInRelationWith(int x, int y, InformationTable informationTable, BiPredicate<EvaluationField, EvaluationField> integralRelationTester) {
+	static boolean isInRelationWith(int x, int y, InformationTable informationTable, BiPredicate<EvaluationField, EvaluationField> integralRelationTester) {
 		notNull(informationTable, "Information table for checking dominance is null.");
 		
 		Table<EvaluationAttribute, EvaluationField> evaluations = informationTable.getActiveConditionAttributeFields();
-		EvaluationField[] xEvaluations = evaluations.getFields(x);
-		EvaluationField[] yEvaluations = evaluations.getFields(y);
 		
-		for (int i = 0; i < xEvaluations.length; i++) {
-			if (!integralRelationTester.test(xEvaluations[i], yEvaluations[i])) {
-				return false;
+		if (evaluations != null) {
+			EvaluationField[] xEvaluations = evaluations.getFields(x);
+			EvaluationField[] yEvaluations = evaluations.getFields(y);
+			
+			for (int i = 0; i < xEvaluations.length; i++) {
+				if (!integralRelationTester.test(xEvaluations[i], yEvaluations[i])) {
+					return false;
+				}
 			}
+			
+			return true;
+		} else {
+			throw new AttributeNotFoundException("Cannot calculate dominance relation if there are no active condition evaluation attributes.");
 		}
-		
-		return true;
 	}
 	
 	/**
@@ -80,6 +89,7 @@ public final class DominanceChecker {
 	 * 
 	 * @throws NullPointerException if given information table is {@code null}
 	 * @throws IndexOutOfBoundsException if index {@code x} or {@code y} does not correspond to any object from the given information table
+	 * @throws AttributeNotFoundException if given information table does not contain any active condition evaluation attribute
 	 */
 	public static boolean dominates(int x, int y, InformationTable informationTable) {
 		return isInRelationWith(x, y, informationTable,
@@ -98,6 +108,7 @@ public final class DominanceChecker {
 	 * 
 	 * @throws NullPointerException if given information table is {@code null}
 	 * @throws IndexOutOfBoundsException if index {@code x} or {@code y} does not correspond to any object from the given information table
+	 * @throws AttributeNotFoundException if given information table does not contain any active condition evaluation attribute
 	 */
 	public static boolean isDominatedBy(int x, int y, InformationTable informationTable) {
 		return isInRelationWith(x, y, informationTable,

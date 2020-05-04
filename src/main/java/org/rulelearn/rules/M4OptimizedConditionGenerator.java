@@ -16,6 +16,7 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.core.AttributeNotFoundException;
 import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
@@ -271,6 +272,8 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 * @throws ElementaryConditionNotFoundException when it is impossible to find any new condition that could be added to given rule conditions
+	 * @throws AttributeNotFoundException if the learning information table referenced from given rule conditions does not contain
+	 *         any active condition evaluation attribute, for which a condition could be constructed
 	 */
 	@Override
 	public Condition<EvaluationField> getBestCondition(IntList consideredObjects, RuleConditions ruleConditions) {
@@ -281,7 +284,15 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		ConditionWithEvaluations candidateConditionWithEvaluations = new ConditionWithEvaluations(ruleConditions);
 		
 		InformationTable learningInformationTable = ruleConditions.getLearningInformationTable();
-		EvaluationAttribute[] activeConditionAttributes = learningInformationTable.getActiveConditionAttributeFields().getAttributes(true);
+		Table<EvaluationAttribute, EvaluationField> activeConditionAttributeFields = learningInformationTable.getActiveConditionAttributeFields();
+		
+		//
+		if (activeConditionAttributeFields == null) {
+			throw new AttributeNotFoundException("Learning data does not contain any active condition evaluation attribute.");
+		}
+		//
+		
+		EvaluationAttribute[] activeConditionAttributes = activeConditionAttributeFields.getAttributes(true);
 		
 		int globalAttributeIndex;
 		
