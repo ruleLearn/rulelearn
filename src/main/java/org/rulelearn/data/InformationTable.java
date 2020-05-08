@@ -1412,26 +1412,30 @@ public class InformationTable {
 	 * @see VCDomLEM
 	 */
 	public boolean isSuitableForInductionOfPossibleRules() {
-		EvaluationAttribute[] attributes = activeConditionAttributeFields.getAttributes(true);
-		int numObj = activeConditionAttributeFields.getNumberOfObjects();
-		int numAttr = activeConditionAttributeFields.getNumberOfAttributes();
-		UnknownSimpleField missingValueType;
-		
-		for (int j = 0; j < numAttr; j++) {
-			missingValueType = attributes[j].getMissingValueType();
-			//missing value type can cause lack of transitivity (e.g. 8 eq ?, ? eq 5, but not 8 eq 5), like UnknownSimpleFieldMV2;
-			//lack of transitivity can yield a problem with induction of possible rules
-			if (missingValueType.equalWhenComparedToAnyEvaluation() && missingValueType.equalWhenReverseComparedToAnyEvaluation()) {
-				for (int i = 0; i < numObj; i++) {
-					if (activeConditionAttributeFields.getField(i, j) instanceof UnknownSimpleField) { //problematic MV does appear
-						return false;
+		if (activeConditionAttributeFields != null) {
+			EvaluationAttribute[] attributes = activeConditionAttributeFields.getAttributes(true);
+			int numObj = activeConditionAttributeFields.getNumberOfObjects();
+			int numAttr = activeConditionAttributeFields.getNumberOfAttributes();
+			UnknownSimpleField missingValueType;
+			
+			for (int j = 0; j < numAttr; j++) {
+				missingValueType = attributes[j].getMissingValueType();
+				//missing value type can cause lack of transitivity (e.g. 8 eq ?, ? eq 5, but not 8 eq 5), like UnknownSimpleFieldMV2;
+				//lack of transitivity can yield a problem with induction of possible rules
+				if (missingValueType.equalWhenComparedToAnyEvaluation() && missingValueType.equalWhenReverseComparedToAnyEvaluation()) {
+					for (int i = 0; i < numObj; i++) {
+						if (activeConditionAttributeFields.getField(i, j) instanceof UnknownSimpleField) { //problematic MV does appear
+							return false;
+						}
 					}
 				}
+				
 			}
 			
+			return true;
+		} else {
+			return false; //TODO: throw an exception?
 		}
-		
-		return true;
 	}
 	
 	/**

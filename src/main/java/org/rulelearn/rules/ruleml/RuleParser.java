@@ -236,7 +236,7 @@ public class RuleParser {
                     for (Node actChild = ((Element)act).getFirstChild(); actChild != null; actChild = actChild.getNextSibling()) {
                         if (actChild.getNodeType() == Node.ELEMENT_NODE && "assert".equals(actChild.getNodeName())) {
                         		try {
-                        			rules.add(parseRule((Element) actChild));
+                        			rules.add(parseRule((Element) actChild)); //parse rule from <assert>...</assert> block
                         		}
                         		catch (RuleParseException ex) {
 								System.out.println("Error while parsing RuleML. " + ex.toString());
@@ -302,8 +302,8 @@ public class RuleParser {
                     for (Node actChild = ((Element)act).getFirstChild(); actChild != null; actChild = actChild.getNextSibling()) {
                         if (actChild.getNodeType() == Node.ELEMENT_NODE && "assert".equals(actChild.getNodeName())) {
                         		try {
-                        			rules.add(parseRule((Element) actChild));
-                        			ruleCharacteristics.add(parseRuleEvaluations((Element) actChild));
+                        			rules.add(parseRule((Element) actChild)); //parse rule from <assert>...</assert> block
+                        			ruleCharacteristics.add(parseRuleEvaluations((Element) actChild));  //parse rule characteristics from <assert>...</assert> block
                         		}
                         		catch (RuleParseException ex) {
 								System.out.println("Error while parsing RuleML. " + ex.toString());
@@ -340,49 +340,57 @@ public class RuleParser {
 		RuleSemantics ruleSemantics = null;
 		RuleType ruleType = null;
 		
-		for (Node assertClause = assertElement.getFirstChild(); assertClause != null; assertClause = assertClause.getNextSibling()) {
-			if (assertClause.getNodeType() == Node.ELEMENT_NODE && "implies".equals(assertClause.getNodeName())) {
-				for (Node impliesClause = assertClause.getFirstChild(); impliesClause != null; impliesClause = impliesClause.getNextSibling()) {
-					if (impliesClause.getNodeType() == Node.ELEMENT_NODE) {
-                        if ("if".equals(impliesClause.getNodeName())) {
-                        	if (impliesClause.hasAttributes()) {
-                        		NamedNodeMap attributes = impliesClause.getAttributes();
-                    			// we only consider one attribute: type
-                    			String type;
-                    			if (attributes.getLength() == 1) {
-                    				if ("type".equals(attributes.item(0).getNodeName())) {
-    	                				type = attributes.item(0).getNodeValue();
-    	                				if (type.equalsIgnoreCase("certain")) {
-    	                					ruleType = RuleType.CERTAIN;
-    	                				}
-    	                				else if (type.equalsIgnoreCase("possible")) {
-    	                					ruleType = RuleType.POSSIBLE;
-    	                				}
-    	                				else if (type.equalsIgnoreCase("approximate")) {
-    	                					ruleType = RuleType.APPROXIMATE;
-    	                				}
-                    				}
-                    			}
-                        	}
+		for (Node impliesNode = assertElement.getFirstChild(); impliesNode != null; impliesNode = impliesNode.getNextSibling()) { //should be one loop iteration
+			if (impliesNode.getNodeType() == Node.ELEMENT_NODE && "implies".equals(impliesNode.getNodeName())) { //we are within <implies>...</implies> node
+				
+				if (impliesNode.hasAttributes()) { //rule type explicitly given
+            		NamedNodeMap attributes = impliesNode.getAttributes();
+        			// we only consider one attribute: type
+        			String type;
+        			if (attributes.getLength() == 1) {
+        				if ("type".equals(attributes.item(0).getNodeName())) {
+            				type = attributes.item(0).getNodeValue();
+            				if (type.equalsIgnoreCase("certain")) {
+            					ruleType = RuleType.CERTAIN;
+            				}
+            				else if (type.equalsIgnoreCase("possible")) {
+            					ruleType = RuleType.POSSIBLE;
+            				}
+            				else if (type.equalsIgnoreCase("approximate")) {
+            					ruleType = RuleType.APPROXIMATE;
+            				}
+        				}
+        			}
+            	}
+				
+				for (Node impliesChild = impliesNode.getFirstChild(); impliesChild != null; impliesChild = impliesChild.getNextSibling()) {
+					if (impliesChild.getNodeType() == Node.ELEMENT_NODE) {
+                        if ("if".equals(impliesChild.getNodeName())) {
                             if (conditions == null) {
-                            	conditions = parseRuleConditionPart((Element) impliesClause);
+                            	conditions = parseRuleConditionPart((Element) impliesChild);
                             } else {
                                 throw new RuleParseException("More than one 'if' node inside an 'implies' node detected in RuleML.");
                             }
                         }
-                        else if ("then".equals(impliesClause.getNodeName())) {
+                        else if ("then".equals(impliesChild.getNodeName())) {
                             if (decisions == null) {
-                            	decisions = parseRuleDecisionPart((Element) impliesClause);
+                            	decisions = parseRuleDecisionPart((Element) impliesChild);
                             } else {
                                 throw new RuleParseException("More than one 'then' node in an 'implies' node detected in RuleML.");
                             }
                         }
-                        else if ("ruleSemantics".equals(impliesClause.getNodeName())) {
-                        		ruleSemantics = parseRuleSemantics((Element) impliesClause);
+                        else if ("ruleSemantics".equals(impliesChild.getNodeName())) {
+                        		ruleSemantics = parseRuleSemantics((Element) impliesChild);
                         }
-                        else if ("ruleType".equals(impliesClause.getNodeName())) {
+                        else if ("ruleType".equals(impliesChild.getNodeName())) {
                         	if (ruleType == null) { // rule type not set yet
-                        		ruleType = parseRuleType((Element) impliesClause);
+                        		ruleType = parseRuleType((Element) impliesChild);
+                        	} else { // rule type already parsed
+                        		RuleType ruleType2 = null;
+                        		ruleType2 = parseRuleType((Element) impliesChild);
+                        		if (ruleType != ruleType2) {
+                        			throw new RuleParseException("Two different types set for a decision rule in RuleML.");
+                        		}
                         	}
                         }
 	                }
@@ -392,6 +400,7 @@ public class RuleParser {
 		
 		notNull(conditions, "No condition part specified for a rule in RuleML.");
 		notNull(decisions, "No decision part specified for a rule in RuleML.");
+		
 		if (decisions.size() >= 1) {
 			if (ruleType == null) { // rule type not set
 				ruleType = DEFAULT_RULE_TYPE;
@@ -422,6 +431,7 @@ public class RuleParser {
 			}
 			rule = new Rule(ruleType, ruleSemantics, conditions, decisions);
 		}
+		
 		return rule;
 	}
 	
@@ -771,7 +781,7 @@ public class RuleParser {
 	/**
 	 * Parses type of a rule from RuleML.
 	 * 
-	 * @param ruleTypeElement RuleML element representing rule semantics
+	 * @param ruleTypeElement RuleML element representing rule type
 	 * @return rule type {@link RuleType}
 	 */
 	protected RuleType parseRuleType(Element ruleTypeElement) {

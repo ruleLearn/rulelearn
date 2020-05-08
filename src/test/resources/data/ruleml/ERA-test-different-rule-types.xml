@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://deliberation.ruleml.org/1.01/relaxng/datalogplus_min_relaxed.rnc"?>
+<RuleML xmlns="http://ruleml.org/spec">
+<act index="1">
+<assert>
+	<implies>
+		<if>
+			<and>
+				<atom>
+				<op>
+					<rel type="threshold-object">ge</rel>
+				</op>
+				<ind>13.0</ind>
+					<var>in3_g</var>
+				</atom>
+				<atom>
+				<op>
+					<rel type="threshold-object">ge</rel>
+				</op>
+				<ind>14.0</ind>
+					<var>in1_g</var>
+				</atom>
+			</and>
+		</if>
+		<then>
+					<atom>
+					<op>
+						<rel type="threshold-object">ge</rel>
+					</op>
+					<ind>9</ind>
+						<var>out1</var>
+					</atom>
+		</then>
+		<ruleSemantics>ge</ruleSemantics>
+		<evaluations>
+			<evaluation measure="Support" value="11"/>
+			<evaluation measure="CoverageFactor" value="0.7857142857142857"/>
+			<evaluation measure="EpsilonMeasure" value="0.005434782608695652"/>
+		</evaluations>
+	</implies>
+</assert>
+<assert>
+	<implies type="certain">
+		<if>
+			<and>
+				<atom>
+				<op>
+					<rel type="threshold-object">ge</rel>
+				</op>
+				<ind>14.0</ind>
+					<var>in1_g</var>
+				</atom>
+				<atom>
+				<op>
+					<rel type="threshold-object">ge</rel>
+				</op>
+				<ind>4.0</ind>
+					<var>in2_g</var>
+				</atom>
+			</and>
+		</if>
+		<then>
+					<atom>
+					<op>
+						<rel type="threshold-object">ge</rel>
+					</op>
+					<ind>7</ind>
+						<var>out1</var>
+					</atom>
+		</then>
+		<ruleSemantics>ge</ruleSemantics>
+		<evaluations>
+			<evaluation measure="Support" value="15"/>
+			<evaluation measure="CoverageFactor" value="0.14563106796116504"/>
+			<evaluation measure="EpsilonMeasure" value="0.00927357032457496"/>
+		</evaluations>
+	</implies>
+</assert>
+<assert>
+	<implies type="possible">
+		<if>
+			<and>
+				<atom>
+				<op>
+					<rel type="threshold-object">ge</rel>
+				</op>
+				<ind>13.0</ind>
+					<var>in2_g</var>
+				</atom>
+				<atom>
+				<op>
+					<rel type="threshold-object">ge</rel>
+				</op>
+				<ind>11.0</ind>
+					<var>in1_g</var>
+				</atom>
+			</and>
+		</if>
+		<then>
+					<atom>
+					<op>
+						<rel type="threshold-object">ge</rel>
+					</op>
+					<ind>7</ind>
+						<var>out1</var>
+					</atom>
+		</then>
+		<ruleSemantics>ge</ruleSemantics>
+		<evaluations>
+			<evaluation measure="Support" value="11"/>
+			<evaluation measure="CoverageFactor" value="0.10679611650485436"/>
+			<evaluation measure="EpsilonMeasure" value="0.00463678516228748"/>
+		</evaluations>
+	</implies>
+</assert>
+<assert>
+	<implies>
+		<if>
+			<and>
+				<atom>
+				<op>
+					<rel type="threshold-object">ge</rel>
+				</op>
+				<ind>14.0</ind>
+					<var>in1_g</var>
+				</atom>
+				<atom>
+				<op>
+					<rel type="threshold-object">ge</rel>
+				</op>
+				<ind>4.0</ind>
+					<var>in2_g</var>
+				</atom>
+			</and>
+		</if>
+		<then>
+					<atom>
+					<op>
+						<rel type="threshold-object">ge</rel>
+					</op>
+					<ind>6</ind>
+						<var>out1</var>
+					</atom>
+		</then>
+		<ruleSemantics>ge</ruleSemantics>
+		<ruleType>certain</ruleType>
+		<evaluations>
+			<evaluation measure="Support" value="18"/>
+			<evaluation measure="CoverageFactor" value="0.09375"/>
+			<evaluation measure="EpsilonMeasure" value="0.005376344086021506"/>
+		</evaluations>
+	</implies>
+</assert>
+<assert>
+	<implies>
+		<if>
+			<and>
+				<atom>
+				<op>
+					<rel type="threshold-object">ge</rel>
+				</op>
+				<ind>13.0</ind>
+					<var>in2_g</var>
+				</atom>
+				<atom>
+				<op>
+					<rel type="threshold-object">ge</rel>
+				</op>
+				<ind>11.0</ind>
+					<var>in1_g</var>
+				</atom>
+			</and>
+		</if>
+		<then>
+					<atom>
+					<op>
+						<rel type="threshold-object">ge</rel>
+					</op>
+					<ind>6</ind>
+						<var>out1</var>
+					</atom>
+		</then>
+		<ruleSemantics>ge</ruleSemantics>
+		<ruleType>possible</ruleType>
+		<evaluations>
+			<evaluation measure="Support" value="13"/>
+			<evaluation measure="CoverageFactor" value="0.06770833333333333"/>
+			<evaluation measure="EpsilonMeasure" value="0.0017921146953405018"/>
+		</evaluations>
+	</implies>
+</assert>
+<assert>
+	<implies type="certain">
+		<if>
+			<and>
+				<atom>
+				<op>
+					<rel type="threshold-object">ge</rel>
+				</op>
+				<ind>10.0</ind>
+					<var>in3_g</var>
+				</atom>
+				<atom>
+				<op>
+					<rel type="threshold-object">ge</rel>
+				</op>
+				<ind>9.0</ind>
+					<var>in2_g</var>
+				</atom>
+				<atom>
+				<op>
+					<rel type="threshold-object">le</rel>
+				</op>
+				<ind>9.0</ind>
+					<var>in2_c</var>
+				</atom>
+			</and>
+		</if>
+		<then>
+					<atom>
+					<op>
+						<rel type="threshold-object">ge</rel>
+					</op>
+					<ind>6</ind>
+						<var>out1</var>
+					</atom>
+		</then>
+		<ruleSemantics>ge</ruleSemantics>
+		<ruleType>certain</ruleType>
+		<evaluations>
+			<evaluation measure="Support" value="14"/>
+			<evaluation measure="CoverageFactor" value="0.07291666666666667"/>
+			<evaluation measure="EpsilonMeasure" value="0.005376344086021506"/>
+		</evaluations>
+	</implies>
+</assert>
+<assert>
+	<implies type="possible">
+		<if>
+			<and>
+				<atom>
+				<op>
+					<rel type="threshold-object">ge</rel>
+				</op>
+				<ind>13.0</ind>
+					<var>in2_g</var>
+				</atom>
+				<atom>
+				<op>
+					<rel type="threshold-object">le</rel>
+				</op>
+				<ind>0.0</ind>
+					<var>in4_c</var>
+				</atom>
+			</and>
+		</if>
+		<then>
+					<atom>
+					<op>
+						<rel type="threshold-object">ge</rel>
+					</op>
+					<ind>5</ind>
+						<var>out1</var>
+					</atom>
+		</then>
+		<ruleSemantics>ge</ruleSemantics>
+		<ruleType>possible</ruleType>
+		<evaluations>
+			<evaluation measure="Support" value="13"/>
+			<evaluation measure="CoverageFactor" value="0.041935483870967745"/>
+			<evaluation measure="EpsilonMeasure" value="0.006818181818181818"/>
+		</evaluations>
+	</implies>
+</assert>
+</act>
+</RuleML>

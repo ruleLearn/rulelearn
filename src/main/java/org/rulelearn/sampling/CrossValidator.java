@@ -51,8 +51,8 @@ public class CrossValidator {
 		T trainingTable;
 		T validationTable;
 		
-		public CrossValidationFold(T triningSet, T validationSet) {
-			this.trainingTable = triningSet;
+		public CrossValidationFold(T trainingSet, T validationSet) {
+			this.trainingTable = trainingSet;
 			this.validationTable = validationSet;
 		}
 		public T getTrainingTable() {

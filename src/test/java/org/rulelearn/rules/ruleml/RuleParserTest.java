@@ -29,6 +29,8 @@ import org.junit.jupiter.api.Test;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.json.AttributeParser;
 import org.rulelearn.rules.RuleSet;
+import org.rulelearn.rules.RuleSetWithCharacteristics;
+import org.rulelearn.rules.RuleType;
 
 /**
  * Test for {@link RuleParser}.
@@ -56,6 +58,8 @@ class RuleParserTest {
 					if (rules != null) {
 						assertEquals(rules.size(), 1);
 						RuleSet firstRuleSet = rules.get(1);
+						System.out.println(firstRuleSet.size() + " rules read.");
+						
 						assertEquals(firstRuleSet.size(), 2);
 					}
 					else {
@@ -96,7 +100,8 @@ class RuleParserTest {
 						assertEquals(rules.size(), 1);
 						RuleSet firstRuleSet = rules.get(1);
 						System.out.println(firstRuleSet.size() + " rules read.");
-						//assertEquals(firstRuleSet.size(), 2);
+						
+						assertEquals(firstRuleSet.getRule(0).getType(), RuleType.CERTAIN);
 					}
 					else {
 						fail("Unable to load RuleML file.");
@@ -136,7 +141,90 @@ class RuleParserTest {
 						assertEquals(rules.size(), 1);
 						RuleSet firstRuleSet = rules.get(1);
 						System.out.println(firstRuleSet.size() + " rules read.");
-						//assertEquals(firstRuleSet.size(), 2);
+						
+						assertEquals(firstRuleSet.getRule(0).getType(), RuleType.POSSIBLE);
+					}
+					else {
+						fail("Unable to load RuleML file.");
+					}
+				}
+				catch (FileNotFoundException ex) {
+					fail(ex.toString());
+				}
+			}
+			else {
+				fail("Unable to load JSON file with meta-data.");
+			}
+		}
+		catch (FileNotFoundException ex) {
+			fail(ex.toString());
+		}
+		catch (IOException ex) {
+			fail(ex.toString());
+		}
+	}
+	
+	/**
+	 * Tests parsing a rule set (with and without characteristics) from a RuleML file with certain and possible rules,
+	 * which is marked either by &lt;implies type="certain"&gt; or &lt;implies type="possible"&gt;.
+	 * or by &lt;ruleType&gt;certain&lt;/ruleType&gt; or &lt;ruleType&gt;possible&lt;/ruleType&gt;,
+	 * or both ways (consistently or not).
+	 */
+	@Test
+	public void testLoading04() {
+		Attribute [] attributes = null;
+		AttributeParser attributeParser = new AttributeParser();
+		try (FileReader attributeReader = new FileReader("src/test/resources/data/csv/ERA-imposed.json")) {
+			attributes = attributeParser.parseAttributes(attributeReader);
+			if (attributes != null) {
+				RuleParser ruleParser = new RuleParser(attributes);
+				
+				try (FileInputStream fileRulesStream = new FileInputStream("src/test/resources/data/ruleml/ERA-test-different-rule-types.xml")) {
+					
+					//1) parse bare rules
+					Map<Integer, RuleSet> rules = ruleParser.parseRules(fileRulesStream);
+					if (rules != null) {
+						assertEquals(rules.size(), 1);
+						RuleSet firstRuleSet = rules.get(1);
+						
+						System.out.println(firstRuleSet.size() + " rules read.");
+						
+						assertEquals(firstRuleSet.size(), 7);
+						assertEquals(firstRuleSet.getRule(0).getType(), RuleType.CERTAIN); //<implies>, no <ruleType> tag (should set default rule type, i.e., certain)
+						assertEquals(firstRuleSet.getRule(1).getType(), RuleType.CERTAIN); //<implies type="certain">, no <ruleType> tag
+						assertEquals(firstRuleSet.getRule(2).getType(), RuleType.POSSIBLE); //<implies type="possible">, no <ruleType> tag
+						assertEquals(firstRuleSet.getRule(3).getType(), RuleType.CERTAIN); //<implies>, <ruleType>certain</ruleType>
+						assertEquals(firstRuleSet.getRule(4).getType(), RuleType.POSSIBLE); //<implies>, <ruleType>possible</ruleType>
+						assertEquals(firstRuleSet.getRule(5).getType(), RuleType.CERTAIN); //<implies type="certain">, <ruleType>certain</ruleType>
+						assertEquals(firstRuleSet.getRule(6).getType(), RuleType.POSSIBLE); //<implies type="possible">, <ruleType>possible</ruleType>
+					}
+					else {
+						fail("Unable to load RuleML file.");
+					}
+				}
+				catch (FileNotFoundException ex) {
+					fail(ex.toString());
+				}
+					
+				//------------------------------------
+				
+				try (FileInputStream fileRulesStream = new FileInputStream("src/test/resources/data/ruleml/ERA-test-different-rule-types.xml")) {
+					//2) parse rules witch characteristics
+					Map<Integer, RuleSetWithCharacteristics> rules = ruleParser.parseRulesWithCharacteristics(fileRulesStream);
+					if (rules != null) {
+						assertEquals(rules.size(), 1);
+						RuleSet firstRuleSet = rules.get(1);
+						
+						System.out.println(firstRuleSet.size() + " rules read.");
+						
+						assertEquals(firstRuleSet.size(), 7);
+						assertEquals(firstRuleSet.getRule(0).getType(), RuleType.CERTAIN); //<implies>, no <ruleType> tag (should set default rule type, i.e., certain)
+						assertEquals(firstRuleSet.getRule(1).getType(), RuleType.CERTAIN); //<implies type="certain">, no <ruleType> tag
+						assertEquals(firstRuleSet.getRule(2).getType(), RuleType.POSSIBLE); //<implies type="possible">, no <ruleType> tag
+						assertEquals(firstRuleSet.getRule(3).getType(), RuleType.CERTAIN); //<implies>, <ruleType>certain</ruleType>
+						assertEquals(firstRuleSet.getRule(4).getType(), RuleType.POSSIBLE); //<implies>, <ruleType>possible</ruleType>
+						assertEquals(firstRuleSet.getRule(5).getType(), RuleType.CERTAIN); //<implies type="certain">, <ruleType>certain</ruleType>
+						assertEquals(firstRuleSet.getRule(6).getType(), RuleType.POSSIBLE); //<implies type="possible">, <ruleType>possible</ruleType>
 					}
 					else {
 						fail("Unable to load RuleML file.");
