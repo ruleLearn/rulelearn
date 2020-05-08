@@ -35,11 +35,6 @@ import org.rulelearn.measures.dominance.RoughMembershipMeasure;
 public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	
 	/**
-	 * Coverage information concerning considered decision rule {@link Rule}.
-	 */
-	RuleCoverageInformation ruleCoverageInformation;
-	
-	/**
 	 * Number of all objects from the information table
 	 * which are not covered by the rule but match rule's decision part.
 	 */
@@ -66,8 +61,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	 * @throws NullPointerException if given parameter is {@code null}
 	 */
 	public ComputableRuleCharacteristics(RuleCoverageInformation ruleCoverageInformation) {
-		super();
-		this.ruleCoverageInformation = notNull(ruleCoverageInformation, "Rule coverage information is null.");
+		super(notNull(ruleCoverageInformation, "Rule coverage information for computable rule characteristics is null."));
 	}
 	
 	/**
@@ -78,7 +72,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	 * @return value of given rule evaluator
 	 */
 	public double getCharacteristic(RuleEvaluator ruleEvaluator) {
-		return ruleEvaluator.evaluate(this.ruleCoverageInformation);
+		return ruleEvaluator.evaluate(getRuleCoverageInformation());
 	}
 	
 	//TODO: use additional supplementary fields: positiveNotCoveredObjectsCount, negativeNotCoveredObjectsCount
@@ -90,7 +84,17 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	 * @see RuleCoverageInformation
 	 */
 	public RuleCoverageInformation getRuleCoverageInformation() {
-		return this.ruleCoverageInformation;
+		return (RuleCoverageInformation)this.ruleCoverageInformation;
+	}
+	
+	/**
+	 * Overrides super-type setter by throwing {@link UnsupportedOperationException}.
+	 * 
+	 * @param ruleCoverageInformation basic rule coverage information
+	 * @throws UnsupportedOperationException if called, to prevent update of rule coverage information
+	 */
+	public void setRuleCoverageInformation(BasicRuleCoverageInformation ruleCoverageInformation) {
+		throw new UnsupportedOperationException("Rule coverage information for computable rule characteristics cannot be changed.");
 	}
 	
 	/**
@@ -101,7 +105,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public int getSupport() {
 		if (support == UNKNOWN_INT_VALUE) {
-			support = (int)SupportMeasure.getInstance().evaluate(this.ruleCoverageInformation); //should be an integer, so casting should be safe
+			support = (int)SupportMeasure.getInstance().evaluate(getRuleCoverageInformation()); //should be an integer, so casting should be safe
 		}
 		return support;
 	}
@@ -127,25 +131,21 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public double getConfidence() {
 		if (confidence == UNKNOWN_DOUBLE_VALUE) {
-			confidence = RoughMembershipMeasure.getInstance().evaluate(this.ruleCoverageInformation);
+			confidence = RoughMembershipMeasure.getInstance().evaluate(getRuleCoverageInformation());
 		}
 		return confidence;
 	}
 	
 	/**
-	 * Gets coverage factor of the decision rule in the context of the information table.<br>
-	 * <br>
-	 * If {@link #getRuleCoverageInformation() rule coverage information} does not store indices of positive objects
-	 * (method {@link RuleCoverageInformation#getIndicesOfPositiveObjects()} returns {@code null}), then result of this
-	 * method cannot be calculated, and will default to {@link RuleCharacteristics#UNKNOWN_DOUBLE_VALUE}.
+	 * Gets coverage factor of the decision rule in the context of the information table.
 	 * 
 	 * @return coverage factor of the decision rule in the context of the information table
 	 */
 	@Override
 	public double getCoverageFactor() {
 		if (coverageFactor == UNKNOWN_DOUBLE_VALUE) {
-			if (this.ruleCoverageInformation.getIndicesOfPositiveObjects() != null) {
-				coverageFactor = ((double)getSupport()) / ((double)this.ruleCoverageInformation.getIndicesOfPositiveObjects().size());
+			if (getRuleCoverageInformation().getIndicesOfPositiveObjects() != null) {
+				coverageFactor = ((double)getSupport()) / ((double)getRuleCoverageInformation().getIndicesOfPositiveObjects().size());
 			}
 		}
 		return coverageFactor;
@@ -166,24 +166,19 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	
 	/**
 	 * Gets negative coverage of the decision rule (number of negative objects covered by the rule) in the context of the information table.
-	 * An object is negative, if its decision does not match rule's decision part.<br>
-	 * <br>
-	 * If {@link #getRuleCoverageInformation() rule coverage information} does not store indices of positive or neutral objects
-	 * (method {@link RuleCoverageInformation#getIndicesOfPositiveObjects()} returns {@code null}, or
-	 * method {@link RuleCoverageInformation#getIndicesOfNeutralObjects()} returns {@code null}), then result of this
-	 * method cannot be calculated, and will default to {@link RuleCharacteristics#UNKNOWN_INT_VALUE}.
+	 * An covered object is negative, if its decision does not match rule's decision part, and object is not neutral.
 	 * 
 	 * @return negative coverage of the decision rule (number of negative objects covered by the rule) in the context of the information table
 	 */
 	@Override
 	public int getNegativeCoverage() {
 		if (negativeCoverage == UNKNOWN_INT_VALUE) {
-			if (this.ruleCoverageInformation.getIndicesOfPositiveObjects() != null &&
-					this.ruleCoverageInformation.getIndicesOfNeutralObjects() != null) {
+			if (getRuleCoverageInformation().getIndicesOfPositiveObjects() != null &&
+					getRuleCoverageInformation().getIndicesOfNeutralObjects() != null) {
 			
 				negativeCoverage = OperationsOnCollections.getNumberOfElementsFromListNotPresentInSets(
 						this.ruleCoverageInformation.getIndicesOfCoveredObjects(),
-						this.ruleCoverageInformation.getIndicesOfPositiveObjects(), this.ruleCoverageInformation.getIndicesOfNeutralObjects());
+						getRuleCoverageInformation().getIndicesOfPositiveObjects(), getRuleCoverageInformation().getIndicesOfNeutralObjects());
 			}
 		}
 		return negativeCoverage;
@@ -197,7 +192,7 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public double getEpsilon() {
 		if (epsilon == UNKNOWN_DOUBLE_VALUE) {
-			epsilon = EpsilonConsistencyMeasure.getInstance().evaluate(this.ruleCoverageInformation);
+			epsilon = EpsilonConsistencyMeasure.getInstance().evaluate(getRuleCoverageInformation());
 		}
 		return epsilon;
 	}

@@ -22,6 +22,7 @@ import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
+import org.rulelearn.data.InformationTable;
 
 /**
  * Set of decision rules and their characteristics, each identified by rule's index.
@@ -34,7 +35,7 @@ public class RuleSetWithCharacteristics extends RuleSet {
 	/**
 	 * Array with characteristics of subsequent rules stored in this rule set.
 	 */
-	protected RuleCharacteristics[] ruleCharacteristics;
+	RuleCharacteristics[] ruleCharacteristics;
 	
 	/**
 	 * Constructor storing rules from the given array and their characteristics in this rule set. 
@@ -169,5 +170,20 @@ public class RuleSetWithCharacteristics extends RuleSet {
 		}
 		
 		return rulesTxtBuilder.toString();
+	}
+	
+	/**
+	 * Iterates over pairs composed of a rule and its characteristics, and for each characteristics sets basic rule coverage information,
+	 * using respective rule and given learning information table. It is assumed that given information table is a learning set of the rules
+	 * from this rule set.
+	 * 
+	 * @param learningInformationTable learning information table for which rules from this rule set has been induced
+	 * @throws NullPointerException if given parameter is {@code null}
+	 */
+	public void calculateBasicRuleCoverageInformation(InformationTable learningInformationTable) {
+		Precondition.notNull(learningInformationTable, "Learning information table is null.");
+		for (int i = 0; i < this.rules.length; i++) {
+			ruleCharacteristics[i].setRuleCoverageInformation(new BasicRuleCoverageInformation(rules[i], learningInformationTable));
+		}
 	}
 }

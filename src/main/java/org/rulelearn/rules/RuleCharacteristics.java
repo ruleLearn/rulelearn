@@ -25,6 +25,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 
 import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.Precondition;
 import org.rulelearn.core.UnknownValueException;
 
 /**
@@ -109,9 +110,45 @@ public class RuleCharacteristics {
 	protected double sConfirmation = UNKNOWN_DOUBLE_VALUE;
 	
 	/**
+	 * Basic rule coverage information concerning considered decision rule. Equals {@code null} by default.
+	 * Can be set in constructor or later, using respective setter.
+	 */
+	BasicRuleCoverageInformation ruleCoverageInformation = null;
+	
+	/**
 	 * Sole constructor.
 	 */
 	public RuleCharacteristics() {}
+	
+	/**
+	 * Constructor storing basic rule coverage information concerning considered decision rule.
+	 * 
+	 * @param ruleCoverageInformation basic rule coverage information to be stored, for future use
+	 * @throws NullPointerException if given parameter is {@code null}
+	 */
+	public RuleCharacteristics(BasicRuleCoverageInformation ruleCoverageInformation) {
+		this.ruleCoverageInformation = Precondition.notNull(ruleCoverageInformation, "Basic rule coverage information for rule characteristics is null.");
+	}
+	
+	/**
+	 * Gets basic rule coverage information concerning considered decision rule.
+	 * Can be {@code null} if not set in constructor or using respective setter.
+	 * 
+	 * @return basic rule coverage information
+	 */
+	public BasicRuleCoverageInformation getRuleCoverageInformation() {
+		return this.ruleCoverageInformation;
+	}
+	
+	/**
+	 * Sets basic rule coverage information concerning considered decision rule.
+	 * 
+	 * @param ruleCoverageInformation basic rule coverage information, for future use
+	 * @throws NullPointerException if given parameter is {@code null}
+	 */
+	public void setRuleCoverageInformation(BasicRuleCoverageInformation ruleCoverageInformation) {
+		this.ruleCoverageInformation = Precondition.notNull(ruleCoverageInformation, "Basic rule coverage information for rule characteristics is null.");
+	}
 	
 	/**
 	 * Gets support of a decision rule in the context of an information table.

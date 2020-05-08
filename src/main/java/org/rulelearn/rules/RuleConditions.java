@@ -24,7 +24,6 @@ import org.rulelearn.approximations.ApproximatedSet;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.core.TernaryLogicValue;
-import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.CompositeField;
 import org.rulelearn.types.EvaluationField;
@@ -631,13 +630,7 @@ public class RuleConditions {
 	 * @see RuleCoverageInformation
 	 */
 	public RuleCoverageInformation getRuleCoverageInformation() {
-		Int2ObjectMap<Decision> decisionsOfCoveredObjects = new Int2ObjectOpenHashMap<Decision>();
-		for (int objectIndex : this.indicesOfCoveredObjects) {
-			decisionsOfCoveredObjects.put(objectIndex, this.learningInformationTable.getDecision(objectIndex));
-		}
-		
-		return new RuleCoverageInformation(this.indicesOfPositiveObjects, this.indicesOfNeutralObjects, this.getIndicesOfCoveredObjects(),
-				decisionsOfCoveredObjects, this.learningInformationTable.getNumberOfObjects());
+		return new RuleCoverageInformation(this);
 	}
 	
 	/**

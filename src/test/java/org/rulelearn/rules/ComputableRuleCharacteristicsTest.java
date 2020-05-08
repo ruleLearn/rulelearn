@@ -48,13 +48,18 @@ class ComputableRuleCharacteristicsTest {
 		IntSet indicesOfNeutralObjects = new IntLinkedOpenHashSet(new int[] {1, 8, 11});
 		IntList indicesOfCoveredObjects = new IntArrayList(new int[] {0, 1, 3, 5, 7, 8, 9, 11, 12});
 		@SuppressWarnings("unchecked")
-		Int2ObjectMap<Decision> decisionsOfCoveredObjects = Mockito.mock(Int2ObjectOpenHashMap.class);
-		Mockito.when(decisionsOfCoveredObjects.size()).thenReturn(indicesOfCoveredObjects.size());
+		Int2ObjectMap<Decision> decisionsOfCoveredObjectsMock = Mockito.mock(Int2ObjectOpenHashMap.class);
+		//Mockito.when(decisionsOfCoveredObjectsMock.size()).thenReturn(indicesOfCoveredObjects.size());
 		int allObjectsCount = 13;
 		
-		computableRuleCharacteristics01 = new ComputableRuleCharacteristics(
-				new RuleCoverageInformation(indicesOfPositiveObjects, indicesOfNeutralObjects, indicesOfCoveredObjects,
-						decisionsOfCoveredObjects, allObjectsCount));
+		RuleCoverageInformation ruleCoverageInformationMock = Mockito.mock(RuleCoverageInformation.class);
+		Mockito.when(ruleCoverageInformationMock.getIndicesOfPositiveObjects()).thenReturn(indicesOfPositiveObjects);
+		Mockito.when(ruleCoverageInformationMock.getIndicesOfNeutralObjects()).thenReturn(indicesOfNeutralObjects);
+		Mockito.when(ruleCoverageInformationMock.getIndicesOfCoveredObjects()).thenReturn(indicesOfCoveredObjects);
+		Mockito.when(ruleCoverageInformationMock.getDecisionsOfCoveredObjects()).thenReturn(decisionsOfCoveredObjectsMock);
+		Mockito.when(ruleCoverageInformationMock.getAllObjectsCount()).thenReturn(allObjectsCount);
+		
+		computableRuleCharacteristics01 = new ComputableRuleCharacteristics(ruleCoverageInformationMock);
 		
 		//-----
 		
@@ -62,13 +67,18 @@ class ComputableRuleCharacteristicsTest {
 		indicesOfNeutralObjects = new IntLinkedOpenHashSet(new int[] {1, 4, 10, 16});
 		indicesOfCoveredObjects = new IntArrayList(new int[] {0, 1, 2, 3, 4, 5, 7, 9, 10, 11, 12, 13, 15});
 		@SuppressWarnings("unchecked")
-		Int2ObjectMap<Decision> decisionsOfCoveredObjects2 = Mockito.mock(Int2ObjectOpenHashMap.class);
-		Mockito.when(decisionsOfCoveredObjects2.size()).thenReturn(indicesOfCoveredObjects.size());
+		Int2ObjectMap<Decision> decisionsOfCoveredObjectsMock2 = Mockito.mock(Int2ObjectOpenHashMap.class);
+		//Mockito.when(decisionsOfCoveredObjectsMock2.size()).thenReturn(indicesOfCoveredObjects.size());
 		allObjectsCount = 18;
 		
-		computableRuleCharacteristics02 = new ComputableRuleCharacteristics(
-				new RuleCoverageInformation(indicesOfPositiveObjects, indicesOfNeutralObjects, indicesOfCoveredObjects,
-						decisionsOfCoveredObjects2, allObjectsCount));
+		RuleCoverageInformation ruleCoverageInformationMock2 = Mockito.mock(RuleCoverageInformation.class);
+		Mockito.when(ruleCoverageInformationMock2.getIndicesOfPositiveObjects()).thenReturn(indicesOfPositiveObjects);
+		Mockito.when(ruleCoverageInformationMock2.getIndicesOfNeutralObjects()).thenReturn(indicesOfNeutralObjects);
+		Mockito.when(ruleCoverageInformationMock2.getIndicesOfCoveredObjects()).thenReturn(indicesOfCoveredObjects);
+		Mockito.when(ruleCoverageInformationMock2.getDecisionsOfCoveredObjects()).thenReturn(decisionsOfCoveredObjectsMock2);
+		Mockito.when(ruleCoverageInformationMock2.getAllObjectsCount()).thenReturn(allObjectsCount);
+		
+		computableRuleCharacteristics02 = new ComputableRuleCharacteristics(ruleCoverageInformationMock2);
 	}
 
 	/**

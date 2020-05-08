@@ -186,7 +186,7 @@ class SimpleOptimizingRuleClassifierTest {
 		SimpleOptimizingRuleClassifier simpleOptimizingRuleClassifier =
 				new SimpleOptimizingRuleClassifier(Mockito.mock(RuleSetWithComputableCharacteristics.class), Mockito.mock(SimpleClassificationResult.class));
 		assertEquals(simpleOptimizingRuleClassifier.hasComputableRuleCharacteristics, true);
-		assertNull(simpleOptimizingRuleClassifier.ruleCoverageInformations);
+		assertNull(simpleOptimizingRuleClassifier.basicRuleCoverageInformations);
 	}
 
 	/**
@@ -198,7 +198,7 @@ class SimpleOptimizingRuleClassifierTest {
 		SimpleOptimizingRuleClassifier simpleOptimizingRuleClassifier =
 				new SimpleOptimizingRuleClassifier(Mockito.mock(RuleSet.class), Mockito.mock(SimpleClassificationResult.class), informationTableMock);
 		assertEquals(simpleOptimizingRuleClassifier.hasComputableRuleCharacteristics, false);
-		assertNotNull(simpleOptimizingRuleClassifier.ruleCoverageInformations);
+		assertNotNull(simpleOptimizingRuleClassifier.basicRuleCoverageInformations);
 	}
 	
 	/**

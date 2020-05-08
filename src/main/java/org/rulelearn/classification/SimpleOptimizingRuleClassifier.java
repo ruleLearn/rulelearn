@@ -27,10 +27,10 @@ import org.rulelearn.data.Decision;
 import org.rulelearn.data.FieldDistribution;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.SimpleDecision;
+import org.rulelearn.rules.BasicRuleCoverageInformation;
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.ConditionAtLeast;
 import org.rulelearn.rules.ConditionAtMost;
-import org.rulelearn.rules.RuleCoverageInformation;
 import org.rulelearn.rules.RuleSet;
 import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
 import org.rulelearn.types.EvaluationField;
@@ -88,10 +88,10 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	boolean hasComputableRuleCharacteristics;
 	
 	/**
-	 * Array with rule coverage information objects for each rule from the rule set.
+	 * Array with basic rule coverage information objects for each rule from the rule set.
 	 * Used only if the rule set does not contain computable rule characteristics. Otherwise is {@code null}. Set in class constructor.
 	 */
-	RuleCoverageInformation[] ruleCoverageInformations;
+	BasicRuleCoverageInformation[] basicRuleCoverageInformations;
 	
 	/**
 	 * Constructs this classifier using rule set with computable rule characteristics.
@@ -111,7 +111,7 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	public SimpleOptimizingRuleClassifier(RuleSetWithComputableCharacteristics ruleSet, SimpleClassificationResult defaultClassificationResult) {
 		super(ruleSet, defaultClassificationResult);
 		this.hasComputableRuleCharacteristics = true;
-		this.ruleCoverageInformations = null;
+		this.basicRuleCoverageInformations = null;
 	}
 	
 	/**
@@ -135,10 +135,10 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 		this.hasComputableRuleCharacteristics = false;
 		
 		int size = ruleSet.size();
-		this.ruleCoverageInformations = new RuleCoverageInformation[size];
+		this.basicRuleCoverageInformations = new BasicRuleCoverageInformation[size];
 		
 		for (int i = 0; i < size; i++) {
-			this.ruleCoverageInformations[i] = new RuleCoverageInformation(ruleSet.getRule(i), learningInformationTable);
+			this.basicRuleCoverageInformations[i] = new BasicRuleCoverageInformation(ruleSet.getRule(i), learningInformationTable);
 		}
 	}
 
@@ -301,8 +301,8 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 		IntSet indicesOfCoveredLearningObjectsWithDecisionEvaluation = new IntOpenHashSet(); //result of this method
 		
 		for (int ruleIndex : indicesOfCoveringRules) {
-			indicesOfCoveredLearningObjects = getRuleCoverageInformation(ruleIndex).getIndicesOfCoveredObjects();
-			decisionsOfCoveredLearningObjects = getRuleCoverageInformation(ruleIndex).getDecisionsOfCoveredObjects();
+			indicesOfCoveredLearningObjects = getBasicRuleCoverageInformation(ruleIndex).getIndicesOfCoveredObjects();
+			decisionsOfCoveredLearningObjects = getBasicRuleCoverageInformation(ruleIndex).getDecisionsOfCoveredObjects();
 			
 			for (int coveredObjectIndex : indicesOfCoveredLearningObjects) {
 				//decision of object covered by current rule is equal to downLimit 
@@ -316,16 +316,16 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	}
 	
 	/**
-	 * Gets {@link RuleCoverageInformation rule coverage information} for the rule with given index
+	 * Gets {@link BasicRuleCoverageInformation basic rule coverage information} for the rule with given index
 	 * 
 	 * @param ruleIndex index of the rule from the rule set
-	 * @return {@link RuleCoverageInformation rule coverage information} for the rule with given index
+	 * @return {@link BasicRuleCoverageInformation basic rule coverage information} for the rule with given index
 	 */
-	RuleCoverageInformation getRuleCoverageInformation(int ruleIndex) {
+	BasicRuleCoverageInformation getBasicRuleCoverageInformation(int ruleIndex) {
 		if (hasComputableRuleCharacteristics) {
 			return ((RuleSetWithComputableCharacteristics)ruleSet).getRuleCharacteristics(ruleIndex).getRuleCoverageInformation();
 		} else {
-			return ruleCoverageInformations[ruleIndex];
+			return basicRuleCoverageInformations[ruleIndex];
 		}
 	}
 	
