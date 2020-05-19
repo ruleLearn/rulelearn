@@ -78,7 +78,8 @@ public abstract class Field implements SelfCloneable<Field> {
     public abstract int hashCode(); 
 	
 	/**
-	 * Gets text representation of this field.
+	 * Gets text representation of this field.<br>
+	 * <br>
 	 * This text representation is used in {@link org.rulelearn.data.InformationTable#serialize(boolean)} method, which, in turn, is used in
 	 * {@link org.rulelearn.data.InformationTable#getHash()} method to produce hash of information table consistent among multiple program runs.<br>
 	 * <br>

@@ -18,6 +18,10 @@ package org.rulelearn.rules;
 
 import static org.rulelearn.core.Precondition.notNull;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import org.rulelearn.core.Precondition;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
@@ -42,6 +46,11 @@ public class RuleSet {
 	 * Is set, gets written to RuleML file when the rules are saved.
 	 */
 	String learningInformationTableHash = null;
+	
+	/**
+	 * Cached output of {@link #getHash()}, being a hexadecimal hash of this rule set (64 characters).
+	 */
+	String hash = null;
 	
 	/**
 	 * Constructor storing rules from the given array in this rule set. 
@@ -135,17 +144,67 @@ public class RuleSet {
 	/**
 	 * Serializes this rule set to multiline plain text.
 	 * 
-	 * @return multiline plain text representation of this rule set
+	 * @return multiline plain text representation of this rule set;
+	 *         used line separator is {@link System#lineSeparator()}
+	 * @see #serialize(String)
 	 */
 	public String serialize() {
+		return serialize(System.lineSeparator());
+	}
+	
+	/**
+	 * Serializes this rule set to multiline plain text, using given line separator.
+	 * 
+	 * @param lineSeparator line separator to be used between subsequent rules
+	 * @return multiline plain text representation of this rule set
+	 */
+	public String serialize(String lineSeparator) {
 		StringBuilder rulesTxtBuilder = new StringBuilder();
 		int size = size();
 		
 		for (int ruleIndex = 0; ruleIndex < size; ruleIndex++) {
-			rulesTxtBuilder.append(getRule(ruleIndex)).append(System.lineSeparator());
+			rulesTxtBuilder.append(getRule(ruleIndex).serialize()).append(lineSeparator);
 		}
 		
 		return rulesTxtBuilder.toString();
 	}
+	
+	/**
+	 * Gets (hexadecimal) hash of this rule set, obtained by {@link MessageDigest} with "SHA-256" algorithm.
+	 * This hash depends only on the elementary conditions and decisions of the rules in this rule set (i.e., no rule characteristics are involved in the hash).
+	 * It should change if any condition or decision changes, as well as the order or number of rules.<br>
+	 * <br>
+	 * Digests byte array of text representation returned by {@link #serialize(String)} with parameter set to {@code "\n"}.
+	 * Byte array is constructed using "UTF-8" encoding.
+	 * 
+	 * @return (hexadecimal) hash of this rule set, consistent among multiple program runs
+	 *         or {@code null} if algorithm "SHA-256" is not on the list of algorithms provided in {@link MessageDigest}
+	 * @see #serialize(String)
+	 */
+	public String getHash() {
+		if (hash == null) {
+			MessageDigest md = null;
+			byte[] hashBytes;
+			
+			try {
+				md = MessageDigest.getInstance("SHA-256");
+			} catch (NoSuchAlgorithmException e) {
+				return null;
+			}
+			
+			md.update(serialize("\n").getBytes(StandardCharsets.UTF_8));
+			hashBytes = md.digest();
+			
+			StringBuilder builder = new StringBuilder(hashBytes.length * 2);
+			for (byte b : hashBytes) {
+				builder.append(String.format("%02X", b));
+			}
+			
+			hash = builder.toString();
+		}
+		
+		return hash;
+	}
+	
 	
 }

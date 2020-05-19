@@ -79,7 +79,7 @@ public abstract class Attribute {
 	/**
 	 * Gets plain text representation of this attribute, taking into account all of its properties.
 	 * 
-	 * @return plain text representation of this attribute, taking into account all of its properties.
+	 * @return plain text representation of this attribute, taking into account all of its properties
 	 */
 	abstract public String serialize();
 	

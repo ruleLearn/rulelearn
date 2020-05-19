@@ -1443,7 +1443,8 @@ public class InformationTable {
 	}
 	
 	/**
-	 * Gets (hexadecimal) hash of this information table, obtained by {@link MessageDigest} with "SHA-256" algorithm.
+	 * Gets (hexadecimal) hash of this information table, obtained by {@link MessageDigest} with "SHA-256" algorithm.<br>
+	 * <br>
 	 * Digests byte array of text representation returned by {@link #serialize(boolean)} with parameter set to {@code true}.
 	 * Byte array is constructed using "UTF-8" encoding.
 	 * 
@@ -1483,7 +1484,8 @@ public class InformationTable {
 	 *        ({@code onlyLearningAttributes == true}), or all attributes should be serialized ({@code onlyLearningAttributes == false});
 	 *        depending on the parameter value, only values corresponding to the learning attributes, or, respectively, values corresponding to all attributes are serialized
 	 * 
-	 * @return plain text representation of this information table
+	 * @return plain text representation of this information table; if {@code onlyLearningAttributes == true}, then line separator is "\n";
+	 *         otherwise, line separator is {@link System#lineSeparator()}.
 	 */
 	public String serialize(boolean onlyLearningAttributes) {
 		//0:-;na-cond-enum3-none;condition;none;noneEnum(l,m,h);mv2|1:+;a-dec-enum3-none;decision;none;noneEnum(l,m,h);mv1.5| ...

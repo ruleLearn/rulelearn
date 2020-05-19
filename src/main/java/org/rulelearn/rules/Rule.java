@@ -663,6 +663,24 @@ public class Rule {
 	}
 	
 	/**
+	 * Gets plain text representation of this rule, taking into account all of its conditions and decisions.<br>
+	 * <br>
+	 * This text representation is used in {@link org.rulelearn.rules.RuleSet#serialize(String)} method, which, in turn, is used in
+	 * {@link org.rulelearn.rules.RuleSet#getHash()} method to produce hash of a rule set consistent among multiple program runs.<br>
+	 * <br>
+	 * Proceed with caution! Changing plain text representation returned by this method may invalidate already calculated hashes, being stored in unit tests and RuleML files.
+	 * 
+	 * @return plain text representation of this rule, taking into account all of its conditions and decisions
+	 * 
+	 * @see org.rulelearn.rules.RuleSet#serialize(String)
+	 * @see org.rulelearn.rules.RuleSet#getHash()
+	 * @see #toString()
+	 */
+	public String serialize() {
+		return toString();
+	}
+	
+	/**
 	 * Gets text representation of this rule.
 	 * 
 	 * @param sortConditions tells if conditions should be sorted according to attribute order,
