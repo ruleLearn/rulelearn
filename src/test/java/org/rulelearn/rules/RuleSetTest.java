@@ -17,6 +17,7 @@
 package org.rulelearn.rules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -24,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.MessageDigest;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +52,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 class RuleSetTest {
 
 	private Rule firstRule = null;
-	private Rule secondRule = null; 
+	private Rule secondRule = null;
+	
+	private String originalHash = "471E10BD59714616E18CFB2D38B0E44D81246AB978D03C7FDD6465A97AD81D82";
 	
 	/**
 	 * Set up test environment for each test.
@@ -241,9 +245,9 @@ class RuleSetTest {
 		String rule2AsText = "(in1_g >= 14.0) & (in2_g >= 4.0) => (out1 >= 7)";
 		
 		Rule ruleMock1 = Mockito.mock(Rule.class);
-		Mockito.when(ruleMock1.toString()).thenReturn(rule1AsText);
+		Mockito.when(ruleMock1.serialize()).thenReturn(rule1AsText);
 		Rule ruleMock2 = Mockito.mock(Rule.class);
-		Mockito.when(ruleMock2.toString()).thenReturn(rule2AsText);
+		Mockito.when(ruleMock2.serialize()).thenReturn(rule2AsText);
 		
 		RuleSet ruleSet = new RuleSet(new Rule[] {ruleMock1, ruleMock2});
 		
@@ -251,6 +255,88 @@ class RuleSetTest {
 		System.out.println(serializedRuleSet); //!
 		assertEquals(serializedRuleSet, rule1AsText+System.lineSeparator()
 			+rule2AsText+System.lineSeparator());
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleSet#serialize(String)}.
+	 */
+	@Test
+	void testSerialize2() {
+		String rule1AsText = "(in3_g >= 13.0) & (in1_g >= 14.0) => (out1 >= 10)";
+		String rule2AsText = "(in1_g >= 14.0) & (in2_g >= 4.0) => (out1 <= 3)";
+		
+		Rule ruleMock1 = Mockito.mock(Rule.class);
+		Mockito.when(ruleMock1.serialize()).thenReturn(rule1AsText);
+		Rule ruleMock2 = Mockito.mock(Rule.class);
+		Mockito.when(ruleMock2.serialize()).thenReturn(rule2AsText);
+		
+		RuleSet ruleSet = new RuleSet(new Rule[] {ruleMock1, ruleMock2});
+		
+		String lineSeparator = "\n";
+		String serializedRuleSet = ruleSet.serialize(lineSeparator);
+		System.out.println(serializedRuleSet); //!
+		assertEquals(serializedRuleSet, rule1AsText+lineSeparator
+			+rule2AsText+lineSeparator);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleSet#getHash()}.
+	 * Tests if digest algorithm "SHA-256" is supported by {@link MessageDigest}.
+	 * Moreover, tests if encoding "UTF-8" is supported by {@link String#getBytes(String)}.
+	 */
+	@Test
+	void testGetHash01() {
+		String rule1AsText = "(in3_g >= 13.0) & (in1_g >= 14.0) => (out1 >= 4)";
+		String rule2AsText = "(in1_g >= 14.0) & (in2_g >= 4.0) => (out1 <= 3)";
+		
+		Rule ruleMock1 = Mockito.mock(Rule.class);
+		Mockito.when(ruleMock1.serialize()).thenReturn(rule1AsText);
+		Rule ruleMock2 = Mockito.mock(Rule.class);
+		Mockito.when(ruleMock2.serialize()).thenReturn(rule2AsText);
+		
+		RuleSet ruleSet = new RuleSet(new Rule[] {ruleMock1, ruleMock2});
+		
+		assertEquals(ruleSet.getHash(), originalHash);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleSet#getHash()}.
+	 * Tests if digest algorithm "SHA-256" is supported by {@link MessageDigest}.
+	 * Moreover, tests if encoding "UTF-8" is supported by {@link String#getBytes(String)}.
+	 */
+	@Test
+	void testGetHash02() {
+		String rule1AsText = "(in3_g >= 13.1) & (in1_g >= 14.0) => (out1 >= 4)"; //changed threshold in first condition (13.0 changed to 13.1)
+		String rule2AsText = "(in1_g >= 14.0) & (in2_g >= 4.0) => (out1 <= 3)";
+		
+		Rule ruleMock1 = Mockito.mock(Rule.class);
+		Mockito.when(ruleMock1.serialize()).thenReturn(rule1AsText);
+		Rule ruleMock2 = Mockito.mock(Rule.class);
+		Mockito.when(ruleMock2.serialize()).thenReturn(rule2AsText);
+		
+		RuleSet ruleSet = new RuleSet(new Rule[] {ruleMock1, ruleMock2});
+		
+		assertNotEquals(ruleSet.getHash(), originalHash);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleSet#getHash()}.
+	 * Tests if digest algorithm "SHA-256" is supported by {@link MessageDigest}.
+	 * Moreover, tests if encoding "UTF-8" is supported by {@link String#getBytes(String)}.
+	 */
+	@Test
+	void testGetHash03() {
+		String rule1AsText = "(in3_g >= 13.0) & (in1_g >= 14.0) => (out1 >= 4)";
+		String rule2AsText = "(in1_g >= 14.0) & (in2_g >= 4.0) => (out1 <= 2)"; //changed threshold in decision (3 changed to 2)
+		
+		Rule ruleMock1 = Mockito.mock(Rule.class);
+		Mockito.when(ruleMock1.serialize()).thenReturn(rule1AsText);
+		Rule ruleMock2 = Mockito.mock(Rule.class);
+		Mockito.when(ruleMock2.serialize()).thenReturn(rule2AsText);
+		
+		RuleSet ruleSet = new RuleSet(new Rule[] {ruleMock1, ruleMock2});
+		
+		assertNotEquals(ruleSet.getHash(), originalHash);
 	}
 
 }

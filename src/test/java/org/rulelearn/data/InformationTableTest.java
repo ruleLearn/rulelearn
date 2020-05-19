@@ -1437,8 +1437,8 @@ class InformationTableTest {
 	
 	/**
 	 * Test for {@link InformationTable#getHash} method}.
-	 * Tests if digest algorithm "SHA-256" is supported by {@link MessageDigest}. Moreover,
-	 * test if encoding "UTF-8" is supported by {@link String#getBytes(String)}. 
+	 * Tests if digest algorithm "SHA-256" is supported by {@link MessageDigest}.
+	 * Moreover, tests if encoding "UTF-8" is supported by {@link String#getBytes(String)}. 
 	 */
 	@Test
 	public void testGetHash01() {
