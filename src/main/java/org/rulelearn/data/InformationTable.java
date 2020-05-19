@@ -157,7 +157,7 @@ public class InformationTable {
 	private Decision[] uniqueDecisions = null;
 	
 	/**
-	 * Cached hexadecimal hash of this information table (64 characters).
+	 * Cached output of {@link #getHash()}, being a hexadecimal hash of this information table (64 characters).
 	 */
 	private String hash = null;
 	
@@ -417,6 +417,10 @@ public class InformationTable {
 		this.attributeMap = accelerateByReadOnlyResult ? informationTable.attributeMap : informationTable.attributeMap.clone();
 		this.localActiveConditionAttributeIndex2GlobalAttributeIndexMap = accelerateByReadOnlyResult ? informationTable.localActiveConditionAttributeIndex2GlobalAttributeIndexMap :
 			new Int2IntOpenHashMap(informationTable.localActiveConditionAttributeIndex2GlobalAttributeIndexMap);
+		
+		this.orderedUniqueFullyDeterminedDecisions = informationTable.orderedUniqueFullyDeterminedDecisions;
+		this.uniqueDecisions = informationTable.uniqueDecisions;
+		this.hash = informationTable.hash;
 	}
 	
 	/**
