@@ -14,40 +14,43 @@
  * limitations under the License.
  */
 
-package org.rulelearn.rules.ruleml;
+package org.rulelearn.data;
 
 /**
- * Exception that can occur during parsing of decision rules.
+ * Exception that can occur during parsing of objects from an information table (for defined attributes).
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class RuleParseException extends RuntimeException {
-    
-	private static final long serialVersionUID = -7154009383040306887L;
+public class ObjectParseException extends RuntimeException {
 
+	/**
+	 * Generated serial version UID.
+	 */
+	private static final long serialVersionUID = -5371731916705478061L;
+	
 	/**
 	 * Sole constructor.
 	 */
-	public RuleParseException() {
+	public ObjectParseException() {
         super();
     }
-
+	
 	/**
      * Creates an exception with a message.
      * 
      * @param message exception message
      */
-    public RuleParseException(String message) {
+    public ObjectParseException(String message) {
         super(message);
     }
-
+    
     /**
      * Creates an exception without a message but with a pointer to a cause.
      * 
-     * @param cause a throwable exception, which caused the {@link RuleParseException}
+     * @param cause a throwable exception, which caused the {@link ObjectParseException}
      */
-    public RuleParseException(Throwable cause) {
+    public ObjectParseException(Throwable cause) {
         super(cause);
     }
 
@@ -55,10 +58,10 @@ public class RuleParseException extends RuntimeException {
      * Creates an exception with a message and a pointer to a cause.
      * 
      * @param message exception message
-     * @param cause a throwable exception, which caused the {@link RuleParseException}
+     * @param cause a throwable exception, which caused the {@link ObjectParseException}
      */
-    public RuleParseException(String message, Throwable cause) {
+    public ObjectParseException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
 }

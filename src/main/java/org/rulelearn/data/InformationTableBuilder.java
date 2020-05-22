@@ -28,6 +28,7 @@ import java.util.UUID;
 
 import org.rulelearn.core.FieldParseException;
 import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.core.Precondition;
 import org.rulelearn.data.arff.ArffReader;
 import org.rulelearn.data.json.AttributeDeserializer;
 import org.rulelearn.types.EvaluationField;
@@ -45,6 +46,8 @@ import com.google.gson.stream.JsonReader;
 import com.univocity.parsers.conversions.TrimConversion;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectLists;
 
 /**
  * Builder for {@link InformationTable}. Allows building of an information table by setting attributes first, and then iteratively adding objects (rows).
@@ -98,6 +101,93 @@ public class InformationTableBuilder {
 	 * Parser of evaluations given in textual form, converting them to {@link EvaluationField evaluation fields} based on information about an attribute.
 	 */
 	EvaluationParser evaluationParser = null;
+	
+	/**
+	 * Build log of this information table builder used for logging effects of calls to methods attempting to add (parse) an object,
+	 * like {@link InformationTableBuilder#addObject(String[])}.
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	public static class BuildLog {
+		
+		int readObjectsCount;
+		int successfullyParsedObjectsCount;
+		ObjectList<String>failureMessages;
+		
+		private BuildLog() {
+			readObjectsCount = 0;
+			successfullyParsedObjectsCount = 0;
+			failureMessages = new ObjectArrayList<String>();
+		}
+		
+		void logSuccess() {
+			readObjectsCount++;
+			successfullyParsedObjectsCount++;
+		}
+		
+		void logFailure(String failureMessage) {
+			readObjectsCount++;
+			failureMessages.add(failureMessage);
+		}
+		
+		/**
+		 * Gets the number of objects read from an input, i.e.,
+		 * the number of objects that were attempted to parse from textual
+		 * representation into in-memory representation, strictly corresponding to
+		 * considered set of attributes.
+		 * 
+		 * @return the number of objects read from an input (that were later either successfully or unsuccessfully parsed)
+		 */
+		public int getReadObjectsCount() {
+			return readObjectsCount;
+		}
+		
+		/**
+		 * Gets the number of objects successfully parsed from an input, i.e.,
+		 * the number of objects that were successfully parsed from textual
+		 * representation into in-memory representation, strictly corresponding to
+		 * considered set of attributes.
+		 * 
+		 * @return the number of objects read from an input and then successfully parsed
+		 */
+		public int getSuccessfullyParsedObjectsCount() {
+			return successfullyParsedObjectsCount;
+		}
+		
+		/**
+		 * Gets unmodifiable list with messages for all parse errors.
+		 * 
+		 * @return unmodifiable list with messages for all parse errors
+		 */
+		public List<String> getFailureMessages() {
+			return ObjectLists.unmodifiable(failureMessages);
+		}
+		
+		/**
+		 * Tells if all objects parsed from text representation have been successfully parsed into their in-memory representation (array of {@link Field fields}.
+		 * 
+		 * @return {@code true} if all objects parsed from text representation have been successfully parsed into their in-memory representation,
+		 *         {@code false} otherwise
+		 */
+		public boolean allObjectsSuccessfullyParsed() {
+			return readObjectsCount == successfullyParsedObjectsCount;
+		}
+	}
+	
+	/**
+	 * Build log of this information table builder used for logging effects of calls to methods attempting to add an object, like {@link InformationTableBuilder#addObject(String[])}.
+	 */
+	BuildLog buildLog;
+	
+	/**
+	 * Tells if {@link ObjectParseException} exception should be thrown when any object cannot be successfully parsed from text representation (as some of its values cannot be parsed).
+	 * If {@code false}, then the exception is not thrown but a message is logged in the system console and the list of parsed objects does not change.
+	 * Regardless of this setting, {@link BuildLog build log} is maintained and updated after each attempt to parse an object.<br>
+	 * <br>
+	 * Initialized with {@code true}. Once modified, affects only subsequent attempts to parse an object.
+	 */
+	public boolean exceptionOnObjectParseError = true;
 
 	/**
 	 * Default constructor initializing this information table builder.
@@ -106,7 +196,9 @@ public class InformationTableBuilder {
 		this.separator = InformationTableBuilder.DEFAULT_SEPARATOR_STRING;
 		this.missingValueStrings = InformationTableBuilder.DEFAULT_MISSING_VALUE_STRINGS;
 		this.trimConversion = new TrimConversion();
-		this.evaluationParser = new EvaluationParser(InformationTableBuilder.DEFAULT_MISSING_VALUE_STRINGS, EvaluationParser.CachingType.VOLATILE); //use caching factory, and force volatile cache 
+		this.evaluationParser = new EvaluationParser(InformationTableBuilder.DEFAULT_MISSING_VALUE_STRINGS, EvaluationParser.CachingType.VOLATILE); //use caching factory, and force volatile cache
+		this.buildLog = new BuildLog();
+		exceptionOnObjectParseError = true;
 	}
 	
 	/**
@@ -175,52 +267,110 @@ public class InformationTableBuilder {
 	}
 	
 	/**
-	 * Adds one object to this builder. 
+	 * Adds one object to this builder, parsing its subsequent values from text. 
 	 * Given string is considered to contain subsequent identifiers/evaluations of a single object, separated by the given separator.
 	 * 
-	 * @param objectDescriptions string with object's identifiers/evaluations, separated by the given separator
+	 * @param objectDescriptions string with object's identifiers/evaluations, separated by the separator declared when constructing this builder
+	 * 
+	 * @see #addObject(String[])
+	 * 
+	 * @throws NullPointerException if given parameter is {@code null}
+	 * @throws IndexOutOfBoundsException if object has different number of descriptions than the number of attributes declared
+	 * @throws ObjectParseException if {@link #exceptionOnObjectParseError} is {@code true} and it is impossible to construct an object
+	 *         (array of {@link Field fields}) from given object descriptions,
+	 *         as at least one textual value cannot be parsed as a correct value of the respective {@link Attribute attribute}
 	 */
 	public void addObject(String objectDescriptions) {
-		if (this.separator != null)
+		Precondition.notNull(objectDescriptions, "Object descriptions are null.");
+		if (this.separator != null) {
 			addObject(objectDescriptions.split(this.separator));
+		} else {
+			throw new NullPointerException("Separator used to parse object descriptions is null."); //this should not happen as the separator is validated in constructors
+		}
 	}
 	
 	/**
-	 * Adds one object to this builder. 
+	 * Adds one object to this builder, parsing its subsequent values from text. 
 	 * Given string is considered to contain subsequent identifiers/evaluations of a single object, separated by the given separator.
 	 * 
 	 * @param objectDescriptions string with object's identifiers/evaluations, separated by the given separator
 	 * @param separator separator of object's evaluations
+	 * 
+	 * @see #addObject(String[])
+	 * 
+	 * @throws IndexOutOfBoundsException if object has different number of descriptions than the number of attributes declared
+	 * @throws ObjectParseException if {@link #exceptionOnObjectParseError} is {@code true} and it is impossible to construct an object
+	 *         (array of {@link Field fields}) from given object descriptions,
+	 *         as at least one textual value cannot be parsed as a correct value of the respective {@link Attribute attribute}
+	 * @throws NullPointerException if any of the given parameters are {@code null}
 	 */
 	public void addObject(String objectDescriptions, String separator) {
+		Precondition.notNull(objectDescriptions, "Object descriptions are null.");
 		if (separator != null) {
 			addObject(objectDescriptions.split(separator));
+		} else {
+			throw new NullPointerException("Separator used to parse object descriptions is null.");
 		}
 	}
 	
 	/**
-	 * Adds one object to this builder. 
+	 * Adds one object to this builder, parsing its subsequent values from text.
 	 * Given array is considered to contain subsequent identifiers/evaluations of a single object.
 	 * 
 	 * @param objectDescriptions single object's identifiers/evaluations
 	 * 
+	 * @throws NullPointerException if given parameter is {@code null}
 	 * @throws IndexOutOfBoundsException if object has different number of descriptions than the number of attributes declared
+	 * @throws ObjectParseException if {@link #exceptionOnObjectParseError} is {@code true} and it is impossible to construct an object
+	 *         (array of {@link Field fields}) from given array of textual values,
+	 *         as at least one textual value cannot be parsed as a correct value of the respective {@link Attribute attribute}
 	 */
 	public void addObject(String[] objectDescriptions) {
-		if (objectDescriptions.length != attributes.length)
+		Precondition.notNull(objectDescriptions, "Object descriptions are null.");
+		if (objectDescriptions.length != attributes.length) {
 			throw new IndexOutOfBoundsException("Object has different number of descriptions than the number of attributes declared.");
+		}
+		
+		boolean allValuesParsedSuccessfully = true;
 		
 		Field[] object = new Field[this.attributes.length];
 		for (int i = 0; i < this.attributes.length; i++) {
 			if (this.attributes[i] instanceof EvaluationAttribute) {
-				object[i] = parseEvaluation(objectDescriptions[i], (EvaluationAttribute)this.attributes[i]);
+				try {
+					object[i] = parseEvaluation(objectDescriptions[i], (EvaluationAttribute)this.attributes[i]);
+				} catch (FieldParseException exception) {
+					String failureMessage = "Error while parsing object's value. " + exception.toString();
+					buildLog.logFailure(failureMessage);
+					if (exceptionOnObjectParseError) {
+						throw new ObjectParseException(failureMessage);
+					} else {
+						System.out.println(failureMessage);
+						allValuesParsedSuccessfully = false;
+						break; //skip subsequent attributes
+					}
+				}
 			}
 			else if (this.attributes[i] instanceof IdentificationAttribute) {
-				object[i] = parseIdentification(objectDescriptions[i], (IdentificationAttribute)this.attributes[i]);
+				try {
+					object[i] = parseIdentification(objectDescriptions[i], (IdentificationAttribute)this.attributes[i]);
+				} catch (FieldParseException exception) {
+					String failureMessage = "Error while parsing object's value. " + exception.toString();
+					buildLog.logFailure(failureMessage);
+					if (exceptionOnObjectParseError) {
+						throw new ObjectParseException(failureMessage);
+					} else {
+						System.out.println(failureMessage);
+						allValuesParsedSuccessfully = false;
+						break; //skip subsequent attributes
+					}
+				}
 			}
 		}
 		
-		this.fields.add(object);
+		if (allValuesParsedSuccessfully) {
+			this.fields.add(object);
+			buildLog.logSuccess();
+		}
 	}
 	
 	/**
@@ -272,7 +422,8 @@ public class InformationTableBuilder {
 				field = (missingValue ?
 						new UUIDIdentificationField(UUIDIdentificationField.DEFAULT_VALUE) : new UUIDIdentificationField(UUID.fromString(identification)));
 			} catch (IllegalArgumentException exception) {
-				throw new FieldParseException("Cannot parse given string as an UUID.");
+				throw new FieldParseException(new StringBuilder("Cannot parse text ").append(identification)
+						.append(" as an UUID for attribute ").append(attribute.getName()).append(".").toString());
 			}
 		}
 		else {
@@ -400,10 +551,12 @@ public class InformationTableBuilder {
 	 * @param separator representation of a separator of fields in CSV file
 	 * 
 	 * @return constructed information table or {@code null} value provided that it was not possible to construct the table 
+	 * 
 	 * @throws NullPointerException if path to JSON file and/or path to CSV file have not been set
 	 * @throws IOException when there is problem with handling JSON file and/or CSV file
 	 * @throws FileNotFoundException when JSON file and/or CSV file cannot be found
 	 * @throws UnsupportedEncodingException when encoding of CSV file is not supported
+	 * @throws ObjectParseException if at least one of the objects can't be parsed from the CSV file
 	 */
 	public static InformationTable safelyBuildFromCSVFile(String pathToJSONAttributeFile, String pathToCSVObjectFile, boolean header, char separator) throws IOException, FileNotFoundException, UnsupportedEncodingException {
 		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");
@@ -414,7 +567,7 @@ public class InformationTableBuilder {
 		InformationTableBuilder informationTableBuilder = null;
 		InformationTable informationTable = null;
 		
-		// load attributes
+		//load attributes
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
@@ -422,24 +575,28 @@ public class InformationTableBuilder {
 		try (JsonReader jsonReader = new JsonReader(new FileReader(pathToJSONAttributeFile))) {
 			attributes = gson.fromJson(jsonReader, Attribute[].class);
 			
-			// construct information table builder
+			//construct information table builder
 			if (attributes != null) {
 				//TODO: the code below is the same as in ObjectParser.parseObjects(Reader) ...
 				
-				// load objects 
+				//load objects 
 				org.rulelearn.data.csv.ObjectBuilder ob = new org.rulelearn.data.csv.ObjectBuilder.Builder().attributes(attributes).header(header).separator(separator).build();
 				objects = ob.getObjects(pathToCSVObjectFile);
 				informationTableBuilder = new InformationTableBuilder(attributes, new String[] {org.rulelearn.data.csv.ObjectBuilder.DEFAULT_MISSING_VALUE_STRING});
 				
 				if (objects != null) {
 					for (int i = 0; i < objects.size(); i++) {
-						informationTableBuilder.addObject(objects.get(i)); //uses volatile caches
+						try {
+							informationTableBuilder.addObject(objects.get(i)); //uses volatile caches
+						} catch (ObjectParseException exception) {
+							throw new ObjectParseException(new StringBuilder("Error while parsing object no. ").append(i+1).append(" from CSV. ").append(exception.toString()).toString()); //if exception was thrown, re-throw it
+						}
 					}
 				}
 			}
 		}
 		
-		// build information table
+		//build information table
 		if (informationTableBuilder != null) {
 			//clear volatile caches of all used evaluation field caching factories
 			informationTableBuilder.clearVolatileCaches();
@@ -471,10 +628,13 @@ public class InformationTableBuilder {
 	 * 
 	 * @param pathToJSONAttributeFile a path to JSON file with attributes
 	 * @param pathToJSONObjectFile a path to the JSON file with objects
+	 * 
 	 * @return constructed information table
+	 * 
 	 * @throws NullPointerException if path to any JSON file has not been set
 	 * @throws IOException when there is problem with handling JSON file
 	 * @throws FileNotFoundException when JSON file cannot be found
+	 * @throws ObjectParseException if at least one of the objects can't be parsed from the JSON file
 	 */
 	public static InformationTable safelyBuildFromJSONFile(String pathToJSONAttributeFile, String pathToJSONObjectFile) throws IOException, FileNotFoundException {
 		notNull(pathToJSONAttributeFile, "Path to JSON file with attributes is null.");
@@ -506,7 +666,11 @@ public class InformationTableBuilder {
 				informationTableBuilder = new InformationTableBuilder(attributes, new String[] {org.rulelearn.data.json.ObjectBuilder.DEFAULT_MISSING_VALUE_STRING});
 				if (objects != null) {
 					for (int i = 0; i < objects.size(); i++) {
-						informationTableBuilder.addObject(objects.get(i)); //uses volatile cache
+						try {
+							informationTableBuilder.addObject(objects.get(i)); //uses volatile cache
+						} catch (ObjectParseException exception) {
+							throw new ObjectParseException(new StringBuilder("Error while parsing object no. ").append(i+1).append(" from JSON. ").append(exception.toString()).toString()); //if exception was thrown, re-throw it
+						}
 					}
 				}
 			}
@@ -538,6 +702,7 @@ public class InformationTableBuilder {
 	 * @throws FileNotFoundException see {@link ArffReader#read(String, AttributePreferenceType)}
 	 * @throws InvalidValueException see {@link ArffReader#read(String, AttributePreferenceType)}
 	 * @throws UnsupportedOperationException see {@link ArffReader#read(String, AttributePreferenceType)}
+	 * @throws ObjectParseException see {@link ArffReader#read(String, AttributePreferenceType)}
 	 */
 	public static InformationTable safelyBuildFromARFFFile(String arffFilePath, AttributePreferenceType decisionAttributePreferenceType) throws IOException, FileNotFoundException {
 		return (new ArffReader()).read(arffFilePath, decisionAttributePreferenceType);
@@ -572,6 +737,15 @@ public class InformationTableBuilder {
 	 */
 	public String getSeparator() {
 		return this.separator;
+	}
+
+	/**
+	 * Gets build log of this information table builder used for logging effects of calls to methods attempting to add an object, like {@link InformationTableBuilder#addObject(String[])}.
+	 * 
+	 * @return build log of this information table
+	 */
+	public BuildLog getBuildLog() {
+		return buildLog;
 	}
 	
 }

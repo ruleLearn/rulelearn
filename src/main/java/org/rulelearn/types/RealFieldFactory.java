@@ -378,7 +378,8 @@ public class RealFieldFactory implements EvaluationFieldFactory {
 			return create(Double.parseDouble(value), attribute.getPreferenceType());
 		}
 		catch (NumberFormatException exception) {
-			throw new FieldParseException(exception.getMessage());
+			throw new FieldParseException(new StringBuilder("Incorrect value ").append(value)
+					.append(" of real attribute ").append(attribute.getName()).append(". ").append(exception.getMessage()).toString());
 		}
 	}
 }

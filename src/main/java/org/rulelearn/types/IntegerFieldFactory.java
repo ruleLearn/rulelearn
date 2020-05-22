@@ -377,7 +377,8 @@ public class IntegerFieldFactory implements EvaluationFieldFactory {
 			return create(Integer.parseInt(value), attribute.getPreferenceType());
 		}
 		catch (NumberFormatException exception) {
-			throw new FieldParseException(exception.getMessage());
+			throw new FieldParseException(new StringBuilder("Incorrect value ").append(value)
+					.append(" of integer attribute ").append(attribute.getName()).append(". ").append(exception.getMessage()).toString());
 		}
 	}
 }

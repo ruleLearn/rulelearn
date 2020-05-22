@@ -171,7 +171,8 @@ public class RealFieldCachingFactory implements EvaluationFieldCachingFactory {
 			return create(Double.parseDouble(value), attribute.getPreferenceType(), true);
 		}
 		catch (NumberFormatException exception) {
-			throw new FieldParseException(exception.getMessage());
+			throw new FieldParseException(new StringBuilder("Incorrect value ").append(value)
+					.append(" of real attribute ").append(attribute.getName()).append(". ").append(exception.getMessage()).toString());
 		}
 	}
 	
@@ -201,7 +202,8 @@ public class RealFieldCachingFactory implements EvaluationFieldCachingFactory {
 			return create(Double.parseDouble(value), attribute.getPreferenceType(), false);
 		}
 		catch (NumberFormatException exception) {
-			throw new FieldParseException(exception.getMessage());
+			throw new FieldParseException(new StringBuilder("Incorrect value ").append(value)
+					.append(" of real attribute ").append(attribute.getName()).append(". ").append(exception.getMessage()).toString());
 		}
 	}
 	

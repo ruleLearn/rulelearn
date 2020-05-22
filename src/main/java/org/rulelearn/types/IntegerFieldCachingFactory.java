@@ -171,7 +171,8 @@ public class IntegerFieldCachingFactory implements EvaluationFieldCachingFactory
 			return create(Integer.parseInt(value), attribute.getPreferenceType(), true);
 		}
 		catch (NumberFormatException exception) {
-			throw new FieldParseException(exception.getMessage());
+			throw new FieldParseException(new StringBuilder("Incorrect value ").append(value)
+					.append(" of integer attribute ").append(attribute.getName()).append(". ").append(exception.getMessage()).toString());
 		}
 	}
 	
@@ -201,7 +202,8 @@ public class IntegerFieldCachingFactory implements EvaluationFieldCachingFactory
 			return create(Integer.parseInt(value), attribute.getPreferenceType(), false);
 		}
 		catch (NumberFormatException exception) {
-			throw new FieldParseException(exception.getMessage());
+			throw new FieldParseException(new StringBuilder("Incorrect value ").append(value)
+					.append(" of integer attribute ").append(attribute.getName()).append(". ").append(exception.getMessage()).toString());
 		}
 	}
 	

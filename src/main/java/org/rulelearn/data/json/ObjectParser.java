@@ -24,6 +24,7 @@ import java.io.Reader;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableBuilder;
+import org.rulelearn.data.ObjectParseException;
 import org.rulelearn.data.csv.ObjectBuilder;
 
 import com.google.gson.JsonArray;
@@ -149,6 +150,7 @@ public class ObjectParser {
 	 * @param reader a reader with content to be parsed
 	 * @return information table {@link InformationTable} with parsed objects
 	 * @throws IOException when something goes wrong with {@link Reader}
+	 * @throws ObjectParseException if at least one of the objects can't be parsed from JSON
 	 */
 	public InformationTable parseObjects(Reader reader) throws IOException {
 		notNull(reader, "Reader with content to be parsed is null.");
@@ -160,11 +162,19 @@ public class ObjectParser {
 			InformationTableBuilder informationTableBuilder = new InformationTableBuilder(this.attributes, new String[]{this.missingValueString});
 			if (json.isJsonArray()) {
 				for (int i = 0; i < ((JsonArray)json).size(); i++) {
-					informationTableBuilder.addObject(parseObject(((JsonArray)json).get(i).getAsJsonObject()));
+					try {
+						informationTableBuilder.addObject(parseObject(((JsonArray)json).get(i).getAsJsonObject()));
+					} catch (ObjectParseException exception) {
+						throw new ObjectParseException(new StringBuilder("Error while parsing object no. ").append(i+1).append(" from JSON. ").append(exception.toString()).toString()); //if exception was thrown, re-throw it
+					}
 				}
 			}
 			else {
-				informationTableBuilder.addObject(parseObject(json));
+				try {
+					informationTableBuilder.addObject(parseObject(json));
+				} catch (ObjectParseException exception) {
+					throw new ObjectParseException("Error while parsing object from JSON. " + exception.toString()); //if exception was thrown, re-throw it
+				}
 			}
 			
 			//clear volatile caches of all used evaluation field caching factories

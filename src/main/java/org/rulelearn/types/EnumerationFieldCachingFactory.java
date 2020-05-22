@@ -214,7 +214,8 @@ public class EnumerationFieldCachingFactory implements EvaluationFieldCachingFac
 			return create(((EnumerationField)attribute.getValueType()).getElementList(), index, attribute.getPreferenceType(), true);
 		}
 		else {
-			throw new FieldParseException(new StringBuilder("Incorrect value of enumeration attribute: ").append(value).toString());
+			throw new FieldParseException(new StringBuilder("Incorrect value ").append(value)
+					.append(" of enumeration attribute ").append(attribute.getName()).append(" (not present in attribute's domain).").toString());
 		}
 	}
 	
@@ -246,7 +247,8 @@ public class EnumerationFieldCachingFactory implements EvaluationFieldCachingFac
 			return create(((EnumerationField)attribute.getValueType()).getElementList(), index, attribute.getPreferenceType(), false);
 		}
 		else {
-			throw new FieldParseException(new StringBuilder("Incorrect value of enumeration attribute: ").append(value).toString());
+			throw new FieldParseException(new StringBuilder("Incorrect value ").append(value)
+					.append(" of enumeration attribute ").append(attribute.getName()).append(" (not present in attribute's domain).").toString());
 		}
 	}
 	

@@ -125,7 +125,7 @@ public class EvaluationParser {
 		boolean missingSimpleField = false;
 		
 		if (evaluation == null || evaluation.equals("")) {
-			throw new FieldParseException("Cannot parse null or empty evaluation.");
+			throw new FieldParseException(new StringBuilder("Cannot parse null or empty evaluation for attribute ").append(attribute.getName()).append(".").toString());
 		}
 	
 		// get rid of white spaces

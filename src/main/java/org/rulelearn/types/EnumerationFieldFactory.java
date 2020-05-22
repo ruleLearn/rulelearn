@@ -419,7 +419,8 @@ public class EnumerationFieldFactory implements EvaluationFieldFactory {
 			return create(((EnumerationField)attribute.getValueType()).getElementList(), index, attribute.getPreferenceType());
 		}
 		else {
-			throw new FieldParseException(new StringBuilder("Incorrect value of enumeration attribute: ").append(value).toString());
+			throw new FieldParseException(new StringBuilder("Incorrect value ").append(value)
+					.append(" of enumeration attribute ").append(attribute.getName()).append(" (not present in attribute's domain).").toString());
 		}
 	}
 	

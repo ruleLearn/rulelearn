@@ -32,6 +32,7 @@ import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableBuilder;
+import org.rulelearn.data.ObjectParseException;
 import org.rulelearn.data.json.InformationTableWriter;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
@@ -108,6 +109,7 @@ public class ArffReader {
 	 * @throws UnsupportedOperationException if any attribute present in ARFF file is of nominal type,
 	 *         and {@link ElementList#ElementList(String[]) constructor of enumeration's field element list} throws {@link NoSuchAlgorithmException}
 	 * @throws UnsupportedOperationException if any line in the @data section section in the ARFF file starts with a curly brace (sparse notation)
+	 * @throws ObjectParseException if at least one of the objects can't be parsed from the ARFF file
 	 */
 	public InformationTable read(String arffFilePath, AttributePreferenceType decisionAttributePreferenceType) throws FileNotFoundException {
 		Precondition.notNull(arffFilePath, "ARFF file path is null.");
@@ -191,12 +193,16 @@ public class ArffReader {
 				line = fileScanner.nextLine().trim();
 				if (line.length() > 0) { //TODO: use more sophisticated check?
 					if (line.startsWith("{")) { //sparse representation of data
-						throw new UnsupportedOperationException("Sparce data in ARFF file are not supported.");
+						throw new UnsupportedOperationException("Sparse data in ARFF file are not supported.");
 					}
 					elements = line.split(dataSeparator);
 					unquoteElements(elements);
 					
-					informationTableBuilder.addObject(elements); //uses volatile caches
+					try {
+						informationTableBuilder.addObject(elements); //uses volatile caches
+					} catch (ObjectParseException exception) {
+						throw new ObjectParseException(new StringBuilder("Error while parsing object from ARFF. ").append(exception.toString()).toString()); //if exception was thrown, re-throw it
+					}
 				}
 			}
 			

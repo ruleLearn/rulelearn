@@ -29,6 +29,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.rulelearn.core.FieldParseException;
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeWithContext;
@@ -61,6 +62,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectLists;
 
 /**
  * Parser of decision rules stored in RuleML format. 
@@ -115,6 +118,98 @@ public class RuleParser {
 	 * Initialized in class constructor with {@link EvaluationParser.CachingType#VOLATILE volatile caching type}.
 	 */
 	EvaluationParser evaluationParser = null;
+	
+	/**
+	 * Parse log of this rule parser used for logging effects of calls to methods attempting to parse a rule,
+	 * like {@link RuleParser#parseRule(Element)} or {@link RuleParser#parseRuleEvaluations(Element)}.
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	public static class ParseLog {
+		
+		int readRulesCount;
+		int successfullyParsedRulesCount; //a rule is considered to be successfully parsed if both the rule itself and its characteristics (if attempted) were parsed successfully
+		ObjectList<String>failureMessages;
+		
+		private ParseLog() {
+			readRulesCount = 0;
+			successfullyParsedRulesCount = 0;
+			failureMessages = new ObjectArrayList<String>();
+		}
+		
+		void logSuccess() {
+			readRulesCount++;
+			successfullyParsedRulesCount++;
+		}
+		
+		void logFailure(String failureMessage) {
+			readRulesCount++;
+			failureMessages.add(failureMessage);
+		}
+		
+		void extendFailure(String failureMessage) { //used if rule was successfully parsed, but rule characteristics was not (only logs message)
+			failureMessages.add(failureMessage);
+		}
+		
+		/**
+		 * Gets the number of rules read from an input, i.e.,
+		 * the number of rules that were attempted to parse from textual
+		 * representation into in-memory representation, strictly corresponding to
+		 * considered set of attributes.
+		 * 
+		 * @return the number of rules read from an input (that were later either successfully or unsuccessfully parsed)
+		 */
+		public int getReadRulesCount() {
+			return readRulesCount;
+		}
+		
+		/**
+		 * Gets the number of rules successfully parsed from an input, i.e.,
+		 * the number of rules that were successfully parsed from textual
+		 * representation into in-memory representation, strictly corresponding to
+		 * considered set of attributes.
+		 * 
+		 * @return the number of rules read from an input and then successfully parsed
+		 */
+		public int getSuccessfullyParsedRulesCount() {
+			return successfullyParsedRulesCount;
+		}
+		
+		/**
+		 * Gets unmodifiable list with messages for all parse errors.
+		 * 
+		 * @return unmodifiable list with messages for all parse errors
+		 */
+		public List<String> getFailureMessages() {
+			return ObjectLists.unmodifiable(failureMessages);
+		}
+		
+		/**
+		 * Tells if all rules parsed from text representation have been successfully parsed into their in-memory representation.
+		 * 
+		 * @return {@code true} if all rules parsed from text representation have been successfully parsed into their in-memory representation,
+		 *         {@code false} otherwise
+		 */
+		public boolean allRulesSuccessfullyParsed() {
+			return readRulesCount == successfullyParsedRulesCount;
+		}
+	}
+	
+	/**
+	 * Parse log of this rule parser used for logging effects of calls to methods attempting to parse a rule,
+	 * like {@link RuleParser#parseRule(Element)} or {@link RuleParser#parseRuleEvaluations(Element)}.
+	 */
+	ParseLog parseLog;
+	
+	/**
+	 * Tells if {@link RuleParseException} exception should be thrown when any rule (along with its all characteristics, if requested) cannot be successfully parsed from text representation.
+	 * If {@code false}, then the exception is not thrown but a message is logged in the system console and the list of parsed rules does not change.
+	 * Regardless of this setting, a {@link ParseLog parse log} is maintained and updated after each attempt to parse a rule.<br>
+	 * <br>
+	 * Initialized with {@code true}. Once modified, affects only subsequent attempts to parse a rule.
+	 */
+	public boolean exceptionOnRuleParseError = true;
 	
 	/**
 	 * Constructs rule parser, sets attributes and initializes parser.
@@ -232,19 +327,28 @@ public class RuleParser {
                     }
                     
                     //parse set of rules
-                    List<Rule> rules = new ObjectArrayList<Rule>();
+                    List<Rule> rulesList = new ObjectArrayList<Rule>();
+                    int counter = 0;
+                    
                     for (Node actChild = ((Element)act).getFirstChild(); actChild != null; actChild = actChild.getNextSibling()) {
                         if (actChild.getNodeType() == Node.ELEMENT_NODE && "assert".equals(actChild.getNodeName())) {
-                        		try {
-                        			rules.add(parseRule((Element) actChild)); //parse rule from <assert>...</assert> block
-                        		}
-                        		catch (RuleParseException ex) {
-								System.out.println("Error while parsing RuleML. " + ex.toString());
-							}
+                        	counter++; //next rule expected
+                    		try {
+                    			rulesList.add(parseRule((Element) actChild)); //parse rule from <assert>...</assert> block
+                    		}
+                    		catch (RuleParseException ex) {
+                    			String failureMessage = new StringBuilder("Error while parsing decision rule no. ").append(counter).append(" from RuleML. ").append(ex).toString();
+                    			parseLog.logFailure(failureMessage);
+                    			if (exceptionOnRuleParseError) {
+                    				throw new RuleParseException(failureMessage);
+                    			} else {
+                    				System.out.println(failureMessage);
+                    			}
+                    		}
                         }
                     }
                     //add parsed set of rules to the map
-                    ruleSets.put(index, new RuleSet(rules.toArray(new Rule[rules.size()])));
+                    ruleSets.put(index, new RuleSet(rulesList.toArray(new Rule[rulesList.size()])));
                     
                     //remember learning data hash, if it was parsed from file
                     if (learningDataHash != null) {
@@ -297,22 +401,61 @@ public class RuleParser {
                     }
                     
                     //parse set of rules and rule characteristics
-                    List<Rule> rules = new ObjectArrayList<Rule> ();
-                    List<RuleCharacteristics> ruleCharacteristics = new ObjectArrayList<RuleCharacteristics> ();
+                    List<Rule> rulesList = new ObjectArrayList<Rule>();
+                    List<RuleCharacteristics> ruleCharacteristicsList = new ObjectArrayList<RuleCharacteristics>();
+                    int counter = 0;
+                    boolean ruleSuccessfullyParsed = false;
+                    boolean ruleCharacteristicsSuccessfullyParsed = false;
+                    Rule rule = null;
+                    RuleCharacteristics ruleCharacteristics = null;
+                    
                     for (Node actChild = ((Element)act).getFirstChild(); actChild != null; actChild = actChild.getNextSibling()) {
                         if (actChild.getNodeType() == Node.ELEMENT_NODE && "assert".equals(actChild.getNodeName())) {
-                        		try {
-                        			rules.add(parseRule((Element) actChild)); //parse rule from <assert>...</assert> block
-                        			ruleCharacteristics.add(parseRuleEvaluations((Element) actChild));  //parse rule characteristics from <assert>...</assert> block
-                        		}
-                        		catch (RuleParseException ex) {
-								System.out.println("Error while parsing RuleML. " + ex.toString());
-							}
+                        	counter++; //next rule expected
+                        	
+                    		try {
+                    			rule = parseRule((Element)actChild); //parse rule from <assert>...</assert> block
+                    			ruleSuccessfullyParsed = true; //TODO
+                    		} catch (RuleParseException ex) {
+                    			String failureMessage = new StringBuilder("Error while parsing decision rule no. ").append(counter).append(" from RuleML. ").append(ex).toString();
+                    			parseLog.logFailure(failureMessage);
+                    			
+                    			if (exceptionOnRuleParseError) {
+                    				throw new RuleParseException(failureMessage);
+                    			} else {
+                    				System.out.println(failureMessage);
+                    			}
+                    		}
+                    		
+                    		try {
+                    			ruleCharacteristics = parseRuleEvaluations((Element)actChild); //parse rule characteristics from <assert>...</assert> block
+                    			ruleCharacteristicsSuccessfullyParsed = true;
+                    		} catch (RuleParseException ex) {
+                    			String failureMessage = new StringBuilder("Error while parsing characteristics of decision rule no. ").append(counter).append(" from RuleML. ").append(ex).toString();
+                    			
+                    			if (ruleSuccessfullyParsed) {
+                    				parseLog.logFailure(failureMessage); //if only characteristics could not be parsed, it still counts as a failure when parsing the rule
+                    			} else {
+                    				parseLog.extendFailure(failureMessage); //add just message explaining why also characteristics could not be parsed
+                    			}
+                    			
+                    			if (exceptionOnRuleParseError) {
+                    				throw new RuleParseException(failureMessage);
+                    			} else {
+                    				System.out.println(failureMessage);
+                    			}
+                    		}
+                    		
+                    		if (ruleSuccessfullyParsed && ruleCharacteristicsSuccessfullyParsed) {
+                    			rulesList.add(rule);
+                    			ruleCharacteristicsList.add(ruleCharacteristics);
+                    		}
+                    		
                         }
                     }
                     //add parsed sets of rules and rule characteristics to the map
-                    ruleSets.put(index, new RuleSetWithCharacteristics(rules.toArray(new Rule[rules.size()]),
-                    		ruleCharacteristics.toArray(new RuleCharacteristics[ruleCharacteristics.size()])));
+                    ruleSets.put(index, new RuleSetWithCharacteristics(rulesList.toArray(new Rule[rulesList.size()]),
+                    		ruleCharacteristicsList.toArray(new RuleCharacteristics[ruleCharacteristicsList.size()])));
                     
                     //remember learning data hash, if it was parsed from file
                     if (learningDataHash != null) {
@@ -329,11 +472,11 @@ public class RuleParser {
 	 * Parses a single rule from RuleML.
 	 * 
 	 * @param assertElement RuleML element representing a single rule
-	 * @return a rule {@link Rule}
+	 * @return parsed {@link Rule decision rule}
 	 * 
-	 * @throws RuleParseException if any of the rules can't be parsed
+	 * @throws RuleParseException if rule can't be parsed
 	 */
-	protected Rule parseRule(Element assertElement) throws RuleParseException {
+	protected Rule parseRule(Element assertElement) {
 		Rule rule = null;
 		List<Condition<? extends EvaluationField>> conditions = null;
 		List<List<Condition<? extends EvaluationField>>> decisions = null;
@@ -436,13 +579,14 @@ public class RuleParser {
 	}
 	
 	/** 
-	 * Parses rule evaluations from RuleML.
+	 * Parses rule evaluations (characteristics) from RuleML.
 	 * 
 	 * @param assertElement RuleML element representing a single rule
 	 * @return rule characteristics {@link RuleCharacteristics}
-	 * @throws RuleParseException if any of the rules can't be parsed
+	 * 
+	 * @throws RuleParseException if at least one of rule's evaluations (characteristics) can't be parsed
 	 */
-	protected RuleCharacteristics parseRuleEvaluations(Element assertElement) throws RuleParseException {
+	protected RuleCharacteristics parseRuleEvaluations(Element assertElement) {
 		RuleCharacteristics ruleCharacteristics = null;
 		
 		for (Node assertClause = assertElement.getFirstChild(); assertClause != null; assertClause = assertClause.getNextSibling()) {
@@ -451,7 +595,11 @@ public class RuleParser {
 					if (impliesClause.getNodeType() == Node.ELEMENT_NODE) {
                         if ("evaluations".equals(impliesClause.getNodeName())) {
                             if (ruleCharacteristics == null) {
-                            	ruleCharacteristics = parseEachRuleEvaluation((Element) impliesClause);
+                            	try {
+                            		ruleCharacteristics = parseEachRuleEvaluation((Element) impliesClause);
+                            	} catch (NumberFormatException|InvalidValueException exception) {
+                            		throw new RuleParseException("Can't parse at least one of rule's characteristics from RuleML.");
+                            	}
                             } else {
                                 throw new RuleParseException("More than one 'evaluations' node detected in RuleML.");
                             }
@@ -468,9 +616,10 @@ public class RuleParser {
 	 * 
 	 * @param ifElement RuleML element representing the condition part of a rule
 	 * @return a list {@link ObjectArrayList} of conditions {@link Condition}
-	 * @throws RuleParseException if any of the rules can't be parsed
+	 * 
+	 * @throws RuleParseException if rule's condition part can't be parsed
 	 */
-	protected List<Condition<? extends EvaluationField>> parseRuleConditionPart(Element ifElement) throws RuleParseException {
+	protected List<Condition<? extends EvaluationField>> parseRuleConditionPart(Element ifElement) {
 		List<Condition<? extends EvaluationField>> conditions = new ObjectArrayList<Condition<? extends EvaluationField>> ();
 		for (Node ifClause = ifElement.getFirstChild(); ifClause != null; ifClause = ifClause.getNextSibling()) {
             if (ifClause.getNodeType() == Node.ELEMENT_NODE) {
@@ -506,9 +655,10 @@ public class RuleParser {
 	 * 
 	 * @param thenElement RuleML element representing the decision part of a rule
 	 * @return a list {@link ObjectArrayList} of conditions {@link Condition}
-	 * @throws RuleParseException if any of the rules can't be parsed 
+	 * 
+	 * @throws RuleParseException if rule's decision part can't be parsed 
 	 */
-	protected List<List<Condition<? extends EvaluationField>>> parseRuleDecisionPart(Element thenElement) throws RuleParseException {
+	protected List<List<Condition<? extends EvaluationField>>> parseRuleDecisionPart(Element thenElement) {
 		List<List<Condition<? extends EvaluationField>>> decisionsOR = new ObjectArrayList<List<Condition<? extends EvaluationField>>> ();
 		List<Condition<? extends EvaluationField>> decisionsAND = null;
 		for (Node thenClause = thenElement.getFirstChild(); thenClause != null; thenClause = thenClause.getNextSibling()) {
@@ -566,9 +716,10 @@ public class RuleParser {
 	 * 
 	 * @param atomElement RuleML element representing a single condition
 	 * @return a condition {@link Condition}
-	 * @throws RuleParseException if any of the rules can't be parsed
+	 * 
+	 * @throws RuleParseException if rule's condition can't be parsed
 	 */
-	protected Condition<? extends EvaluationField> parseRuleCondition(Element atomElement) throws RuleParseException {
+	protected Condition<? extends EvaluationField> parseRuleCondition(Element atomElement) {
 		Condition<? extends EvaluationField> condition = null;
 		boolean relationThresholdVSObject = true; // by default relation is of type threshold versus object
         NodeList relationList = atomElement.getElementsByTagName("rel");
@@ -614,7 +765,11 @@ public class RuleParser {
         int attributeIndex = this.attributeNamesMap.getInt(attributeName);
         if (attributeIndex != RuleParser.DEFAULT_INDEX) {
         		if ((this.attributes[attributeIndex] instanceof EvaluationAttribute) && (this.attributesWithContext[attributeIndex] instanceof EvaluationAttributeWithContext)) {
-        			condition = constructCondition(relation, value, relationThresholdVSObject, (EvaluationAttributeWithContext)attributesWithContext[attributeIndex]);
+        			try {
+        				condition = constructCondition(relation, value, relationThresholdVSObject, (EvaluationAttributeWithContext)attributesWithContext[attributeIndex]);
+        			} catch (FieldParseException exception) {
+        				throw new RuleParseException("Could not read an evaluation in RuleML decision rule's condition: " + exception.getMessage());
+        			}
         		}
 		    else {
 		    		throw new RuleParseException("Attribute used in a RuleML decision rule is not an evaluation attribute.");
@@ -634,6 +789,8 @@ public class RuleParser {
 	 * @param relationThresholdVSObject type of relation (relation object versus value when false or value versus object when true)
 	 * @param attributeWithContext attribute for which condition is constructed
 	 * @return constructed condition 
+	 * 
+	 * @throws FieldParseException if given String value cannot be parsed as a value of the given attribute
 	 */
 	protected Condition<EvaluationField> constructCondition(String relation, String value, boolean relationThresholdVSObject, EvaluationAttributeWithContext attributeWithContext) {
 		Condition<EvaluationField> condition = null;
@@ -680,72 +837,74 @@ public class RuleParser {
 	 * 
 	 * @param evaluationsElement RuleML element representing evaluations of a rule
 	 * @return rule characteristics {@link RuleCharacteristics} of a rule
-	 * @throws RuleParseException if any of evaluations of rules can't be parsed
+	 * 
+	 * @throws NumberFormatException if any integer or double evaluation can't be parsed from text
+	 * @throws InvalidValueException if any parsed integer or double evaluation can't be set in rule characteristics
 	 */
-	protected RuleCharacteristics parseEachRuleEvaluation(Element evaluationsElement) throws RuleParseException {
+	protected RuleCharacteristics parseEachRuleEvaluation(Element evaluationsElement) {
 		RuleCharacteristics ruleCharacteristics = new RuleCharacteristics();
 		for (Node evaluationElement = evaluationsElement.getFirstChild(); evaluationElement != null; evaluationElement = evaluationElement.getNextSibling()) {
             if (evaluationElement.getNodeType() == Node.ELEMENT_NODE) {
                 if ("evaluation".equals(evaluationElement.getNodeName())) {
-                		if (evaluationElement.hasAttributes()) {
-                			NamedNodeMap attributes = evaluationElement.getAttributes();
-                			// we only consider two attributes: measure and value
-                			String measure, value;
-                			if (attributes.getLength() == 2) {
-                				if (("measure".equals(attributes.item(0).getNodeName())) && ("value".equals(attributes.item(1).getNodeName()))) {
-	                				measure = attributes.item(0).getNodeValue();
-	                				value = attributes.item(1).getNodeValue();
-	                				if ("Support".equals(measure)) {
-	                					ruleCharacteristics.setSupport(Integer.parseInt(value));
-	                				}
-	                				else if ("Strength".equals(measure)) {
-	                					ruleCharacteristics.setStrength(Double.parseDouble(value));
-	                				}
-	                				else if ("Confidence".equals(measure)) {
-	                					ruleCharacteristics.setConfidence(Double.parseDouble(value));
-	                				}
-	                				else if ("CoverageFactor".equals(measure)) {
-	                					ruleCharacteristics.setCoverageFactor(Double.parseDouble(value));
-	                				}
-	                				else if ("Coverage".equals(measure)) {
-	                					ruleCharacteristics.setCoverage(Integer.parseInt(value));
-	                				}
-	                				else if ("NegativeCoverage".equals(measure)) {
-	                					ruleCharacteristics.setNegativeCoverage(Integer.parseInt(value));
-	                				}
-	                				else if ("EpsilonMeasure".equals(measure)) {
-	                					ruleCharacteristics.setEpsilon(Double.parseDouble(value));
-	                				}
-	                				else if ("InconsistencyMeasure".equals(measure)) {
-	                					ruleCharacteristics.setEpsilon(Double.parseDouble(value));
-	                				}
-	                				else if ("EpsilonPrimMeasure".equals(measure)) {
-	                					ruleCharacteristics.setEpsilonPrime(Double.parseDouble(value));
-	                				}
-	                				else if ("EpsilonPrimeMeasure".equals(measure)) {
-	                					ruleCharacteristics.setEpsilonPrime(Double.parseDouble(value));
-	                				}
-	                				else if ("f-ConfirmationMeasure".equals(measure)) {
-	                					ruleCharacteristics.setFConfirmation(Double.parseDouble(value));
-	                				}
-	                				else if ("A-ConfirmationMeasure".equals(measure)) {
-	                					ruleCharacteristics.setAConfirmation(Double.parseDouble(value));
-	                				}
-	                				else if ("Z-ConfirmationMeasure".equals(measure)) {
-	                					ruleCharacteristics.setZConfirmation(Double.parseDouble(value));
-	                				}
-	                				else if ("l-ConfirmationMeasure".equals(measure)) {
-	                					ruleCharacteristics.setLConfirmation(Double.parseDouble(value));
-	                				}
-	                				else if ("c1-ConfirmationMeasure".equals(measure)) {
-	                					ruleCharacteristics.setC1Confirmation(Double.parseDouble(value));
-	                				}
-	                				else if ("s-ConfirmationMeasure".equals(measure)) {
-	                					ruleCharacteristics.setSConfirmation(Double.parseDouble(value));
-	                				}
+            		if (evaluationElement.hasAttributes()) {
+            			NamedNodeMap attributes = evaluationElement.getAttributes();
+            			// we only consider two attributes: measure and value
+            			String measure, value;
+            			if (attributes.getLength() == 2) {
+            				if (("measure".equals(attributes.item(0).getNodeName())) && ("value".equals(attributes.item(1).getNodeName()))) {
+                				measure = attributes.item(0).getNodeValue();
+                				value = attributes.item(1).getNodeValue();
+                				if ("Support".equals(measure)) {
+                					ruleCharacteristics.setSupport(Integer.parseInt(value));
                 				}
-                			}
-                		}
+                				else if ("Strength".equals(measure)) {
+                					ruleCharacteristics.setStrength(Double.parseDouble(value));
+                				}
+                				else if ("Confidence".equals(measure)) {
+                					ruleCharacteristics.setConfidence(Double.parseDouble(value));
+                				}
+                				else if ("CoverageFactor".equals(measure)) {
+                					ruleCharacteristics.setCoverageFactor(Double.parseDouble(value));
+                				}
+                				else if ("Coverage".equals(measure)) {
+                					ruleCharacteristics.setCoverage(Integer.parseInt(value));
+                				}
+                				else if ("NegativeCoverage".equals(measure)) {
+                					ruleCharacteristics.setNegativeCoverage(Integer.parseInt(value));
+                				}
+                				else if ("EpsilonMeasure".equals(measure)) {
+                					ruleCharacteristics.setEpsilon(Double.parseDouble(value));
+                				}
+                				else if ("InconsistencyMeasure".equals(measure)) {
+                					ruleCharacteristics.setEpsilon(Double.parseDouble(value));
+                				}
+                				else if ("EpsilonPrimMeasure".equals(measure)) {
+                					ruleCharacteristics.setEpsilonPrime(Double.parseDouble(value));
+                				}
+                				else if ("EpsilonPrimeMeasure".equals(measure)) {
+                					ruleCharacteristics.setEpsilonPrime(Double.parseDouble(value));
+                				}
+                				else if ("f-ConfirmationMeasure".equals(measure)) {
+                					ruleCharacteristics.setFConfirmation(Double.parseDouble(value));
+                				}
+                				else if ("A-ConfirmationMeasure".equals(measure)) {
+                					ruleCharacteristics.setAConfirmation(Double.parseDouble(value));
+                				}
+                				else if ("Z-ConfirmationMeasure".equals(measure)) {
+                					ruleCharacteristics.setZConfirmation(Double.parseDouble(value));
+                				}
+                				else if ("l-ConfirmationMeasure".equals(measure)) {
+                					ruleCharacteristics.setLConfirmation(Double.parseDouble(value));
+                				}
+                				else if ("c1-ConfirmationMeasure".equals(measure)) {
+                					ruleCharacteristics.setC1Confirmation(Double.parseDouble(value));
+                				}
+                				else if ("s-ConfirmationMeasure".equals(measure)) {
+                					ruleCharacteristics.setSConfirmation(Double.parseDouble(value));
+                				}
+            				}
+            			}
+            		}
                 }
             }
 		}
@@ -816,6 +975,15 @@ public class RuleParser {
 				((EvaluationAttribute)attributes[i]).getValueType().getCachingFactory().clearVolatileCache(); //clears volatile cache of the caching factory corresponding to current evaluation attribute
 			}
 		}
+	}
+	
+	/**
+	 * Gets parse log of this rule parser used for logging effects of calls to methods attempting to parse a rule, or a rule with its characteristics.
+	 * 
+	 * @return parse log of this rule parser
+	 */
+	public ParseLog getParseLog() {
+		return parseLog;
 	}
 	
 }

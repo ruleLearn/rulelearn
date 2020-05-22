@@ -24,6 +24,7 @@ import java.util.List;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableBuilder;
+import org.rulelearn.data.ObjectParseException;
 import org.rulelearn.types.Field;
 
 /**
@@ -192,6 +193,7 @@ public class ObjectParser {
 	 * @param reader a reader with content to be parsed
 	 * @return information table {@link InformationTable} with parsed objects or {@code null} when the table cannot be constructed
 	 * @throws NullPointerException when the provided reader is {@code null}
+	 * @throws ObjectParseException if at least one of the objects can't be parsed from CSV
 	 */
 	public InformationTable parseObjects(Reader reader) {
 		notNull(reader, "Reader is null.");
@@ -208,7 +210,11 @@ public class ObjectParser {
 				// separator passed to InformationTableBuilder is irrelevant here
 				InformationTableBuilder informationTableBuilder = new InformationTableBuilder(this.attributes, ",", new String[]{this.missingValueString}); 
 				for (int i = 0; i < objects.size(); i++) {
-					informationTableBuilder.addObject(objects.get(i));
+					try {
+						informationTableBuilder.addObject(objects.get(i));
+					} catch (ObjectParseException exception) {
+						throw new ObjectParseException(new StringBuilder("Error while parsing object no. ").append(i+1).append(" from CSV. ").append(exception.toString()).toString()); //if exception was thrown, re-throw it
+					}
 				}
 				
 				informationTableBuilder.clearVolatileCaches();
