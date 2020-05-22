@@ -244,7 +244,7 @@ class InformationTableBuilderTest {
 			}
 		}
 		else {
-			fail("Unable to load JSON test file with definition of attributes");
+			fail("Unable to load JSON test file with definition of attributes.");
 		}
 		
 		// load objects
@@ -267,7 +267,7 @@ class InformationTableBuilderTest {
 			}
 		}
 		else {
-			fail("Unable to load JSON test file with definition of objects");
+			fail("Unable to load JSON test file with definition of objects.");
 		}
 		ObjectBuilder ob = new ObjectBuilder.Builder(attributes).build();
 		List<String []> objects = null;

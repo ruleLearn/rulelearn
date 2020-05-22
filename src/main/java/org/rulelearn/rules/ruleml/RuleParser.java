@@ -259,6 +259,7 @@ public class RuleParser {
 		//initialize evaluation parser used to parse thresholds in rules' conditions
 		//TODO: allow different missing value strings
 		this.evaluationParser = new EvaluationParser(DEFAULT_MISSING_VALUE_STRINGS, EvaluationParser.CachingType.VOLATILE); //use caching factory, and force volatile cache
+		this.parseLog = new ParseLog();
 	}
 	
 	/**
