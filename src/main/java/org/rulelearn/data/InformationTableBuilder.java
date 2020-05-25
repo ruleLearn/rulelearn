@@ -275,7 +275,7 @@ public class InformationTableBuilder {
 	 * @see #addObject(String[])
 	 * 
 	 * @throws NullPointerException if given parameter is {@code null}
-	 * @throws IndexOutOfBoundsException if object has different number of descriptions than the number of attributes declared
+	 * @throws ObjectParseException if object has different number of descriptions than the number of attributes declared
 	 * @throws ObjectParseException if {@link #exceptionOnObjectParseError} is {@code true} and it is impossible to construct an object
 	 *         (array of {@link Field fields}) from given object descriptions,
 	 *         as at least one textual value cannot be parsed as a correct value of the respective {@link Attribute attribute}
@@ -298,7 +298,7 @@ public class InformationTableBuilder {
 	 * 
 	 * @see #addObject(String[])
 	 * 
-	 * @throws IndexOutOfBoundsException if object has different number of descriptions than the number of attributes declared
+	 * @throws ObjectParseException if object has different number of descriptions than the number of attributes declared
 	 * @throws ObjectParseException if {@link #exceptionOnObjectParseError} is {@code true} and it is impossible to construct an object
 	 *         (array of {@link Field fields}) from given object descriptions,
 	 *         as at least one textual value cannot be parsed as a correct value of the respective {@link Attribute attribute}
@@ -320,15 +320,24 @@ public class InformationTableBuilder {
 	 * @param objectDescriptions single object's identifiers/evaluations
 	 * 
 	 * @throws NullPointerException if given parameter is {@code null}
-	 * @throws IndexOutOfBoundsException if object has different number of descriptions than the number of attributes declared
+	 * @throws ObjectParseException if object has different number of descriptions than the number of attributes declared
 	 * @throws ObjectParseException if {@link #exceptionOnObjectParseError} is {@code true} and it is impossible to construct an object
 	 *         (array of {@link Field fields}) from given array of textual values,
 	 *         as at least one textual value cannot be parsed as a correct value of the respective {@link Attribute attribute}
 	 */
 	public void addObject(String[] objectDescriptions) {
 		Precondition.notNull(objectDescriptions, "Object descriptions are null.");
+		
 		if (objectDescriptions.length != attributes.length) {
-			throw new IndexOutOfBoundsException("Object has different number of descriptions than the number of attributes declared.");
+			String failureMessage = "Object has different number of descriptions than the number of attributes declared.";
+			buildLog.logFailure(failureMessage);
+			
+			if (exceptionOnObjectParseError) {
+				throw new ObjectParseException(failureMessage);
+			} else {
+				System.out.println(failureMessage);
+				return;
+			}
 		}
 		
 		boolean allValuesParsedSuccessfully = true;

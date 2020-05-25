@@ -416,7 +416,7 @@ public class RuleParser {
                         	
                     		try {
                     			rule = parseRule((Element)actChild); //parse rule from <assert>...</assert> block
-                    			ruleSuccessfullyParsed = true; //TODO
+                    			ruleSuccessfullyParsed = true;
                     		} catch (RuleParseException ex) {
                     			String failureMessage = new StringBuilder("Error while parsing decision rule no. ").append(counter).append(" from RuleML. ").append(ex).toString();
                     			parseLog.logFailure(failureMessage);

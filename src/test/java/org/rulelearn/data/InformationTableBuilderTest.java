@@ -183,7 +183,7 @@ class InformationTableBuilderTest {
 	void testAddObject03() {
 		setUp01();
 		InformationTableBuilder informationTableBuilder = new InformationTableBuilder(attributes1, "", new String[] {""});
-		assertThrows(IndexOutOfBoundsException.class, () -> {informationTableBuilder.addObject("1, 1.0, a");});
+		assertThrows(ObjectParseException.class, () -> {informationTableBuilder.addObject("1, 1.0, a");});
 	}
 	
 	/**
