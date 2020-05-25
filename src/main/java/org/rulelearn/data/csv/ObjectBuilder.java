@@ -27,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.rulelearn.data.Attribute;
+import org.rulelearn.data.ObjectParseException;
 
 import com.univocity.parsers.common.processor.RowListProcessor;
 import com.univocity.parsers.csv.CsvFormat;
@@ -219,6 +220,7 @@ public class ObjectBuilder {
 	 * 
 	 * @param reader a reader of the CSV file
 	 * @return a list of {@link String} arrays representing description of all objects in the file on all attributes
+	 * @throws ObjectParseException if the number of values specified for an object in CSV input exceeds the number of attributes
 	 */
 	public List<String[]> getObjects(Reader reader) {
 		notNull(reader, "Reader of the CSV file is null.");
@@ -238,7 +240,11 @@ public class ObjectBuilder {
 		}
 		CsvParser parser = new CsvParser(parserSettings);
 		
-		parser.parse(reader);
+		try {
+			parser.parse(reader);
+		} catch (IndexOutOfBoundsException exception) {
+			throw new ObjectParseException("The number of descriptions specified for an object in CSV input exceeds the number of attributes.");
+		}
 		
 		String[] attributeNames = null;
 		if (this.header) {
@@ -259,9 +265,11 @@ public class ObjectBuilder {
 	 * 
 	 * @param pathToCSVFile a path to the CSV file
 	 * @return a list of {@link String} arrays representing description of all objects in the file on all attributes or {@code null} when something goes wrong
+	 * 
 	 * @throws IOException when something goes wrong with {@link InputStreamReader}
 	 * @throws FileNotFoundException in case the supplied file does not exist
-	 * @throws UnsupportedEncodingException in case the encoding specified is not correct 
+	 * @throws UnsupportedEncodingException in case the encoding specified is not correct
+	 * @throws ObjectParseException if the number of values specified for an object in CSV input exceeds the number of attributes 
 	 */
 	public List<String[]> getObjects(String pathToCSVFile) throws IOException, FileNotFoundException, UnsupportedEncodingException {
 		notNull(pathToCSVFile, "String representing path to CSV file is null.");
@@ -281,7 +289,11 @@ public class ObjectBuilder {
 		}
 		CsvParser parser = new CsvParser(parserSettings);
 		try (InputStreamReader reader = new InputStreamReader(new FileInputStream(pathToCSVFile), this.encoding)) {
-			parser.parse(reader);
+			try {
+				parser.parse(reader);
+			} catch (IndexOutOfBoundsException exception) {
+				throw new ObjectParseException("The number of descriptions specified for an object in CSV input exceeds the number of attributes.");
+			}
 		}
 		
 		String[] attributeNames = null;

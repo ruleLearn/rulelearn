@@ -205,7 +205,8 @@ public class ObjectParser {
 		ObjectBuilder objectBuilder = new ObjectBuilder.Builder().attributes(this.attributes).encoding(this.encoding).header(this.header).separator(this.separator).build();
 		
 		if (objectBuilder != null) {
-			objects = objectBuilder.getObjects(reader);
+			objects = objectBuilder.getObjects(reader); //can throw ObjectParseException
+			
 			if (objects != null) {
 				// separator passed to InformationTableBuilder is irrelevant here
 				InformationTableBuilder informationTableBuilder = new InformationTableBuilder(this.attributes, ",", new String[]{this.missingValueString}); 

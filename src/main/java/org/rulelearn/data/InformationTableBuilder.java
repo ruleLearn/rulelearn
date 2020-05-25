@@ -590,7 +590,8 @@ public class InformationTableBuilder {
 				
 				//load objects 
 				org.rulelearn.data.csv.ObjectBuilder ob = new org.rulelearn.data.csv.ObjectBuilder.Builder().attributes(attributes).header(header).separator(separator).build();
-				objects = ob.getObjects(pathToCSVObjectFile);
+				objects = ob.getObjects(pathToCSVObjectFile); //can throw ObjectParseException
+				
 				informationTableBuilder = new InformationTableBuilder(attributes, new String[] {org.rulelearn.data.csv.ObjectBuilder.DEFAULT_MISSING_VALUE_STRING});
 				
 				if (objects != null) {
