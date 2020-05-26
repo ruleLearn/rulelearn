@@ -29,6 +29,7 @@ import java.util.List;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.ObjectParseException;
 
+import com.univocity.parsers.common.TextParsingException;
 import com.univocity.parsers.common.processor.RowListProcessor;
 import com.univocity.parsers.csv.CsvFormat;
 import com.univocity.parsers.csv.CsvParser;
@@ -216,6 +217,50 @@ public class ObjectBuilder {
 	}
 	
 	/**
+	 * Handles exception of type {@link TextParsingException} by using its message to construct an exception of type {@link ObjectParseException}, with detailed error message.
+	 * 
+	 * @param exception CSV text parse exception to be handled
+	 * @throws ObjectParseException exception with detailed error message
+	 */
+	private void handleTextParsingException(TextParsingException exception) {
+		StringBuilder messageBuilder = new StringBuilder(200);
+		String defaultMessagePrefix = "The number of descriptions specified for an object";
+		
+		String message = exception.getMessage();
+		
+		int startIndex = -1;
+		int endIndex = -1;
+		
+		startIndex = message.indexOf("Internal state when error was thrown: line=");
+		
+		if (startIndex >= 0) {
+			message = message.substring(startIndex); //Internal state when error was thrown: line=0, column=12, record=0, charIndex=104
+			
+			startIndex = message.indexOf("=");
+			endIndex = message.indexOf(",");
+			if (startIndex >= 0 && endIndex > startIndex + 1) { //there is at least one digit to parse
+				message = message.substring(startIndex + 1, endIndex); //get 0-based row number (skip "=", end just before ",")
+				
+				int objectIndex;
+				try {
+					objectIndex = Integer.parseInt(message);
+					messageBuilder.append("The number of descriptions specified for object no. ").append(objectIndex + 1); //paste 1-based row number into the exception message
+				} catch (NumberFormatException exception2) {
+					messageBuilder.append(defaultMessagePrefix);
+				}
+			} else {
+				messageBuilder.append(defaultMessagePrefix);
+			}
+		} else {
+			messageBuilder.append(defaultMessagePrefix);
+		}
+		
+		messageBuilder.append(" in CSV input exceeds the number of attributes.").append(" The number of descriptions should be at most ").append(attributes.length).append(".").toString();
+		
+		throw new ObjectParseException(messageBuilder.toString());
+	}
+	
+	/**
 	 * Reads description of all objects from the supplied (CSV) reader and returns them as a list of {@link String} arrays.
 	 * 
 	 * @param reader a reader of the CSV file
@@ -243,18 +288,20 @@ public class ObjectBuilder {
 		try {
 			parser.parse(reader);
 		} catch (IndexOutOfBoundsException exception) {
-			throw new ObjectParseException("The number of descriptions specified for an object in CSV input exceeds the number of attributes.");
+			throw new ObjectParseException(new StringBuilder("The number of descriptions specified for an object in CSV input exceeds the number of attributes.")
+					.append(" The number of descriptions should be at most ").append(attributes.length).append(".").toString());
+		} catch (TextParsingException exception) {
+			handleTextParsingException(exception); //throws ObjectParseException
 		}
 		
 		String[] attributeNames = null;
 		if (this.header) {
 			attributeNames = rowProcessor.getHeaders();
+			//parser.getContext().headers();
 		}
-		if ((attributeNames != null) && (this.attributes != null)) {
+		if ((attributeNames != null) && (attributes != null)) {
 			// TODO check whether attribute names are valid
 		}
-		
-		// set maximal number of object fields
 		
 		List<String[]> objects = rowProcessor.getRows();
 		return objects;
@@ -271,7 +318,7 @@ public class ObjectBuilder {
 	 * @throws UnsupportedEncodingException in case the encoding specified is not correct
 	 * @throws ObjectParseException if the number of values specified for an object in CSV input exceeds the number of attributes 
 	 */
-	public List<String[]> getObjects(String pathToCSVFile) throws IOException, FileNotFoundException, UnsupportedEncodingException {
+	public List<String[]> getObjects(String pathToCSVFile) throws IOException, FileNotFoundException, UnsupportedEncodingException { //TODO: refactor using getObjects(Reader)
 		notNull(pathToCSVFile, "String representing path to CSV file is null.");
 		
 		CsvParserSettings parserSettings = new CsvParserSettings();
@@ -292,13 +339,17 @@ public class ObjectBuilder {
 			try {
 				parser.parse(reader);
 			} catch (IndexOutOfBoundsException exception) {
-				throw new ObjectParseException("The number of descriptions specified for an object in CSV input exceeds the number of attributes.");
+				throw new ObjectParseException(new StringBuilder("The number of descriptions specified for an object in CSV input exceeds the number of attributes.")
+						.append(" The number of descriptions should be at most ").append(attributes.length).append(".").toString());
+			} catch (TextParsingException exception) {
+				handleTextParsingException(exception); //throws ObjectParseException
 			}
 		}
 		
 		String[] attributeNames = null;
 		if (this.header) {
 			attributeNames = rowProcessor.getHeaders();
+			//parser.getContext().headers();
 		}
 		if ((attributeNames != null) && (attributes != null)) {
 			// TODO check whether attribute names are valid 

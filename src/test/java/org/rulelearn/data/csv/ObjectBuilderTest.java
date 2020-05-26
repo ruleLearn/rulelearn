@@ -19,15 +19,19 @@ package org.rulelearn.data.csv;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.data.Attribute;
+import org.rulelearn.data.ObjectParseException;
 import org.rulelearn.data.json.AttributeParser;
 
 /**
@@ -229,5 +233,37 @@ class ObjectBuilderTest {
 			System.out.println(ex);
 		}
 	}
-
+	
+	/**
+	 * Test method for {@link ObjectBuilder#getObjects(java.io.Reader))}.
+	 */
+	@Test
+	void testGetObjects06() {
+		Attribute [] attributes = null;
+		
+		String csv = 	"5850.0	3	1	2	1	0	1	0	1	0	0	2\r\n" + 
+						"4000.0	2	1	1	1	0	0	0	0	0	0	2";
+		
+		AttributeParser attributeParser = new AttributeParser();
+		try (FileReader attributesReader = new FileReader("src/test/resources/data/csv/windsor.json")) {
+			attributes = attributeParser.parseAttributes(attributesReader);
+			if (attributes != null) {
+				ObjectBuilder ob = new ObjectBuilder.Builder().attributes(attributes).header(false).separator('\t').build();
+				try (Reader objectsReader = new StringReader(csv)) {
+					ob.getObjects(objectsReader);
+					fail("Should throw an ObjectParseException.");
+				}
+				catch (ObjectParseException ex) {
+					System.out.println(ex);
+				}
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(ex);
+		}
+		catch (IOException ex) {
+			System.out.println(ex);
+		}
+	}
+	
 }
