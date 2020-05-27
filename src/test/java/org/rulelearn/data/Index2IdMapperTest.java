@@ -16,7 +16,8 @@
 
 package org.rulelearn.data;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -59,6 +60,20 @@ class Index2IdMapperTest {
 		int[] objectIndex2Id = {7, 14, 5};
 		Index2IdMapper mapper = new Index2IdMapper(objectIndex2Id, false);
 		assertEquals(mapper.getNumberOfObjects(), 3);
+	}
+	
+	/**
+	 * Test for {@link Index2IdMapper#getIndex(int)} method.
+	 */
+	@Test
+	void testGetIndex_01() {
+		int[] objectIndex2Id = {7, 14, 5};
+		Index2IdMapper mapper = new Index2IdMapper(objectIndex2Id, false);
+		assertEquals(mapper.getIndex(7), 0);
+		assertEquals(mapper.getIndex(14), 1);
+		assertEquals(mapper.getIndex(5), 2);
+		
+		assertEquals(mapper.getIndex(0), -1); //id 0 not recorded in the mapper
 	}
 
 }

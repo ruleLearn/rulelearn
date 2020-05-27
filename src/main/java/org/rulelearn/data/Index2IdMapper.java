@@ -19,8 +19,11 @@ package org.rulelearn.data;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+
 /**
- * Mapper from object's index to its unique id. Each object's index corresponds to a single information table.
+ * Mapper from object's index to its unique id, and vice versa. Each object's index corresponds to a single information table.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -30,7 +33,12 @@ public class Index2IdMapper {
 	/**
 	 * Maps object's index to its id - objectIndex2Id[objectIndex] == objectId.
 	 */
-	protected int[] objectIndex2Id = null;
+	int[] objectIndex2Id = null;
+	
+	/**
+	 * Maps object's id to its index - id2ObjectIndexMap.get(objectId) == objectIndex
+	 */
+	Int2IntMap id2ObjectIndexMap = null;
 	
 	/**
 	 * Constructor of this mapper that memorizes mapping between object's index
@@ -58,6 +66,10 @@ public class Index2IdMapper {
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT)
 	public Index2IdMapper(int[] objectIndex2Id, boolean accelerateByReadOnlyParam) {
 		this.objectIndex2Id = accelerateByReadOnlyParam ? objectIndex2Id : objectIndex2Id.clone();
+		this.id2ObjectIndexMap = new Int2IntOpenHashMap(objectIndex2Id.length);
+		for (int i = 0; i < objectIndex2Id.length; i++) {
+			this.id2ObjectIndexMap.put(objectIndex2Id[i], i);
+		}
 	}
 	
 	/**
@@ -69,6 +81,20 @@ public class Index2IdMapper {
 	 */
 	public int getId(int objectIndex) {
 		return objectIndex2Id[objectIndex];
+	}
+	
+	/**
+	 * Gets index of an object from an information table having given unique id.
+	 * 
+	 * @param id unique id of an object in an information table
+	 * @return index of an object from an information table having given unique id, or -1 if there is no mapping for the given id
+	 */
+	public int getIndex(int id) {
+		if (id2ObjectIndexMap.containsKey(id)) {
+			return id2ObjectIndexMap.get(id);
+		} else {
+			return -1;
+		}
 	}
 	
 	/**
