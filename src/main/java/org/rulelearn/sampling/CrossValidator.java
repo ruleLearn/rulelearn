@@ -17,6 +17,7 @@
 package org.rulelearn.sampling;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
@@ -159,6 +160,9 @@ public class CrossValidator {
 					}
 				}
 			}
+			
+			Arrays.sort(indices); //sort indices, so the objects in the validation table are also in the original order
+			
 			folds.add(new CrossValidationFold<InformationTable>(informationTable.discard(indices, accelerateByReadOnlyResult), informationTable.select(indices, accelerateByReadOnlyResult)));
 		}
 		
@@ -264,8 +268,12 @@ public class CrossValidator {
 							}
 						}
 					}
-					folds.add(new CrossValidationFold<InformationTable>(informationTable.discard(indices.toIntArray(), accelerateByReadOnlyResult), 
-							informationTable.select(indices.toIntArray(), accelerateByReadOnlyResult)));
+					
+					int[] indicesArray = indices.toIntArray();
+					Arrays.sort(indicesArray); //sort indices, so the objects in the validation table are also in the original order
+					
+					folds.add(new CrossValidationFold<InformationTable>(informationTable.discard(indicesArray, accelerateByReadOnlyResult), 
+							informationTable.select(indicesArray, accelerateByReadOnlyResult)));
 				}
 			}
 		}
