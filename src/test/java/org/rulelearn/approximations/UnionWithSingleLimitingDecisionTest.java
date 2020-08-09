@@ -1268,6 +1268,8 @@ class UnionWithSingleLimitingDecisionTest {
 		assertEquals(complementaryUnion.getLimitingDecision(), union.getLimitingDecision());
 		assertEquals(complementaryUnion.getUnionType(), UnionType.AT_MOST);
 		assertFalse(complementaryUnion.isIncludeLimitingDecision());
+		
+		//assertEquals(complementaryUnion.getComplementaryUnion(), union); //test if the union is set as complementary union to the union's complementary union
 	}
 	
 	/**
@@ -1283,14 +1285,53 @@ class UnionWithSingleLimitingDecisionTest {
 		assertEquals(complementaryUnion.getLimitingDecision(), union.getLimitingDecision());
 		assertEquals(complementaryUnion.getUnionType(), UnionType.AT_LEAST);
 		assertFalse(complementaryUnion.isIncludeLimitingDecision());
+		
+		//assertEquals(complementaryUnion.getComplementaryUnion(), union); //test if the union is set as complementary union to the union's complementary union
 	}
 
-//	/**
-//	 * Test method for {@link Union#calculateComplementaryUnion()}.
-//	 */
-//	@Test
-//	void testCalculateComplementaryUnion() {
-//	}
+	/**
+	 * Test method for {@link Union#calculateComplementaryUnion()} (indirect test).
+	 */
+	@Test
+	void testCalculateComplementaryUnion01() {
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtLeastUnionWithSimpleLimitingDecision(AttributePreferenceType.GAIN, true);
+		UnionWithSingleLimitingDecision union = unionWithConstructorParameters.union;
+		assertEquals(union.complementaryUnion, null);
+		
+		UnionWithSingleLimitingDecision complementaryUnion = union.getComplementaryUnion();
+		assertNotNull(complementaryUnion); //tests if complementary union is calculated on demand
+		assertEquals(complementaryUnion.getLimitingDecision(), union.getLimitingDecision());
+		assertEquals(complementaryUnion.getUnionType(), UnionType.AT_MOST);
+		assertFalse(complementaryUnion.isIncludeLimitingDecision());
+		
+		UnionWithSingleLimitingDecision complementaryComplementaryUnion = complementaryUnion.getComplementaryUnion();
+		assertNotNull(complementaryComplementaryUnion); //tests if complementary union is calculated on demand
+		assertEquals(complementaryComplementaryUnion.getLimitingDecision(), union.getLimitingDecision());
+		assertEquals(complementaryComplementaryUnion.getUnionType(), UnionType.AT_LEAST);
+		assertTrue(complementaryComplementaryUnion.isIncludeLimitingDecision());
+	}
+	
+	/**
+	 * Test method for {@link Union#calculateComplementaryUnion()} (indirect test).
+	 */
+	@Test
+	void testCalculateComplementaryUnion02() {
+		UnionWithConstructorParameters unionWithConstructorParameters = getTestAtMostUnionWithSimpleLimitingDecision(AttributePreferenceType.COST, true);
+		UnionWithSingleLimitingDecision union = unionWithConstructorParameters.union;
+		assertEquals(union.complementaryUnion, null);
+		
+		UnionWithSingleLimitingDecision complementaryUnion = union.getComplementaryUnion();
+		assertNotNull(complementaryUnion); //tests if complementary union is calculated on demand
+		assertEquals(complementaryUnion.getLimitingDecision(), union.getLimitingDecision());
+		assertEquals(complementaryUnion.getUnionType(), UnionType.AT_LEAST);
+		assertFalse(complementaryUnion.isIncludeLimitingDecision());
+		
+		UnionWithSingleLimitingDecision complementaryComplementaryUnion = complementaryUnion.getComplementaryUnion();
+		assertNotNull(complementaryComplementaryUnion); //tests if complementary union is calculated on demand
+		assertEquals(complementaryComplementaryUnion.getLimitingDecision(), union.getLimitingDecision());
+		assertEquals(complementaryComplementaryUnion.getUnionType(), UnionType.AT_MOST);
+		assertTrue(complementaryComplementaryUnion.isIncludeLimitingDecision());
+	}
 
 	/**
 	 * Test method for {@link Union#getUnionType()}.

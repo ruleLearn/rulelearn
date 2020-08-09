@@ -230,7 +230,7 @@ public class UnionWithSingleLimitingDecision extends Union {
 			break;
 		}
 		
-		return new UnionWithSingleLimitingDecision(complementaryUnionType, this.limitingDecision, this.getInformationTable(), this.getRoughSetCalculator(), false);
+		return new UnionWithSingleLimitingDecision(complementaryUnionType, this.limitingDecision, this.getInformationTable(), this.getRoughSetCalculator(), !this.includeLimitingDecision);
 	}
 	
 	/**

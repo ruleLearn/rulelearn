@@ -75,8 +75,11 @@ public abstract class Union extends ApproximatedSet {
 	protected UnionType unionType;
 	
 	/**
-	 * Reference to complementary union of decision classes that complements this union w.r.t. set of all objects U. This reference is useful, e.g., when calculating the upper approximation of this union using VC-DRSA
-	 * (by complementing the lower approximation of the complementary union). Initialized with {@code null}. Can be updated by {@link #setComplementaryUnion(Union)} method.
+	 * Reference to complementary union of decision classes that complements this union w.r.t. set of all objects U. This reference is useful, e.g.,
+	 * when calculating the upper approximation of this union using VC-DRSA
+	 * (by complementing the lower approximation of the complementary union).
+	 * Initialized with {@code null}. Can be updated by {@link #setComplementaryUnion(Union)} method.
+	 * If {@code null}, gets calculated when {@link #getComplementaryUnion()} method is invoked.
 	 */
 	protected Union complementaryUnion = null;
 	
@@ -166,7 +169,7 @@ public abstract class Union extends ApproximatedSet {
 	 * 
 	 * @param union complementary union of decision classes
 	 * @return {@code true} if given union has been set as a complementary union,
-	 *         {@code false} otherwise 
+	 *         {@code false} otherwise (which occurs if this union already stores a reference to its complementary union)
 	 */
 	public boolean setComplementaryUnion(Union union) {
 		//accept change only if the complementary union has not been set nor calculated yet
@@ -186,16 +189,20 @@ public abstract class Union extends ApproximatedSet {
 	protected abstract Union calculateComplementaryUnion();
 
 	/**
-	 * Gets complementary union of decision classes that complements this union w.r.t. set of all objects U.
-	 * If complementary union has not been previously set
-	 * using {@link #setComplementaryUnion(Union)} method, it is first calculated.
+	 * Gets stored complementary union of decision classes that complements this union w.r.t. set of all objects U.
+	 * If complementary union is not set (by prior call to this getter or by using {@link #setComplementaryUnion(Union)} method,
+	 * it is first calculated and stored in this union, and then returned.<br>
+	 * <br>
+	 * If necessary, once this method returns, one can {@link #setComplementaryUnion(Union) set manually} this union as complementary to the returned one.
 	 * 
 	 * @return complementary union of decision classes 
 	 */
+	// * Moreover, it is attempted to set this union as complementary union to the returned one
+	// * by invoking method {@link #setComplementaryUnion(Union)} with {@code this} reference on the returned object.
 	public Union getComplementaryUnion() {
 		if (this.complementaryUnion == null) {
 			this.complementaryUnion = calculateComplementaryUnion();
-			this.complementaryUnion.setComplementaryUnion(this); //set this union as complementary to the returned one
+			//this.complementaryUnion.setComplementaryUnion(this); //set this union as complementary to the returned one
 		}
 		
 		return this.complementaryUnion;
