@@ -96,7 +96,7 @@ public class ElementList {
 	 * 
 	 * @param elements array of {@link String} elements
 	 * @param algorithm algorithm, from the list provided in {@link MessageDigest}, used to calculate hash
-	 * @throws NullPointerException when elements is null
+	 * @throws NullPointerException when elements or algorithm is {@code null}
 	 * @throws NoSuchAlgorithmException when algorithm is not on the list of algorithms provided in {@link MessageDigest}.
 	 */
 	public ElementList (String [] elements, String algorithm) throws NoSuchAlgorithmException {

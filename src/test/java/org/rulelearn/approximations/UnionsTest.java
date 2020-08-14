@@ -34,6 +34,52 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 public class UnionsTest {
 	
 	/**
+	 * Test method for {@link Unions#getInformationTable()}.
+	 */
+	@Test
+	void testGetInformationTable() {
+		InformationTableWithDecisionDistributions informationTableMock = Mockito.mock(InformationTableWithDecisionDistributions.class);
+		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
+		
+		Unions unions = new Unions(informationTableMock, roughSetCalculatorMock) {
+			@Override
+			void calculateUpwardUnions() {
+				throw new UnsupportedOperationException("Calculation of upward unions should not be requested during test.");
+			}
+			
+			@Override
+			void calculateDownwardUnions() {
+				throw new UnsupportedOperationException("Calculation of downward unions should not be requested during test.");
+			}
+		};
+		
+		assertEquals(unions.getInformationTable(), informationTableMock);
+	}
+	
+	/**
+	 * Test method for {@link Unions#getRoughSetCalculator()}.
+	 */
+	@Test
+	void testGetRoughSetCalculator() {
+		InformationTableWithDecisionDistributions informationTableMock = Mockito.mock(InformationTableWithDecisionDistributions.class);
+		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
+		
+		Unions unions = new Unions(informationTableMock, roughSetCalculatorMock) {
+			@Override
+			void calculateUpwardUnions() {
+				throw new UnsupportedOperationException("Calculation of upward unions should not be requested during test.");
+			}
+			
+			@Override
+			void calculateDownwardUnions() {
+				throw new UnsupportedOperationException("Calculation of downward unions should not be requested during test.");
+			}
+		};
+		
+		assertEquals(unions.getRoughSetCalculator(), roughSetCalculatorMock);
+	}
+	
+	/**
 	 * Test method for {@link Unions#getQualityOfApproximation()}.
 	 * Tests Symptoms data set composed of 17 objects from classes 0-2, with class 2 being the best class and class 0 being the worst class.
 	 * Three objects from class 2 and two objects from class 1 are inconsistent w.r.t. dominance principle.

@@ -25,7 +25,6 @@ import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-//TODO: set complementary unions, if possible
 //TODO: constructor allowing to set different thresholds for different upward/downward unions
 
 /**

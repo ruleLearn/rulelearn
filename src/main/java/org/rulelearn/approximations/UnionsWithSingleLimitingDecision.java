@@ -22,12 +22,14 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import org.rulelearn.core.InvalidSizeException;
+import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.ReadOnlyArrayReference;
 import org.rulelearn.core.ReadOnlyArrayReferenceLocation;
 import org.rulelearn.data.CompositeDecision;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
+import org.rulelearn.data.SimpleDecision;
 
 /**
  * Container for all upward and downward unions (i.e., unions of type {@link Union.UnionType#AT_LEAST}, and {@link Union.UnionType#AT_MOST}, respectively),
@@ -97,6 +99,8 @@ public class UnionsWithSingleLimitingDecision extends Unions {
 		//create all upward and downward unions
 		calculateUpwardUnions();
 		calculateDownwardUnions();
+		
+		setComplementaryUnions(); //attempt to set complementary unions, using already calculated unions
 	}
 	
 	/**
@@ -211,6 +215,24 @@ public class UnionsWithSingleLimitingDecision extends Unions {
 		for (int i = 0; i < this.downwardUnions.length; i++) {
 			this.downwardUnions[i] = downwardUnionsList.get(i);
 		} //for (i)
+	}
+	
+	/**
+	 * If the information table contains only one decision attribute and all its simple decisions are fully-determined,
+	 * for each pair of complementary upward and downward union marks the unions as mutually complementary using {@link Union#setComplementaryUnion(Union)}.
+	 */
+	void setComplementaryUnions() {
+		if (limitingDecisions[0] instanceof SimpleDecision) { //information table contains only one decision attribute
+			if (limitingDecisions.length == getInformationTable().getDecisionDistribution().getDecisions().size()) { //all simple decisions are fully-determined
+				if (upwardUnions.length != downwardUnions.length) {
+					throw new InvalidValueException("The cardinalities of upward and downward unions differ."); //this should not happen
+				}
+				for (int i = 0, j = downwardUnions.length - 1; i < upwardUnions.length; i++, j--) { //go from the most specific upward union to the least specific upward union
+					upwardUnions[i].setComplementaryUnion(downwardUnions[j]);
+					downwardUnions[j].setComplementaryUnion(upwardUnions[i]);
+				} //set complementary unions, using already calculated unions
+			}
+		}
 	}
 	
 	/**
