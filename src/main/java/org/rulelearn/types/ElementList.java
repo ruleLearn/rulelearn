@@ -313,4 +313,43 @@ public class ElementList {
 		
 		return builder.toString();
 	}
+	
+	
+	/**
+	 * Sets {@code map} and {@code hash} fields after serialization provided that
+	 * {@code algorithm} is set properly and {@code elements} is not {@code null}.
+	 * 
+	 * @return this object
+	 */
+	private Object readResolve() {
+		String algorithm;
+		
+		if (this.algorithm != null) {
+			algorithm = this.algorithm;
+		}
+		else {
+			algorithm = DEFAULT_HASH_ALGORITHM;
+		}
+		if (elements != null) {
+			int [] indices = new int [elements.length];
+			for (int i=0; i < elements.length; i++) {
+				indices[i] = i;
+			}
+			map = new Object2IntOpenHashMap<String>(this.elements, indices);
+			map.defaultReturnValue(ElementList.DEFAULT_INDEX);
+			
+			// calculate hash code
+			try {
+				MessageDigest m = MessageDigest.getInstance(algorithm);
+				for (int i = 0; i < elements.length; i++)
+					m.update(elements[i].getBytes());
+				hash = m.digest();
+			}
+			catch (NoSuchAlgorithmException ex) {
+				hash = null;
+			}
+		}
+		
+	    return this;
+	}
 }
