@@ -96,31 +96,48 @@ public class ElementList {
 	 * 
 	 * @param elements array of {@link String} elements
 	 * @param algorithm algorithm, from the list provided in {@link MessageDigest}, used to calculate hash
+	 * 
 	 * @throws NullPointerException when elements or algorithm is {@code null}
-	 * @throws NoSuchAlgorithmException when algorithm is not on the list of algorithms provided in {@link MessageDigest}.
+	 * @throws NoSuchAlgorithmException when algorithm is not on the list of algorithms provided in {@link MessageDigest}
 	 */
 	public ElementList (String [] elements, String algorithm) throws NoSuchAlgorithmException {
 		if (elements != null) {
-			int size = elements.length;
-			this.elements = new String [size];
-			int [] indices = new int [size];
-			for (int i=0; i < elements.length; i++) {
+			this.elements = new String[elements.length];
+			for (int i = 0; i < elements.length; i++) {
 				this.elements[i] = elements[i];
-				indices[i] = i;
 			}
-			this.map = new Object2IntOpenHashMap<String>(this.elements, indices);
-			this.map.defaultReturnValue(ElementList.DEFAULT_INDEX);
-			
-			// calculate hash code
+			initializeMap();
 			this.algorithm = algorithm;
-			MessageDigest m = MessageDigest.getInstance(algorithm);
-			for (int i = 0; i < this.elements.length; i++)
-				m.update(this.elements[i].getBytes());
-			this.hash = m.digest();
+			initializeHash();
 		}
 		else {
-			throw new NullPointerException("Array of elements cannot be null");
+			throw new NullPointerException("Array of elements cannot be null.");
 		}
+	}
+	
+	/**
+	 * Initializes {@link #map} property. Employs {@link #elements} property, so it has to be already set.
+	 */
+	void initializeMap() {
+		int[] indices = new int [elements.length];
+		for (int i = 0; i < elements.length; i++) {
+			indices[i] = i;
+		}
+		map = new Object2IntOpenHashMap<String>(elements, indices);
+		map.defaultReturnValue(ElementList.DEFAULT_INDEX);
+	}
+	
+	/**
+	 * Initializes {@link #hash} property. Employs {@link #algorithm} and {@link #elements} properties, so they have to be already set.
+	 * 
+	 * @throws NoSuchAlgorithmException when {@link #algorithm} is not on the list of algorithms provided in {@link MessageDigest}
+	 */
+	void initializeHash() throws NoSuchAlgorithmException {
+		MessageDigest m = MessageDigest.getInstance(algorithm);
+		for (int i = 0; i < elements.length; i++) {
+			m.update(elements[i].getBytes());
+		}
+		hash = m.digest();
 	}
 	
 	/**
