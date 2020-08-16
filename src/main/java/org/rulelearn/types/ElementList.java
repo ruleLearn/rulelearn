@@ -16,6 +16,7 @@
 
 package org.rulelearn.types;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
@@ -115,7 +116,7 @@ public class ElementList {
 			this.algorithm = algorithm;
 			MessageDigest m = MessageDigest.getInstance(algorithm);
 			for (int i = 0; i < this.elements.length; i++)
-				m.update(this.elements[i].getBytes());
+				m.update(this.elements[i].getBytes(StandardCharsets.UTF_8));
 			this.hash = m.digest();
 		}
 		else {
@@ -342,7 +343,7 @@ public class ElementList {
 			try {
 				MessageDigest m = MessageDigest.getInstance(algorithm);
 				for (int i = 0; i < elements.length; i++)
-					m.update(elements[i].getBytes());
+					m.update(elements[i].getBytes(StandardCharsets.UTF_8));
 				hash = m.digest();
 			}
 			catch (NoSuchAlgorithmException ex) {
