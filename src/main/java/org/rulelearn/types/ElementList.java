@@ -317,7 +317,7 @@ public class ElementList {
 	
 	
 	/**
-	 * Sets {@code map} and {@code hash} fields after serialization provided that
+	 * Sets {@code map} and {@code hash} fields after deserialization provided that
 	 * {@code algorithm} is set properly and {@code elements} is not {@code null}.
 	 * 
 	 * @return this object
@@ -353,4 +353,5 @@ public class ElementList {
 		
 	    return this;
 	}
+	
 }
