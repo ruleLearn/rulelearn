@@ -264,7 +264,7 @@ public class ElementListTest {
 	 * Test for {@link ElementList} serialization with {@code XStream}.
 	 */
 	@Test
-	public void testCXStreamSerialize02() {
+	public void testXStreamSerialize02() {
 		this.setUp02();
 		
 		XStream xstream = new XStream();

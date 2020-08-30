@@ -136,7 +136,7 @@ public class ElementList {
 	void initializeHash() throws NoSuchAlgorithmException {
 		MessageDigest m = MessageDigest.getInstance(algorithm);
 		for (int i = 0; i < elements.length; i++) {
-			m.update(elements[i].getBytes());
+			m.update(elements[i].getBytes(StandardCharsets.UTF_8));
 		}
 		hash = m.digest();
 	}
@@ -340,28 +340,14 @@ public class ElementList {
 	 * @return this object
 	 */
 	private Object readResolve() {
-		String algorithm;
-		
-		if (this.algorithm != null) {
-			algorithm = this.algorithm;
-		}
-		else {
+		if (algorithm == null) {
 			algorithm = DEFAULT_HASH_ALGORITHM;
 		}
 		if (elements != null) {
-			int [] indices = new int [elements.length];
-			for (int i=0; i < elements.length; i++) {
-				indices[i] = i;
-			}
-			map = new Object2IntOpenHashMap<String>(this.elements, indices);
-			map.defaultReturnValue(ElementList.DEFAULT_INDEX);
+			initializeMap();
 			
-			// calculate hash code
 			try {
-				MessageDigest m = MessageDigest.getInstance(algorithm);
-				for (int i = 0; i < elements.length; i++)
-					m.update(elements[i].getBytes(StandardCharsets.UTF_8));
-				hash = m.digest();
+				initializeHash();
 			}
 			catch (NoSuchAlgorithmException ex) {
 				hash = null;
