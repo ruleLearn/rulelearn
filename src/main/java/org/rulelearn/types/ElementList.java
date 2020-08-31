@@ -340,17 +340,17 @@ public class ElementList {
 	 * @return this object
 	 */
 	private Object readResolve() {
-		if (algorithm == null) {
-			algorithm = DEFAULT_HASH_ALGORITHM;
-		}
 		if (elements != null) {
 			initializeMap();
 			
+			if (algorithm == null) {
+				algorithm = DEFAULT_HASH_ALGORITHM;
+			}
 			try {
 				initializeHash();
 			}
 			catch (NoSuchAlgorithmException ex) {
-				hash = null;
+				;
 			}
 		}
 		
