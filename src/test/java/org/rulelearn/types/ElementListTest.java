@@ -258,6 +258,9 @@ public class ElementListTest {
 		assertEquals(list2.isEqualTo(list2d), TernaryLogicValue.TRUE);
 		assertEquals(list1d.hasEqualHash(list2d), TernaryLogicValue.TRUE);
 		assertEquals(list1d.isEqualTo(list2d), TernaryLogicValue.TRUE);
+		
+		assertEquals(list1.map,list1d.map);
+		assertEquals(list2.map,list2d.map);
 	}
 	
 	/**
@@ -279,6 +282,9 @@ public class ElementListTest {
 		assertEquals(list2.isEqualTo(list2d), TernaryLogicValue.TRUE);
 		assertEquals(list1d.hasEqualHash(list2d), TernaryLogicValue.FALSE);
 		assertEquals(list1d.isEqualTo(list2d), TernaryLogicValue.FALSE);
+		
+		assertEquals(list1.map,list1d.map);
+		assertEquals(list2.map,list2d.map);
 	}
 	
 	/**
@@ -304,6 +310,9 @@ public class ElementListTest {
 		assertEquals(list1d.hasEqualHash(list3d), TernaryLogicValue.FALSE);
 		assertEquals(list1d.isEqualTo(list2d), TernaryLogicValue.UNCOMPARABLE);
 		assertEquals(list1d.isEqualTo(list3d), TernaryLogicValue.FALSE);
+		
+		assertEquals(list1.map,list1d.map);
+		assertEquals(list3.map,list3d.map);
 	}
 	
 	/**
@@ -325,6 +334,9 @@ public class ElementListTest {
 		assertEquals(list2.isEqualTo(list2d), TernaryLogicValue.TRUE);
 		assertEquals(list1d.hasEqualHash(list2d), TernaryLogicValue.FALSE);
 		assertEquals(list1d.isEqualTo(list2d), TernaryLogicValue.TRUE);
+		
+		assertEquals(list1.map,list1d.map);
+		assertEquals(list2.map,list2d.map);
 	}
 	
 }

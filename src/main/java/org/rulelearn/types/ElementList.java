@@ -49,7 +49,7 @@ public class ElementList {
 	/**
 	 * Array of {@link String} elements of an enumeration.
 	 */
-	protected String [] elements = null;
+	protected String[] elements = null;
 	
 	/**
 	 * Map of elements of an enumeration.
@@ -88,7 +88,7 @@ public class ElementList {
 	 * @throws NullPointerException when elements is null
 	 * @throws NoSuchAlgorithmException when {@link #DEFAULT_HASH_ALGORITHM default hash algorithm} is not on the list of algorithms provided in {@link MessageDigest}.
 	 */
-	public ElementList (String [] elements) throws NoSuchAlgorithmException {
+	public ElementList (String[] elements) throws NoSuchAlgorithmException {
 		this(elements, DEFAULT_HASH_ALGORITHM);
 	}
 	
@@ -101,7 +101,7 @@ public class ElementList {
 	 * @throws NullPointerException when elements or algorithm is {@code null}
 	 * @throws NoSuchAlgorithmException when algorithm is not on the list of algorithms provided in {@link MessageDigest}
 	 */
-	public ElementList (String [] elements, String algorithm) throws NoSuchAlgorithmException {
+	public ElementList (String[] elements, String algorithm) throws NoSuchAlgorithmException {
 		if (elements != null) {
 			this.elements = new String[elements.length];
 			for (int i = 0; i < elements.length; i++) {
@@ -177,7 +177,7 @@ public class ElementList {
 	 * @return array of {@link String} elements
 	 */
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
-	public String [] getElements () {
+	public String[] getElements () {
 		return elements;
 	}
 	
@@ -241,7 +241,7 @@ public class ElementList {
 	 * 
 	 * @return array of bytes representing hash value
 	 */
-	public byte [] getHash () {
+	public byte[] getHash () {
 		return hash;
 	}
 	
@@ -253,7 +253,7 @@ public class ElementList {
 	 */
 	public TernaryLogicValue isEqualTo(ElementList otherList) {
 		if (otherList != null) {
-			String [] otherElements = otherList.getElements();
+			String[] otherElements = otherList.getElements();
 			if (elements.length == otherElements.length) {
 				int i = 0;
 				int length = elements.length;
@@ -281,16 +281,19 @@ public class ElementList {
 	 */
 	public TernaryLogicValue hasEqualHash(ElementList otherList) {
 		if (otherList != null) {
-			byte [] otherHash = otherList.getHash();
+			byte[] otherHash = otherList.getHash();
 			if (hash.length == otherHash.length) {
 				int i = 0;
 				int length = hash.length;
-				while ((i < length) && (hash[i] == otherHash[i]))
+				while ((i < length) && (hash[i] == otherHash[i])) {
 					i++;
-				if (i < length)
+				}
+				if (i < length) {
 					return TernaryLogicValue.FALSE;
-				else
+				}
+				else {
 					return TernaryLogicValue.TRUE;
+				}
 			}
 			else {
 				return TernaryLogicValue.FALSE;
