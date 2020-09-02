@@ -27,6 +27,8 @@ import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.Test;
 import org.rulelearn.core.TernaryLogicValue;
 
+import com.thoughtworks.xstream.XStream;
+
 /**
  * Test for {@link ElementList}
  *
@@ -237,5 +239,104 @@ public class ElementListTest {
 		assertEquals(list1.serialize(), "(1,2,3)");
 	}
 	
+	/**
+	 * Test for {@link ElementList} serialization with {@code XStream}.
+	 */
+	@Test
+	public void testXStreamSerialize01() {
+		this.setUp01();
+		
+		XStream xstream = new XStream();
+		String xml1 = xstream.toXML(list1);
+		String xml2 = xstream.toXML(list2);
+		ElementList list1d = (ElementList)xstream.fromXML(xml1);
+		ElementList list2d = (ElementList)xstream.fromXML(xml2);
+		
+		assertEquals(list1.hasEqualHash(list1d), TernaryLogicValue.TRUE);
+		assertEquals(list1.isEqualTo(list1d), TernaryLogicValue.TRUE);
+		assertEquals(list2.hasEqualHash(list2d), TernaryLogicValue.TRUE);
+		assertEquals(list2.isEqualTo(list2d), TernaryLogicValue.TRUE);
+		assertEquals(list1d.hasEqualHash(list2d), TernaryLogicValue.TRUE);
+		assertEquals(list1d.isEqualTo(list2d), TernaryLogicValue.TRUE);
+		
+		assertEquals(list1.map,list1d.map);
+		assertEquals(list2.map,list2d.map);
+	}
+	
+	/**
+	 * Test for {@link ElementList} serialization with {@code XStream}.
+	 */
+	@Test
+	public void testXStreamSerialize02() {
+		this.setUp02();
+		
+		XStream xstream = new XStream();
+		String xml1 = xstream.toXML(list1);
+		String xml2 = xstream.toXML(list2);
+		ElementList list1d = (ElementList)xstream.fromXML(xml1);
+		ElementList list2d = (ElementList)xstream.fromXML(xml2);
+		
+		assertEquals(list1.hasEqualHash(list1d), TernaryLogicValue.TRUE);
+		assertEquals(list1.isEqualTo(list1d), TernaryLogicValue.TRUE);
+		assertEquals(list2.hasEqualHash(list2d), TernaryLogicValue.TRUE);
+		assertEquals(list2.isEqualTo(list2d), TernaryLogicValue.TRUE);
+		assertEquals(list1d.hasEqualHash(list2d), TernaryLogicValue.FALSE);
+		assertEquals(list1d.isEqualTo(list2d), TernaryLogicValue.FALSE);
+		
+		assertEquals(list1.map,list1d.map);
+		assertEquals(list2.map,list2d.map);
+	}
+	
+	/**
+	 * Test for {@link ElementList} serialization with {@code XStream}.
+	 */
+	@Test
+	public void testXStreamSerialize03() {
+		this.setUp03();
+		
+		XStream xstream = new XStream();
+		String xml1 = xstream.toXML(list1);
+		String xml2 = xstream.toXML(list2);
+		String xml3 = xstream.toXML(list3);
+		ElementList list1d = (ElementList)xstream.fromXML(xml1);
+		ElementList list2d = (ElementList)xstream.fromXML(xml2);
+		ElementList list3d = (ElementList)xstream.fromXML(xml3);
+		
+		assertEquals(list1.hasEqualHash(list1d), TernaryLogicValue.TRUE);
+		assertEquals(list1.isEqualTo(list1d), TernaryLogicValue.TRUE);
+		assertEquals(list3.hasEqualHash(list3d), TernaryLogicValue.TRUE);
+		assertEquals(list3.isEqualTo(list3d), TernaryLogicValue.TRUE);
+		assertEquals(list1d.hasEqualHash(list2d), TernaryLogicValue.UNCOMPARABLE);
+		assertEquals(list1d.hasEqualHash(list3d), TernaryLogicValue.FALSE);
+		assertEquals(list1d.isEqualTo(list2d), TernaryLogicValue.UNCOMPARABLE);
+		assertEquals(list1d.isEqualTo(list3d), TernaryLogicValue.FALSE);
+		
+		assertEquals(list1.map,list1d.map);
+		assertEquals(list3.map,list3d.map);
+	}
+	
+	/**
+	 * Test for {@link ElementList} serialization with {@code XStream}.
+	 */
+	@Test
+	public void testXStreamSerialize04() {
+		this.setUp04();
+		
+		XStream xstream = new XStream();
+		String xml1 = xstream.toXML(list1);
+		String xml2 = xstream.toXML(list2);
+		ElementList list1d = (ElementList)xstream.fromXML(xml1);
+		ElementList list2d = (ElementList)xstream.fromXML(xml2);
+		
+		assertEquals(list1.hasEqualHash(list1d), TernaryLogicValue.TRUE);
+		assertEquals(list1.isEqualTo(list1d), TernaryLogicValue.TRUE);
+		assertEquals(list2.hasEqualHash(list2d), TernaryLogicValue.TRUE);
+		assertEquals(list2.isEqualTo(list2d), TernaryLogicValue.TRUE);
+		assertEquals(list1d.hasEqualHash(list2d), TernaryLogicValue.FALSE);
+		assertEquals(list1d.isEqualTo(list2d), TernaryLogicValue.TRUE);
+		
+		assertEquals(list1.map,list1d.map);
+		assertEquals(list2.map,list2d.map);
+	}
 	
 }
