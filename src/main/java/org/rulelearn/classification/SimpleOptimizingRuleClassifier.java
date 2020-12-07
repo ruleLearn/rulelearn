@@ -58,9 +58,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * {1, 2, 5, 17, 19, 20} and {3, 6, 17, 18, 19, 21}, where objects 1 and 5 belong to class "2", objects 2, 3, 6, 17 and 19 belong to class "3", and objects 18, 20, and 21 belong to class "4",
  * then decision "3" is supported by objects {2, 3, 6, 17, 19} (remark that objects 17 and 19 are counted only once!), so the a posteriori frequency of class 3
  * (i.e., frequency observed among "at least" rules covering class 3 with their decision part) is 5.
- * Analogously, if there are two covering "at most" rules with the following decisions: "&lt;= 1", "&lt;= 2", supported, respectively, by objects
- * {2, 7, 21} and {4, 7, 33}, where object 2 belongs to class "0", objects 7 and 21 belong to class "1", and objects 4 and 33 belong to class "2",
- * then decision "1" is supported by objects {7, 21} (remark that object 7 is counted only once!), so the a posteriori frequency of class 1
+ * Analogously, if there are two covering "at most" rules with the following decisions: "&lt;= 2", "&lt;= 1", supported, respectively, by objects
+ * {4, 7, 33} and {12, 7, 24}, where object 12 belongs to class "0", objects 7 and 24 belong to class "1", and objects 4 and 33 belong to class "2",
+ * then decision "1" is supported by objects {7, 24} (remark that object 7 is counted only once!), so the a posteriori frequency of class 1
  * (i.e., frequency observed among "at most" rules covering class 1 with their decision part) is 2.
  * Then, the classification result returned by this classifier will be the mode, i.e., class "3", as this class has higher support (5 objects) than class 1 (2 objects).
  * Remark, that the modal value is equal to the median value of the class distribution composed of just these two classes.<br>
