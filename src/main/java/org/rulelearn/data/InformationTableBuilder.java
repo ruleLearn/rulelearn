@@ -665,8 +665,7 @@ public class InformationTableBuilder {
 			// load objects
 			JsonElement json = null;
 			try (JsonReader jsonObjectsReader = new JsonReader(new FileReader(pathToJSONObjectFile))) {
-				JsonParser jsonParser = new JsonParser();
-				json = jsonParser.parse(jsonObjectsReader);
+				json = JsonParser.parseReader(jsonObjectsReader);
 			}
 			org.rulelearn.data.json.ObjectBuilder ob = new org.rulelearn.data.json.ObjectBuilder.Builder(attributes).build();
 			objects = ob.getObjects(json);

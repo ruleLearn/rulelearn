@@ -16,7 +16,8 @@
 
 package org.rulelearn.rules;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +44,7 @@ class ConditionRemovalEvaluatorTest {
 	
 	@BeforeEach
 	void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		this.conditionIndex = 0;
 		this.threshold = 0.0;
 		when(conditionRemovalEvaluatorMock.evaluationSatisfiesThresholdWithoutCondition(this.ruleConditionsMock, this.threshold, this.conditionIndex)).thenCallRealMethod();

@@ -113,7 +113,7 @@ class RuleMLBuilderTest {
 	@BeforeEach
 	public void setUp () {
 		this.ruleMLBuilder = new RuleMLBuilder();
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		
 		// set mock for condition at least
 		when(this.conditionAtLeastMock.getRuleSemantics()).thenReturn(RuleSemantics.AT_LEAST);

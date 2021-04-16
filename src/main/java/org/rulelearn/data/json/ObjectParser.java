@@ -195,8 +195,7 @@ public class ObjectParser {
 	protected JsonElement getJSON(Reader reader) throws IOException {
 		notNull(reader, "Reader with content to be parsed is null.");
 		try (JsonReader jsonReader = new JsonReader(reader)) {
-			JsonParser jsonParser = new JsonParser();			
-			return jsonParser.parse(jsonReader);
+			return JsonParser.parseReader(reader);
 		}
 	}
 	

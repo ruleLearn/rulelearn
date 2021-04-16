@@ -88,8 +88,7 @@ class ObjectBuilderTest {
 			if (attributes != null) {
 				JsonElement json = null;
 				try (FileReader objectReader = new FileReader("src/test/resources/data/json/prioritisation1.json"); JsonReader jsonObjectReader = new JsonReader(objectReader)){
-					JsonParser jsonParser = new JsonParser();
-					json = jsonParser.parse(jsonObjectReader);
+					json = JsonParser.parseReader(jsonObjectReader);
 						
 					ObjectBuilder objectBuilder = new ObjectBuilder.Builder(attributes).build();
 					List<String []> objects = null;

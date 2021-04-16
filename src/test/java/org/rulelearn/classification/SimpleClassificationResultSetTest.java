@@ -16,7 +16,8 @@
 
 package org.rulelearn.classification;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +45,7 @@ class SimpleClassificationResultSetTest {
 	
 	@BeforeEach
 	void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		when(this.informationTableMock.getNumberOfObjects()).thenReturn(2);
 		this.classificationResultSet = new SimpleClassificationResultSet(this.informationTableMock, this.classifierMock);
 		

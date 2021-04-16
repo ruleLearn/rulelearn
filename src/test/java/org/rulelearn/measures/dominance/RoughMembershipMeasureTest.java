@@ -16,14 +16,13 @@
 
 package org.rulelearn.measures.dominance;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 import java.util.Iterator;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -66,7 +65,7 @@ class RoughMembershipMeasureTest {
 	
 	@BeforeEach
 	void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		this.measure = RoughMembershipMeasure.getInstance();
 		// mock unions
 		when(this.unionAtLeast2Mock.getUnionType()).thenReturn(UnionType.AT_LEAST);

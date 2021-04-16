@@ -16,7 +16,7 @@
 
 package org.rulelearn.measures;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +37,7 @@ class GainTypeMeasureTest {
 	
 	@BeforeEach
 	void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		when(measureMock.getType()).thenCallRealMethod();
 	}
 

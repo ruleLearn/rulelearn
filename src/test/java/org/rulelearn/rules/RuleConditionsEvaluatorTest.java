@@ -45,7 +45,7 @@ class RuleConditionsEvaluatorTest {
 	
 	@BeforeEach
 	void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		this.threshold = 0.0;
 		when(ruleConditionsEvaluatorMock.evaluationSatisfiesThreshold(this.ruleConditionsMock, this.threshold)).thenCallRealMethod();
 		when(ruleConditionsEvaluatorMock.confront(ruleConditionsMock, ruleConditionsMock2)).thenCallRealMethod();

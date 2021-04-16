@@ -44,7 +44,7 @@ class ConsistencyMeasureTest {
 	
 	@BeforeEach
 	void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		this.objectIndex = 0;
 		this.threshold = 0.0;
 		when(measureMock.isConsistencyThresholdReached(this.objectIndex, this.setMock, this.threshold)).thenCallRealMethod();

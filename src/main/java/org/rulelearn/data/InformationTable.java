@@ -1278,10 +1278,16 @@ public class InformationTable {
 		//and calculates new fields corresponding to that new binary attribute
 		private void create01AttributeAndCalculateItsFields(int elementListIndex, AttributePreferenceType newPreferenceType) {
 			newAttributes[newAttributeIndex] = create01Attribute(elementListIndex, newPreferenceType); //create new binary attribute
+			Field field;
 			
 			for (int objectIndex = 0; objectIndex < numberOfObjects; objectIndex++) { //calculate fields in the new column
-				newListOfFields.get(objectIndex)[newAttributeIndex] = (((EnumerationField)getField(objectIndex, oldAttributeIndex)).getValue() == elementListIndex) ?
-						getBinaryField(1, newPreferenceType) : getBinaryField(0, newPreferenceType);
+				field = getField(objectIndex, oldAttributeIndex);
+				if (field instanceof UnknownSimpleField) { //value of enumeration field is missing
+					newListOfFields.get(objectIndex)[newAttributeIndex] = field;
+				} else {
+					newListOfFields.get(objectIndex)[newAttributeIndex] = (((EnumerationField)field).getValue() == elementListIndex) ?
+							getBinaryField(1, newPreferenceType) : getBinaryField(0, newPreferenceType);
+				}
 			}
 			
 			newAttributeIndex++;

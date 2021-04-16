@@ -83,7 +83,7 @@ class SimpleRuleClassifierTest {
 	 */
 	private void setUpForTestWithGainTypeDecisionAttribute(AttributePreferenceType decisionAttributePreferenceType) {
 		notNull(decisionAttributePreferenceType, "Preference type of the decision attribute is null.");
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		
 		// set decision domain
 		try {

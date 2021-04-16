@@ -84,7 +84,7 @@ class EpsilonConsistencyMeasureTest {
 	
 	@BeforeEach
 	void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		this.measure = EpsilonConsistencyMeasure.getInstance();
 		// mock unions
 		when(this.unionAtLeast2Mock.getUnionType()).thenReturn(UnionType.AT_LEAST);

@@ -16,8 +16,9 @@
 
 package org.rulelearn.approximations;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,7 +57,7 @@ class VCDominanceBasedRoughSetCalculatorTest {
 	
 	@BeforeEach
 	void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		this.lowerApproximationConsistencyThreshold = 0.01;
 		this.vcDRSAcalculator = new VCDominanceBasedRoughSetCalculator(this.lowerApproximationConsistencyMeasureMock, this.lowerApproximationConsistencyThreshold);
 	}

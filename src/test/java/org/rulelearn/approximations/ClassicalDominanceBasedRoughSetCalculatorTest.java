@@ -78,7 +78,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	 * Sets up tests for calculation of lower approximation of at least union.
 	 */
 	void setUpAtLeastUnionForCalculationOfLowerApproximation() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		// mock union
 		when(this.unionMock.getUnionType()).thenReturn(UnionType.AT_LEAST);
 		when(this.unionMock.isDecisionNegative(class1)).thenReturn(true);
@@ -104,7 +104,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	 * Sets up tests for calculation of upper approximation of at least union.
 	 */
 	void setUpAtLeastUnionForCalculationOfUpperApproximation() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		// mock union
 		when(this.unionMock.getUnionType()).thenReturn(UnionType.AT_LEAST);
 		when(this.unionMock.isDecisionPositive(class1)).thenReturn(false);
@@ -138,7 +138,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	 * Sets up tests for for calculation of lower approximation of at most union.
 	 */
 	void setUpAtMostUnionForCalculationOfLowerApproximation() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		// mock union
 		when(this.unionMock.getUnionType()).thenReturn(UnionType.AT_MOST);
 		when(this.unionMock.isDecisionNegative(class1)).thenReturn(false);
@@ -169,7 +169,7 @@ class ClassicalDominanceBasedRoughSetCalculatorTest {
 	 * Sets up tests for calculation of upper approximation of at least union.
 	 */
 	void setUpAtMostUnionForCalculationOfUpperApproximation() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		// mock union
 		when(this.unionMock.getUnionType()).thenReturn(UnionType.AT_MOST);
 		when(this.unionMock.isDecisionPositive(class1)).thenReturn(true);

@@ -13,22 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-buildscript {
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2' //adds junitPlatformTest task
-	}
-}
-
-apply plugin: 'java-library'
-apply plugin: 'org.junit.platform.gradle.plugin'
-apply plugin: 'maven-publish'
+ 
+ plugins {
+	 id 'java-library'
+	 id 'maven-publish'
+ }
 
 group = 'org.rulelearn'
-version = '0.21.0'
+version = '0.21.1'
+ext.javadocDestinationDir = docsDir.getPath().replace('\\', '/') + '/javadoc' //add javadoc destination dir to project
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -37,140 +30,158 @@ repositories {
 
 dependencies {
  	//adding FastUtil library
-	api("it.unimi.dsi:fastutil:8.1.1")
-	//runtime("it.unimi.dsi:fastutil:8.1.1")
+	api('it.unimi.dsi:fastutil-core:8.5.4')
 	
 	//adding Gson library
-	api('com.google.code.gson:gson:2.8.2')
-	//runtime ('com.google.code.gson:gson:2.8.2')
+	api('com.google.code.gson:gson:2.8.6')
 	
 	//adding uniVocity-parsers
-	implementation('com.univocity:univocity-parsers:2.5.9')
-	//runtime ('com.univocity:univocity-parsers:2.5.9')
+	implementation('com.univocity:univocity-parsers:2.9.1')
 	
-	testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.2")
-	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.2")
+	testImplementation('org.junit.jupiter:junit-jupiter-api:5.7.1')
+	testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.7.1')
 	
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.0.2")
-	
-	testImplementation("org.mockito:mockito-core:2.23.4")
+	testImplementation('org.mockito:mockito-core:3.9.0')
 	
 	//For running JUnit 4 based tests:
-	//testCompile("junit:junit:4.12")
-    //testRuntime("org.junit.vintage:junit-vintage-engine:4.12.2")
+	//testCompile('junit:junit:4.12')
+    //testRuntime('org.junit.vintage:junit-vintage-engine:4.12.2')
 	
 	// To avoid compiler warnings about @API annotations in JUnit code
-	testCompileOnly('org.apiguardian:apiguardian-api:1.0.0') //licenced under Apache License 2.0; https://github.com/apiguardian-team/apiguardian
+	testCompileOnly('org.apiguardian:apiguardian-api:1.1.1') //licenced under Apache License 2.0; https://github.com/apiguardian-team/apiguardian
 	
 	// To use Log4J's LogManager
-	testRuntimeOnly("org.apache.logging.log4j:log4j-core:2.10.0") //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/
-	testRuntimeOnly("org.apache.logging.log4j:log4j-jul:2.10.0") //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/	
+	testRuntimeOnly('org.apache.logging.log4j:log4j-core:2.14.1') //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/
+	testRuntimeOnly('org.apache.logging.log4j:log4j-jul:2.14.1') //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/	
 	
 	// https://mvnrepository.com/artifact/com.thoughtworks.xstream/xstream
-	testImplementation('com.thoughtworks.xstream:xstream:1.4.12')
+	testImplementation('com.thoughtworks.xstream:xstream:1.4.16')
 }
 
-compileJava {
-  if (project.properties["org.gradle.java.home"] == null ) {
+tasks.named('compileJava') {
+  if (project.properties['org.gradle.java.home'] == null ) {
   	if (System.getenv('JAVA_HOME') != null) {
-  		println "[note@build.gradle/compileJava] Property org.gradle.java.home is not set - Gradle assumes JAVA_HOME environmental variable to point to Java JDK directory"
+  		println '[note@build.gradle/compileJava] Property org.gradle.java.home is not set - Gradle assumes JAVA_HOME environmental variable to point to Java JDK directory'
   		println "[note@build.gradle/compileJava] JAVA_HOME=${System.getenv('JAVA_HOME')}"
-  		println ""
+  		println ''
   		
   		options.fork = true
-  		options.forkOptions.executable = "${System.getenv('JAVA_HOME')}\\bin\\javac".replace("\\", "/")
-  		options.compilerArgs << "-Xlint:unchecked"
+  		options.forkOptions.executable = "${System.getenv('JAVA_HOME')}\\bin\\javac".replace('\\', '/')
+  		options.compilerArgs << '-Xlint:unchecked'
+		options.compilerArgs << '-deprecation'
   	}
   }
 }
 
-compileTestJava {
-  if (project.properties["org.gradle.java.home"] == null ) {
+tasks.named('compileTestJava') {
+  if (project.properties['org.gradle.java.home'] == null ) {
   	if (System.getenv('JAVA_HOME') != null) {
-  		println "[note@build.gradle/compileTestJava] Property org.gradle.java.home is not set - Gradle assumes JAVA_HOME environmental variable to point to Java JDK directory"
+  		println '[note@build.gradle/compileTestJava] Property org.gradle.java.home is not set - Gradle assumes JAVA_HOME environmental variable to point to Java JDK directory'
   		println "[note@build.gradle/compileTestJava] JAVA_HOME=${System.getenv('JAVA_HOME')}"
-  		println ""
+  		println ''
   		
   		options.fork = true
-  		options.forkOptions.executable = "${System.getenv('JAVA_HOME')}\\bin\\javac".replace("\\", "/")
+  		options.forkOptions.executable = "${System.getenv('JAVA_HOME')}\\bin\\javac".replace('\\', '/')
   	}
   }
 }
 
-junitPlatform {
-	// platformVersion '1.0.2'
-	filters {
-		engines {
-			// include 'junit-jupiter', 'junit-vintage'
-			// exclude 'custom-engine'
-		}
-		tags {
-			// include 'fast'
-			//exclude 'integration'
-		}
-		// includeClassNamePattern '.*Test'
+tasks.named('test') {
+	description 'Runs all tests except integration ones' //runs faster
+	useJUnitPlatform {
+		excludeTags 'integration'
+		includeEngines 'junit-jupiter'
 	}
-	enableStandardTestTask true
-	// reportsDir file('build/test-results/junit-platform') // this is the default
-	logManager 'org.apache.logging.log4j.jul.LogManager'
+	systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LogManager'
 }
 
-javadoc {
+tasks.register('integrationTest', Test) { //runs slower
+	description 'Runs only integration tests'
+	group 'verification'
+	useJUnitPlatform {
+		includeTags 'integration'
+		includeEngines 'junit-jupiter'
+	}
+	systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LogManager'
+	maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+}
+
+tasks.withType(Test).configureEach { //print test results for each task of type Test
+	println "Max parallel forks of $it: " + maxParallelForks
+	afterSuite { desc, result ->
+		if (!desc.parent) { // will match the outermost suite
+			println "Summary of performed tests: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+		}
+	}
+}
+
+tasks.named('javadoc') {
 	options.author = true
-	options.addStringOption("charset", "UTF-8")
-	options.addStringOption("encoding", "UTF-8");
+	options.addStringOption('charset', 'UTF-8')
+	options.addStringOption('encoding', 'UTF-8');
+	destinationDir = new File(javadocDestinationDir)
 	//options.addBooleanOption('html5', true)
 	if (JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption('html5', true)
     }
 	
-	if (project.properties["org.gradle.java.home"] == null ) {
+	if (project.properties['org.gradle.java.home'] == null ) {
 		if (System.getenv('JAVA_HOME') != null) {
-			println "[note@build.gradle/javadoc] Property org.gradle.java.home is not set - Gradle assumes JAVA_HOME environmental variable to point to Java JDK directory"
+			println '[note@build.gradle/javadoc] Property org.gradle.java.home is not set - Gradle assumes JAVA_HOME environmental variable to point to Java JDK directory'
   			println "[note@build.gradle/javadoc] JAVA_HOME=${System.getenv('JAVA_HOME')}"
-  			println ""
+  			println ''
 		
-	 		setExecutable("${System.getenv('JAVA_HOME')}\\bin\\javadoc".replace("\\", "/"))
+	 		setExecutable("${System.getenv('JAVA_HOME')}\\bin\\javadoc".replace('\\', '/'))
 	 	}
     }
     
-    if (project.properties["generate.test.javadoc"] == "true") {
-    	println "[note@build.gradle/javadoc] Generating documentation also for test classes"
-    	println ""
+    if (project.properties['generate.test.javadoc'] == 'true') {
+    	println '[note@build.gradle/javadoc] Generating documentation also for test classes'
+    	println ''
     	
     	classpath += sourceSets.test.compileClasspath
     	source += sourceSets.test.allJava
     } else {
-    	println "[note@build.gradle/javadoc] Skipping generation of documentation for test classes"
-    	println ""
+    	println '[note@build.gradle/javadoc] Skipping generation of documentation for test classes'
+    	println ''
     }
 }
 
-jar {
+tasks.named('jar') {
 	manifest {
 		attributes('Implementation-Title': project.name,
 				   'Implementation-Version': project.version)
 	}
 }
 
-task all(dependsOn: ["clean", "junitPlatformTest", "jar", "javadoc"], description: "Performs all tasks") {
-	group 'aggregate'
-	description 'Run tests, generate javadoc, build jar'
+tasks.register('refresh') {
+	dependsOn build, integrationTest, javadoc //build internally depends on test
+	integrationTest.mustRunAfter build
 	
-	doLast {
-		println("Building ruleLearn completed.")
-	}
+	description 'Performs all tasks, including integration tests'
+	group 'aggregate'
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
+tasks.register('all') {
+	dependsOn clean, refresh
+	
+	refresh.mustRunAfter clean
+	
+	description 'Cleans and performs all tasks, including integration tests'
+	group 'aggregate'
+}
+
+tasks.register('javadocJar', Jar) {
+	dependsOn tasks.named('javadoc')
     archiveClassifier = 'javadoc'
-    from javadoc.destinationDir}
+    from project.javadocDestinationDir
+}
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifact javadocJar
+			artifact javadocJar //TODO: change to avoid confuguration of javadocJar (when supported by Gradle)
             pom {
                 name = 'ruleLearn library'
                 description = 'Open source library for learning rule models from decision examples and applying these models to classify or rank new examples'

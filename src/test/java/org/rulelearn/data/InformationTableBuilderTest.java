@@ -257,8 +257,7 @@ class InformationTableBuilderTest {
 			System.out.println(ex.toString());
 		}
 		if (jsonReader != null) {
-			JsonParser jsonParser = new JsonParser();
-			json = jsonParser.parse(jsonReader);
+			json = JsonParser.parseReader(jsonReader);
 			try {
 				jsonReader.close();
 			}

@@ -69,8 +69,9 @@ class InformationTableTest {
 			"12:+;a-cond-enum3-none;condition;none;noneEnum(l,m,h);mv1.5\n" +
 			"m|l|m|1|2.0|3|1.0|a|l\n" + 
 			"h|m|h|2|3.0|4|2.0|b|m\n" + 
-			"m|h|l|3|4.0|5|3.0|a|h";
-	private String originalOnlyLearningAttributesHash = "9FDD19E3CE03DF538C42F2A146D6A7B56860FBC3303B1DF067C3D416BF57E169"; //hash for the above original only learning attributes serialization
+			"m|h|l|3|4.0|5|3.0|a|h\n" +
+			"?|?|?|?|?|?|?|?|?";
+	private String originalOnlyLearningAttributesHash = "BE06579125D9EDDD16A1BF96D7548B910777E1386A1852B2A16C3EE46AFDB0B4"; //hash for the above original only learning attributes serialization
 	
 	private String originalAllAttributesSerialization = //concerns configuration04
 			"0:-;na-cond-enum3-none;condition;none;noneEnum(l,m,h);mv2|" +
@@ -88,7 +89,8 @@ class InformationTableTest {
 			"12:+;a-cond-enum3-none;condition;none;noneEnum(l,m,h);mv1.5" + System.lineSeparator() +
 			"l|m|h|o1|00000000-0000-0000-0000-000000000000|l|m|1|2.0|3|1.0|a|l" + System.lineSeparator() + 
 			"m|h|l|o2|00000000-0000-0000-0000-000000000001|m|h|2|3.0|4|2.0|b|m" + System.lineSeparator() + 
-			"h|m|l|o3|00000000-0000-0000-0000-000000000002|h|l|3|4.0|5|3.0|a|h";
+			"h|m|l|o3|00000000-0000-0000-0000-000000000002|h|l|3|4.0|5|3.0|a|h" + System.lineSeparator() +
+			"?|?|?|o4|00000000-0000-0000-0000-000000000003|?|?|?|?|?|?|?|?";
 	
 	/**
 	 * Sole constructor initializing information table test configurations.
@@ -248,6 +250,7 @@ class InformationTableTest {
 						{ "l", "m", "h",  "o1", "00000000-0000-0000-0000-000000000000",  "l", "m",  "1", "2.0",  "3", "1.0",  "a",  "l"},
 						{ "m", "h", "l",  "o2", "00000000-0000-0000-0000-000000000001",  "m", "h",  "2", "3.0",  "4", "2.0",  "b",  "m"},
 						{ "h", "m", "l",  "o3", "00000000-0000-0000-0000-000000000002",  "h", "l",  "3", "4.0",  "5", "3.0",  "a",  "h"},
+						{ "?", "?", "?",  "o4", "00000000-0000-0000-0000-000000000003",  "?", "?",  "?", "?",    "?", "?",    "?",  "?"},
 				});
 		} catch (NoSuchAlgorithmException exception) {
 			throw new InvalidValueException("NoSuchAlgorithmException thrown when creating domain of an enumeration field.");
@@ -1362,6 +1365,7 @@ class InformationTableTest {
 				{ "l", "m", "h",  "o1", "00000000-0000-0000-0000-000000000000",  "l", "m",  "1", "2.0",  "3","3", "1.0","1.0",  "a",  "1","0","0"},
 				{ "m", "h", "l",  "o2", "00000000-0000-0000-0000-000000000001",  "m", "h",  "2", "3.0",  "4","4", "2.0","2.0",  "b",  "0","1","0"},
 				{ "h", "m", "l",  "o3", "00000000-0000-0000-0000-000000000002",  "h", "l",  "3", "4.0",  "5","5", "3.0","3.0",  "a",  "0","0","1"},
+				{ "?", "?", "?",  "o4", "00000000-0000-0000-0000-000000000003",  "?", "?",  "?", "?",    "?","?", "?","?",      "?",  "?","?","?"},
 			};
 		} else { //transformNominalAttributesWith3PlusValues == false
 			try {
@@ -1379,6 +1383,7 @@ class InformationTableTest {
 				{ "l", "m", "h",  "o1", "00000000-0000-0000-0000-000000000000",  "l", "m",  "1", "2.0",  "3","3", "1.0","1.0",  "a",  "l"},
 				{ "m", "h", "l",  "o2", "00000000-0000-0000-0000-000000000001",  "m", "h",  "2", "3.0",  "4","4", "2.0","2.0",  "b",  "m"},
 				{ "h", "m", "l",  "o3", "00000000-0000-0000-0000-000000000002",  "h", "l",  "3", "4.0",  "5","5", "3.0","3.0",  "a",  "h"},
+				{ "?", "?", "?",  "o4", "00000000-0000-0000-0000-000000000003",  "?", "?",  "?", "?",    "?","?", "?","?",      "?",  "?"},
 			};
 		}
 		

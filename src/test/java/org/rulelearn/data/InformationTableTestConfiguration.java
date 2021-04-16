@@ -19,6 +19,7 @@ package org.rulelearn.data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.types.EnumerationField;
@@ -32,6 +33,8 @@ import org.rulelearn.types.RealField;
 import org.rulelearn.types.RealFieldFactory;
 import org.rulelearn.types.TextIdentificationField;
 import org.rulelearn.types.UUIDIdentificationField;
+import org.rulelearn.types.UnknownSimpleField;
+
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
@@ -59,6 +62,12 @@ public class InformationTableTestConfiguration {
 	 */
 	protected Field parseEvaluationAttributeField(EvaluationAttribute attribute, String fieldAsText) {
 		EvaluationField valueType = attribute.getValueType();
+		UnknownSimpleField missingValueType = attribute.getMissingValueType();
+		String missingValueString = missingValueType.toString();
+		
+		if (fieldAsText.trim().equals(missingValueString)) { //handle missing value on evaluation attribute
+			return missingValueType;
+		}
 		
 		if (valueType instanceof IntegerField) {
 			return IntegerFieldFactory.getInstance().create(Integer.parseInt(fieldAsText), attribute.getPreferenceType());

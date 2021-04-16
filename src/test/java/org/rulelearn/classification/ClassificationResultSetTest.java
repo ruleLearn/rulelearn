@@ -16,8 +16,9 @@
 
 package org.rulelearn.classification;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -72,7 +73,7 @@ class ClassificationResultSetTest {
 	
 	@BeforeEach
 	void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		
 		attributes = new Attribute[4];
 		attributes[0] = new IdentificationAttribute("i1", true, new TextIdentificationField(TextIdentificationField.DEFAULT_VALUE));
