@@ -36,6 +36,25 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 public class SimpleOptimizingCountingRuleClassifier extends SimpleOptimizingRuleClassifier {
 	
+	/**
+	 * Resolution strategy used for classification with upward/downward decision rules.
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	public static enum ResolutionStrategy {
+		UP_LIMIT,
+		DOWN_LIMIT,
+		EQUAL_LIMIT,
+		MODE,
+		DEFAULT;
+	}
+	
+	/**
+	 * Resolution strategy used for the most recently classified object.
+	 */
+	ResolutionStrategy latestResolutionStrategy = null;
+	
 	long resolvedToUpLimitCount = 0;
 	long resolvedToDownLimitCount = 0;
 	long resolvedToEqualLimitCount = 0;
@@ -104,6 +123,7 @@ public class SimpleOptimizingCountingRuleClassifier extends SimpleOptimizingRule
 				if (upLimit.isEqualTo(downLimit) == TernaryLogicValue.TRUE) { //both limits are set and equal to each other
 					result = new SimpleClassificationResult(new SimpleDecision(upLimit, decisionAttributeIndex));
 					resolvedToEqualLimitCount++;
+					latestResolutionStrategy = ResolutionStrategy.EQUAL_LIMIT;
 				}	
 				else { //both limits are set but different
 					//remark that not necessarily downLimit <= upLimit! We can have, e.g., >=2 && <=6 or <=2 && >=6 
@@ -111,20 +131,24 @@ public class SimpleOptimizingCountingRuleClassifier extends SimpleOptimizingRule
 							downLimit, upLimit, indicesOfCoveringAtMostRules, indicesOfCoveringAtLeastRules),
 							decisionAttributeIndex));
 					resolvedToModeCount++;
+					latestResolutionStrategy = ResolutionStrategy.MODE;
 				}
 			}
 			else { //only upLimit is set
 				result = new SimpleClassificationResult(new SimpleDecision(upLimit, decisionAttributeIndex));
 				resolvedToUpLimitCount++;
+				latestResolutionStrategy = ResolutionStrategy.UP_LIMIT;
 			}
 		}
 		else if (downLimit != null) { //only downLimit is set
 			result = new SimpleClassificationResult(new SimpleDecision(downLimit, decisionAttributeIndex));
 			resolvedToDownLimitCount++;
+			latestResolutionStrategy = ResolutionStrategy.DOWN_LIMIT;
 		}
 		else { //no limit is set
 			result = this.getDefaultClassificationResult(); //set default result, returned if no rule covers considered object;
 			resolvedToDefaultCount++;
+			latestResolutionStrategy = ResolutionStrategy.DEFAULT;
 		}
 
 		return result;
@@ -173,6 +197,15 @@ public class SimpleOptimizingCountingRuleClassifier extends SimpleOptimizingRule
 	 */
 	public long getResolvedToDefaultCount() {
 		return resolvedToDefaultCount;
+	}
+
+	/**
+	 * Gets resolution strategy used for the most recently classified object.
+	 *  
+	 * @return resolution strategy used for the most recently classified object
+	 */
+	public ResolutionStrategy getLatestResolutionStrategy() {
+		return latestResolutionStrategy;
 	}
 	
 }

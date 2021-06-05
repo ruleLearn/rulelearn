@@ -183,7 +183,7 @@ public class DecisionDistribution {
 
 	/**
 	 * Gets median value in this distribution, concerning given order of the decisions contained in this distribution.
-	 * For example, if the distribution is: class 1 - 100 objects, class 2 - 99 object, then median will be class 1.
+	 * For example, if the distribution is: class 1 - 100 objects, class 2 - 99 objects, then median will be class 1.
 	 * If the distribution is: class 1 - 100 objects, class 2 - 100 object, then median will also be class 1.
 	 * So, if the number of objects is even, and median decision falls between two decisions, than left decision is chosen.
 	 * 
