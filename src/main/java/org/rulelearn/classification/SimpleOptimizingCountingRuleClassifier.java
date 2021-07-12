@@ -51,9 +51,22 @@ public class SimpleOptimizingCountingRuleClassifier extends SimpleOptimizingRule
 	}
 	
 	/**
-	 * Resolution strategy used for the most recently classified object.
+	 * Resolution strategy used for the most recently classified object; {@code null} if classification has not been performed yet.
 	 */
 	ResolutionStrategy latestResolutionStrategy = null;
+	
+	/**
+	 * Down limit resulting from covering rules with decision "<=" for the most recently classified object for which {@link ResolutionStrategy#MODE} resolution strategy has been employed;
+	 * {@code null} if classification with {@link ResolutionStrategy#MODE} resolution strategy has not been performed yet.
+	 * Down limit is the most cautious class in the intersection of covering rules with decision "<=".
+	 */
+	EvaluationField latestModeDownLimit = null;
+	/**
+	 * Up limit resulting from covering rules with decision ">=" for the most recently classified object for which {@link ResolutionStrategy#MODE} resolution strategy has been employed;
+	 * {@code null} if classification with {@link ResolutionStrategy#MODE} resolution strategy has not been performed yet.
+	 * Up limit is the most cautious class in the intersection of covering rules with decision ">=".
+	 */
+	EvaluationField latestModeUpLimit = null;
 	
 	long resolvedToUpLimitCount = 0;
 	long resolvedToDownLimitCount = 0;
@@ -117,6 +130,9 @@ public class SimpleOptimizingCountingRuleClassifier extends SimpleOptimizingRule
 			IntList indicesOfCoveringAtLeastRules, IntList indicesOfCoveringAtMostRules) {
 		SimpleClassificationResult result;
 		
+		//latestModeDownLimit = null; //redundant
+		//latestModeUpLimit = null; //redundant
+		
 		//set the result
 		if (upLimit != null) {
 			if (downLimit != null) {
@@ -132,6 +148,8 @@ public class SimpleOptimizingCountingRuleClassifier extends SimpleOptimizingRule
 							decisionAttributeIndex));
 					resolvedToModeCount++;
 					latestResolutionStrategy = ResolutionStrategy.MODE;
+					latestModeDownLimit = downLimit;
+					latestModeUpLimit = upLimit;
 				}
 			}
 			else { //only upLimit is set
@@ -206,6 +224,28 @@ public class SimpleOptimizingCountingRuleClassifier extends SimpleOptimizingRule
 	 */
 	public ResolutionStrategy getLatestResolutionStrategy() {
 		return latestResolutionStrategy;
+	}
+
+	/**
+	 * Gets down limit resulting from covering rules with decision "<=" for the most recently classified object for which {@link ResolutionStrategy#MODE} resolution strategy has been employed;
+	 * {@code null} if classification with {@link ResolutionStrategy#MODE} resolution strategy has not been performed yet.
+	 * Down limit is the most cautious class in the intersection of covering rules with decision "<=".
+	 * 
+	 * @return down limit resulting from covering rules with decision "<=" for the most recently classified object for which {@link ResolutionStrategy#MODE} resolution strategy has been employed
+	 */
+	public EvaluationField getLatestModeDownLimit() {
+		return latestModeDownLimit;
+	}
+
+	/**
+	 * Gets up limit resulting from covering rules with decision ">=" for the most recently classified object for which {@link ResolutionStrategy#MODE} resolution strategy has been employed;
+	 * {@code null} if classification with {@link ResolutionStrategy#MODE} resolution strategy has not been performed yet.
+	 * Up limit is the most cautious class in the intersection of covering rules with decision ">=".
+	 * 
+	 * @return up limit resulting from covering rules with decision ">=" for the most recently classified object for which {@link ResolutionStrategy#MODE} resolution strategy has been employed
+	 */
+	public EvaluationField getLatestModeUpLimit() {
+		return latestModeUpLimit;
 	}
 	
 }
