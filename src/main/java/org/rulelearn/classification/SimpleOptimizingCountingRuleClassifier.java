@@ -227,22 +227,22 @@ public class SimpleOptimizingCountingRuleClassifier extends SimpleOptimizingRule
 	}
 
 	/**
-	 * Gets down limit resulting from covering rules with decision "<=" for the most recently classified object for which {@link ResolutionStrategy#MODE} resolution strategy has been employed;
+	 * Gets down limit resulting from covering rules with decision "&lt;=" for the most recently classified object for which {@link ResolutionStrategy#MODE} resolution strategy has been employed;
 	 * {@code null} if classification with {@link ResolutionStrategy#MODE} resolution strategy has not been performed yet.
-	 * Down limit is the most cautious class in the intersection of covering rules with decision "<=".
+	 * Down limit is the most cautious class in the intersection of covering rules with decision "&lt;=".
 	 * 
-	 * @return down limit resulting from covering rules with decision "<=" for the most recently classified object for which {@link ResolutionStrategy#MODE} resolution strategy has been employed
+	 * @return down limit resulting from covering rules with decision "&lt;=" for the most recently classified object for which {@link ResolutionStrategy#MODE} resolution strategy has been employed
 	 */
 	public EvaluationField getLatestModeDownLimit() {
 		return latestModeDownLimit;
 	}
 
 	/**
-	 * Gets up limit resulting from covering rules with decision ">=" for the most recently classified object for which {@link ResolutionStrategy#MODE} resolution strategy has been employed;
+	 * Gets up limit resulting from covering rules with decision "&gt;=" for the most recently classified object for which {@link ResolutionStrategy#MODE} resolution strategy has been employed;
 	 * {@code null} if classification with {@link ResolutionStrategy#MODE} resolution strategy has not been performed yet.
-	 * Up limit is the most cautious class in the intersection of covering rules with decision ">=".
+	 * Up limit is the most cautious class in the intersection of covering rules with decision "&gt;=".
 	 * 
-	 * @return up limit resulting from covering rules with decision ">=" for the most recently classified object for which {@link ResolutionStrategy#MODE} resolution strategy has been employed
+	 * @return up limit resulting from covering rules with decision "&gt;=" for the most recently classified object for which {@link ResolutionStrategy#MODE} resolution strategy has been employed
 	 */
 	public EvaluationField getLatestModeUpLimit() {
 		return latestModeUpLimit;
