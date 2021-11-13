@@ -322,13 +322,16 @@ public class RuleCharacteristics {
 	/**
 	 * Gets negative coverage of a decision rule (number of negative objects covered by the rule) in the context of an information table.
 	 * An object is negative, if its decision does not match rule's decision part.
-	 * If negative coverage is not stored in these characteristics, an attempt is made to compute it as a difference between coverage and support.
+	 * If negative coverage is not stored in these characteristics, an attempt is made to compute it as a difference between coverage and support.<br>
+	 * <br>
+	 * It is important to note that this method does not take into account the presence of neutral objects. If there are such objects, correct negative 
+	 * coverage can be lower that the one returned by this method.
 	 * 
 	 * @return negative coverage of a decision rule (number of negative objects covered by the rule) in the context of an information table
 	 * @throws UnknownValueException if negative coverage is unknown (not stored in these characteristics) and cannot be computed
 	 *         as either support or coverage is also unknown
 	 */
-	public int getNegativeCoverage() {
+	public int getNegativeCoverage() { //TODO: take into account neutral objects?
 		if (negativeCoverage == UNKNOWN_INT_VALUE) {
 			try {
 				negativeCoverage = getCoverage() - getSupport(); 
