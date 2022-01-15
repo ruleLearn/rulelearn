@@ -24,6 +24,8 @@ import java.util.Set;
 
 import org.rulelearn.core.InvalidSizeException;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+
 //import org.rulelearn.approximations.Union;
 //import org.rulelearn.core.TernaryLogicValue;
 
@@ -32,7 +34,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
- * Distribution (histogram) of decisions in the set of considered objects (information table). For any decision observed in an information table,
+ * Distribution (histogram) of decisions in the set of considered objects (e.g., information table). For any decision observed in the set of considered objects,
  * this distribution offers information regarding how many objects share this decision. For example, if there are 7 objects in an information table,
  * three of them have decision 1, and four of them have decision 2, then this distribution will map decision 1 to value 3, and decision 2 to value 4.
  * So, this distribution is a kind of a map, where each key corresponds to a decision, and each value corresponds to the number of occurrences of the considered decision.
@@ -68,6 +70,22 @@ public class DecisionDistribution {
 		for (int i = 0; i < numberOfObjects; i++) {
 			this.increaseCount(informationTable.getDecision(i));
 		}
+	}
+	
+	/**
+	 * Constructs this distribution based on the given mapping between object index and object's decision.
+	 * 
+	 * @param decisionsOfObjects mapping between object index and object's decision
+	 * @throws NullPointerException if given map with decisions of objects is {@code null}
+	 */
+	public DecisionDistribution(Int2ObjectMap<Decision> decisionsOfObjects) {
+		notNull(decisionsOfObjects, "Map with decisions of objects is null.");
+		this.decision2CountMap = new Object2IntOpenHashMap<Decision>();
+		
+		for (Decision decision : decisionsOfObjects.values()) {
+			this.increaseCount(decision);
+		}
+
 	}
 	
 	/**
@@ -213,7 +231,7 @@ public class DecisionDistribution {
 		median = null;
 
 		for (int i = 0; i < cumulativeSums.length; i++) {
-			//TODO: if cumulativeSum is even, and there is a switch of decision between element cumulativeSum / 2 and cumulativeSum / 2 + 1, then take median randomly, using seed
+			//TODO: if cumulativeSum is even, and there is a switch of decision between element cumulativeSum / 2 and cumulativeSum / 2 + 1, then take median randomly, using a seed
 			if (cumulativeSums[i] >= roundedHalfOfCumulativeSum) { //median decision found
 				median = orderedUniqueFullyDeterminedDecisions[i];
 				break;

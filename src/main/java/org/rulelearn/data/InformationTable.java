@@ -558,13 +558,16 @@ public class InformationTable {
 	}
 	
 	/**
-	 * Calculates ordered (from the worst to the best) array of all unique fully-determined decisions assigned to objects of this information table.
+	 * Calculates ordered (from the worst to the best, completely or at least partially) array of all unique fully-determined decisions assigned to objects of this information table.
 	 * A fully-determined {@link Decision decision} is a decision whose all contributing evaluations are non-missing (are instances of {@link KnownSimpleField}) -
 	 * see {@link Decision#hasNoMissingEvaluation()}.<br>
 	 * <br>
 	 * For any two decisions from the returned array, {@code decision1.equals(decision2)} should return {@code false}.
 	 * If {@link #getDecisions()} returns {@code null}, then result of this method is {@code null}.
-	 * This may be the case if the information table stores evaluations of test objects (for which decisions are unknown).
+	 * This may be the case if the information table stores evaluations of test objects (for which decisions are unknown).<br>
+	 * <br>
+	 * This method assures that if two decisions are comparable, then worse decision will have smaller index than better decision.
+	 * However, if two decisions are incomparable, their respective order is not determined a priori (may be any).
 	 * 
 	 * @return array with unique fully-determined decisions ordered from the worst to the best,
 	 *         or {@code null} if this information table does not store any decisions ({@link #getDecisions()} returns {@code null})
@@ -645,8 +648,9 @@ public class InformationTable {
 		int decisionsCount = orderedUniqueFullyDeterminedDecisionsList.size();
 		Decision[] orderedUniqueFullyDeterminedDecisions = new Decision[decisionsCount];
 		
-		for (int i = 0; i < decisionsCount; i++)
+		for (int i = 0; i < decisionsCount; i++) {
 			orderedUniqueFullyDeterminedDecisions[i] = orderedUniqueFullyDeterminedDecisionsList.get(i);
+		}
 		
 		return orderedUniqueFullyDeterminedDecisions;
 	}

@@ -52,7 +52,8 @@ class DecisionDistributionTest {
 	@Test
 	void testDecisionDistributionInformationTable() {
 		try {
-			new DecisionDistribution(null);
+			InformationTable informationTable = null;
+			new DecisionDistribution(informationTable);
 			fail("Should not construct decision distribution with null information table.");
 		} catch (NullPointerException exception) {
 			//OK

@@ -183,6 +183,15 @@ public class SimpleDecision extends Decision {
 		
 		return indexSet;
 	}
+	
+	/**
+	 * Gets index of active decision attribute employed in this decision.
+	 * 
+	 * @return index of active decision attribute employed in this decision
+	 */
+	public int getAttributeIndex() {
+		return this.attributeIndex;
+	}
 
 	/**
 	 * {@inheritDoc}
