@@ -1,7 +1,7 @@
 # ruleLearn
 Open source library for learning rule models from decision examples and applying these models to classify or rank new examples. 
 
-Rule models are induced according to sequential covering algorithm presented in [[1]](#VCDomLEM). The learning is preceded by analysis of consistency of data, which is based on rough set theory. More precisely, this library implements dominance-based rough et approaches: original one (DRSA) [[2]](#DRSA) and its variable consistency extensions (VC-DRSA) [[3]](#VCDRSA). Rule models can be used to classify new examples [].
+Rule models are induced according to VC-DomLEM sequential covering algorithm presented in [[1]](#VCDomLEM). The learning is preceded by analysis of consistency of data, which is based on rough set theory. More precisely, this library implements dominance-based rough et approaches: original one (DRSA) [[2]](#DRSA) and its variable consistency extensions (VC-DRSA) [[3]](#VCDRSA). Rule models can be used to classify new examples [].
 
 ruleLearn also allows to validate constructed rule models in stratified cross-validation.
 
