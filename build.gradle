@@ -20,7 +20,7 @@
  }
 
 group = 'org.rulelearn'
-version = '0.23.0'
+version = '0.23.1'
 ext.javadocDestinationDir = docsDir.getPath().replace('\\', '/') + '/javadoc' //add javadoc destination dir to project
 
 // In this section you declare where to find the dependencies of your project

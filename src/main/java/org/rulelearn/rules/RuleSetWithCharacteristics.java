@@ -204,7 +204,10 @@ public class RuleSetWithCharacteristics extends RuleSet {
 			}
 		}
 		
-		return new RuleSetWithCharacteristics(newRules, newRuleCharacteristics, true);
+		RuleSetWithCharacteristics ruleSetWithCharacteristics = new RuleSetWithCharacteristics(newRules, newRuleCharacteristics, true);
+		ruleSetWithCharacteristics.setLearningInformationTableHash(this.getLearningInformationTableHash()); //retain hash - rules relate to the same data!
+		
+		return ruleSetWithCharacteristics;
 	}
 	
 	/**

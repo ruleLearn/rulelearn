@@ -223,7 +223,12 @@ public class RuleSetWithComputableCharacteristics extends RuleSetWithCharacteris
 			}
 		}
 		
-		return new RuleSetWithComputableCharacteristics(newRules, newRuleCoverageInformationArray, newComputableRuleCharacteristics);
+		RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics =
+				new RuleSetWithComputableCharacteristics(newRules, newRuleCoverageInformationArray, newComputableRuleCharacteristics);
+		
+		ruleSetWithComputableCharacteristics.setLearningInformationTableHash(this.getLearningInformationTableHash()); //retain hash - rules relate to the same data!
+		
+		return ruleSetWithComputableCharacteristics;
 	}
 	
 }
