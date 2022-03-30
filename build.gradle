@@ -20,7 +20,7 @@
  }
 
 group = 'org.rulelearn'
-version = '0.21.3'
+version = '0.22.0'
 ext.javadocDestinationDir = docsDir.getPath().replace('\\', '/') + '/javadoc' //add javadoc destination dir to project
 
 // In this section you declare where to find the dependencies of your project
@@ -51,8 +51,8 @@ dependencies {
 	testCompileOnly('org.apiguardian:apiguardian-api:1.1.1') //licenced under Apache License 2.0; https://github.com/apiguardian-team/apiguardian
 	
 	// To use Log4J's LogManager
-	testRuntimeOnly('org.apache.logging.log4j:log4j-core:2.14.1') //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/
-	testRuntimeOnly('org.apache.logging.log4j:log4j-jul:2.14.1') //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/	
+	testRuntimeOnly('org.apache.logging.log4j:log4j-core:2.17.1') //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/
+	testRuntimeOnly('org.apache.logging.log4j:log4j-jul:2.17.1') //licenced under Apache License 2.0; https://logging.apache.org/log4j/2.x/	
 	
 	// https://mvnrepository.com/artifact/com.thoughtworks.xstream/xstream
 	testImplementation('com.thoughtworks.xstream:xstream:1.4.16')
@@ -155,7 +155,8 @@ tasks.named('jar') {
 }
 
 tasks.register('refresh') {
-	dependsOn build, integrationTest, javadoc //build internally depends on test
+	dependsOn javadoc, build, integrationTest //build internally depends on test
+	integrationTest.mustRunAfter javadoc //ensure that errors in javadoc are spotted early
 	integrationTest.mustRunAfter build
 	
 	description 'Performs all tasks, including integration tests'

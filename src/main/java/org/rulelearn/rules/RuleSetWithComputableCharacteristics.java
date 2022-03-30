@@ -39,7 +39,8 @@ public class RuleSetWithComputableCharacteristics extends RuleSetWithCharacteris
 	
 	/**
 	 * Private constructor used to compose rule set with computable characteristics from components.
-	 * Assumes all parameters are correct. Used by {@link #join(RuleSetWithComputableCharacteristics, RuleSetWithComputableCharacteristics)}.
+	 * Assumes all parameters are correct. Used by {@link #join(RuleSetWithComputableCharacteristics, RuleSetWithComputableCharacteristics)}
+	 * and {@link #filter(RuleSetWithComputableCharacteristics, RuleFilter).
 	 * 
 	 * @param rules rules to be set in constructed rule set
 	 * @param ruleCoverageInformationArray {@link RuleCoverageInformation rule coverage information} array to be set in constructed rule set
@@ -155,6 +156,51 @@ public class RuleSetWithComputableCharacteristics extends RuleSetWithCharacteris
 		for (int i = 0; i < size2; i++) {
 			ruleCoverageInformationArray[size1 + i] = ruleSet2.ruleCoverageInformationArray[i];
 			computableRuleCharacteristics[size1 + i] = (ComputableRuleCharacteristics)ruleSet2.ruleCharacteristics[i]; //this cast is safe
+		}
+		
+		return new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, computableRuleCharacteristics);
+	}
+	
+	/**
+	 * Filters given set of rules with characteristics, and returns a subset of rules, composed of rules that are accepted by the given rule filter.
+	 * 
+	 * @param ruleSet rule set to filter
+	 * @param ruleFilter rule filter used to test each rule from the given rule set
+	 * 
+	 * @return a new rule set (with characteristics) composing of rules accepted by the given filter
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 */
+	public static RuleSetWithComputableCharacteristics filter(RuleSetWithComputableCharacteristics ruleSet, RuleFilter ruleFilter) {
+		Precondition.notNull(ruleSet, "Rule set to be filtered is null.");
+		Precondition.notNull(ruleFilter, "Rule filter is null.");
+		
+		int ruleSetSize = ruleSet.size();
+		byte[] accepted = new byte[ruleSetSize];
+		int acceptedCount = 0;
+		
+		for (int i = 0; i < ruleSetSize; i++) {
+			if (ruleFilter.accepts(ruleSet.getRule(i), ruleSet.getRuleCharacteristics(i))) {
+				acceptedCount++;
+				accepted[i] = 1;
+			} else {
+				accepted[i] = 0;
+			}
+		}
+		
+		Rule[] rules = new Rule[acceptedCount];
+		RuleCoverageInformation[] ruleCoverageInformationArray = new RuleCoverageInformation[acceptedCount];
+		ComputableRuleCharacteristics[] computableRuleCharacteristics = new ComputableRuleCharacteristics[acceptedCount];
+		
+		int newAcceptedRuleIndex = 0;
+		
+		for (int i = 0; i < ruleSetSize; i++) {
+			if (accepted[i] == 1) {
+				rules[newAcceptedRuleIndex] = ruleSet.getRule(i);
+				ruleCoverageInformationArray[newAcceptedRuleIndex] = ruleSet.ruleCoverageInformationArray[i];
+				computableRuleCharacteristics[newAcceptedRuleIndex] = (ComputableRuleCharacteristics)ruleSet.ruleCharacteristics[i]; //this cast is safe
+				newAcceptedRuleIndex++;
+			}
 		}
 		
 		return new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, computableRuleCharacteristics);

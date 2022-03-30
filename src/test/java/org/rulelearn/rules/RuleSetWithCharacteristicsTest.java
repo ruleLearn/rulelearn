@@ -280,5 +280,145 @@ class RuleSetWithCharacteristicsTest {
 		System.out.println(serializedRuleSet); //!
 		assertEquals(serializedRuleSet, ruleAsText+" [support=10, strength=0.2, coverage-factor=0.3, confidence=?, epsilon=0.1]"+System.lineSeparator());
 	}
+	
+	/**
+	 * Test method for {@link RuleSetWithCharacteristics#join(RuleSetWithCharacteristics, RuleSetWithCharacteristics)}.
+	 */
+	@Test
+	void testJoin() {
+		int size1 = 5; //>=1
+		Rule[] rules1 = new Rule[size1];
+		RuleCharacteristics[] ruleCharacteristics1 = new RuleCharacteristics[size1];
+		for (int i = 0; i < size1; i++) {
+			rules1[i] = Mockito.mock(Rule.class);
+			ruleCharacteristics1[i] = Mockito.mock(RuleCharacteristics.class);
+		}
+		
+		int size2 = 4; //>=1
+		Rule[] rules2 = new Rule[size2];
+		RuleCharacteristics[] ruleCharacteristics2 = new RuleCharacteristics[size2];
+		for (int i = 0; i < size2; i++) {
+			rules2[i] = Mockito.mock(Rule.class);
+			ruleCharacteristics2[i] = Mockito.mock(RuleCharacteristics.class);
+		}
+		
+		RuleSetWithCharacteristics ruleSet1 = new RuleSetWithCharacteristics(rules1, ruleCharacteristics1, true);
+		RuleSetWithCharacteristics ruleSet2 = new RuleSetWithCharacteristics(rules2, ruleCharacteristics2, true);
+		
+		RuleSetWithCharacteristics jointRuleSet = RuleSetWithCharacteristics.join(ruleSet1, ruleSet2);
+		
+		assertEquals(jointRuleSet.size(), size1 + size2);
+		assertEquals(jointRuleSet.getRule(0), ruleSet1.getRule(0));
+		assertEquals(jointRuleSet.getRule(1), ruleSet1.getRule(1));
+		assertEquals(jointRuleSet.getRule(2), ruleSet1.getRule(2));
+		assertEquals(jointRuleSet.getRule(3), ruleSet1.getRule(3));
+		assertEquals(jointRuleSet.getRule(4), ruleSet1.getRule(4));
+		assertEquals(jointRuleSet.getRule(5), ruleSet2.getRule(0));
+		assertEquals(jointRuleSet.getRule(6), ruleSet2.getRule(1));
+		assertEquals(jointRuleSet.getRule(7), ruleSet2.getRule(2));
+		assertEquals(jointRuleSet.getRule(8), ruleSet2.getRule(3));
+		assertEquals(jointRuleSet.ruleCharacteristics[0], ruleSet1.ruleCharacteristics[0]);
+		assertEquals(jointRuleSet.ruleCharacteristics[1], ruleSet1.ruleCharacteristics[1]);
+		assertEquals(jointRuleSet.ruleCharacteristics[2], ruleSet1.ruleCharacteristics[2]);
+		assertEquals(jointRuleSet.ruleCharacteristics[3], ruleSet1.ruleCharacteristics[3]);
+		assertEquals(jointRuleSet.ruleCharacteristics[4], ruleSet1.ruleCharacteristics[4]);
+		assertEquals(jointRuleSet.ruleCharacteristics[5], ruleSet2.ruleCharacteristics[0]);
+		assertEquals(jointRuleSet.ruleCharacteristics[6], ruleSet2.ruleCharacteristics[1]);
+		assertEquals(jointRuleSet.ruleCharacteristics[7], ruleSet2.ruleCharacteristics[2]);
+		assertEquals(jointRuleSet.ruleCharacteristics[8], ruleSet2.ruleCharacteristics[3]);
+	}
+	
+	/**
+	 * Test method for {@link RuleSetWithCharacteristics#filter(RuleSetWithCharacteristics, RuleFilter)}.
+	 * Tests filtration using strict confidence filter.
+	 */
+	@Test
+	void testFilter01() {
+		int size = 5; //>=1
+		Rule[] rules = new Rule[size];
+		RuleCharacteristics[] ruleCharacteristics = new RuleCharacteristics[size];
+		for (int i = 0; i < size; i++) {
+			rules[i] = Mockito.mock(Rule.class);
+			ruleCharacteristics[i] = Mockito.mock(RuleCharacteristics.class);
+		}
+		
+		Mockito.when(ruleCharacteristics[0].getConfidence()).thenReturn(0.4);
+		Mockito.when(ruleCharacteristics[1].getConfidence()).thenReturn(0.5);
+		Mockito.when(ruleCharacteristics[2].getConfidence()).thenReturn(0.6);
+		Mockito.when(ruleCharacteristics[3].getConfidence()).thenReturn(0.7);
+		Mockito.when(ruleCharacteristics[4].getConfidence()).thenReturn(0.5);
+		
+		RuleSetWithCharacteristics ruleSet = new RuleSetWithCharacteristics(rules, ruleCharacteristics, true);
+		
+		RuleSetWithCharacteristics filteredRuleSet = RuleSetWithCharacteristics.filter(ruleSet, new ConfidenceRuleFilter(0.5, true));
+		
+		assertEquals(filteredRuleSet.size(), 2);
+		assertEquals(filteredRuleSet.getRule(0), ruleSet.getRule(2));
+		assertEquals(filteredRuleSet.getRule(1), ruleSet.getRule(3));
+		assertEquals(filteredRuleSet.ruleCharacteristics[0], ruleSet.ruleCharacteristics[2]);
+		assertEquals(filteredRuleSet.ruleCharacteristics[1], ruleSet.ruleCharacteristics[3]);
+	}
+	
+	/**
+	 * Test method for {@link RuleSetWithCharacteristics#filter(RuleSetWithCharacteristics, RuleFilter)}.
+	 * Tests filtration using weak confidence filter.
+	 */
+	@Test
+	void testFilter02() {
+		int size = 5; //>=1
+		Rule[] rules = new Rule[size];
+		RuleCharacteristics[] ruleCharacteristics = new RuleCharacteristics[size];
+		for (int i = 0; i < size; i++) {
+			rules[i] = Mockito.mock(Rule.class);
+			ruleCharacteristics[i] = Mockito.mock(RuleCharacteristics.class);
+		}
+		
+		Mockito.when(ruleCharacteristics[0].getConfidence()).thenReturn(0.4);
+		Mockito.when(ruleCharacteristics[1].getConfidence()).thenReturn(0.5);
+		Mockito.when(ruleCharacteristics[2].getConfidence()).thenReturn(0.6);
+		Mockito.when(ruleCharacteristics[3].getConfidence()).thenReturn(0.7);
+		Mockito.when(ruleCharacteristics[4].getConfidence()).thenReturn(0.5);
+		
+		RuleSetWithCharacteristics ruleSet = new RuleSetWithCharacteristics(rules, ruleCharacteristics, true);
+		
+		RuleSetWithCharacteristics filteredRuleSet = RuleSetWithCharacteristics.filter(ruleSet, new ConfidenceRuleFilter(0.5, false));
+		
+		assertEquals(filteredRuleSet.size(), 4);
+		assertEquals(filteredRuleSet.getRule(0), ruleSet.getRule(1));
+		assertEquals(filteredRuleSet.getRule(1), ruleSet.getRule(2));
+		assertEquals(filteredRuleSet.getRule(2), ruleSet.getRule(3));
+		assertEquals(filteredRuleSet.getRule(3), ruleSet.getRule(4));
+		assertEquals(filteredRuleSet.ruleCharacteristics[0], ruleSet.ruleCharacteristics[1]);
+		assertEquals(filteredRuleSet.ruleCharacteristics[1], ruleSet.ruleCharacteristics[2]);
+		assertEquals(filteredRuleSet.ruleCharacteristics[2], ruleSet.ruleCharacteristics[3]);
+		assertEquals(filteredRuleSet.ruleCharacteristics[3], ruleSet.ruleCharacteristics[4]);
+	}
+	
+	/**
+	 * Test method for {@link RuleSetWithCharacteristics#filter(RuleSetWithCharacteristics, RuleFilter)}.
+	 * Tests filtration using strict confidence filter that should filter all rules.
+	 */
+	@Test
+	void testFilter03() {
+		int size = 5; //>=1
+		Rule[] rules = new Rule[size];
+		RuleCharacteristics[] ruleCharacteristics = new RuleCharacteristics[size];
+		for (int i = 0; i < size; i++) {
+			rules[i] = Mockito.mock(Rule.class);
+			ruleCharacteristics[i] = Mockito.mock(RuleCharacteristics.class);
+		}
+		
+		Mockito.when(ruleCharacteristics[0].getConfidence()).thenReturn(0.4);
+		Mockito.when(ruleCharacteristics[1].getConfidence()).thenReturn(0.5);
+		Mockito.when(ruleCharacteristics[2].getConfidence()).thenReturn(0.6);
+		Mockito.when(ruleCharacteristics[3].getConfidence()).thenReturn(0.7);
+		Mockito.when(ruleCharacteristics[4].getConfidence()).thenReturn(0.5);
+		
+		RuleSetWithCharacteristics ruleSet = new RuleSetWithCharacteristics(rules, ruleCharacteristics, true);
+		
+		RuleSetWithCharacteristics filteredRuleSet = RuleSetWithCharacteristics.filter(ruleSet, new ConfidenceRuleFilter(0.7, true));
+		
+		assertEquals(filteredRuleSet.size(), 0);
+	}
 
 }

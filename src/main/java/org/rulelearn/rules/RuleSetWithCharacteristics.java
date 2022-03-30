@@ -146,6 +146,48 @@ public class RuleSetWithCharacteristics extends RuleSet {
 	}
 	
 	/**
+	 * Filters given set of rules with characteristics, and returns a subset of rules, composed of rules that are accepted by the given rule filter.
+	 * 
+	 * @param ruleSet rule set to filter
+	 * @param ruleFilter rule filter used to test each rule from the given rule set
+	 * 
+	 * @return a new rule set (with characteristics) composing of rules accepted by the given filter
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 */
+	public static RuleSetWithCharacteristics filter(RuleSetWithCharacteristics ruleSet, RuleFilter ruleFilter) {
+		Precondition.notNull(ruleSet, "Rule set to be filtered is null.");
+		Precondition.notNull(ruleFilter, "Rule filter is null.");
+		
+		int ruleSetSize = ruleSet.size();
+		byte[] accepted = new byte[ruleSetSize];
+		int acceptedCount = 0;
+		
+		for (int i = 0; i < ruleSetSize; i++) {
+			if (ruleFilter.accepts(ruleSet.getRule(i), ruleSet.getRuleCharacteristics(i))) {
+				acceptedCount++;
+				accepted[i] = 1;
+			} else {
+				accepted[i] = 0;
+			}
+		}
+		
+		Rule[] rules = new Rule[acceptedCount];
+		RuleCharacteristics[] characteristics = new RuleCharacteristics[acceptedCount];
+		int newAcceptedRuleIndex = 0;
+		
+		for (int i = 0; i < ruleSetSize; i++) {
+			if (accepted[i] == 1) {
+				rules[newAcceptedRuleIndex] = ruleSet.getRule(i);
+				characteristics[newAcceptedRuleIndex] = ruleSet.getRuleCharacteristics(i);
+				newAcceptedRuleIndex++;
+			}
+		}
+		
+		return new RuleSetWithCharacteristics(rules, characteristics, true);
+	}
+	
+	/**
 	 * Serializes this rule set to multiline plain text (rules + chosen, most important characteristics).
 	 * If for any rule some characteristics is unknown, prints "?" for its value.
 	 * 

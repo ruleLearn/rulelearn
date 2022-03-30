@@ -218,7 +218,7 @@ class RuleSetWithComputableCharacteristicsTest {
 			computableRuleCharacteristics2[i] = Mockito.mock(ComputableRuleCharacteristics.class);
 		}
 		computableRuleCharacteristics2[0] = null; //assume first computable rule characteristics have not been calculated yet
-		computableRuleCharacteristics2[size2 - 1] = null; //assume second computable rule characteristics have not been calculated yet
+		computableRuleCharacteristics2[size2 - 1] = null; //assume last computable rule characteristics have not been calculated yet
 		
 		RuleSetWithComputableCharacteristics ruleSet1 = new RuleSetWithComputableCharacteristics(rules1, ruleCoverageInformationArray1, true);
 		ruleSet1.ruleCharacteristics = computableRuleCharacteristics1; //override computable rule characteristics
@@ -256,6 +256,114 @@ class RuleSetWithComputableCharacteristicsTest {
 		assertEquals(jointRuleSet.ruleCharacteristics[6], ruleSet2.ruleCharacteristics[1]);
 		assertEquals(jointRuleSet.ruleCharacteristics[7], ruleSet2.ruleCharacteristics[2]);
 		assertEquals(jointRuleSet.ruleCharacteristics[8], null);
+	}
+	
+	/**
+	 * Test method for {@link RuleSetWithComputableCharacteristics#filter(RuleSetWithComputableCharacteristics, RuleFilter)}.
+	 * Tests filtration using strict confidence filter.
+	 */
+	@Test
+	void testFilter01() {
+		int size = 5;
+		Rule[] rules = new Rule[size];
+		RuleCoverageInformation[] ruleCoverageInformationArray = new RuleCoverageInformation[size];
+		ComputableRuleCharacteristics[] computableRuleCharacteristics = new ComputableRuleCharacteristics[size];
+		for (int i = 0; i < size; i++) {
+			rules[i] = Mockito.mock(Rule.class);
+			ruleCoverageInformationArray[i] = Mockito.mock(RuleCoverageInformation.class);
+			computableRuleCharacteristics[i] = Mockito.mock(ComputableRuleCharacteristics.class);
+		}
+		
+		Mockito.when(computableRuleCharacteristics[0].getConfidence()).thenReturn(0.4);
+		Mockito.when(computableRuleCharacteristics[1].getConfidence()).thenReturn(0.5);
+		Mockito.when(computableRuleCharacteristics[2].getConfidence()).thenReturn(0.6);
+		Mockito.when(computableRuleCharacteristics[3].getConfidence()).thenReturn(0.7);
+		Mockito.when(computableRuleCharacteristics[4].getConfidence()).thenReturn(0.5);
+		
+		RuleSetWithComputableCharacteristics ruleSet = new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true);
+		ruleSet.ruleCharacteristics = computableRuleCharacteristics; //override computable rule characteristics
+		
+		RuleSetWithComputableCharacteristics filteredRuleSet = RuleSetWithComputableCharacteristics.filter(ruleSet, new ConfidenceRuleFilter(0.5, true));
+		
+		assertEquals(filteredRuleSet.size(), 2);
+		assertEquals(filteredRuleSet.getRule(0), ruleSet.getRule(2));
+		assertEquals(filteredRuleSet.getRule(1), ruleSet.getRule(3));
+		assertEquals(filteredRuleSet.ruleCoverageInformationArray[0], ruleSet.ruleCoverageInformationArray[2]);
+		assertEquals(filteredRuleSet.ruleCoverageInformationArray[1], ruleSet.ruleCoverageInformationArray[3]);
+		assertEquals(filteredRuleSet.ruleCharacteristics[0], ruleSet.ruleCharacteristics[2]);
+		assertEquals(filteredRuleSet.ruleCharacteristics[1], ruleSet.ruleCharacteristics[3]);
+	}
+	
+	/**
+	 * Test method for {@link RuleSetWithComputableCharacteristics#filter(RuleSetWithComputableCharacteristics, RuleFilter)}.
+	 * Tests filtration using weak confidence filter.
+	 */
+	@Test
+	void testFilter02() {
+		int size = 5;
+		Rule[] rules = new Rule[size];
+		RuleCoverageInformation[] ruleCoverageInformationArray = new RuleCoverageInformation[size];
+		ComputableRuleCharacteristics[] computableRuleCharacteristics = new ComputableRuleCharacteristics[size];
+		for (int i = 0; i < size; i++) {
+			rules[i] = Mockito.mock(Rule.class);
+			ruleCoverageInformationArray[i] = Mockito.mock(RuleCoverageInformation.class);
+			computableRuleCharacteristics[i] = Mockito.mock(ComputableRuleCharacteristics.class);
+		}
+		
+		Mockito.when(computableRuleCharacteristics[0].getConfidence()).thenReturn(0.4);
+		Mockito.when(computableRuleCharacteristics[1].getConfidence()).thenReturn(0.5);
+		Mockito.when(computableRuleCharacteristics[2].getConfidence()).thenReturn(0.6);
+		Mockito.when(computableRuleCharacteristics[3].getConfidence()).thenReturn(0.7);
+		Mockito.when(computableRuleCharacteristics[4].getConfidence()).thenReturn(0.5);
+		
+		RuleSetWithComputableCharacteristics ruleSet = new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true);
+		ruleSet.ruleCharacteristics = computableRuleCharacteristics; //override computable rule characteristics
+		
+		RuleSetWithComputableCharacteristics filteredRuleSet = RuleSetWithComputableCharacteristics.filter(ruleSet, new ConfidenceRuleFilter(0.5, false));
+		
+		assertEquals(filteredRuleSet.size(), 4);
+		assertEquals(filteredRuleSet.getRule(0), ruleSet.getRule(1));
+		assertEquals(filteredRuleSet.getRule(1), ruleSet.getRule(2));
+		assertEquals(filteredRuleSet.getRule(2), ruleSet.getRule(3));
+		assertEquals(filteredRuleSet.getRule(3), ruleSet.getRule(4));
+		assertEquals(filteredRuleSet.ruleCoverageInformationArray[0], ruleSet.ruleCoverageInformationArray[1]);
+		assertEquals(filteredRuleSet.ruleCoverageInformationArray[1], ruleSet.ruleCoverageInformationArray[2]);
+		assertEquals(filteredRuleSet.ruleCoverageInformationArray[2], ruleSet.ruleCoverageInformationArray[3]);
+		assertEquals(filteredRuleSet.ruleCoverageInformationArray[3], ruleSet.ruleCoverageInformationArray[4]);
+		assertEquals(filteredRuleSet.ruleCharacteristics[0], ruleSet.ruleCharacteristics[1]);
+		assertEquals(filteredRuleSet.ruleCharacteristics[1], ruleSet.ruleCharacteristics[2]);
+		assertEquals(filteredRuleSet.ruleCharacteristics[2], ruleSet.ruleCharacteristics[3]);
+		assertEquals(filteredRuleSet.ruleCharacteristics[3], ruleSet.ruleCharacteristics[4]);
+	}
+	
+	/**
+	 * Test method for {@link RuleSetWithComputableCharacteristics#filter(RuleSetWithComputableCharacteristics, RuleFilter)}.
+	 * Tests filtration using strict confidence filter that should filter all rules.
+	 */
+	@Test
+	void testFilter03() {
+		int size = 5;
+		Rule[] rules = new Rule[size];
+		RuleCoverageInformation[] ruleCoverageInformationArray = new RuleCoverageInformation[size];
+		ComputableRuleCharacteristics[] computableRuleCharacteristics = new ComputableRuleCharacteristics[size];
+		for (int i = 0; i < size; i++) {
+			rules[i] = Mockito.mock(Rule.class);
+			ruleCoverageInformationArray[i] = Mockito.mock(RuleCoverageInformation.class);
+			computableRuleCharacteristics[i] = Mockito.mock(ComputableRuleCharacteristics.class);
+		}
+		
+		Mockito.when(computableRuleCharacteristics[0].getConfidence()).thenReturn(0.4);
+		Mockito.when(computableRuleCharacteristics[1].getConfidence()).thenReturn(0.5);
+		Mockito.when(computableRuleCharacteristics[2].getConfidence()).thenReturn(0.6);
+		Mockito.when(computableRuleCharacteristics[3].getConfidence()).thenReturn(0.7);
+		Mockito.when(computableRuleCharacteristics[4].getConfidence()).thenReturn(0.5);
+		
+		RuleSetWithComputableCharacteristics ruleSet = new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true);
+		ruleSet.ruleCharacteristics = computableRuleCharacteristics; //override computable rule characteristics
+		
+		RuleSetWithComputableCharacteristics filteredRuleSet = RuleSetWithComputableCharacteristics.filter(ruleSet, new ConfidenceRuleFilter(0.7, true));
+		
+		assertEquals(filteredRuleSet.size(), 0);
 	}
 
 }
