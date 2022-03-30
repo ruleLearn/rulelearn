@@ -147,24 +147,44 @@ public class RuleSetWithCharacteristics extends RuleSet {
 	
 	/**
 	 * Filters given set of rules with characteristics, and returns a subset of rules, composed of rules that are accepted by the given rule filter.
+	 * Calls {@link #filter(RuleFilter)} on the given rule set, passing given rule filter as a parameter.
 	 * 
 	 * @param ruleSet rule set to filter
 	 * @param ruleFilter rule filter used to test each rule from the given rule set
 	 * 
-	 * @return a new rule set (with characteristics) composing of rules accepted by the given filter
+	 * @return a new rule set (with characteristics) composed of rules accepted by the given filter
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public static RuleSetWithCharacteristics filter(RuleSetWithCharacteristics ruleSet, RuleFilter ruleFilter) {
 		Precondition.notNull(ruleSet, "Rule set to be filtered is null.");
+		
+		return ruleSet.filter(ruleFilter);
+	}
+	
+	/**
+	 * Browses this rule set using given rule filter and transfers accepted rules to the returned new rule set.<br>
+	 * <br>
+	 * If rule filter is an instance of {@link AcceptingRuleFilter}, then just returns this rule set.
+	 * 
+	 * @param ruleFilter rule filter used to test each rule from this rule set
+	 * @return filtered set of rules (new object, or the same object if rule filter is an instance of {@link AcceptingRuleFilter})
+	 * 
+	 * @throws NullPointerException if given rule filter is {@code null}
+	 */
+	public RuleSetWithCharacteristics filter(RuleFilter ruleFilter) {
 		Precondition.notNull(ruleFilter, "Rule filter is null.");
 		
-		int ruleSetSize = ruleSet.size();
+		if (ruleFilter instanceof AcceptingRuleFilter) {
+			return this; //optimization for the default case (all induced rules remain)
+		}
+		
+		int ruleSetSize = size();
 		byte[] accepted = new byte[ruleSetSize];
 		int acceptedCount = 0;
 		
 		for (int i = 0; i < ruleSetSize; i++) {
-			if (ruleFilter.accepts(ruleSet.getRule(i), ruleSet.getRuleCharacteristics(i))) {
+			if (ruleFilter.accepts(getRule(i), getRuleCharacteristics(i))) {
 				acceptedCount++;
 				accepted[i] = 1;
 			} else {
@@ -172,19 +192,19 @@ public class RuleSetWithCharacteristics extends RuleSet {
 			}
 		}
 		
-		Rule[] rules = new Rule[acceptedCount];
-		RuleCharacteristics[] characteristics = new RuleCharacteristics[acceptedCount];
+		Rule[] newRules = new Rule[acceptedCount];
+		RuleCharacteristics[] newRuleCharacteristics = new RuleCharacteristics[acceptedCount];
 		int newAcceptedRuleIndex = 0;
 		
 		for (int i = 0; i < ruleSetSize; i++) {
 			if (accepted[i] == 1) {
-				rules[newAcceptedRuleIndex] = ruleSet.getRule(i);
-				characteristics[newAcceptedRuleIndex] = ruleSet.getRuleCharacteristics(i);
+				newRules[newAcceptedRuleIndex] = getRule(i);
+				newRuleCharacteristics[newAcceptedRuleIndex] = getRuleCharacteristics(i);
 				newAcceptedRuleIndex++;
 			}
 		}
 		
-		return new RuleSetWithCharacteristics(rules, characteristics, true);
+		return new RuleSetWithCharacteristics(newRules, newRuleCharacteristics, true);
 	}
 	
 	/**

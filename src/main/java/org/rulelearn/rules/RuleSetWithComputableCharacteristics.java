@@ -163,24 +163,44 @@ public class RuleSetWithComputableCharacteristics extends RuleSetWithCharacteris
 	
 	/**
 	 * Filters given set of rules with characteristics, and returns a subset of rules, composed of rules that are accepted by the given rule filter.
+	 * Calls {@link #filter(RuleFilter)} on the given rule set, passing given rule filter as a parameter.
 	 * 
 	 * @param ruleSet rule set to filter
 	 * @param ruleFilter rule filter used to test each rule from the given rule set
 	 * 
-	 * @return a new rule set (with characteristics) composing of rules accepted by the given filter
+	 * @return a new rule set (with characteristics) composed of rules accepted by the given filter
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
 	 */
 	public static RuleSetWithComputableCharacteristics filter(RuleSetWithComputableCharacteristics ruleSet, RuleFilter ruleFilter) {
 		Precondition.notNull(ruleSet, "Rule set to be filtered is null.");
+		
+		return ruleSet.filter(ruleFilter);
+	}
+	
+	/**
+	 * Browses this rule set using given rule filter and transfers accepted rules to the returned new rule set.<br>
+	 * <br>
+	 * If rule filter is an instance of {@link AcceptingRuleFilter}, then just returns this rule set.
+	 * 
+	 * @param ruleFilter rule filter used to test each rule from this rule set
+	 * @return filtered set of rules (new object, or the same object if rule filter is an instance of {@link AcceptingRuleFilter})
+	 * 
+	 * @throws NullPointerException if given rule filter is {@code null}
+	 */
+	public RuleSetWithComputableCharacteristics filter(RuleFilter ruleFilter) {
 		Precondition.notNull(ruleFilter, "Rule filter is null.");
 		
-		int ruleSetSize = ruleSet.size();
+		if (ruleFilter instanceof AcceptingRuleFilter) {
+			return this; //optimization for the default case (all induced rules remain)
+		}
+		
+		int ruleSetSize = size();
 		byte[] accepted = new byte[ruleSetSize];
 		int acceptedCount = 0;
 		
 		for (int i = 0; i < ruleSetSize; i++) {
-			if (ruleFilter.accepts(ruleSet.getRule(i), ruleSet.getRuleCharacteristics(i))) {
+			if (ruleFilter.accepts(getRule(i), getRuleCharacteristics(i))) {
 				acceptedCount++;
 				accepted[i] = 1;
 			} else {
@@ -188,22 +208,22 @@ public class RuleSetWithComputableCharacteristics extends RuleSetWithCharacteris
 			}
 		}
 		
-		Rule[] rules = new Rule[acceptedCount];
-		RuleCoverageInformation[] ruleCoverageInformationArray = new RuleCoverageInformation[acceptedCount];
-		ComputableRuleCharacteristics[] computableRuleCharacteristics = new ComputableRuleCharacteristics[acceptedCount];
+		Rule[] newRules = new Rule[acceptedCount];
+		RuleCoverageInformation[] newRuleCoverageInformationArray = new RuleCoverageInformation[acceptedCount];
+		ComputableRuleCharacteristics[] newComputableRuleCharacteristics = new ComputableRuleCharacteristics[acceptedCount];
 		
 		int newAcceptedRuleIndex = 0;
 		
 		for (int i = 0; i < ruleSetSize; i++) {
 			if (accepted[i] == 1) {
-				rules[newAcceptedRuleIndex] = ruleSet.getRule(i);
-				ruleCoverageInformationArray[newAcceptedRuleIndex] = ruleSet.ruleCoverageInformationArray[i];
-				computableRuleCharacteristics[newAcceptedRuleIndex] = (ComputableRuleCharacteristics)ruleSet.ruleCharacteristics[i]; //this cast is safe
+				newRules[newAcceptedRuleIndex] = getRule(i);
+				newRuleCoverageInformationArray[newAcceptedRuleIndex] = ruleCoverageInformationArray[i];
+				newComputableRuleCharacteristics[newAcceptedRuleIndex] = (ComputableRuleCharacteristics)ruleCharacteristics[i]; //this cast is safe
 				newAcceptedRuleIndex++;
 			}
 		}
 		
-		return new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, computableRuleCharacteristics);
+		return new RuleSetWithComputableCharacteristics(newRules, newRuleCoverageInformationArray, newComputableRuleCharacteristics);
 	}
 	
 }

@@ -191,7 +191,7 @@ public class VCDomLEM {
 		RuleCoverageInformation[] ruleCoverageInformationArray = new RuleCoverageInformation[minimalRuleConditionsWithApproximatedSets.size()];
 		int ruleIndex = 0;
 		
-		for (RuleConditionsWithApproximatedSet minimalRuleConditionsWithApproximatedSet : minimalRuleConditionsWithApproximatedSets ) {
+		for (RuleConditionsWithApproximatedSet minimalRuleConditionsWithApproximatedSet : minimalRuleConditionsWithApproximatedSets) {
 			rules[ruleIndex] = new Rule(minimalRuleConditionsWithApproximatedSet.getRuleConditions().getRuleType(),
 					approximatedSetRuleDecisionsProvider.getRuleSemantics(minimalRuleConditionsWithApproximatedSet.getApproximatedSet()),
 					minimalRuleConditionsWithApproximatedSet.getRuleConditions(),
@@ -201,6 +201,18 @@ public class VCDomLEM {
 		}
 		
 		return new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true);
+	}
+	
+	/**
+	 * Generates a minimal set of decision rules by VC-DomLEM algorithm, and then filters the rules using given rule filter.
+	 * If certain rules are considered, rule conditions are generated using evaluations of objects from lower approximations.
+	 * If possible rules are considered, rule conditions are generated using evaluations of objects from upper approximations.
+	 * 
+	 * @return set of induced decision rules with computable characteristics {@link RuleSetWithComputableCharacteristics},
+	 *         filtered using given rule filter 
+	 */
+	public RuleSetWithComputableCharacteristics generateAndFilterRules(RuleFilter ruleFilter) {
+		return generateRules().filter(ruleFilter);
 	}
 	
 	/**

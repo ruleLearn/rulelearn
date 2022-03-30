@@ -41,7 +41,7 @@ public abstract class RuleInducerComponents {
 	private final AllowedNegativeObjectsType allowedNegativeObjectsType;
 	
 	/**
-	 * Contract of a builder of rule inducer components {@link RuleInducerComponents}.
+	 * Contract of a builder of {@link RuleInducerComponents rule inducer components}.
 	 *
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -103,6 +103,8 @@ public abstract class RuleInducerComponents {
 		 * @return this builder
 		 */
 		public Builder ruleType(RuleType ruleType);
+		
+		//public allowedNegativeObjectsType(AllowedNegativeObjectsType); //this method is defined in subclasses, as the type of allowed negative objects can be changed for certain rules only
 		
 		/**
 		 * Gets condition generator {@link ConditionGenerator} used in rule induction process.
@@ -258,9 +260,9 @@ public abstract class RuleInducerComponents {
 	}
 	
 	/**
-	 * Gets builder {@link Builder} which may be useful to reconstruct the rule inducer components object.
+	 * Gets {@link Builder builder} which may be useful to reconstruct the rule inducer components object.
 	 * 
-	 * @return builder {@link Builder} able to reconstruct the rule inducer components object
+	 * @return {@link Builder builder} able to reconstruct the rule inducer components object
 	 */
 	public abstract Builder builder(); 
 	

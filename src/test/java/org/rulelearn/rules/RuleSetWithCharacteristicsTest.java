@@ -17,6 +17,7 @@
 package org.rulelearn.rules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -395,7 +396,7 @@ class RuleSetWithCharacteristicsTest {
 	}
 	
 	/**
-	 * Test method for {@link RuleSetWithCharacteristics#filter(RuleSetWithCharacteristics, RuleFilter)}.
+	 * Test method for {@link RuleSetWithCharacteristics#filter(RuleFilter)}.
 	 * Tests filtration using strict confidence filter that should filter all rules.
 	 */
 	@Test
@@ -416,9 +417,35 @@ class RuleSetWithCharacteristicsTest {
 		
 		RuleSetWithCharacteristics ruleSet = new RuleSetWithCharacteristics(rules, ruleCharacteristics, true);
 		
-		RuleSetWithCharacteristics filteredRuleSet = RuleSetWithCharacteristics.filter(ruleSet, new ConfidenceRuleFilter(0.7, true));
+		RuleSetWithCharacteristics filteredRuleSet = ruleSet.filter(new ConfidenceRuleFilter(0.7, true));
 		
 		assertEquals(filteredRuleSet.size(), 0);
+	}
+	
+	/**
+	 * Test method for {@link RuleSetWithCharacteristics#filter(RuleFilter)}.
+	 * Tests if {@link AcceptingRuleFilter} causes that the original rule set is returned.
+	 */
+	@Test
+	void testFilter04() {
+		int size = 5; //>=1
+		Rule[] rules = new Rule[size];
+		RuleCharacteristics[] ruleCharacteristics = new RuleCharacteristics[size];
+		for (int i = 0; i < size; i++) {
+			rules[i] = Mockito.mock(Rule.class);
+			ruleCharacteristics[i] = Mockito.mock(RuleCharacteristics.class);
+		}
+		
+		Mockito.when(ruleCharacteristics[0].getConfidence()).thenReturn(0.4);
+		Mockito.when(ruleCharacteristics[1].getConfidence()).thenReturn(0.5);
+		Mockito.when(ruleCharacteristics[2].getConfidence()).thenReturn(0.6);
+		Mockito.when(ruleCharacteristics[3].getConfidence()).thenReturn(0.7);
+		Mockito.when(ruleCharacteristics[4].getConfidence()).thenReturn(0.5);
+		
+		RuleSetWithCharacteristics ruleSet = new RuleSetWithCharacteristics(rules, ruleCharacteristics, true);
+		RuleSetWithCharacteristics filteredRuleSet = ruleSet.filter(new AcceptingRuleFilter());
+		
+		assertSame(ruleSet, filteredRuleSet);
 	}
 
 }

@@ -80,7 +80,7 @@ public class CertainRuleInducerComponents extends RuleInducerComponents {
 		
 		private RuleType ruleType = RuleType.CERTAIN;
 		
-		private AllowedNegativeObjectsType allowedObjectsType = AllowedNegativeObjectsType.POSITIVE_REGION;
+		private AllowedNegativeObjectsType allowedNegativeObjectsType = AllowedNegativeObjectsType.POSITIVE_REGION;
 		
 		/**
 		 * {@inheritDoc}
@@ -175,12 +175,12 @@ public class CertainRuleInducerComponents extends RuleInducerComponents {
 		/**
 		 * Sets type of negative objects allowed to be covered {@link AllowedNegativeObjectsType} by rule conditions {@link RuleConditions}. 
 		 * 
-		 * @param allowedObjectsType the type of negative objects allowed to be covered
+		 * @param allowedNegativeObjectsType the type of negative objects allowed to be covered
 		 * @return the builder
 		 * @throws NullPointerException if given parameter is {@code null}
 		 */
-		public Builder allowedNegativeObjectsType(AllowedNegativeObjectsType allowedObjectsType) {
-			this.allowedObjectsType = notNull(allowedObjectsType, "Provided allowed objects type is null.");
+		public Builder allowedNegativeObjectsType(AllowedNegativeObjectsType allowedNegativeObjectsType) {
+			this.allowedNegativeObjectsType = notNull(allowedNegativeObjectsType, "Provided allowed negative objects type is null.");
 			return this;
 		}
 		
@@ -261,7 +261,7 @@ public class CertainRuleInducerComponents extends RuleInducerComponents {
 		 */
 		@Override
 		public AllowedNegativeObjectsType allowedNegativeObjectsType() {
-			return this.allowedObjectsType;
+			return this.allowedNegativeObjectsType;
 		}
 		
 		/**

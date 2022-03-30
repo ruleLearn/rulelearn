@@ -18,6 +18,7 @@ package org.rulelearn.rules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -337,7 +338,7 @@ class RuleSetWithComputableCharacteristicsTest {
 	}
 	
 	/**
-	 * Test method for {@link RuleSetWithComputableCharacteristics#filter(RuleSetWithComputableCharacteristics, RuleFilter)}.
+	 * Test method for {@link RuleSetWithComputableCharacteristics#filter(RuleFilter)}.
 	 * Tests filtration using strict confidence filter that should filter all rules.
 	 */
 	@Test
@@ -361,9 +362,39 @@ class RuleSetWithComputableCharacteristicsTest {
 		RuleSetWithComputableCharacteristics ruleSet = new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true);
 		ruleSet.ruleCharacteristics = computableRuleCharacteristics; //override computable rule characteristics
 		
-		RuleSetWithComputableCharacteristics filteredRuleSet = RuleSetWithComputableCharacteristics.filter(ruleSet, new ConfidenceRuleFilter(0.7, true));
+		RuleSetWithComputableCharacteristics filteredRuleSet = ruleSet.filter(new ConfidenceRuleFilter(0.7, true));
 		
 		assertEquals(filteredRuleSet.size(), 0);
+	}
+	
+	/**
+	 * Test method for {@link RuleSetWithComputableCharacteristics#filter(RuleFilter)}.
+	 * Tests if {@link AcceptingRuleFilter} causes that the original rule set is returned.
+	 */
+	@Test
+	void testFilter04() {
+		int size = 5;
+		Rule[] rules = new Rule[size];
+		RuleCoverageInformation[] ruleCoverageInformationArray = new RuleCoverageInformation[size];
+		ComputableRuleCharacteristics[] computableRuleCharacteristics = new ComputableRuleCharacteristics[size];
+		for (int i = 0; i < size; i++) {
+			rules[i] = Mockito.mock(Rule.class);
+			ruleCoverageInformationArray[i] = Mockito.mock(RuleCoverageInformation.class);
+			computableRuleCharacteristics[i] = Mockito.mock(ComputableRuleCharacteristics.class);
+		}
+		
+		Mockito.when(computableRuleCharacteristics[0].getConfidence()).thenReturn(0.4);
+		Mockito.when(computableRuleCharacteristics[1].getConfidence()).thenReturn(0.5);
+		Mockito.when(computableRuleCharacteristics[2].getConfidence()).thenReturn(0.6);
+		Mockito.when(computableRuleCharacteristics[3].getConfidence()).thenReturn(0.7);
+		Mockito.when(computableRuleCharacteristics[4].getConfidence()).thenReturn(0.5);
+		
+		RuleSetWithComputableCharacteristics ruleSet = new RuleSetWithComputableCharacteristics(rules, ruleCoverageInformationArray, true);
+		ruleSet.ruleCharacteristics = computableRuleCharacteristics; //override computable rule characteristics
+		
+		RuleSetWithComputableCharacteristics filteredRuleSet = ruleSet.filter(new AcceptingRuleFilter());
+		
+		assertSame(ruleSet, filteredRuleSet);
 	}
 
 }
