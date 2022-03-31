@@ -81,5 +81,24 @@ public class ConfidenceRuleFilter implements RuleFilter {
 			throw new UnknownValueException("Rule's confidence is unknown.");
 		}
 	}
+	
+	/**
+	 * Gets confidence threshold.
+	 * 
+	 * @return confidence threshold
+	 */
+	public double getConfidenceThreshold() {
+		return confidenceThreshold;
+	}
+	
+	/**
+	 * Gets flag indicating if strict comparison (confidence &gt; threshold) is employed.
+	 * 
+	 * @return {@code true} if strict comparison (confidence &gt; threshold) is employed,
+	 *         {@code false} if weak comparison (confidence &gt;= threshold) is employed
+	 */
+	public boolean getStrictComparison() {
+		return strictComparison;
+	}
 
 }
