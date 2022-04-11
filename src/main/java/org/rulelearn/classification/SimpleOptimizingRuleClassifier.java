@@ -44,15 +44,17 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 /**
  * Simple classifier using decision rules to classify each object from an information table to exactly one decision class.
  * If no rule matches an object, returns for that object a {@link #getDefaultClassificationResult() default classification result}.
- * Calculates intersection of covering at least / at most rules, just like "standard" DRSA classifier.<br>
+ * Calculates most prudent class in the intersection of covering at least / at most rules, just like "standard" DRSA classifier.<br>
  * <br>
  * For example, if there are covering "at least" rules with the following decisions: "&gt;= 2", "&gt;= 3",
  * then the classification result will be "3".
  * Analogously, if there are covering "at most" rules with the following decisions: "&lt;= 1", "&lt;= 2",
  * then the classification result will be "1".
- * If there are covering rules of both types, then first calculates value resulting from the intersection of all &gt;= rules,
- * and also value resulting from intersection of all &lt;= rules.
- * Then returns one of these values, depending on the number of different objects supporting the rules and contributing to assignment to each of these classes.<br>
+ * If there are covering rules of both types, then first calculates prudent value
+ * resulting from the intersection of all &gt;= rules, and also prudent value resulting from intersection of all &lt;= rules.
+ * If these values coincide, then returns the common value.
+ * Otherwise, resolves the conflicting assignments by
+ * returning one of these values, depending on the number of different objects supporting the rules and contributing to assignment to each of these classes.<br>
  * <br>
  * For example, if there are two covering "at least" rules with the following decisions: "&gt;= 2", "&gt;= 3", supported, respectively, by objects
  * {1, 2, 5, 17, 19, 20} and {3, 6, 17, 18, 19, 21}, where objects 1 and 5 belong to class "2", objects 2, 3, 6, 17 and 19 belong to class "3", and objects 18, 20, and 21 belong to class "4",

@@ -34,12 +34,16 @@ import it.unimi.dsi.fastutil.ints.IntList;
 /**
  * Simple classifier using decision rules to classify each object from an information table to exactly one decision class.
  * If no rule matches an object, returns for that object a {@link #getDefaultClassificationResult() default classification result}.
- * Calculates intersection of covering at least / at most rules.
- * For example, if there are covering rules with the following decisions: "&gt;= 2", "&gt;= 3",
- * then the classification result will be "3". Analogously, if there are covering rules with the following decisions: "&lt;= 1", "&lt;= 2",
- * then the classification result will be "1". If there are covering rules of both types, then first calculates value
- * resulting from the intersection of all &gt;= rules, and also value resulting from intersection of all &lt;= rules.
- * Then returns a mean value of the two values, as calculated by {@link MeanCalculator}.
+ * Calculates most prudent class in the intersection of covering at least / at most rules, just like "standard" DRSA classifier.<br>
+ * <br>
+ * For example, if there are covering "at least" rules with the following decisions: "&gt;= 2", "&gt;= 3",
+ * then the classification result will be "3".
+ * Analogously, if there are covering rules with the following decisions: "&lt;= 1", "&lt;= 2",
+ * then the classification result will be "1".
+ * If there are covering rules of both types, then first calculates prudent value
+ * resulting from the intersection of all &gt;= rules, and also prudent value resulting from intersection of all &lt;= rules.
+ * If these values coincide, then returns the common value. Otherwise, resolves the conflicting assignments by
+ * calculating a mean value of the two values, as calculated by {@link MeanCalculator}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

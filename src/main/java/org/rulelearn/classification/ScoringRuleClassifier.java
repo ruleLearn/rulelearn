@@ -31,7 +31,6 @@ import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.ConditionAtLeast;
 import org.rulelearn.rules.ConditionAtMost;
 import org.rulelearn.rules.Rule;
-import org.rulelearn.rules.RuleCharacteristics;
 import org.rulelearn.rules.RuleSet;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
@@ -51,20 +50,29 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 /**
- * Rule classifier based on measure Score(Cl,z) - where Cl denotes a decision class, and z denotes classified object - described in the paper:<br>
+ * Rule classifier based on measure Score(Cl,z) - where Cl denotes a decision class, and z denotes classified object - first described in the paper:<br>
  * J. Błaszczyński, S. Greco, R. Słowiński, Multi-criteria classification - A new scheme for application of dominance-based decision rules.
- * European Journal of Operational Research, 181(3), 2007, pp. 1030-1044.<br>
- * This classifier can be used in two modes:<br>
+ * European Journal of Operational Research (EJOR), 181(3), 2007, pp. 1030-1044.<br>
+ * This classifier (often called VC-DRSA classifier) can be used in two modes:<br>
  * - score, i.e., always using Score measure to compute optimal classification decision (as proposed in the above paper), or<br>
  * - hybrid, using Score measure only to resolve conflicts (e.g., if covering rules suggest class &gt;=1 and &lt;=2, or if covering rules suggest class &gt;=3 and &lt;=1);
  *   if there is no conflict, returns "standard" prudent classification decision (e.g., for covering rules suggesting classes &gt;=2 and &gt;=3 returns class 3,
- *   while for covering rules suggesting classes &lt;=1 and &lt;=2 returns class 1).
+ *   while for covering rules suggesting classes &lt;=1 and &lt;=2 returns class 1).<br>
+ * <br>
+ * In case of a tie (two or more decisions get the same score), the worst of the decisions involved in a tie is returned, i.e., the decision having the smallest index in the array returned by
+ * {@link InformationTable#getOrderedUniqueFullyDeterminedDecisions()}.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class ScoringRuleClassifier extends RuleClassifier implements SimpleClassifier {
 	
+	/**
+	 * Operation mode of this classifier.
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
 	public static enum Mode {
 		/**
 		 * Mode indicating that always Score measure is used to compute optimal classification decision.
@@ -73,14 +81,39 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 		/**
 		 * Mode indicating that Score measure is used to compute optimal classification decision
 		 * only to resolve conflicts (e.g., if rules suggest class &gt;=1 and &lt;=2, or if rules suggest class &gt;=3 and &lt;=1).
+		 * Otherwise, standard DRSA classifier mechanism is used (as described, e.g., in {@link SimpleRuleClassifier}).
 		 */
 		HYBRID
 	}
 	
 	/**
+	 * Version of the definition of this classifier.
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	public static enum Version {
+		/**
+		 * Version of the VC-DRSA classifier described in the seminal paper from EJOR 2007.
+		 */
+		EJOR_2007,
+		/**
+		 * Corrected version of the VC-DRSA classifier described in J. Błaszczyński,
+		 * Rule Models for Ordinal Classification in Variable Consistency Rough Set Approaches (2010),
+		 * PhD thesis. Poznan University of Technology, Poznań, Poland, 2010.
+		 * The correction is twofold:<br>
+		 * - in eq. (5.10), describing positive score, sum of sets is used in the denominator (instead of intersection),<br>
+		 * - in eq. (5.11), describing negative score, in the numerator, each upward/downward union of classes is replaced by the complement of class Cl_t.
+		 * This version of VC-DRSA classifier is implemented in the java Rough Sets (jRS) library, a predecessor of ruleLearn.
+		 */
+		COMPLEMENT
+	}
+	
+	/**
 	 * Stores indices of objects from learning information table that are covered by the considered decision rule,
-	 * and also stores indices of covered objects from particular decision classes,
-	 * and also stores indices of supporting objects (i.e., covered learning objects matching rule's decision condition).
+	 * indices of covered objects from particular decision classes,
+	 * indices of supporting objects (i.e., covered learning objects matching rule's decision condition),
+	 * and indices of rule's positive objects.
 	 *
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -113,6 +146,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 		
 		/**
 		 * Constructs this detailed rule coverage information.
+		 * Calculates {@link #indicesOfCoveredObjects} and {@link #decisionClass2IndicesOfCoveredObjects}.
 		 * 
 		 * @param ruleIndex index of a rule in the rule set for which this detailed coverage information is defined
 		 * @throws InvalidValueException if given rule index is negative
@@ -128,7 +162,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 				
 				//calculate decisionClass2IndicesOfCoveredObjects
 				for (Int2ObjectMap.Entry<Decision> entry : decisionsOfCoveredObjects.int2ObjectEntrySet()) {
-					registerObjectIndexForDecision(entry.getIntKey(), (SimpleDecision)entry.getValue());
+					registerCoveredObjectIndexForDecision(entry.getIntKey(), (SimpleDecision)entry.getValue());
 				}
 			} else {
 				indicesOfCoveredObjects = new IntOpenHashSet();
@@ -138,7 +172,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 					if (ruleSet.getRule(ruleIndex).covers(objectIndex, learningInformationTable)) {
 						indicesOfCoveredObjects.add(objectIndex);
 						//update decisionClass2IndicesOfCoveredObjects
-						registerObjectIndexForDecision(objectIndex, (SimpleDecision)learningInformationTable.getDecision(objectIndex)); //safe cast as learning information table is checked to have only simple decisions
+						registerCoveredObjectIndexForDecision(objectIndex, (SimpleDecision)learningInformationTable.getDecision(objectIndex)); //safe cast as learning information table is checked to have only simple decisions
 					}
 				}
 			}
@@ -150,7 +184,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 		 * @param objectIndex index of an learning (training) object covered by the rule
 		 * @param decision decision of covered learning (training) object
 		 */
-		void registerObjectIndexForDecision(int objectIndex, SimpleDecision decision) {
+		void registerCoveredObjectIndexForDecision(int objectIndex, SimpleDecision decision) {
 			if (decisionClass2IndicesOfCoveredObjects.containsKey(decision)) {
 				decisionClass2IndicesOfCoveredObjects.get(decision).add(objectIndex);
 			} else {
@@ -256,6 +290,18 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	Mode mode;
 	
 	/**
+	 * Default version of the definition of this classifier.
+	 * Equal to the first version, i.e., {@link Version#EJOR_2007}.
+	 */
+	public final Version DEFAULT_VERSION = Version.EJOR_2007;
+	
+	/**
+	 * Version of the definition of this classifier.
+	 * Initialized with the {@link #DEFAULT_VERSION default version}.
+	 */
+	Version version = DEFAULT_VERSION;
+	
+	/**
 	 * Ordered (from the smallest to the greatest) array of all unique (fully-determined) simple decisions assigned to objects of the learning (training) information table.
 	 */
 	SimpleDecision[] learningAscendinglyOrderedUniqueDecisions;
@@ -294,11 +340,9 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 //	Object2ObjectMap<Decision, List<Decision>> atMostDecisions;
 
 	/**
-	 * Constructs this classifier.
+	 * Constructs this classifier, assuming {@link #DEFAULT_VERSION default version} of its definition.
 	 * 
-	 * @param ruleSet set of decision rules to be used to classify objects from an information table;
-	 *        if not an instance of {@link RuleSetWithCharacteristics}, then will be transformed to such instance by calculating {@link RuleCharacteristics} for each rule using given learning information table;
-	 *        for each calculated {@link RuleCharacteristics rule characteristics}, only {@link RuleCharacteristics#getRuleCoverageInformation() basic rule coverage information} is set
+	 * @param ruleSet set of decision rules to be used to classify objects from an information table
 	 * @param defaultClassificationResult default classification result, to be returned by this classifier
 	 *        if it is unable to calculate such result using stored decision rules
 	 * @param mode classification mode to be used by this classifier; {@link Mode#HYBRID} is expected to give better results on average
@@ -342,6 +386,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 //			
 //			this.ruleSet = ruleSetWithCharacteristics; //override rule set stored by superclass constructor
 //		}
+		
 		AttributePreferenceType decisionAttributePreferenceType;
 		decisionAttributePreferenceType = ((EvaluationAttribute)learningInformationTable.getAttribute(((SimpleDecision)learningInformationTable.getDecision(0)).getAttributeIndex())).getPreferenceType();
 		
@@ -381,6 +426,28 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 		
 //		//just initialize the mapping
 //		this.ruleIndex2DecisionDistribution = new Int2ObjectOpenHashMap<DecisionDistribution>();
+		
+		this.version = DEFAULT_VERSION; //use default version of the definition of this VC-DRSA classifier
+	}
+	
+	/**
+	 * Constructs this classifier, setting also the given version of its definition.
+	 * 
+	 * @param ruleSet set of decision rules to be used to classify objects from an information table
+	 * @param defaultClassificationResult default classification result, to be returned by this classifier
+	 *        if it is unable to calculate such result using stored decision rules
+	 * @param mode classification mode to be used by this classifier; {@link Mode#HYBRID} is expected to give better results on average
+	 * @param learningInformationTable learning (training) information table for which rules from the given rule set have been induced
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 *         of if given learning information table does not store {@link Decision decisions} for subsequent objects
+	 * @throws InvalidSizeException if given learning information table does not store any object
+	 * @throws InvalidTypeException if decisions stored for subsequent objects are not {@link SimpleDecision simple decisions}
+	 * @throws InvalidValueException if preference type of learning information table active decision attribute is neither gain nor cost
+	 */
+	public ScoringRuleClassifier(RuleSet ruleSet, SimpleEvaluatedClassificationResult defaultClassificationResult, Mode mode, Version version, InformationTable learningInformationTable) {
+		this(ruleSet, defaultClassificationResult, mode, learningInformationTable);
+		this.version = Precondition.notNull(version, "VC-DRSA classifier version is null.");
 	}
 	
 //	/**
@@ -410,6 +477,15 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	 */
 	public Mode getMode() {
 		return mode;
+	}
+	
+	/**
+	 * Gets employed version of the definition of this classifier.
+	 * 
+	 * @return employed version of the definition of this classifier
+	 */
+	public Version getVersion() {
+		return version;
 	}
 	
 	/**
@@ -501,8 +577,8 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 			
 			DecisionLoopParameters decisionLoopParameters = new DecisionLoopParameters(); //constructed once and then updated in calculateDecisionLoopParameters method 
 			Object2DoubleMap<SimpleDecision> decision2ScoreMap = new Object2DoubleOpenHashMap<SimpleDecision>(); //maps decision to its Score
-			double score;
-			double maxScore = -1.0; //initialized with value outside the range [0,1]
+			double score = 0;
+			double maxScore = Double.NEGATIVE_INFINITY; //initialized with the worst possible value
 			int maxScoreDecisionIndex = -1; //index of decision with maximum score
 			
 			switch (indicesOfCoveringAtLeastAndAtMostRules.size()) { //check number of rules covering classified test object
@@ -512,7 +588,8 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 				
 				for (int decisionIndex = decisionLoopParameters.startingDecisionIndex; decisionIndex != decisionLoopParameters.outOfRangeDecisionIndex;
 						decisionIndex += decisionLoopParameters.change) {
-					score = Math.pow((double)ruleIndex2DetailedRuleCoverageInfo.get(onlyRuleIndex).getDecisionClass2IndicesOfCoveredObjects().get(learningAscendinglyOrderedUniqueDecisions[decisionIndex]).size(), 2) /
+					score = Math.pow((double)ruleIndex2DetailedRuleCoverageInfo.get(onlyRuleIndex).getDecisionClass2IndicesOfCoveredObjects().get(
+							learningAscendinglyOrderedUniqueDecisions[decisionIndex]).size(), 2) /
 							((double)ruleIndex2DetailedRuleCoverageInfo.get(onlyRuleIndex).getIndicesOfCoveredObjects().size() *
 							(double)learningDecisionDistribution.getCount(learningAscendinglyOrderedUniqueDecisions[decisionIndex])); //denominator should not be zero
 					
@@ -638,7 +715,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	 * @param rule decision rule for which parameters should be calculated
 	 * @param parameters container for parameters (has to be not {@code null}), whose fields will get updated
 	 */
-	void calculateDecisionLoopParameters(Rule rule, DecisionLoopParameters parameters) {
+	void calculateDecisionLoopParameters(Rule rule, DecisionLoopParameters parameters) { //TODO
 		Condition<EvaluationField> ruleDecisionCondition = rule.getDecision();
 		parameters.startingDecisionIndex = decisionEvaluation2DecisionIndex.getInt(ruleDecisionCondition.getLimitingEvaluation());
 		
