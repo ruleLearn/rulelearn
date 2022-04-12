@@ -188,7 +188,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 			}
 			
 			if (version == Version.COMPLEMENT) {
-				decisionClass2IndicesOfComplementCoveredObjects = new Object2ObjectOpenHashMap<SimpleDecision, IntSet>();
+				decisionClass2IndicesOfComplementCoveredObjects = new Object2ObjectOpenHashMap<SimpleDecision, IntSet>(); //just initialize this field
 			}
 		}
 		
@@ -358,23 +358,6 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	 */
 	Int2ObjectMap<DetailedRuleCoverageInformation> ruleIndex2DetailedRuleCoverageInfo;
 	
-//	/**
-//	 * Maps rule index to distribution of decisions among learning (training) objects covered by that rule.
-//	 * This map is extended dynamically, once a rule matches a test object for the first time.
-//	 * Once calculated, distribution of decisions among training objects covered by the rule
-//	 * remains ready to be used when that rule covers another test object.
-//	 */
-//	Int2ObjectMap<DecisionDistribution> ruleIndex2DecisionDistribution;
-	
-//	/**
-//	 * Maps decision to list of decisions that are equal or greater.
-//	 */
-//	Object2ObjectMap<Decision, List<Decision>> atLeastDecisions;
-//	/**
-//	 * Maps decision to list of decisions that are equal or smaller.
-//	 */
-//	Object2ObjectMap<Decision, List<Decision>> atMostDecisions;
-
 	/**
 	 * Constructs this classifier, assuming {@link #DEFAULT_VERSION default version} of its definition.
 	 * 
@@ -407,42 +390,6 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 			throw new InvalidTypeException("Learning information table does not contain simple decisions.");
 		}
 		
-//		//ensure having rule set with characteristics
-//		if (!(ruleSet instanceof RuleSetWithCharacteristics)) {
-//			int rulesCount = ruleSet.size();
-//			Rule[] rules = new Rule[rulesCount];
-//			RuleCharacteristics[] ruleCharacteristics = new RuleCharacteristics[rulesCount];
-//			
-//			for (int i = 0; i < rulesCount; i++) {
-//				rules[i] = ruleSet.getRule(i);
-//				ruleCharacteristics[i] = new RuleCharacteristics(); //empty rule characteristics, that will later get basic rule coverage information
-//			}
-//			RuleSetWithCharacteristics ruleSetWithCharacteristics = new RuleSetWithCharacteristics(rules, ruleCharacteristics, true);
-//			ruleSetWithCharacteristics.calculateBasicRuleCoverageInformation(learningInformationTable);
-//			
-//			this.ruleSet = ruleSetWithCharacteristics; //override rule set stored by superclass constructor
-//		}
-		
-//		AttributePreferenceType decisionAttributePreferenceType;
-//		decisionAttributePreferenceType = ((EvaluationAttribute)learningInformationTable.getAttribute(((SimpleDecision)learningInformationTable.getDecision(0)).getAttributeIndex())).getPreferenceType();
-		
-//		//ensure asc. ordered array of unique simple decisions present in learning information table
-//		switch(decisionAttributePreferenceType) {
-//		case COST:
-//			Decision[] learningOrderedUniqueFullyDeterminedDecisions = learningInformationTable.getOrderedUniqueFullyDeterminedDecisions();
-//			int numberOfDecisions = learningOrderedUniqueFullyDeterminedDecisions.length;
-//			this.learningOrderedUniqueDecisions = new SimpleDecision[numberOfDecisions];
-//			for (int decisionIndex = 0; decisionIndex < numberOfDecisions; decisionIndex++) {
-//				this.learningOrderedUniqueDecisions[decisionIndex] = (SimpleDecision)learningOrderedUniqueFullyDeterminedDecisions[numberOfDecisions - 1 - decisionIndex];
-//			}
-//			break;
-//		case GAIN:
-//			this.learningOrderedUniqueDecisions = (SimpleDecision[])learningInformationTable.getOrderedUniqueFullyDeterminedDecisions().clone();
-//			break;
-//		default:
-//			throw new InvalidValueException("Preference type of learning information table active decision attribute should be gain or cost."); //this should not happen
-//		}
-		
 		this.learningOrderedUniqueDecisions = (SimpleDecision[])learningInformationTable.getOrderedUniqueFullyDeterminedDecisions().clone(); //cache result
 		
 		//Construct and fill decisionEvaluation2DecisionIndex
@@ -451,10 +398,6 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 			this.decisionEvaluation2DecisionIndex.put(learningOrderedUniqueDecisions[decisionIndex].getEvaluation(), decisionIndex);
 		}
 		
-//		Decision[] uniqueDecisions = learningInformationTable.getUniqueDecisions();
-//		this.atLeastDecisions = new Object2ObjectOpenHashMap<Decision, List<Decision>>();
-//		this.atMostDecisions = new Object2ObjectOpenHashMap<Decision, List<Decision>>();
-		
 		//ensure "global" distribution of decisions (in learning information table)
 		this.learningDecisionDistribution = (learningInformationTable instanceof InformationTableWithDecisionDistributions) ?
 				((InformationTableWithDecisionDistributions)learningInformationTable).getDecisionDistribution() :
@@ -462,9 +405,6 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 		
 		//just initialize the mapping
 		this.ruleIndex2DetailedRuleCoverageInfo = new Int2ObjectOpenHashMap<ScoringRuleClassifier.DetailedRuleCoverageInformation>();
-		
-//		//just initialize the mapping
-//		this.ruleIndex2DecisionDistribution = new Int2ObjectOpenHashMap<DecisionDistribution>();
 		
 		this.version = DEFAULT_VERSION; //use default version of the definition of this VC-DRSA classifier
 	}
@@ -489,17 +429,6 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 		this(ruleSet, defaultClassificationResult, mode, learningInformationTable);
 		this.version = Precondition.notNull(version, "VC-DRSA classifier version is null.");
 	}
-	
-//	/**
-//	 * Gets set of decision rules used to classify objects from any information table to which this classifier is applied.
-//	 * Each {@link RuleCharacteristics rule characteristic} from the returned container contains only {@link BasicRuleCoverageInformation basic rule coverage information}.
-//	 * 
-//	 * @return set of decision rules used to classify objects from any information table to which this classifier is applied
-//	 */
-//	@Override
-//	public RuleSetWithCharacteristics getRuleSet() {
-//		return (RuleSetWithCharacteristics)this.ruleSet; //safety of this cast is assured in class constructor, where ruleSet is assigned an object of type RuleSetWithCharacteristics
-//	}
 	
 	/**
 	 * Gets learning information table for which this classifier is defined.
@@ -613,7 +542,6 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 					ruleIndex2DetailedRuleCoverageInfo.put(ruleIndex, new DetailedRuleCoverageInformation(ruleIndex)); 
 				}
 			}
-//			updateDecisionDistributionsAmongCoveredLearningObjects(indicesOfCoveringAtLeastAndAtMostRules);
 			
 			DecisionLoopParameters decisionLoopParameters = new DecisionLoopParameters(); //constructed once and then updated in calculateDecisionLoopParameters method 
 			Object2DoubleMap<SimpleDecision> decision2ScoreMap = new Object2DoubleOpenHashMap<SimpleDecision>(); //maps decision to its Score
@@ -644,7 +572,6 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 				} //for
 				
 				return new SimpleEvaluatedClassificationResult(learningOrderedUniqueDecisions[maxScoreDecisionIndex], maxScore, decision2ScoreMap);
-				
 			default: //>1 covering rule
 				double scorePlus;
 				double scoreMinus = 0;
@@ -783,8 +710,6 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	 * @param parameters container for parameters (has to be not {@code null}), whose fields will get updated
 	 */
 	void calculateDecisionLoopParameters(Rule rule, DecisionLoopParameters parameters) {
-//		Condition<EvaluationField> ruleDecisionCondition = rule.getDecision();
-		
 		if (rule.getSemantics() == RuleSemantics.AT_LEAST) {
 			parameters.startingDecisionIndex = decisionEvaluation2DecisionIndex.getInt(rule.getDecision().getLimitingEvaluation());
 			parameters.change = 1;
@@ -796,31 +721,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 		} else {
 			throw new InvalidTypeException("Rule semantics is neither at least nor at most."); //this should not happen
 		}
-
-//		if (ruleDecisionCondition instanceof ConditionAtLeast<?>) {
-//			parameters.change = 1;
-//			parameters.outOfRangeDecisionIndex = learningOrderedUniqueDecisions.length;
-//		} else if (ruleDecisionCondition instanceof ConditionAtMost<?>) {
-//			parameters.change = -1;
-//			parameters.outOfRangeDecisionIndex = -1;
-//		} else {
-//			throw new InvalidTypeException("Rule's decision condition type is neither at least nor at most."); //this should not happen
-//		}
 	}
-	
-//	/**
-//	 * Goes over rules from the rule set with given indices and for each rule whose index is not yet in the map {@link #ruleIndex2DecisionDistribution},
-//	 * calculates distribution of decisions among learning (training) objects covered by this rule, and puts that decision distribution into the map, at rule's index.  
-//	 * 
-//	 * @param indicesOfCoveringRules list of indices of rules covering a test object; assumed to be not {@code null}
-//	 */
-//	private void updateDecisionDistributionsAmongCoveredLearningObjects(IntList indicesOfCoveringRules) {
-//		for (int i : indicesOfCoveringRules) {
-//			if (!ruleIndex2DecisionDistribution.containsKey(i)) {
-//				ruleIndex2DecisionDistribution.put(i, new DecisionDistribution(getRuleSet().getRuleCharacteristics(i).getRuleCoverageInformation().getDecisionsOfCoveredObjects()));
-//			}
-//		}
-//	}
 	
 	/**
 	 * Iterates among rules from the rule set that cover selected object from given information table
@@ -832,32 +733,22 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	 * @param objectIndex index of an object from the given information table
 	 * @param informationTable information table containing the object of interest
 	 * 
-	 * @return list of indices of rules from the rule set that cover the object of interest (first indices of
-	 *         at least rules, followed by indices of at most rules)
+	 * @return list of indices of rules from the rule set that cover the object of interest
+	 *         (first indices of at least rules, followed by indices of at most rules)
 	 */
 	IntList getIndicesOfCoveringAtLeastAndAtMostRules(int objectIndex, InformationTable informationTable) {
 		IntList indicesOfCoveringRules = new IntArrayList();
 		IntList additionalIndicesOfCoveringRules = new IntArrayList();
 		
-//		Condition<EvaluationField> decisionCondition; //decision condition of the current rule
 		int rulesCount = this.ruleSet.size();
 		
 		for (int i = 0; i < rulesCount; i++) {
 			if (this.ruleSet.getRule(i).covers(objectIndex, informationTable)) { //current rule covers considered object
-//				decisionCondition = this.ruleSet.getRule(i).getDecision();
-				
 				if (this.ruleSet.getRule(i).getSemantics() == RuleSemantics.AT_LEAST) {
 					indicesOfCoveringRules.add(i); //remember index of covering "at least" rule
 				} else if (this.ruleSet.getRule(i).getSemantics() == RuleSemantics.AT_MOST) {
 					additionalIndicesOfCoveringRules.add(i); //remember index of covering "at most" rule
 				}
-				
-//				if (decisionCondition instanceof ConditionAtLeast<?>) {
-//					indicesOfCoveringRules.add(i); //remember index of covering "at least" rule
-//				}
-//				else if (decisionCondition instanceof ConditionAtMost<?>) {
-//					additionalIndicesOfCoveringRules.add(i); //remember index of covering "at most" rule
-//				}
 			} //if
 		} //for
 		
