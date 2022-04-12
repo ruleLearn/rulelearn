@@ -27,6 +27,9 @@ public class UnknownRuleSemanticsException extends RuntimeException {
 
 	private static final long serialVersionUID = 5034172542445366932L;
 	
+	/**
+	 * Sole constructor of this exception.
+	 */
 	public UnknownRuleSemanticsException() {
         super();
     }

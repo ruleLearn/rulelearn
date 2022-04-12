@@ -43,10 +43,26 @@ public class SimpleOptimizingCountingRuleClassifier extends SimpleOptimizingRule
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
 	public static enum ResolutionStrategy {
+		/**
+		 * Resolution strategy consisting in choosing the most cautious common class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtLeast}. 
+		 */
 		UP_LIMIT,
+		/**
+		 * Resolution strategy consisting in choosing the most cautious common class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtMost}.
+		 */
 		DOWN_LIMIT,
+		/**
+		 * Resolution strategy consisting in choosing the most cautious common class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtLeast},
+		 * which is at the same time the most cautious common class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtMost}.
+		 */
 		EQUAL_LIMIT,
+		/**
+		 * Resolution strategy consisting in returning the mode between two considered different cautious decision classes.
+		 */
 		MODE,
+		/**
+		 * Resolution strategy consisting in returning the default decision class (as not rule covered classified test object).
+		 */
 		DEFAULT;
 	}
 	

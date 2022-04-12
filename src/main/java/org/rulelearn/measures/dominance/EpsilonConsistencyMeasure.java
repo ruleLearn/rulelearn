@@ -51,7 +51,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMeasure<Union>, MonotonicConditionAdditionEvaluator, RuleConditionsEvaluator, ConditionRemovalEvaluator, RuleEvaluator {
 
+	/**
+	 * Best possible value of this measure.
+	 */
 	protected final static double BEST_VALUE = 0.0;
+	/**
+	 * Worst possible value of this measure.
+	 */
 	protected final static double WORST_VALUE = 1.0;
 	
 	/**

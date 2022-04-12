@@ -20,17 +20,13 @@ import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
-import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.DecisionDistribution;
-import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.data.SimpleDecision;
-import org.rulelearn.rules.Condition;
-import org.rulelearn.rules.ConditionAtLeast;
-import org.rulelearn.rules.ConditionAtMost;
 import org.rulelearn.rules.Rule;
+import org.rulelearn.rules.RuleSemantics;
 import org.rulelearn.rules.RuleSet;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
@@ -60,7 +56,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
  *   while for covering rules suggesting classes &lt;=1 and &lt;=2 returns class 1).<br>
  * <br>
  * In case of a tie (two or more decisions get the same score), the worst of the decisions involved in a tie is returned, i.e., the decision having the smallest index in the array returned by
- * {@link InformationTable#getOrderedUniqueFullyDeterminedDecisions()}.
+ * {@link InformationTable#getOrderedUniqueFullyDeterminedDecisions()} for the learning (training) information table.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -102,7 +98,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 		 * Rule Models for Ordinal Classification in Variable Consistency Rough Set Approaches (2010),
 		 * PhD thesis. Poznan University of Technology, Poznań, Poland, 2010.
 		 * The correction is twofold:<br>
-		 * - in eq. (5.10), describing positive score, sum of sets is used in the denominator (instead of intersection),<br>
+		 * - in eq. (5.10), describing positive score, sum of sets is used in the denominator (instead of intersection, which is an error in notation),<br>
 		 * - in eq. (5.11), describing negative score, in the numerator, each upward/downward union of classes is replaced by the complement of class Cl_t.
 		 * This version of VC-DRSA classifier is implemented in the java Rough Sets (jRS) library, a predecessor of ruleLearn.
 		 */
@@ -112,8 +108,9 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	/**
 	 * Stores indices of objects from learning information table that are covered by the considered decision rule,
 	 * indices of covered objects from particular decision classes,
-	 * indices of supporting objects (i.e., covered learning objects matching rule's decision condition),
-	 * and indices of rule's positive objects.
+	 * indices of supporting objects (i.e., covered learning objects matching rule's decision condition) (if {@link ScoringRuleClassifier#version} equals {@link Version#EJOR_2007}),
+	 * indices of covered objects from complements of particular decision classes (if {@link ScoringRuleClassifier#version} equals {@link Version#COMPLEMENT}),
+	 * and indices of rule's positive objects (if {@link ScoringRuleClassifier#version} equals {@link Version#EJOR_2007}).
 	 *
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -131,14 +128,27 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 		/**
 		 * Indices of objects from rule's learning information table that support the rule (i.e., indices of covered learning objects that match rule's decision condition).
 		 * This set is calculated upon first request and then stored for future use (it is not always used for a rule that covers a test object).
+		 * This set is used only if {@link ScoringRuleClassifier#version} equals {@link Version#EJOR_2007}.
 		 */
 		IntSet indicesOfSupportingObjects = null;
+		/**
+		 * Maps a single decision class (represented by a simple decision) to the set of indices of covered learning objects from the complement of that class.
+		 * The keys in the map depend on the original decisions of the covered objects, not on the decisions covered by the rule's decision condition.
+		 * This map is initialized in class constructor, only if {@link ScoringRuleClassifier#version} equals {@link Version#COMPLEMENT}. 
+		 * This map is not built all at once. It contains mappings only for those decision classes, for which the set of indices of covered learning objects
+		 * from the complement of that classes was requested at least once. If requested set of indices is not stored for a given decision,
+		 * it is calculated, stored in this map for future reference, and only then returned.
+		 * This map is used only if {@link ScoringRuleClassifier#version} equals {@link Version#COMPLEMENT}.
+		 */
+		Object2ObjectMap<SimpleDecision, IntSet> decisionClass2IndicesOfComplementCoveredObjects = null;
 		/**
 		 * Indices of all objects from rule's learning information (decision) table that satisfy right-hand side (RHS, decision part) of the decision rule.
 		 * In case of a certain/possible rule, these are the objects from considered approximated set.
 		 * This set is calculated upon first request and then stored for future use (it is not always used for a rule that covers a test object).
+		 * This set is used only if {@link ScoringRuleClassifier#version} equals {@link Version#EJOR_2007}.
 		 */
 		IntSet indicesOfPositiveObjects = null;
+		
 		/**
 		 * Index of a rule in the rule set for which this detailed coverage information is defined.
 		 */
@@ -162,7 +172,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 				
 				//calculate decisionClass2IndicesOfCoveredObjects
 				for (Int2ObjectMap.Entry<Decision> entry : decisionsOfCoveredObjects.int2ObjectEntrySet()) {
-					registerCoveredObjectIndexForDecision(entry.getIntKey(), (SimpleDecision)entry.getValue());
+					registerCoveredObjectIndexForDecision(entry.getIntKey(), (SimpleDecision)entry.getValue()); //update decisionClass2IndicesOfCoveredObjects
 				}
 			} else {
 				indicesOfCoveredObjects = new IntOpenHashSet();
@@ -175,6 +185,10 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 						registerCoveredObjectIndexForDecision(objectIndex, (SimpleDecision)learningInformationTable.getDecision(objectIndex)); //safe cast as learning information table is checked to have only simple decisions
 					}
 				}
+			}
+			
+			if (version == Version.COMPLEMENT) {
+				decisionClass2IndicesOfComplementCoveredObjects = new Object2ObjectOpenHashMap<SimpleDecision, IntSet>();
 			}
 		}
 		
@@ -208,8 +222,8 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 		 * 
 		 * @return mapping between decision classes of learning objects covered by the rule and lists of indices of covered learning objects from these classes
 		 */
-		Object2ObjectMap<SimpleDecision, IntSet> getDecisionClass2IndicesOfCoveredObjects() { //already calculated in class constructor
-			return decisionClass2IndicesOfCoveredObjects;
+		Object2ObjectMap<SimpleDecision, IntSet> getDecisionClass2IndicesOfCoveredObjects() {
+			return decisionClass2IndicesOfCoveredObjects; //already calculated in class constructor
 		}
 		
 		/**
@@ -231,6 +245,25 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 			}
 			
 			return indicesOfSupportingObjects;
+		}
+		
+		/**
+		 * Gets the set of indices of covered learning objects from the complement of decision class characterized by given decision.
+		 * This method can be used only if {@link ScoringRuleClassifier#version} equals {@link Version#COMPLEMENT}.
+		 * 
+		 * @param decision decision indicating decision class whose complement is of interest
+		 * @return the set of indices of covered learning objects from the complement of decision class characterized by given decision
+		 * 
+		 * @throws NullPointerException if {@link ScoringRuleClassifier#version} is different than {@link Version#COMPLEMENT}
+		 */
+		IntSet getIndicesOfComplementCoveredObjects(SimpleDecision decision) {
+			if (!decisionClass2IndicesOfComplementCoveredObjects.containsKey(decision)) {
+				IntSet indicesOfComplementCoveredObjects = new IntOpenHashSet(getIndicesOfCoveredObjects());
+				indicesOfComplementCoveredObjects.removeAll(getDecisionClass2IndicesOfCoveredObjects().get(decision));
+				decisionClass2IndicesOfComplementCoveredObjects.put(decision, indicesOfComplementCoveredObjects);
+			}
+			
+			return decisionClass2IndicesOfComplementCoveredObjects.get(decision);
 		}
 		
 		/**
@@ -259,7 +292,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	}
 	
 	/**
-	 * Container for three parameters defining a "for" loop iterating over all decisions covered by a decision rule, starting from the rule's RHS decision. 
+	 * Container for three parameters defining a "for" loop iterating over all decisions covered by a decision rule, starting from the worst decision. 
 	 * 
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -302,13 +335,16 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	Version version = DEFAULT_VERSION;
 	
 	/**
-	 * Ordered (from the smallest to the greatest) array of all unique (fully-determined) simple decisions assigned to objects of the learning (training) information table.
+	 * Ordered (from the worst to the best) array of all unique (and fully-determined) simple decisions assigned to objects of the learning (training) information table.
+	 * When constructing this object, this field is assigned the return value of {@link InformationTable#getOrderedUniqueFullyDeterminedDecisions()} invoked on the
+	 * learning (training) information table (for caching purposes).
 	 */
-	SimpleDecision[] learningAscendinglyOrderedUniqueDecisions;
+	SimpleDecision[] learningOrderedUniqueDecisions;
 	
 	/**
-	 * Maps evaluation on the active decision attribute (for which all simple decisions are defined)
-	 * to index of the corresponding decision in {@link #learningAscendinglyOrderedUniqueDecisions} array.
+	 * Maps evaluation on the active decision attribute of the learning (training) information table (the attribute for which all simple decisions are defined)
+	 * to index of the corresponding decision (to which that evaluation contributes) in the array returned by {@link InformationTable#getOrderedUniqueFullyDeterminedDecisions()}
+	 * for the learning (training) information table and stored in {@link #learningOrderedUniqueDecisions}.
 	 */
 	Object2IntMap<EvaluationField> decisionEvaluation2DecisionIndex;
 	
@@ -387,29 +423,32 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 //			this.ruleSet = ruleSetWithCharacteristics; //override rule set stored by superclass constructor
 //		}
 		
-		AttributePreferenceType decisionAttributePreferenceType;
-		decisionAttributePreferenceType = ((EvaluationAttribute)learningInformationTable.getAttribute(((SimpleDecision)learningInformationTable.getDecision(0)).getAttributeIndex())).getPreferenceType();
+//		AttributePreferenceType decisionAttributePreferenceType;
+//		decisionAttributePreferenceType = ((EvaluationAttribute)learningInformationTable.getAttribute(((SimpleDecision)learningInformationTable.getDecision(0)).getAttributeIndex())).getPreferenceType();
 		
-		//ensure asc. ordered array of unique simple decisions present in learning information table
-		switch(decisionAttributePreferenceType) {
-		case COST:
-			Decision[] learningOrderedUniqueFullyDeterminedDecisions = learningInformationTable.getOrderedUniqueFullyDeterminedDecisions();
-			int numberOfDecisions = learningOrderedUniqueFullyDeterminedDecisions.length;
-			this.learningAscendinglyOrderedUniqueDecisions = new SimpleDecision[numberOfDecisions];
-			for (int decisionIndex = 0; decisionIndex < numberOfDecisions; decisionIndex++) {
-				this.learningAscendinglyOrderedUniqueDecisions[decisionIndex] = (SimpleDecision)learningOrderedUniqueFullyDeterminedDecisions[numberOfDecisions - 1 - decisionIndex];
-			}
-			break;
-		case GAIN:
-			this.learningAscendinglyOrderedUniqueDecisions = (SimpleDecision[])learningInformationTable.getOrderedUniqueFullyDeterminedDecisions().clone();
-			break;
-		default:
-			throw new InvalidValueException("Preference type of learning information table active decision attribute should be gain or cost."); //this should not happen
-		}
+//		//ensure asc. ordered array of unique simple decisions present in learning information table
+//		switch(decisionAttributePreferenceType) {
+//		case COST:
+//			Decision[] learningOrderedUniqueFullyDeterminedDecisions = learningInformationTable.getOrderedUniqueFullyDeterminedDecisions();
+//			int numberOfDecisions = learningOrderedUniqueFullyDeterminedDecisions.length;
+//			this.learningOrderedUniqueDecisions = new SimpleDecision[numberOfDecisions];
+//			for (int decisionIndex = 0; decisionIndex < numberOfDecisions; decisionIndex++) {
+//				this.learningOrderedUniqueDecisions[decisionIndex] = (SimpleDecision)learningOrderedUniqueFullyDeterminedDecisions[numberOfDecisions - 1 - decisionIndex];
+//			}
+//			break;
+//		case GAIN:
+//			this.learningOrderedUniqueDecisions = (SimpleDecision[])learningInformationTable.getOrderedUniqueFullyDeterminedDecisions().clone();
+//			break;
+//		default:
+//			throw new InvalidValueException("Preference type of learning information table active decision attribute should be gain or cost."); //this should not happen
+//		}
 		
+		this.learningOrderedUniqueDecisions = (SimpleDecision[])learningInformationTable.getOrderedUniqueFullyDeterminedDecisions().clone(); //cache result
+		
+		//Construct and fill decisionEvaluation2DecisionIndex
 		this.decisionEvaluation2DecisionIndex = new Object2IntOpenHashMap<EvaluationField>();
-		for (int decisionIndex = 0; decisionIndex < learningAscendinglyOrderedUniqueDecisions.length; decisionIndex++) {
-			this.decisionEvaluation2DecisionIndex.put(learningAscendinglyOrderedUniqueDecisions[decisionIndex].getEvaluation(), decisionIndex);
+		for (int decisionIndex = 0; decisionIndex < learningOrderedUniqueDecisions.length; decisionIndex++) {
+			this.decisionEvaluation2DecisionIndex.put(learningOrderedUniqueDecisions[decisionIndex].getEvaluation(), decisionIndex);
 		}
 		
 //		Decision[] uniqueDecisions = learningInformationTable.getUniqueDecisions();
@@ -437,6 +476,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	 * @param defaultClassificationResult default classification result, to be returned by this classifier
 	 *        if it is unable to calculate such result using stored decision rules
 	 * @param mode classification mode to be used by this classifier; {@link Mode#HYBRID} is expected to give better results on average
+	 * @param version requested version of the definition of this classifier
 	 * @param learningInformationTable learning (training) information table for which rules from the given rule set have been induced
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
@@ -589,29 +629,27 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 				for (int decisionIndex = decisionLoopParameters.startingDecisionIndex; decisionIndex != decisionLoopParameters.outOfRangeDecisionIndex;
 						decisionIndex += decisionLoopParameters.change) {
 					score = Math.pow((double)ruleIndex2DetailedRuleCoverageInfo.get(onlyRuleIndex).getDecisionClass2IndicesOfCoveredObjects().get(
-							learningAscendinglyOrderedUniqueDecisions[decisionIndex]).size(), 2) /
+							learningOrderedUniqueDecisions[decisionIndex]).size(), 2) /
 							((double)ruleIndex2DetailedRuleCoverageInfo.get(onlyRuleIndex).getIndicesOfCoveredObjects().size() *
-							(double)learningDecisionDistribution.getCount(learningAscendinglyOrderedUniqueDecisions[decisionIndex])); //denominator should not be zero
+							(double)learningDecisionDistribution.getCount(learningOrderedUniqueDecisions[decisionIndex])); //denominator should not be zero
 					
-					decision2ScoreMap.put(learningAscendinglyOrderedUniqueDecisions[decisionIndex], score);
+					decision2ScoreMap.put(learningOrderedUniqueDecisions[decisionIndex], score);
 					
 					//update max score only if better score found - corresponds to "prudent" approach
-					//(prefers decision closest to the decision corresponding to limiting evaluation of rule's decision condition)
 					if (score > maxScore) {
 						maxScore = score; //update maximum score
 						maxScoreDecisionIndex = decisionIndex; //remember index of decision giving maximum score
+						//if there is >1 decision with the best score, the first considered decision with the best score will be chosen (i.e., the worst decision)
 					}
-					
-					//TODO: what if >1 such decisions? currently first considered decision with the best score is chosen
 				} //for
 				
-				return new SimpleEvaluatedClassificationResult(learningAscendinglyOrderedUniqueDecisions[maxScoreDecisionIndex], maxScore);
+				return new SimpleEvaluatedClassificationResult(learningOrderedUniqueDecisions[maxScoreDecisionIndex], maxScore, decision2ScoreMap);
 				
 			default: //>1 covering rule
 				double scorePlus;
 				double scoreMinus = 0;
 				
-				IntSet[] indicesOfRulesSupportingDecision = new IntOpenHashSet[learningAscendinglyOrderedUniqueDecisions.length]; //for each decision stores either null or a set of indices of rules supporting that decision
+				IntSet[] indicesOfRulesSupportingDecision = new IntOpenHashSet[learningOrderedUniqueDecisions.length]; //for each decision stores either null or a set of indices of rules supporting that decision
 				
 				//prepare indicesOfRulesSupportingDecision
 				for (int ruleIndex : indicesOfCoveringAtLeastAndAtMostRules) {
@@ -629,63 +667,91 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 				IntSet sumCondCapDecisionClass; //in numerator of Score+ (sum of intersections of set of training objects that are covered by a positive rule and set of training objects that belong to considered decision class)
 				IntSet sumCondPlus; //in denominator of Score+ (sum of sets of training objects that are covered by a positive rule)
 				
-				IntSet sumCondCapUnion = null; //in numerator of Score- (sum of intersections of set of training objects that are covered by a negative rule and set of training objects that belong to union of decision classes suggested by the negative rule)
+				IntSet sumCondCapNegativeSet = null; //in numerator of Score-;
+				//for version EJOR_2007: sum of intersections of set of training objects that are covered by a negative rule and set of training objects that belong to union of decision classes suggested by the negative rule;
+				//for version COMPLEMENT: sum of sets of training objects that are covered by a negative rule and belong to the complement of currently considered decision class
+				
 				IntSet sumCondMinus = null; //in denominator of Score- (sum of sets of training objects that are covered by subsequent negative rules)
-				IntSet sumUnions = null; //in denominator of Score- (sum of sets of training objects that belong to union of decision classes suggested by a negative rule)
+				IntSet sumUnions = null; //in denominator of Score- for version EJOR_2007 (sum of sets of training objects that belong to union of decision classes suggested by a negative rule)
+				
 				boolean scoreMinusPresent;
 				
 				for (int decisionIndex = 0; decisionIndex < indicesOfRulesSupportingDecision.length; decisionIndex++) { //go over all decisions
 					if (indicesOfRulesSupportingDecision[decisionIndex] != null) { //given decision is supported by at least one rule covering classified object, and thus it becomes a potential decision for which Score needs to be calculated
+						//initialize sets for calculating positive Score
 						sumCondCapDecisionClass = new IntOpenHashSet();
 						sumCondPlus = new IntOpenHashSet();
 						
 						if (indicesOfRulesSupportingDecision[decisionIndex].size() < indicesOfCoveringAtLeastAndAtMostRules.size()) { //there are also rules that do not support currently considered decision
-							sumCondCapUnion = new IntOpenHashSet();
+							//initialize sets for calculating negative Score
+							sumCondCapNegativeSet = new IntOpenHashSet();
 							sumCondMinus = new IntOpenHashSet();
-							sumUnions = new IntOpenHashSet();
+							if (version == Version.EJOR_2007) {
+								sumUnions = new IntOpenHashSet();
+							} //for Version.COMPLEMENT leave sumUnions == null
 							scoreMinusPresent = true;
 						} else {
 							scoreMinusPresent = false;
 						}
 						
-						for (int ruleIndex : indicesOfCoveringAtLeastAndAtMostRules) {
+						for (int ruleIndex : indicesOfCoveringAtLeastAndAtMostRules) { //go over all covering rules and calculate sets of objects (precisely: objects' indices) necessary to calculate Score
 							if (indicesOfRulesSupportingDecision[decisionIndex].contains(ruleIndex)) { //current rule supports current decision
 								sumCondCapDecisionClass.addAll(
-										ruleIndex2DetailedRuleCoverageInfo.get(ruleIndex).getDecisionClass2IndicesOfCoveredObjects().get(learningAscendinglyOrderedUniqueDecisions[decisionIndex]));
+										ruleIndex2DetailedRuleCoverageInfo.get(ruleIndex).getDecisionClass2IndicesOfCoveredObjects().get(learningOrderedUniqueDecisions[decisionIndex]));
 								sumCondPlus.addAll(ruleIndex2DetailedRuleCoverageInfo.get(ruleIndex).getIndicesOfCoveredObjects());
 							} else { //current rule does not support current decision
-								sumCondCapUnion.addAll(ruleIndex2DetailedRuleCoverageInfo.get(ruleIndex).getIndicesOfSupportingObjects());
+								switch (version) {
+								case EJOR_2007:
+									sumCondCapNegativeSet.addAll(ruleIndex2DetailedRuleCoverageInfo.get(ruleIndex).getIndicesOfSupportingObjects());
+									sumUnions.addAll(ruleIndex2DetailedRuleCoverageInfo.get(ruleIndex).getIndicesOfPositiveObjects());
+									break;
+								case COMPLEMENT:
+									sumCondCapNegativeSet.addAll(ruleIndex2DetailedRuleCoverageInfo.get(ruleIndex).getIndicesOfComplementCoveredObjects(learningOrderedUniqueDecisions[decisionIndex]));
+									//sumUnions not used in the denominator!
+									break;
+								default:
+									throw new InvalidValueException("Unknown version of scoring rule classifier."); //this should not happen
+								} //switch
 								sumCondMinus.addAll(ruleIndex2DetailedRuleCoverageInfo.get(ruleIndex).getIndicesOfCoveredObjects());
-								sumUnions.addAll(ruleIndex2DetailedRuleCoverageInfo.get(ruleIndex).getIndicesOfPositiveObjects());
 							}
 						} //for (ruleIndex)
 						
 						scorePlus = Math.pow((double)sumCondCapDecisionClass.size(), 2) /
-								((double)sumCondPlus.size() * (double)learningDecisionDistribution.getCount(learningAscendinglyOrderedUniqueDecisions[decisionIndex]));
+								((double)sumCondPlus.size() * (double)learningDecisionDistribution.getCount(learningOrderedUniqueDecisions[decisionIndex])); //calculate positive score
 						
 						if (scoreMinusPresent) {
-							scoreMinus = Math.pow((double)sumCondCapUnion.size(), 2) /
-								((double)sumCondMinus.size() * (double)sumUnions.size());
+							int size = 0; //right multiplier in the denominator of eq. describing Score-
+							switch (version) {
+							case EJOR_2007:
+								size = sumUnions.size();
+								break;
+							case COMPLEMENT:
+								size = learningInformationTable.getNumberOfObjects() - learningDecisionDistribution.getCount(learningOrderedUniqueDecisions[decisionIndex]); //size of the complement of currently considered decision class
+								break;
+							default:
+								throw new InvalidValueException("Unknown version of scoring rule classifier."); //this should not happen
+							}
+							
+							scoreMinus = Math.pow((double)sumCondCapNegativeSet.size(), 2) /
+								((double)sumCondMinus.size() * (double)size); //calculate negative score
 						} else {
 							scoreMinus = 0;
 						}
 						
 						score = scorePlus - scoreMinus;
 						
-						decision2ScoreMap.put(learningAscendinglyOrderedUniqueDecisions[decisionIndex], score);
+						decision2ScoreMap.put(learningOrderedUniqueDecisions[decisionIndex], score);
 						
 						//update max score only if better score found - corresponds to "prudent" approach
-						//(prefers decision closest to the decision corresponding to limiting evaluation of rule's decision condition)
 						if (score > maxScore) {
 							maxScore = score; //update maximum score
 							maxScoreDecisionIndex = decisionIndex; //remember index of decision giving maximum score
+							//if there is >1 decision with the best score, the first considered decision with the best score will be chosen (i.e., the worst decision)
 						}
-						
-						//TODO: what if >1 such decisions? currently first considered decision with the best score is chosen
 					} //if
 				} //for (decisionIndex)
 				
-				return new SimpleEvaluatedClassificationResult(learningAscendinglyOrderedUniqueDecisions[maxScoreDecisionIndex], maxScore);
+				return new SimpleEvaluatedClassificationResult(learningOrderedUniqueDecisions[maxScoreDecisionIndex], maxScore, decision2ScoreMap);
 			} //switch
 		} //else
 		
@@ -694,11 +760,11 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	/**
 	 * Stores information that decision with given index is supported by the RHS of the rule with given index. Updates <code>indicesOfRulesSupportingDecision</code>.
 	 * 
-	 * @param indicesOfRulesSupportingDecision already created array containing, for each decision from {@link #learningAscendinglyOrderedUniqueDecisions},
+	 * @param indicesOfRulesSupportingDecision already created array containing, for each decision from {@link #learningOrderedUniqueDecisions},
 	 *        a set of indices of rules that support this decision;
 	 *        an entry can potentially be {@code null}, if so far no rule supported respective decision
-	 * @param decisionIndex	index of decision from {@link #learningAscendinglyOrderedUniqueDecisions} supported by the rule with given index
-	 * @param ruleIndex index of the rule from {@link #ruleSet} that supports with its RHS decision having given index at {@link #learningAscendinglyOrderedUniqueDecisions}
+	 * @param decisionIndex	index of decision from {@link #learningOrderedUniqueDecisions} supported by the rule with given index
+	 * @param ruleIndex index of the rule from {@link #ruleSet} that supports with its RHS decision having given index at {@link #learningOrderedUniqueDecisions}
 	 */
 	void updateIndicesOfRulesSupportingDecision(IntSet[] indicesOfRulesSupportingDecision, int decisionIndex, int ruleIndex) {
 		if (indicesOfRulesSupportingDecision[decisionIndex] == null) {
@@ -709,25 +775,37 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	}
 	
 	/**
-	 * Calculates decision loop parameters for the given rule, and sets these parameters inside given parameter container.
-	 * Starting decision index will indicate the decision corresponding to limiting evaluation of rule's decision condition.
+	 * Calculates decision loop parameters for the given rule (i.e., parameters of the loop that iterates over all decisions covered by the RHS of the given rule,
+	 * from the worst decision to the best decision), and sets these parameters inside given parameter container.
+	 * Updates all fields of the given {@link DecisionLoopParameters parameters} object.
 	 * 
 	 * @param rule decision rule for which parameters should be calculated
 	 * @param parameters container for parameters (has to be not {@code null}), whose fields will get updated
 	 */
-	void calculateDecisionLoopParameters(Rule rule, DecisionLoopParameters parameters) { //TODO
-		Condition<EvaluationField> ruleDecisionCondition = rule.getDecision();
-		parameters.startingDecisionIndex = decisionEvaluation2DecisionIndex.getInt(ruleDecisionCondition.getLimitingEvaluation());
+	void calculateDecisionLoopParameters(Rule rule, DecisionLoopParameters parameters) {
+//		Condition<EvaluationField> ruleDecisionCondition = rule.getDecision();
 		
-		if (ruleDecisionCondition instanceof ConditionAtLeast<?>) {
+		if (rule.getSemantics() == RuleSemantics.AT_LEAST) {
+			parameters.startingDecisionIndex = decisionEvaluation2DecisionIndex.getInt(rule.getDecision().getLimitingEvaluation());
 			parameters.change = 1;
-			parameters.outOfRangeDecisionIndex = learningAscendinglyOrderedUniqueDecisions.length;
-		} else if (ruleDecisionCondition instanceof ConditionAtMost<?>) {
-			parameters.change = -1;
-			parameters.outOfRangeDecisionIndex = -1;
+			parameters.outOfRangeDecisionIndex = learningOrderedUniqueDecisions.length;
+		} else if (rule.getSemantics() == RuleSemantics.AT_MOST) {
+			parameters.startingDecisionIndex = 0;
+			parameters.change = 1;
+			parameters.outOfRangeDecisionIndex = decisionEvaluation2DecisionIndex.getInt(rule.getDecision().getLimitingEvaluation()) + 1;
 		} else {
-			throw new InvalidTypeException("Rule's decision condition type is neither at least nor at most."); //this should not happen
+			throw new InvalidTypeException("Rule semantics is neither at least nor at most."); //this should not happen
 		}
+
+//		if (ruleDecisionCondition instanceof ConditionAtLeast<?>) {
+//			parameters.change = 1;
+//			parameters.outOfRangeDecisionIndex = learningOrderedUniqueDecisions.length;
+//		} else if (ruleDecisionCondition instanceof ConditionAtMost<?>) {
+//			parameters.change = -1;
+//			parameters.outOfRangeDecisionIndex = -1;
+//		} else {
+//			throw new InvalidTypeException("Rule's decision condition type is neither at least nor at most."); //this should not happen
+//		}
 	}
 	
 //	/**
@@ -747,8 +825,9 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	/**
 	 * Iterates among rules from the rule set that cover selected object from given information table
 	 * and gathers indices of these covering rules. In the resulting list of indices, first portion
-	 * of indices belongs to covering at least rules, and second portion of indices belongs to covering
-	 * at most rules.
+	 * of indices belongs to covering at least rules (i.e., rules with semantics {@link RuleSemantics#AT_LEAST}),
+	 * and second portion of indices belongs to covering at most rules
+	 * (i.e., rules with semantics {@link RuleSemantics#AT_MOST}).
 	 * 
 	 * @param objectIndex index of an object from the given information table
 	 * @param informationTable information table containing the object of interest
@@ -760,19 +839,25 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 		IntList indicesOfCoveringRules = new IntArrayList();
 		IntList additionalIndicesOfCoveringRules = new IntArrayList();
 		
-		Condition<EvaluationField> decisionCondition; //decision condition of the current rule
+//		Condition<EvaluationField> decisionCondition; //decision condition of the current rule
 		int rulesCount = this.ruleSet.size();
 		
 		for (int i = 0; i < rulesCount; i++) {
 			if (this.ruleSet.getRule(i).covers(objectIndex, informationTable)) { //current rule covers considered object
-				decisionCondition = this.ruleSet.getRule(i).getDecision();
+//				decisionCondition = this.ruleSet.getRule(i).getDecision();
 				
-				if (decisionCondition instanceof ConditionAtLeast<?>) {
+				if (this.ruleSet.getRule(i).getSemantics() == RuleSemantics.AT_LEAST) {
 					indicesOfCoveringRules.add(i); //remember index of covering "at least" rule
-				}
-				else if (decisionCondition instanceof ConditionAtMost<?>) {
+				} else if (this.ruleSet.getRule(i).getSemantics() == RuleSemantics.AT_MOST) {
 					additionalIndicesOfCoveringRules.add(i); //remember index of covering "at most" rule
 				}
+				
+//				if (decisionCondition instanceof ConditionAtLeast<?>) {
+//					indicesOfCoveringRules.add(i); //remember index of covering "at least" rule
+//				}
+//				else if (decisionCondition instanceof ConditionAtMost<?>) {
+//					additionalIndicesOfCoveringRules.add(i); //remember index of covering "at most" rule
+//				}
 			} //if
 		} //for
 		

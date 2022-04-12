@@ -41,7 +41,13 @@ import org.rulelearn.rules.RuleEvaluator;
  */
 public class RoughMembershipMeasure implements GainTypeMeasure, ConsistencyMeasure<Union>, RuleEvaluator {
 	
+	/**
+	 * Best possible value of this measure.
+	 */
 	protected final static double BEST_VALUE = 1.0;
+	/**
+	 * Worst possible value of this measure.
+	 */
 	protected final static double WORST_VALUE = 0.0;
 	
 	private static final RoughMembershipMeasure INSTANCE = new RoughMembershipMeasure();

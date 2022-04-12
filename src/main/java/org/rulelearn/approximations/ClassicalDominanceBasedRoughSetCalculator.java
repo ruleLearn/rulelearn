@@ -63,6 +63,11 @@ public class ClassicalDominanceBasedRoughSetCalculator implements DominanceBased
 		this.reflexiveDominanceRelations = reflexiveDominanceRelations;
 	}
 	
+	/**
+	 * Tells is dominance relations are reflexive.
+	 * 
+	 * @return {@code true} if dominance relations are reflexive, {@code false} otherwise
+	 */
 	public boolean areDominanceRelationsReflexive () {
 		return this.reflexiveDominanceRelations;
 	}

@@ -44,11 +44,26 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public class InformationTableTestConfiguration {
+	/**
+	 * Attributes of the information table.
+	 */
 	protected Attribute[] attributes;
 	//protected int activeDecisionAttributeIndex = -1;
+	/**
+	 * Index of the active identification attribute.
+	 */
 	protected int activeIdentificationAttributeIndex = -1;
+	/**
+	 * List of active decision attribute indices.
+	 */
 	protected List<Integer> listOfActiveDecisionAttributeIndices;
+	/**
+	 * List of fields of the information table.
+	 */
 	protected List<Field[]> listOfFields;
+	/**
+	 * Indices of all objects of the information table.
+	 */
 	protected int[] allObjectIndices = null;
 	
 	/**

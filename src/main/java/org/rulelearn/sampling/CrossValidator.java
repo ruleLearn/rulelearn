@@ -52,13 +52,27 @@ public class CrossValidator {
 		T trainingTable;
 		T validationTable;
 		
+		/**
+		 * Constructs this cross validator.
+		 * 
+		 * @param trainingSet training set of objects
+		 * @param validationSet test (validation) set of objects
+		 */
 		public CrossValidationFold(T trainingSet, T validationSet) {
 			this.trainingTable = trainingSet;
 			this.validationTable = validationSet;
 		}
+		/**
+		 * Gets training information table.
+		 * @return training information table
+		 */
 		public T getTrainingTable() {
 			return trainingTable;
 		}
+		/**
+		 * Gets test (validation) information table.
+		 * @return test (validation) information table
+		 */
 		public T getValidationTable() {
 			return validationTable;
 		}

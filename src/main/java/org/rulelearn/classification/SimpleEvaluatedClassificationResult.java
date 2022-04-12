@@ -16,7 +16,10 @@
 
 package org.rulelearn.classification;
 
+import org.rulelearn.core.Precondition;
 import org.rulelearn.data.SimpleDecision;
+
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 
 /**
  * Simple result of classification of an object from an information table, reflecting its classification to exactly one decision class, obtained by choosing the decision that optimizes
@@ -27,12 +30,15 @@ import org.rulelearn.data.SimpleDecision;
  */
 public class SimpleEvaluatedClassificationResult extends SimpleClassificationResult {
 	
-	//TODO: store also distribution of evaluations among all decisions?
-	
 	/**
 	 * Evaluation of suggested decision, which may be interpreted as its certainty.
 	 */
 	double suggestedDecisionEvaluation;
+	
+	/**
+	 * Maps different conceivable decisions to their evaluations with respect to employed quality measure.
+	 */
+	Object2DoubleMap<SimpleDecision> decision2ScoreMap = null;
 	
 	/**
 	 * Constructs this classification result using suggested decision and its evaluation.
@@ -40,11 +46,25 @@ public class SimpleEvaluatedClassificationResult extends SimpleClassificationRes
 	 * @param suggestedDecision evaluation of an object on the decision attribute (i.e., decision) suggested by a classifier
 	 * @param suggestedDecisionEvaluation evaluation of suggested decision
 	 * 
-	 * @throws NullPointerException if given suggested decision in {@code null}
+	 * @throws NullPointerException if given suggested decision is {@code null}
 	 */
 	public SimpleEvaluatedClassificationResult(SimpleDecision suggestedDecision, double suggestedDecisionEvaluation) {
 		super(suggestedDecision);
 		this.suggestedDecisionEvaluation = suggestedDecisionEvaluation;
+	}
+	
+	/**
+	 * Constructs this classification result using suggested decision and its evaluation.
+	 * 
+	 * @param suggestedDecision evaluation of an object on the decision attribute (i.e., decision) suggested by a classifier
+	 * @param suggestedDecisionEvaluation evaluation of suggested decision
+	 * @param decision2ScoreMap mapping between all considered decisions and their scores
+	 * 
+	 * @throws NullPointerException if given suggested decision or given map is {@code null}
+	 */
+	public SimpleEvaluatedClassificationResult(SimpleDecision suggestedDecision, double suggestedDecisionEvaluation, Object2DoubleMap<SimpleDecision> decision2ScoreMap) {
+		this(suggestedDecision, suggestedDecisionEvaluation);
+		this.decision2ScoreMap = Precondition.notNull(decision2ScoreMap, "Decision to score map is null.");
 	}
 
 	/**
@@ -54,6 +74,17 @@ public class SimpleEvaluatedClassificationResult extends SimpleClassificationRes
 	 */
 	public double getSuggestedDecisionEvaluation() {
 		return suggestedDecisionEvaluation;
+	}
+
+	/**
+	 * Gets a mapping between different conceivable decisions and their evaluations with respect to employed quality measure.
+	 * The returned map should not be modified.
+	 * 
+	 * @return a mapping between different conceivable decisions and their evaluations with respect to employed quality measure;
+	 *         {@code null} if not set in class constructor
+	 */
+	public Object2DoubleMap<SimpleDecision> getDecision2ScoreMap() {
+		return decision2ScoreMap;
 	}
 	
 	

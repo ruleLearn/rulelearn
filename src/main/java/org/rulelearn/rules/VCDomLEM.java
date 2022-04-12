@@ -208,6 +208,7 @@ public class VCDomLEM {
 	 * If certain rules are considered, rule conditions are generated using evaluations of objects from lower approximations.
 	 * If possible rules are considered, rule conditions are generated using evaluations of objects from upper approximations.
 	 * 
+	 * @param ruleFilter rule filter to be applied to all induced rules
 	 * @return set of induced decision rules with computable characteristics {@link RuleSetWithComputableCharacteristics},
 	 *         filtered using given rule filter 
 	 */
