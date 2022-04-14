@@ -25,6 +25,8 @@ import org.rulelearn.data.DecisionDistribution;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.data.SimpleDecision;
+import org.rulelearn.rules.ConditionAtLeast;
+import org.rulelearn.rules.ConditionAtMost;
 import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleSemantics;
 import org.rulelearn.rules.RuleSet;
@@ -115,7 +117,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
-	private class DetailedRuleCoverageInformation {
+	class DetailedRuleCoverageInformation {
 		/**
 		 * Indices of objects from rule's learning information table that are covered by the rule.
 		 */
@@ -292,12 +294,48 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	}
 	
 	/**
+	 * Version of {@link SimpleRuleClassifier} that does not resolve conflicts - when facing conflicting limiting evaluations, just returns {@code null} as classification result.
+	 *
+	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
+	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
+	 */
+	class SkippingConflictResolutionSimpleRuleClassifer extends SimpleRuleClassifier {
+
+		/**
+		 * Default constructor, passing all arguments to super class constructor.
+		 * 
+		 * @param ruleSet set of decision rules to be used to classify objects from an information table
+		 * @param defaultClassificationResult default classification result, to be returned by this classifier
+		 *        if it is unable to calculate such result using stored decision rules
+		 * 
+		 * @throws NullPointerException if any of the parameters is {@code null}
+		 */
+		public SkippingConflictResolutionSimpleRuleClassifer(RuleSet ruleSet, SimpleClassificationResult defaultClassificationResult) {
+			super(ruleSet, defaultClassificationResult);
+		}
+		
+		/**
+		 * Computes classification result in case when both limits are set but different. Just returns {@code null}.
+		 * 
+		 * @param upLimit evaluation corresponding to the most cautious class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtLeast}
+		 * @param downLimit evaluation corresponding to the most cautious class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtMost}
+		 * @param decisionAttributeIndex index of decision attribute
+		 * 
+		 * @return {@code null}
+		 */
+		SimpleClassificationResult resolveConflictingClassificationResult(EvaluationField upLimit, EvaluationField downLimit, int decisionAttributeIndex) {
+			return null; //avoid conflict resolution!
+		}
+		
+	}
+	
+	/**
 	 * Container for three parameters defining a "for" loop iterating over all decisions covered by a decision rule, starting from the worst decision. 
 	 * 
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */
-	private static class DecisionLoopParameters {
+	private class DecisionLoopParameters {
 		/**
 		 * First index for which "for" loop iteration should be performed. Should be &gt;= 0.
 		 */
@@ -481,7 +519,21 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	 */
 	@Override
 	public SimpleEvaluatedClassificationResult classify(int objectIndex, InformationTable informationTable) {
-		return classifyWithScore(getIndicesOfCoveringAtLeastAndAtMostRules(objectIndex, informationTable));
+		switch (mode) {
+		case HYBRID:
+			SkippingConflictResolutionSimpleRuleClassifer probingSimpleRuleClassifer = new SkippingConflictResolutionSimpleRuleClassifer(ruleSet, getDefaultClassificationResult());
+			IntList indicesOfCoveringRules = new IntArrayList();
+			SimpleClassificationResult result = probingSimpleRuleClassifer.classify(objectIndex, informationTable, indicesOfCoveringRules); //populates indicesOfCoveringRules
+			if (result == null) { //conflicting suggestions
+				return classifyWithScore(indicesOfCoveringRules); //fall back to Score calculation
+			} else { //no conflict
+				return new SimpleEvaluatedClassificationResult(result.getSuggestedDecision(), 1.0);
+			}
+		case SCORE:
+			return classifyWithScore(getIndicesOfCoveringRules(objectIndex, informationTable));
+		default:
+			throw new InvalidValueException("Wrong mode of scoring classifier."); //this should not happen
+		}
 	}
 
 	/**
@@ -507,7 +559,8 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	 * 
 	 * @param objectIndex {@inheritDoc}
 	 * @param informationTable {@inheritDoc}
-	 * @param indicesOfCoveringRules {@inheritDoc}
+	 * @param indicesOfCoveringRules {@inheritDoc};
+	 *        covering rules are added to the list in the order in which they appear in the rule set
 	 * 
 	 * @return simple optimal classification result for the considered object
 	 * 
@@ -517,27 +570,37 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	 */
 	@Override
 	public SimpleEvaluatedClassificationResult classify(int objectIndex, InformationTable informationTable, IntList indicesOfCoveringRules) {
-		IntList indicesOfCoveringAtLeastAtMostRules = getIndicesOfCoveringAtLeastAndAtMostRules(objectIndex, informationTable);
-		indicesOfCoveringRules.addAll(indicesOfCoveringAtLeastAtMostRules);
-		
-		return classifyWithScore(indicesOfCoveringAtLeastAtMostRules);
+		switch (mode) {
+		case HYBRID:
+			SkippingConflictResolutionSimpleRuleClassifer probingSimpleRuleClassifer = new SkippingConflictResolutionSimpleRuleClassifer(ruleSet, getDefaultClassificationResult());
+			SimpleClassificationResult result = probingSimpleRuleClassifer.classify(objectIndex, informationTable, indicesOfCoveringRules); //populates indicesOfCoveringRules
+			if (result == null) { //conflicting suggestions
+				return classifyWithScore(indicesOfCoveringRules); //fall back to Score calculation
+			} else { //no conflict
+				return new SimpleEvaluatedClassificationResult(result.getSuggestedDecision(), 1.0);
+			}
+		case SCORE:
+			IntList calculatedIndicesOfCoveringRules = getIndicesOfCoveringRules(objectIndex, informationTable);
+			indicesOfCoveringRules.addAll(calculatedIndicesOfCoveringRules);
+			return classifyWithScore(calculatedIndicesOfCoveringRules);
+		default:
+			throw new InvalidValueException("Wrong mode of scoring classifier."); //this should not happen
+		}
 	}
 	
 	/**
-	 * Classifies an object from an information table, using given indices of "at least" and "at most" rules covering that object.
+	 * Classifies an object from an information table, using given indices of ("at least" and "at most") rules covering that object.
 	 * 
-	 * @param indicesOfCoveringAtLeastAndAtMostRules list of indices of rules from the rule set that cover the object of interest (first indices of
-	 *         at least rules, followed by indices of at most rules)
-	 * 
-	 * @return simple optimal classification result for a test object covered by rules with given indices 
+	 * @param indicesOfCoveringRules list of indices of rules from the rule set that cover the object of interest
+	 * @return simple optimal classification result for a test object covered by rules with given indices
 	 */
-	SimpleEvaluatedClassificationResult classifyWithScore(IntList indicesOfCoveringAtLeastAndAtMostRules) {
-		if (indicesOfCoveringAtLeastAndAtMostRules.size() == 0) { //no covering rule
+	SimpleEvaluatedClassificationResult classifyWithScore(IntList indicesOfCoveringRules) {
+		if (indicesOfCoveringRules.size() == 0) { //no covering rule
 			return getDefaultClassificationResult();
 		} else {
 			//every rule covering considered test object will be used to calculate Score of that object w.r.t. different decisions,
 			//so it makes sense to create detailed rule coverage information for each such rule
-			for (int ruleIndex : indicesOfCoveringAtLeastAndAtMostRules) {
+			for (int ruleIndex : indicesOfCoveringRules) {
 				if (!ruleIndex2DetailedRuleCoverageInfo.containsKey(ruleIndex)) {
 					ruleIndex2DetailedRuleCoverageInfo.put(ruleIndex, new DetailedRuleCoverageInformation(ruleIndex)); 
 				}
@@ -549,9 +612,9 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 			double maxScore = Double.NEGATIVE_INFINITY; //initialized with the worst possible value
 			int maxScoreDecisionIndex = -1; //index of decision with maximum score
 			
-			switch (indicesOfCoveringAtLeastAndAtMostRules.size()) { //check number of rules covering classified test object
+			switch (indicesOfCoveringRules.size()) { //check number of rules covering classified test object
 			case 1: //exactly one covering rule
-				int onlyRuleIndex = indicesOfCoveringAtLeastAndAtMostRules.getInt(0);
+				int onlyRuleIndex = indicesOfCoveringRules.getInt(0);
 				calculateDecisionLoopParameters(ruleSet.getRule(onlyRuleIndex), decisionLoopParameters); //updates fields of decisionLoopParameters object
 				
 				for (int decisionIndex = decisionLoopParameters.startingDecisionIndex; decisionIndex != decisionLoopParameters.outOfRangeDecisionIndex;
@@ -579,7 +642,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 				IntSet[] indicesOfRulesSupportingDecision = new IntOpenHashSet[learningOrderedUniqueDecisions.length]; //for each decision stores either null or a set of indices of rules supporting that decision
 				
 				//prepare indicesOfRulesSupportingDecision
-				for (int ruleIndex : indicesOfCoveringAtLeastAndAtMostRules) {
+				for (int ruleIndex : indicesOfCoveringRules) {
 					calculateDecisionLoopParameters(ruleSet.getRule(ruleIndex), decisionLoopParameters); //updates fields of decisionLoopParameters object
 					for (int decisionIndex = decisionLoopParameters.startingDecisionIndex; decisionIndex != decisionLoopParameters.outOfRangeDecisionIndex;
 							decisionIndex += decisionLoopParameters.change) {
@@ -609,7 +672,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 						sumCondCapDecisionClass = new IntOpenHashSet();
 						sumCondPlus = new IntOpenHashSet();
 						
-						if (indicesOfRulesSupportingDecision[decisionIndex].size() < indicesOfCoveringAtLeastAndAtMostRules.size()) { //there are also rules that do not support currently considered decision
+						if (indicesOfRulesSupportingDecision[decisionIndex].size() < indicesOfCoveringRules.size()) { //there are also rules that do not support currently considered decision
 							//initialize sets for calculating negative Score
 							sumCondCapNegativeSet = new IntOpenHashSet();
 							sumCondMinus = new IntOpenHashSet();
@@ -621,7 +684,7 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 							scoreMinusPresent = false;
 						}
 						
-						for (int ruleIndex : indicesOfCoveringAtLeastAndAtMostRules) { //go over all covering rules and calculate sets of objects (precisely: objects' indices) necessary to calculate Score
+						for (int ruleIndex : indicesOfCoveringRules) { //go over all covering rules and calculate sets of objects (precisely: objects' indices) necessary to calculate Score
 							if (indicesOfRulesSupportingDecision[decisionIndex].contains(ruleIndex)) { //current rule supports current decision
 								sumCondCapDecisionClass.addAll(
 										ruleIndex2DetailedRuleCoverageInfo.get(ruleIndex).getDecisionClass2IndicesOfCoveredObjects().get(learningOrderedUniqueDecisions[decisionIndex]));
@@ -725,34 +788,23 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	
 	/**
 	 * Iterates among rules from the rule set that cover selected object from given information table
-	 * and gathers indices of these covering rules. In the resulting list of indices, first portion
-	 * of indices belongs to covering at least rules (i.e., rules with semantics {@link RuleSemantics#AT_LEAST}),
-	 * and second portion of indices belongs to covering at most rules
-	 * (i.e., rules with semantics {@link RuleSemantics#AT_MOST}).
+	 * and gathers indices of these covering rules. The order of rules in the returned list is the same as in the rule set.
 	 * 
 	 * @param objectIndex index of an object from the given information table
 	 * @param informationTable information table containing the object of interest
 	 * 
 	 * @return list of indices of rules from the rule set that cover the object of interest
-	 *         (first indices of at least rules, followed by indices of at most rules)
 	 */
-	IntList getIndicesOfCoveringAtLeastAndAtMostRules(int objectIndex, InformationTable informationTable) {
+	IntList getIndicesOfCoveringRules(int objectIndex, InformationTable informationTable) {
 		IntList indicesOfCoveringRules = new IntArrayList();
-		IntList additionalIndicesOfCoveringRules = new IntArrayList();
 		
 		int rulesCount = this.ruleSet.size();
 		
 		for (int i = 0; i < rulesCount; i++) {
 			if (this.ruleSet.getRule(i).covers(objectIndex, informationTable)) { //current rule covers considered object
-				if (this.ruleSet.getRule(i).getSemantics() == RuleSemantics.AT_LEAST) {
-					indicesOfCoveringRules.add(i); //remember index of covering "at least" rule
-				} else if (this.ruleSet.getRule(i).getSemantics() == RuleSemantics.AT_MOST) {
-					additionalIndicesOfCoveringRules.add(i); //remember index of covering "at most" rule
-				}
+				indicesOfCoveringRules.add(i); //remember index of covering rule
 			} //if
 		} //for
-		
-		indicesOfCoveringRules.addAll(additionalIndicesOfCoveringRules);
 		
 		return indicesOfCoveringRules;
 	}
