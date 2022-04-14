@@ -87,7 +87,8 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 	 * @param indicesOfCoveringRules reference to a list where indices of covering rules should be added;
 	 *        if no rule from the rule set covers given object, then no index will be added to the list;
 	 *        used only if {@code rememberIndicesOfCoveringRules == true} - in such case has to be not {@code null} (otherwise a {@link NullPointerException} will be thrown);
-	 *        not used if {@code rememberIndicesOfCoveringRules == false} - in such case may be {@code null}
+	 *        not used if {@code rememberIndicesOfCoveringRules == false} - in such case may be {@code null};
+	 *        covering rules are added to the list in the order in which they appear in the rule set
 	 * 
 	 * @return simple classification result for the considered object
 	 * 
@@ -101,79 +102,106 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 			Precondition.notNull(indicesOfCoveringRules, "List for remembering indices of covering rules is null.");
 		}
 		
-		SimpleClassificationResult result = this.getDefaultClassificationResult(); //set default result, returned if no rule covers considered object
-		int decisionAttributeIndex = -1;
-		
-		Condition<EvaluationField> decision = null; //decision condition of the current rule
-		EvaluationField upLimit = null, downLimit = null;
+		Condition<EvaluationField> decisionCondition = null; //decision condition of the current rule
+		EvaluationField upLimit = null; //most cautious evaluation among limiting evaluations of decision conditions of type ConditionAtLeast
+		EvaluationField downLimit = null; //most cautious evaluation among limiting evaluations of decision conditions of type ConditionAtMost
 		
 		int rulesCount = this.ruleSet.size();
+		//take decision attribute index from the first rule -- all rules are expected to be defined for the same decision attribute
+		int decisionAttributeIndex = (rulesCount > 0 ? this.ruleSet.getRule(0).getDecision().getAttributeWithContext().getAttributeIndex() : -1);
 		
 		for (int i = 0; i < rulesCount; i++) {
-			if (this.ruleSet.getRule(i).covers(objectIndex, informationTable)) {
+			if (this.ruleSet.getRule(i).covers(objectIndex, informationTable)) { //current rule covers considered object
 				if (rememberIndicesOfCoveringRules) {
 					indicesOfCoveringRules.add(i); //remember index of covering rule
 				}
-				decision = this.ruleSet.getRule(i).getDecision();
-				
-				if (decisionAttributeIndex == -1) { //TODO: what if decision attribute index changes (for now index from the first covering rule is assigned)
-					decisionAttributeIndex = decision.getAttributeWithContext().getAttributeIndex();
-				}
-				if (decision instanceof ConditionAtLeast<?>) {
+				decisionCondition = this.ruleSet.getRule(i).getDecision();
+
+				if (decisionCondition instanceof ConditionAtLeast<?>) {
 					if (upLimit == null) {
-						upLimit = decision.getLimitingEvaluation();
+						upLimit = decisionCondition.getLimitingEvaluation();
 					}
 					else {
 						try {
-							if (decision.getLimitingEvaluation().compareToEx(upLimit) > 0) {
-								upLimit = decision.getLimitingEvaluation();
+							if (decisionCondition.getLimitingEvaluation().compareToEx(upLimit) > 0) {
+								upLimit = decisionCondition.getLimitingEvaluation();
 							}
 						}
 						catch (UncomparableException ex) {
 							throw new InvalidValueException("Cannot compare limiting evaluations of two decisions of type at least.");
-							//System.out.println("Uncomparable decision value detected during comparison: " + ex.toString());
 						}
 					}
 				}
-				else if (decision instanceof ConditionAtMost<?>) {
+				else if (decisionCondition instanceof ConditionAtMost<?>) {
 					if (downLimit == null) {
-						downLimit = decision.getLimitingEvaluation();
+						downLimit = decisionCondition.getLimitingEvaluation();
 					}
 					else {
 						try {
-							if (decision.getLimitingEvaluation().compareToEx(downLimit) < 0) {
-								downLimit = decision.getLimitingEvaluation();
+							if (decisionCondition.getLimitingEvaluation().compareToEx(downLimit) < 0) {
+								downLimit = decisionCondition.getLimitingEvaluation();
 							}
 						}
 						catch (UncomparableException ex) {
 							throw new InvalidValueException("Cannot compare limiting evaluations of two decisions of type at most.");
-							//System.out.println("Uncomparable decision value detected during comparison: " + ex.toString());
 						}
 					}
 				}
 			}
 		}
 		
-		// set the result
+		//set the result
+		return resolveClassificationResult(upLimit, downLimit, decisionAttributeIndex);
+	}
+	
+	/**
+	 * Computes classification result.
+	 * 
+	 * @param upLimit evaluation corresponding to the most cautious class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtLeast}
+	 * @param downLimit evaluation corresponding to the most cautious class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtMost}
+	 * @param decisionAttributeIndex index of decision attribute
+	 * 
+	 * @return computed classification result
+	 */
+	SimpleClassificationResult resolveClassificationResult(EvaluationField upLimit, EvaluationField downLimit, int decisionAttributeIndex) {
+		SimpleClassificationResult result;
+
+		//set the result
 		if (upLimit != null) {
 			if (downLimit != null) {
-				if (upLimit.isEqualTo(downLimit) == TernaryLogicValue.TRUE) {
+				if (upLimit.isEqualTo(downLimit) == TernaryLogicValue.TRUE) { //both limits are set and equal to each other
 					result = new SimpleClassificationResult(new SimpleDecision(upLimit, decisionAttributeIndex));
 				}	
-				else { //both limits set
-					//remark that not necessarily downLimit <= upLimit! We can have, e.g., <=2 && >=6 or >=2 && <=6
-					result = new SimpleClassificationResult(new SimpleDecision(downLimit.calculate(this.meanCalculator, upLimit), decisionAttributeIndex));
+				else { //both limits are set but different
+					//remark that not necessarily downLimit <= upLimit! We can have, e.g., >=2 && <=6 or <=2 && >=6
+					result = resolveConflictingClassificationResult(upLimit, downLimit, decisionAttributeIndex);
 				}
 			}
-			else {
+			else { //only upLimit is set
 				result = new SimpleClassificationResult(new SimpleDecision(upLimit, decisionAttributeIndex));
 			}
 		}
-		else if (downLimit != null) {
+		else if (downLimit != null) { //only downLimit is set
 			result = new SimpleClassificationResult(new SimpleDecision(downLimit, decisionAttributeIndex));
+		}
+		else { //no limit is set
+			result = this.getDefaultClassificationResult(); //set default result, returned if no rule covers considered object
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Computes classification result in case when both limits are set but different. Returns mean value of the two limits.
+	 * 
+	 * @param upLimit evaluation corresponding to the most cautious class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtLeast}
+	 * @param downLimit evaluation corresponding to the most cautious class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtMost}
+	 * @param decisionAttributeIndex index of decision attribute
+	 * 
+	 * @return computed classification result (mean value of the two limits)
+	 */
+	SimpleClassificationResult resolveConflictingClassificationResult(EvaluationField upLimit, EvaluationField downLimit, int decisionAttributeIndex) {
+		return new SimpleClassificationResult(new SimpleDecision(downLimit.calculate(this.meanCalculator, upLimit), decisionAttributeIndex));
 	}
 	
 	/**

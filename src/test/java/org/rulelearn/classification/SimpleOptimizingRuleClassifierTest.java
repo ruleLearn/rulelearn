@@ -389,11 +389,11 @@ class SimpleOptimizingRuleClassifierTest {
 		EvaluationField downLimit = IntegerFieldFactory.getInstance().create(1, decAttrPrefType);
 		EvaluationField upLimit = IntegerFieldFactory.getInstance().create(3, decAttrPrefType);
 		
-		List<Integer> indicesOfCoveringAtMostRules = new IntArrayList();
+		IntList indicesOfCoveringAtMostRules = new IntArrayList();
 		indicesOfCoveringAtMostRules.add(atMostRuleIndex0);
 		indicesOfCoveringAtMostRules.add(atMostRuleIndex1);
 		
-		List<Integer> indicesOfCoveringAtLeastRules = new IntArrayList();
+		IntList indicesOfCoveringAtLeastRules = new IntArrayList();
 		indicesOfCoveringAtLeastRules.add(atLeastRuleIndex0);
 		indicesOfCoveringAtLeastRules.add(atLeastRuleIndex1);
 		
@@ -411,7 +411,7 @@ class SimpleOptimizingRuleClassifierTest {
 		
 		EvaluationField decisionEvaluation = IntegerFieldFactory.getInstance().create(1, decAttrPrefType);
 		
-		List<Integer> indicesOfCoveringAtMostRules = new IntArrayList();
+		IntList indicesOfCoveringAtMostRules = new IntArrayList();
 		indicesOfCoveringAtMostRules.add(atMostRuleIndex0);
 		indicesOfCoveringAtMostRules.add(atMostRuleIndex1);
 		
@@ -433,7 +433,7 @@ class SimpleOptimizingRuleClassifierTest {
 		
 		EvaluationField decisionEvaluation = IntegerFieldFactory.getInstance().create(3, decAttrPrefType);
 		
-		List<Integer> indicesOfCoveringAtLeastRules = new IntArrayList();
+		IntList indicesOfCoveringAtLeastRules = new IntArrayList();
 		indicesOfCoveringAtLeastRules.add(atLeastRuleIndex0);
 		indicesOfCoveringAtLeastRules.add(atLeastRuleIndex1);
 		

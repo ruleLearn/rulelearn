@@ -16,8 +16,6 @@
 
 package org.rulelearn.classification;
 
-import java.util.List;
-
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.ModeCalculator;
 import org.rulelearn.core.Precondition;
@@ -166,8 +164,8 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 		}
 		
 		Condition<EvaluationField> decisionCondition = null; //decision condition of the current rule
-		EvaluationField upLimit = null; //intersection of limiting evaluations of decision conditions of type ConditionAtLeast
-		EvaluationField downLimit = null; //intersection of limiting evaluations of decision conditions of type ConditionAtMost
+		EvaluationField upLimit = null; //most cautious evaluation among limiting evaluations of decision conditions of type ConditionAtLeast
+		EvaluationField downLimit = null; //most cautious evaluation among limiting evaluations of decision conditions of type ConditionAtMost
 		
 		int rulesCount = this.ruleSet.size();
 		//take decision attribute index from the first rule -- all rules are expected to be defined for the same decision attribute
@@ -178,6 +176,9 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 		
 		for (int i = 0; i < rulesCount; i++) {
 			if (this.ruleSet.getRule(i).covers(objectIndex, informationTable)) { //current rule covers considered object
+				if (rememberIndicesOfCoveringRules) {
+					indicesOfCoveringRules.add(i); //remember index of covering rule
+				}				
 				decisionCondition = this.ruleSet.getRule(i).getDecision();
 
 				if (decisionCondition instanceof ConditionAtLeast<?>) {
@@ -214,20 +215,16 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 				}
 			}
 		}
-		
-		if (rememberIndicesOfCoveringRules) { //append to given list indices of all covering rules
-			indicesOfCoveringRules.addAll(indicesOfCoveringAtLeastRules);
-			indicesOfCoveringRules.addAll(indicesOfCoveringAtMostRules);
-		}
-		
+
+		//set the result
 		return resolveClassificationResult(upLimit, downLimit, decisionAttributeIndex, indicesOfCoveringAtLeastRules, indicesOfCoveringAtMostRules);
 	}
 	
 	/**
 	 * Computes classification result.
 	 * 
-	 * @param upLimit most cautious common class in the intersection of rules with decision of type {@link ConditionAtLeast}
-	 * @param downLimit most cautious common class in the intersection of rules with decision of type {@link ConditionAtMost}
+	 * @param upLimit evaluation corresponding to the most cautious class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtLeast}
+	 * @param downLimit evaluation corresponding to the most cautious class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtMost}
 	 * @param decisionAttributeIndex index of decision attribute
 	 * @param indicesOfCoveringAtLeastRules indices of at least rules (with decision of type {@link ConditionAtLeast}) from the rule set that cover classified object
 	 * @param indicesOfCoveringAtMostRules indices of at most rules (with decision of type {@link ConditionAtMost}) from the rule set that cover classified object
@@ -236,6 +233,7 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	 */
 	SimpleClassificationResult resolveClassificationResult(EvaluationField upLimit, EvaluationField downLimit, int decisionAttributeIndex,
 			IntList indicesOfCoveringAtLeastRules, IntList indicesOfCoveringAtMostRules) {
+		
 		SimpleClassificationResult result;
 		
 		//set the result
@@ -259,7 +257,7 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 			result = new SimpleClassificationResult(new SimpleDecision(downLimit, decisionAttributeIndex));
 		}
 		else { //no limit is set
-			result = this.getDefaultClassificationResult(); //set default result, returned if no rule covers considered object;
+			result = this.getDefaultClassificationResult(); //set default result, returned if no rule covers considered object
 		}
 
 		return result;
@@ -269,14 +267,14 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	 * Calculates {@link EvaluationField evaluation} modal value of the two given evaluations of decision attribute.
 	 * Uses {{@link #modeCalculator}. For the description of counting frequencies of the given evaluations, see description of this class.
 	 * 
-	 * @param downLimit evaluation resulting from intersection of "at most" rules
-	 * @param upLimit evaluation resulting from intersection of "at least" rules
-	 * @param indicesOfCoveringAtMostRules indices of at most rules covering classified object
-	 * @param indicesOfCoveringAtLeastRules indices of at least rules covering classified object
+	 * @param downLimit evaluation corresponding to the most cautious class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtMost}
+	 * @param upLimit evaluation corresponding to the most cautious class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtLeast}
+	 * @param indicesOfCoveringAtMostRules indices of at most rules (with decision of type {@link ConditionAtMost}) from the rule set that cover classified object
+	 * @param indicesOfCoveringAtLeastRules indices of at least rules (with decision of type {@link ConditionAtLeast}) from the rule set that cover classified object
 	 * 
 	 * @return modal value of the two given evaluations of decision attribute
 	 */
-	EvaluationField calculateModalDecisionEvaluation(EvaluationField downLimit, EvaluationField upLimit, List<Integer> indicesOfCoveringAtMostRules, List<Integer> indicesOfCoveringAtLeastRules) {
+	EvaluationField calculateModalDecisionEvaluation(EvaluationField downLimit, EvaluationField upLimit, IntList indicesOfCoveringAtMostRules, IntList indicesOfCoveringAtLeastRules) {
 		FieldDistribution fieldDistribution = new FieldDistribution();
 		
 		//indices of objects that: i) are covered by at least one rule covering classified object, ii) have decision with evaluation equal to limit
@@ -289,7 +287,8 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	
 	/**
 	 * Browses rules from the rule set having indices on the given list and gathers indices of those learning objects covered by these rules
-	 * whose simple decision has evaluation equal to given {@code evaluation}. In other words, gathers indices of covered learning objects supporting simple decision with given evaluation.
+	 * whose simple decision has evaluation equal to given {@code decisionEvaluation}.
+	 * In other words, gathers indices of covered learning objects supporting simple decision with given evaluation.
 	 * 
 	 * @param decisionEvaluation decision evaluation of interest, searched among simple decisions of covered learning objects
 	 * @param indicesOfCoveringRules indices of "at least" or "at most" rules (from the rule set) covering classified test object
@@ -297,7 +296,7 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 	 *         and having simple decision with {@link SimpleDecision#getEvaluation() evaluation} equal to given {@code evaluation}
 	 * @throws ClassCastException if decision of some considered learning object is not of type {@link SimpleDecision}
 	 */
-	IntSet getIndicesOfCoveredLearningObjectsWithDecisionEvaluation(EvaluationField decisionEvaluation, List<Integer> indicesOfCoveringRules) {
+	IntSet getIndicesOfCoveredLearningObjectsWithDecisionEvaluation(EvaluationField decisionEvaluation, IntList indicesOfCoveringRules) {
 		IntList indicesOfCoveredLearningObjects;
 		Int2ObjectMap<Decision> decisionsOfCoveredLearningObjects;
 		IntSet indicesOfCoveredLearningObjectsWithDecisionEvaluation = new IntOpenHashSet(); //result of this method
