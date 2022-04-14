@@ -16,6 +16,8 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.approximations.Union.UnionType;
+
 /**
  * Semantics of a decision rule, reflecting the type of conditions and decision present in this rule.
  *
@@ -27,11 +29,13 @@ public enum RuleSemantics {
 	
 	/**
 	 * Semantics of a rule describing minimal conditions (lower profile) that need to be satisfied by a decision object to conclude that this object belongs to the set determined by rule's decision part.
+	 * Rules with this semantics are induced from approximations of {@link UnionType#AT_LEAST upward} unions of classes.
 	 */
 	AT_LEAST,
 	
 	/**
 	 * Semantics of a rule describing maximal conditions (upper profile) that must not be exceeded by a decision object to conclude that this object belongs to the set determined by rule's decision part.
+	 * Rules with this semantics are induced from approximations of {@link UnionType#AT_MOST downward} unions of classes.
 	 */
 	AT_MOST,
 	

@@ -61,7 +61,7 @@ public class SimpleOptimizingCountingRuleClassifier extends SimpleOptimizingRule
 		 */
 		MODE,
 		/**
-		 * Resolution strategy consisting in returning the default decision class (as not rule covered classified test object).
+		 * Resolution strategy consisting in returning the default decision class (as no rule covered classified test object).
 		 */
 		DEFAULT;
 	}
@@ -133,8 +133,8 @@ public class SimpleOptimizingCountingRuleClassifier extends SimpleOptimizingRule
 	 * Computes classification result. Updates count of particular situation (only up limit was used, only down limit was used, both limits being equal were used,
 	 * both limits being different were used, default classification result was used).
 	 * 
-	 * @param upLimit most cautious common class in the intersection of rules with decision of type {@link ConditionAtLeast}
-	 * @param downLimit most cautious common class in the intersection of rules with decision of type {@link ConditionAtMost}
+	 * @param upLimit evaluation corresponding to the most cautious class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtLeast}
+	 * @param downLimit evaluation corresponding to the most cautious class in the intersection of unions of classes suggested by rules with decision of type {@link ConditionAtMost}
 	 * @param decisionAttributeIndex index of decision attribute
 	 * @param indicesOfCoveringAtLeastRules indices of at least rules (with decision of type {@link ConditionAtLeast}) from the rule set that cover classified object
 	 * @param indicesOfCoveringAtMostRules indices of at most rules (with decision of type {@link ConditionAtMost}) from the rule set that cover classified object
@@ -144,6 +144,7 @@ public class SimpleOptimizingCountingRuleClassifier extends SimpleOptimizingRule
 	@Override
 	SimpleClassificationResult resolveClassificationResult(EvaluationField upLimit, EvaluationField downLimit, int decisionAttributeIndex,
 			IntList indicesOfCoveringAtLeastRules, IntList indicesOfCoveringAtMostRules) {
+		
 		SimpleClassificationResult result;
 		
 		//latestModeDownLimit = null; //redundant

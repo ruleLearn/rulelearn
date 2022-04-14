@@ -20,6 +20,7 @@ import org.rulelearn.core.Precondition;
 import org.rulelearn.data.SimpleDecision;
 
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 
 /**
  * Simple result of classification of an object from an information table, reflecting its classification to exactly one decision class, obtained by choosing the decision that optimizes
@@ -51,6 +52,8 @@ public class SimpleEvaluatedClassificationResult extends SimpleClassificationRes
 	public SimpleEvaluatedClassificationResult(SimpleDecision suggestedDecision, double suggestedDecisionEvaluation) {
 		super(suggestedDecision);
 		this.suggestedDecisionEvaluation = suggestedDecisionEvaluation;
+		this.decision2ScoreMap = new Object2DoubleOpenHashMap<SimpleDecision>();
+		this.decision2ScoreMap.put(suggestedDecision, suggestedDecisionEvaluation);
 	}
 	
 	/**
@@ -58,12 +61,13 @@ public class SimpleEvaluatedClassificationResult extends SimpleClassificationRes
 	 * 
 	 * @param suggestedDecision evaluation of an object on the decision attribute (i.e., decision) suggested by a classifier
 	 * @param suggestedDecisionEvaluation evaluation of suggested decision
-	 * @param decision2ScoreMap mapping between all considered decisions and their scores
+	 * @param decision2ScoreMap mapping between all considered decisions and their scores (including also given suggested decision)
 	 * 
 	 * @throws NullPointerException if given suggested decision or given map is {@code null}
 	 */
 	public SimpleEvaluatedClassificationResult(SimpleDecision suggestedDecision, double suggestedDecisionEvaluation, Object2DoubleMap<SimpleDecision> decision2ScoreMap) {
-		this(suggestedDecision, suggestedDecisionEvaluation);
+		super(suggestedDecision);
+		this.suggestedDecisionEvaluation = suggestedDecisionEvaluation;
 		this.decision2ScoreMap = Precondition.notNull(decision2ScoreMap, "Decision to score map is null.");
 	}
 
