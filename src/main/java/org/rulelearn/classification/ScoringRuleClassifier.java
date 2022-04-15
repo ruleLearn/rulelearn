@@ -350,6 +350,28 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 		int outOfRangeDecisionIndex;
 	}
 	
+	private class ScoreHistory {
+		private double maxScore = Double.NEGATIVE_INFINITY; //maximum score found so far; initialized with the worst possible value
+		private int maxScoreDecisionIndex = -1; //index of decision with maximum score
+		
+		private Object2DoubleMap<SimpleDecision> decision2ScoreMap; //maps decision to its Score
+		
+		private ScoreHistory() {
+			decision2ScoreMap = new Object2DoubleOpenHashMap<SimpleDecision>();
+		}
+		
+		private void registerScoreForDecision(double score, int decisionIndex) {
+			decision2ScoreMap.put(learningOrderedUniqueDecisions[decisionIndex], score);
+			
+			//update max score only if better score found - corresponds to "prudent" approach
+			if (score > maxScore) {
+				maxScore = score; //update maximum score
+				maxScoreDecisionIndex = decisionIndex; //remember index of decision giving maximum score
+				//if there is >1 decision with the best score, the first considered decision with the best score will be chosen (i.e., the worst decision)
+			}
+		}
+	}
+	
 	/**
 	 * Learning (training) information table for which all rules from the rule set have been calculated. 
 	 */
@@ -466,6 +488,9 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 	public ScoringRuleClassifier(RuleSet ruleSet, SimpleEvaluatedClassificationResult defaultClassificationResult, Mode mode, Version version, InformationTable learningInformationTable) {
 		this(ruleSet, defaultClassificationResult, mode, learningInformationTable);
 		this.version = Precondition.notNull(version, "VC-DRSA classifier version is null.");
+		if (version != Version.EJOR_2007 && version != Version.COMPLEMENT) {
+			throw new InvalidValueException("Not supported version of VC-DRSA classifier."); //This allows to simplify further code - no switch necessary (version can have only two values)
+		}
 	}
 	
 	/**
@@ -598,54 +623,42 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 		if (indicesOfCoveringRules.size() == 0) { //no covering rule
 			return getDefaultClassificationResult();
 		} else {
-			//every rule covering considered test object will be used to calculate Score of that object w.r.t. different decisions,
-			//so it makes sense to create detailed rule coverage information for each such rule
+			//every rule covering considered test object will be used to calculate Score of that object w.r.t. different decisions, so it makes sense to create detailed rule coverage information for each such rule
 			for (int ruleIndex : indicesOfCoveringRules) {
 				if (!ruleIndex2DetailedRuleCoverageInfo.containsKey(ruleIndex)) {
 					ruleIndex2DetailedRuleCoverageInfo.put(ruleIndex, new DetailedRuleCoverageInformation(ruleIndex)); 
 				}
 			}
 			
-			DecisionLoopParameters decisionLoopParameters = new DecisionLoopParameters(); //constructed once and then updated in calculateDecisionLoopParameters method 
-			Object2DoubleMap<SimpleDecision> decision2ScoreMap = new Object2DoubleOpenHashMap<SimpleDecision>(); //maps decision to its Score
+			DecisionLoopParameters decisionLoopParameters = new DecisionLoopParameters(); //constructed once and then updated in calculateDecisionLoopParameters method
+			ScoreHistory scoreHistory = new ScoreHistory();
 			double score = 0;
-			double maxScore = Double.NEGATIVE_INFINITY; //initialized with the worst possible value
-			int maxScoreDecisionIndex = -1; //index of decision with maximum score
 			
 			switch (indicesOfCoveringRules.size()) { //check number of rules covering classified test object
-			case 1: //exactly one covering rule
+			case 1: //exactly one covering rule; this case is a special case of >1 covering rule, that is handled separately only due to efficiency concerns (less processing required if only one rule - no negative score)
 				int onlyRuleIndex = indicesOfCoveringRules.getInt(0);
 				calculateDecisionLoopParameters(ruleSet.getRule(onlyRuleIndex), decisionLoopParameters); //updates fields of decisionLoopParameters object
 				
-				for (int decisionIndex = decisionLoopParameters.startingDecisionIndex; decisionIndex != decisionLoopParameters.outOfRangeDecisionIndex;
-						decisionIndex += decisionLoopParameters.change) {
+				for (int decisionIndex = decisionLoopParameters.startingDecisionIndex; decisionIndex != decisionLoopParameters.outOfRangeDecisionIndex; decisionIndex += decisionLoopParameters.change) {
 					score = Math.pow((double)ruleIndex2DetailedRuleCoverageInfo.get(onlyRuleIndex).getDecisionClass2IndicesOfCoveredObjects().get(
-							learningOrderedUniqueDecisions[decisionIndex]).size(), 2) /
+						learningOrderedUniqueDecisions[decisionIndex]).size(), 2) /
 							((double)ruleIndex2DetailedRuleCoverageInfo.get(onlyRuleIndex).getIndicesOfCoveredObjects().size() *
 							(double)learningDecisionDistribution.getCount(learningOrderedUniqueDecisions[decisionIndex])); //denominator should not be zero
-					
-					decision2ScoreMap.put(learningOrderedUniqueDecisions[decisionIndex], score);
-					
-					//update max score only if better score found - corresponds to "prudent" approach
-					if (score > maxScore) {
-						maxScore = score; //update maximum score
-						maxScoreDecisionIndex = decisionIndex; //remember index of decision giving maximum score
-						//if there is >1 decision with the best score, the first considered decision with the best score will be chosen (i.e., the worst decision)
-					}
+					scoreHistory.registerScoreForDecision(score, decisionIndex);
 				} //for
 				
-				return new SimpleEvaluatedClassificationResult(learningOrderedUniqueDecisions[maxScoreDecisionIndex], maxScore, decision2ScoreMap);
+				return new SimpleEvaluatedClassificationResult(learningOrderedUniqueDecisions[scoreHistory.maxScoreDecisionIndex], scoreHistory.maxScore, scoreHistory.decision2ScoreMap);
 			default: //>1 covering rule
 				double scorePlus;
 				double scoreMinus = 0;
+				int negativeSetSize;
 				
 				IntSet[] indicesOfRulesSupportingDecision = new IntOpenHashSet[learningOrderedUniqueDecisions.length]; //for each decision stores either null or a set of indices of rules supporting that decision
 				
 				//prepare indicesOfRulesSupportingDecision
 				for (int ruleIndex : indicesOfCoveringRules) {
 					calculateDecisionLoopParameters(ruleSet.getRule(ruleIndex), decisionLoopParameters); //updates fields of decisionLoopParameters object
-					for (int decisionIndex = decisionLoopParameters.startingDecisionIndex; decisionIndex != decisionLoopParameters.outOfRangeDecisionIndex;
-							decisionIndex += decisionLoopParameters.change) {
+					for (int decisionIndex = decisionLoopParameters.startingDecisionIndex; decisionIndex != decisionLoopParameters.outOfRangeDecisionIndex; decisionIndex += decisionLoopParameters.change) {
 						updateIndicesOfRulesSupportingDecision(indicesOfRulesSupportingDecision, decisionIndex, ruleIndex);
 					}
 				}
@@ -654,17 +667,17 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 				//for each potential decision we have 2 sets of rules:
 				//  a) rules whose decision part covers that decision (called positive rules)
 				//  b) rules whose decision part does not cover that decision (called negative rules)
+				
 				IntSet sumCondCapDecisionClass; //in numerator of Score+ (sum of intersections of set of training objects that are covered by a positive rule and set of training objects that belong to considered decision class)
 				IntSet sumCondPlus; //in denominator of Score+ (sum of sets of training objects that are covered by a positive rule)
 				
-				IntSet sumCondCapNegativeSet = null; //in numerator of Score-;
-				//for version EJOR_2007: sum of intersections of set of training objects that are covered by a negative rule and set of training objects that belong to union of decision classes suggested by the negative rule;
-				//for version COMPLEMENT: sum of sets of training objects that are covered by a negative rule and belong to the complement of currently considered decision class
-				
+				IntSet sumCondCapNegativeSet = null; //in numerator of Score-:
+				//- for version EJOR_2007: sum of intersections of set of training objects that are covered by a negative rule and set of training objects that belong to union of decision classes suggested by the negative rule;
+				//- for version COMPLEMENT: sum of sets of training objects that are covered by a negative rule and belong to the complement of currently considered decision class
 				IntSet sumCondMinus = null; //in denominator of Score- (sum of sets of training objects that are covered by subsequent negative rules)
-				IntSet sumUnions = null; //in denominator of Score- for version EJOR_2007 (sum of sets of training objects that belong to union of decision classes suggested by a negative rule)
+				IntSet sumUnions = null; //in denominator of Score- for version EJOR_2007 only (sum of sets of training objects that belong to union of decision classes suggested by a negative rule)
 				
-				boolean scoreMinusPresent;
+				boolean scoreMinusPresent; //tells if negative score needs to be calculated for current decision
 				
 				for (int decisionIndex = 0; decisionIndex < indicesOfRulesSupportingDecision.length; decisionIndex++) { //go over all decisions
 					if (indicesOfRulesSupportingDecision[decisionIndex] != null) { //given decision is supported by at least one rule covering classified object, and thus it becomes a potential decision for which Score needs to be calculated
@@ -673,21 +686,18 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 						sumCondPlus = new IntOpenHashSet();
 						
 						if (indicesOfRulesSupportingDecision[decisionIndex].size() < indicesOfCoveringRules.size()) { //there are also rules that do not support currently considered decision
+							scoreMinusPresent = true;
 							//initialize sets for calculating negative Score
 							sumCondCapNegativeSet = new IntOpenHashSet();
 							sumCondMinus = new IntOpenHashSet();
-							if (version == Version.EJOR_2007) {
-								sumUnions = new IntOpenHashSet();
-							} //for Version.COMPLEMENT leave sumUnions == null
-							scoreMinusPresent = true;
+							sumUnions = (version == Version.EJOR_2007 ? new IntOpenHashSet() : null); //sumUnions not used for COMPLEMENT version
 						} else {
 							scoreMinusPresent = false;
 						}
 						
 						for (int ruleIndex : indicesOfCoveringRules) { //go over all covering rules and calculate sets of objects (precisely: objects' indices) necessary to calculate Score
 							if (indicesOfRulesSupportingDecision[decisionIndex].contains(ruleIndex)) { //current rule supports current decision
-								sumCondCapDecisionClass.addAll(
-										ruleIndex2DetailedRuleCoverageInfo.get(ruleIndex).getDecisionClass2IndicesOfCoveredObjects().get(learningOrderedUniqueDecisions[decisionIndex]));
+								sumCondCapDecisionClass.addAll(ruleIndex2DetailedRuleCoverageInfo.get(ruleIndex).getDecisionClass2IndicesOfCoveredObjects().get(learningOrderedUniqueDecisions[decisionIndex]));
 								sumCondPlus.addAll(ruleIndex2DetailedRuleCoverageInfo.get(ruleIndex).getIndicesOfCoveredObjects());
 							} else { //current rule does not support current decision
 								switch (version) {
@@ -697,10 +707,9 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 									break;
 								case COMPLEMENT:
 									sumCondCapNegativeSet.addAll(ruleIndex2DetailedRuleCoverageInfo.get(ruleIndex).getIndicesOfComplementCoveredObjects(learningOrderedUniqueDecisions[decisionIndex]));
-									//sumUnions not used in the denominator!
-									break;
+									break; //sumUnions not used in the denominator!
 								default:
-									throw new InvalidValueException("Unknown version of scoring rule classifier."); //this should not happen
+									throw new InvalidValueException("Not supported version of scoring rule classifier."); //this should not happen
 								} //switch
 								sumCondMinus.addAll(ruleIndex2DetailedRuleCoverageInfo.get(ruleIndex).getIndicesOfCoveredObjects());
 							}
@@ -710,38 +719,19 @@ public class ScoringRuleClassifier extends RuleClassifier implements SimpleClass
 								((double)sumCondPlus.size() * (double)learningDecisionDistribution.getCount(learningOrderedUniqueDecisions[decisionIndex])); //calculate positive score
 						
 						if (scoreMinusPresent) {
-							int size = 0; //right multiplier in the denominator of eq. describing Score-
-							switch (version) {
-							case EJOR_2007:
-								size = sumUnions.size();
-								break;
-							case COMPLEMENT:
-								size = learningInformationTable.getNumberOfObjects() - learningDecisionDistribution.getCount(learningOrderedUniqueDecisions[decisionIndex]); //size of the complement of currently considered decision class
-								break;
-							default:
-								throw new InvalidValueException("Unknown version of scoring rule classifier."); //this should not happen
-							}
-							
-							scoreMinus = Math.pow((double)sumCondCapNegativeSet.size(), 2) /
-								((double)sumCondMinus.size() * (double)size); //calculate negative score
+							negativeSetSize = (version == Version.EJOR_2007 ? sumUnions.size() :
+								learningInformationTable.getNumberOfObjects() - learningDecisionDistribution.getCount(learningOrderedUniqueDecisions[decisionIndex])); //version == Version.COMPLEMENT
+							scoreMinus = Math.pow((double)sumCondCapNegativeSet.size(), 2) / ((double)sumCondMinus.size() * (double)negativeSetSize); //calculate negative score
 						} else {
 							scoreMinus = 0;
 						}
 						
 						score = scorePlus - scoreMinus;
-						
-						decision2ScoreMap.put(learningOrderedUniqueDecisions[decisionIndex], score);
-						
-						//update max score only if better score found - corresponds to "prudent" approach
-						if (score > maxScore) {
-							maxScore = score; //update maximum score
-							maxScoreDecisionIndex = decisionIndex; //remember index of decision giving maximum score
-							//if there is >1 decision with the best score, the first considered decision with the best score will be chosen (i.e., the worst decision)
-						}
+						scoreHistory.registerScoreForDecision(score, decisionIndex);
 					} //if
 				} //for (decisionIndex)
 				
-				return new SimpleEvaluatedClassificationResult(learningOrderedUniqueDecisions[maxScoreDecisionIndex], maxScore, decision2ScoreMap);
+				return new SimpleEvaluatedClassificationResult(learningOrderedUniqueDecisions[scoreHistory.maxScoreDecisionIndex], scoreHistory.maxScore, scoreHistory.decision2ScoreMap);
 			} //switch
 		} //else
 		
