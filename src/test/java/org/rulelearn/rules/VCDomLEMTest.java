@@ -390,8 +390,8 @@ class VCDomLEMTest {
 //		}
 		
 		//expected output:
-		int ruleIndex;
-		int condIndex;
+		int ruleIndex = 0;
+		int condIndex = 0;
 		//(symptom1 >= 31.0) => (state >= 2)
 		assertTrue(ruleSet.getRule(ruleIndex = 0).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
 		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
@@ -446,8 +446,8 @@ class VCDomLEMTest {
 //		}
 		
 		//expected output:
-		int ruleIndex;
-		int condIndex;
+		int ruleIndex = 0;
+		int condIndex = 0;
 		//(symptom1 >= 31.0) => (state >= 2)
 		assertTrue(ruleSet.getRule(ruleIndex = 0).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
 		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
@@ -509,8 +509,8 @@ class VCDomLEMTest {
 //		}
 		
 		//expected output:
-		int ruleIndex;
-		int condIndex;
+		int ruleIndex = 0;
+		int condIndex = 0;
 		//(symptom2 >= 27.0) => (state >= 2)
 		assertTrue(ruleSet.getRule(ruleIndex = 0).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastThresholdVSObject);
 		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 2);
@@ -564,8 +564,8 @@ class VCDomLEMTest {
 //		}
 		
 		//expected output:
-		int ruleIndex;
-		int condIndex;
+		int ruleIndex = 0;
+		int condIndex = 0;
 		//(symptom1 >= 22.5) =>[p] (state >= 2)
 		assertTrue(ruleSet.getRule(ruleIndex = 0).getConditions(true)[condIndex = 0] instanceof ConditionAtLeastObjectVSThreshold); //ConditionAtLeastObjectVSThreshold (!)
 		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 1);
@@ -610,8 +610,8 @@ class VCDomLEMTest {
 //		}
 //		
 		//expected output:
-		int ruleIndex;
-		int condIndex;
+		int ruleIndex = 0;
+		int condIndex = 0;
 		//(symptom2 <= 9.0) => (state <= 0)
 		assertTrue(ruleSet.getRule(ruleIndex = 0).getConditions(true)[condIndex = 0] instanceof ConditionAtMostThresholdVSObject);
 		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 2);
@@ -666,8 +666,8 @@ class VCDomLEMTest {
 //		}
 		
 		//expected output:
-		int ruleIndex;
-		int condIndex;
+		int ruleIndex = 0;
+		int condIndex = 0;
 		//(symptom2 <= 9.0) => (state <= 0)
 		assertTrue(ruleSet.getRule(ruleIndex = 0).getConditions(true)[condIndex = 0] instanceof ConditionAtMostThresholdVSObject);
 		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 2);
@@ -729,8 +729,8 @@ class VCDomLEMTest {
 //		}
 		
 		//expected output:
-		int ruleIndex;
-		int condIndex;
+		int ruleIndex = 0;
+		int condIndex = 0;
 		//(symptom2 <= 9.0) =>[p] (state <= 0)
 		assertTrue(ruleSet.getRule(ruleIndex = 0).getConditions(true)[condIndex = 0] instanceof ConditionAtMostObjectVSThreshold);
 		assertEquals(ruleSet.getRule(ruleIndex).getConditions(true)[condIndex].getAttributeWithContext().getAttributeIndex(), 2);
