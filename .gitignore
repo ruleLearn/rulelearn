@@ -1,4 +1,5 @@
 .gradle
+.idea
 .settings
 bin
 build
@@ -8,3 +9,4 @@ lib
 *generated.json
 *generated.csv
 /src/test/resources/data/ruleml/ERA-train-0-hash.xml
+/src/test/resources/data/large
