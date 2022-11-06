@@ -16,6 +16,10 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.approximations.ApproximatedSet;
+import org.rulelearn.core.Precondition;
+import org.rulelearn.data.InformationTable;
+
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -58,6 +62,23 @@ public class RuleCoverageInformation extends BasicRuleCoverageInformation {
 		
 		indicesOfPositiveObjects = ruleConditions.getIndicesOfPositiveObjects();
 		indicesOfNeutralObjects = ruleConditions.getIndicesOfNeutralObjects();
+	}
+	
+	/**
+	 * Constructs this rule coverage info.
+	 * 
+	 * @param rule rule of interest, matched against objects from the given learning information table
+	 * @param learningInformationTable rule's learning information table
+	 * @param approximatedSet approximated set for which given rule has been induced
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 */
+	public RuleCoverageInformation(Rule rule, InformationTable learningInformationTable, ApproximatedSet approximatedSet) {
+		super(rule, learningInformationTable);
+		Precondition.notNull(approximatedSet, "Approximated set for constructing rule coverage information is null.");
+		
+		indicesOfPositiveObjects = approximatedSet.getObjects();
+		indicesOfNeutralObjects = approximatedSet.getNeutralObjects();
 	}
 	
 	/**

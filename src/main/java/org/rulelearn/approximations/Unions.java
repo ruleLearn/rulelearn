@@ -107,12 +107,12 @@ public abstract class Unions extends ApproximatedSets {
 	}
 
 	/**
-	 * Gets quality of approximation of all unions which can be defined for the information table.
+	 * Gets quality of (approximation of) classification concerning all unions which can be defined for the information table.
 	 * As in general (in presence of missing values) the theorem concerning identity of boundaries
 	 * does not hold, counts an object as inconsistent if it belongs to the boundary of any upward
 	 * or downward union from this container.
 	 * 
-	 * @return quality of approximation of all unions which can be defined for the information table
+	 * @return quality of (approximation of) classification concerning all unions which can be defined for the information table
 	 */
 	@Override
 	public double getQualityOfApproximation() {

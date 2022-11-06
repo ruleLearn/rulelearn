@@ -83,7 +83,27 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 		KnownSimpleField sufficientEvaluation = null;
 		KnownSimpleField insufficientEvaluation = null;
 		
+		/**
+		 * Tells if given limiting evaluation of an elementary condition is inside this interval.
+		 * 
+		 * @param evaluation evaluation for elementary condition
+		 * @param compareToMultiplier see {@link M4OptimizedConditionGenerator#calculateCompareToMultiplier(EvaluationAttribute, RuleConditions)}
+		 * @return {@code true} if this interval contains given evaluation, {@code false} otherwise
+		 */
 		abstract boolean includes(KnownSimpleField evaluation, int compareToMultiplier);
+		
+		/**
+		 * Tells if given candidate condition limiting evaluation is more extreme than given so far most extreme evaluation.
+		 * The meaning of the notion "extreme" depends on the evaluation measure used for choosing elementary conditions.
+		 * If more specific conditions are preferred, then more extreme evaluation is the one that corresponds to more specific condition.
+		 * If more general conditions are preferred, then more extreme evaluation is the one that corresponds to more general condition.
+		 * 
+		 * @param candidateLimitingEvaluation new evaluation to be tested
+		 * @param extremeLimitingEvaluation the most extreme evaluation found so far
+		 * @param compareToMultiplier see {@link M4OptimizedConditionGenerator#calculateCompareToMultiplier(EvaluationAttribute, RuleConditions)}
+		 * @return {@code true} if given candidate condition limiting evaluation is more extreme than given so far most extreme evaluation,
+		 *         {@code false} otherwise
+		 */
 		abstract boolean isMoreExtremeEvaluation(KnownSimpleField candidateLimitingEvaluation, KnownSimpleField extremeLimitingEvaluation, int compareToMultiplier);
 		
 		//initializes this interval
@@ -318,7 +338,8 @@ public class M4OptimizedConditionGenerator extends AbstractConditionGeneratorWit
 	}
 	
 	/**
-	 * Calculates multiplier used to compare two evaluations on the same condition attribute; it takes into account both attribute's preference type and rule's semantics.
+	 * Calculates multiplier used to compare two evaluations on the same condition attribute;
+	 * it takes into account both attribute's preference type and rule's semantics.
 	 * 
 	 * @param attribute considered condition attribute
 	 * @param ruleConditions rule conditions for which next best conditions is search for
