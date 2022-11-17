@@ -35,7 +35,7 @@ public interface ConditionRemovalEvaluator extends Measure {
 	 * 
 	 * @return evaluation of a hypothetical rule conditions obtained from the given ones by removing condition with given index
 	 * 
-	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws NullPointerException if given rule conditions are {@code null}
 	 * @throws IndexOutOfBoundsException if given condition index does not index any condition in given rule conditions
 	 */
 	public double evaluateWithoutCondition(RuleConditions ruleConditions, int conditionIndex);

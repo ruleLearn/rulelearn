@@ -16,6 +16,10 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.data.AttributePreferenceType;
+import org.rulelearn.data.EvaluationAttribute;
+import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.types.EvaluationField;
 
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -44,4 +48,127 @@ public interface ConditionGenerator {
 	 * @throws ElementaryConditionNotFoundException when it is impossible to find any new condition that could be added to given rule conditions
 	 */
 	public Condition<EvaluationField> getBestCondition(IntList consideredObjects, RuleConditions ruleConditions);
+	
+	/**
+	 * Utility method for constructing condition given rule type, rule semantics, evaluation attribute, limiting evaluation, and global index of the attribute.
+	 * Handles only certain and possible rule types.
+	 * 
+	 * @param ruleType type of rule for which new condition should be created
+	 * @param ruleSemantics semantics of rule for which new condition should be created
+	 * @param evaluationAttribute evaluation attribute for which new condition should be created
+	 * @param limitingEvaluation limiting evaluation of the new condition
+	 * @param globalAttributeIndex global index of the attribute
+	 * 
+	 * @return condition constructed for given parameters
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws InvalidValueException if {@code ruleType} is neither {@link RuleType#CERTAIN} nor {@link RuleType#POSSIBLE}
+	 * @throws InvalidValueException if {@code ruleSemantics} is neither {@link RuleSemantics#AT_LEAST} nor {@link RuleSemantics#AT_MOST} nor {@link RuleSemantics#EQUAL}
+	 * @throws InvalidValueException if {@link EvaluationAttribute#getPreferenceType() preference type} of the given attribute is neither
+	 *         {@link AttributePreferenceType#GAIN} nor {@link AttributePreferenceType#COST} nor {@link AttributePreferenceType#NONE}
+	 */
+	static public Condition<EvaluationField> constructCondition(RuleType ruleType, RuleSemantics ruleSemantics, EvaluationAttribute evaluationAttribute, 
+			EvaluationField limitingEvaluation, int globalAttributeIndex) {
+		switch (ruleType) {
+		case CERTAIN:
+			return constructCertainRuleCondition(ruleSemantics, evaluationAttribute, limitingEvaluation, globalAttributeIndex);
+		case POSSIBLE:
+			return constructPossibleRuleCondition(ruleSemantics, evaluationAttribute, limitingEvaluation, globalAttributeIndex);
+		default:
+			throw new InvalidValueException("Cannot construct condition if rule type is neither certain nor possible.");
+		}
+	}
+	
+	
+	/**
+	 * Utility method for constructing certain rule's condition given rule semantics, evaluation attribute, limiting evaluation, and global index of the attribute.
+	 * 
+	 * @param ruleSemantics semantics of rule for which new condition should be created
+	 * @param evaluationAttribute evaluation attribute for which new condition should be created
+	 * @param limitingEvaluation limiting evaluation of the new condition
+	 * @param globalAttributeIndex global index of the attribute
+	 * 
+	 * @return condition constructed for given parameters
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws InvalidValueException if given {@code ruleSemantics} is neither {@link RuleSemantics#AT_LEAST} nor {@link RuleSemantics#AT_MOST} nor {@link RuleSemantics#EQUAL}
+	 * @throws InvalidValueException if {@link EvaluationAttribute#getPreferenceType() preference type} of the given attribute is neither
+	 *         {@link AttributePreferenceType#GAIN} nor {@link AttributePreferenceType#COST} nor {@link AttributePreferenceType#NONE}
+	 */
+	static public Condition<EvaluationField> constructCertainRuleCondition(RuleSemantics ruleSemantics, EvaluationAttribute evaluationAttribute, EvaluationField limitingEvaluation, int globalAttributeIndex) {
+		switch (ruleSemantics) {
+		case AT_LEAST:
+			switch (evaluationAttribute.getPreferenceType()) {
+			case GAIN:
+				return new ConditionAtLeastThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case COST:
+				return new ConditionAtMostThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case NONE:
+				return new ConditionEqualThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			default:
+				throw new InvalidValueException("Unhandled attribute's preference type.");
+			}
+		case AT_MOST:
+			switch (evaluationAttribute.getPreferenceType()) {
+			case GAIN:
+				return new ConditionAtMostThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case COST:
+				return new ConditionAtLeastThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case NONE:
+				return new ConditionEqualThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			default:
+				throw new InvalidValueException("Unhandled attribute's preference type.");
+			}
+		case EQUAL:
+			return new ConditionEqualThresholdVSObject<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+		default:
+			throw new InvalidValueException("Unhandled rule semantics.");
+		}
+	}
+	
+	/**
+	 * Utility method for constructing possible rule's condition given rule semantics, evaluation attribute, limiting evaluation, and global index of the attribute.
+	 * 
+	 * @param ruleSemantics semantics of rule for which new condition should be created
+	 * @param evaluationAttribute evaluation attribute for which new condition should be created
+	 * @param limitingEvaluation limiting evaluation of the new condition
+	 * @param globalAttributeIndex global index of the attribute
+	 * 
+	 * @return condition constructed for given parameters
+	 * 
+	 * @throws NullPointerException if any of the parameters is {@code null}
+	 * @throws InvalidValueException if given {@code ruleSemantics} is neither {@link RuleSemantics#AT_LEAST} nor {@link RuleSemantics#AT_MOST} nor {@link RuleSemantics#EQUAL}
+	 * @throws InvalidValueException if {@link EvaluationAttribute#getPreferenceType() preference type} of the given attribute is neither
+	 *         {@link AttributePreferenceType#GAIN} nor {@link AttributePreferenceType#COST} nor {@link AttributePreferenceType#NONE}
+	 */
+	static public Condition<EvaluationField> constructPossibleRuleCondition(RuleSemantics ruleSemantics, EvaluationAttribute evaluationAttribute, EvaluationField limitingEvaluation, int globalAttributeIndex) {
+		switch (ruleSemantics) {
+		case AT_LEAST:
+			switch (evaluationAttribute.getPreferenceType()) {
+			case GAIN:
+				return new ConditionAtLeastObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case COST:
+				return new ConditionAtMostObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case NONE:
+				return new ConditionEqualObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			default:
+				throw new InvalidValueException("Unhandled attribute's preference type.");
+			}
+		case AT_MOST:
+			switch (evaluationAttribute.getPreferenceType()) {
+			case GAIN:
+				return new ConditionAtMostObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case COST:
+				return new ConditionAtLeastObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			case NONE:
+				return new ConditionEqualObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+			default:
+				throw new InvalidValueException("Unhandled attribute's preference type.");
+			}
+		case EQUAL:
+			return new ConditionEqualObjectVSThreshold<EvaluationField>(new EvaluationAttributeWithContext(evaluationAttribute, globalAttributeIndex), limitingEvaluation);
+		default:
+			throw new InvalidValueException("Unhandled rule semantics.");
+		}
+	}
 }

@@ -46,7 +46,7 @@ public class AttributeOrderRuleConditionsPruner extends AbstractRuleConditionsPr
 	 * @return {@inheritDoc}
 	 */
 	@Override
-	public AbstractRuleConditionsPruner copyWithNewStoppingConditionChecker(RuleInductionStoppingConditionChecker stoppingConditionChecker) {
+	public AttributeOrderRuleConditionsPruner copyWithNewStoppingConditionChecker(RuleInductionStoppingConditionChecker stoppingConditionChecker) {
 		return new AttributeOrderRuleConditionsPruner(stoppingConditionChecker);
 	}
 

@@ -56,4 +56,6 @@ public abstract class AbstractConditionGeneratorWithEvaluators implements Condit
 		this.conditionAdditionEvaluators = conditionAdditionEvaluators;
 	}
 	
+	//TODO: add getter for conditionAdditionEvaluators
+	
 }

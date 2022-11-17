@@ -40,7 +40,7 @@ public class FIFORuleConditionsPruner extends AbstractRuleConditionsPruner {
 	 * @see org.rulelearn.rules.AbstractRuleConditionsPruner#copyWithNewStoppingConditionChecker(org.rulelearn.rules.RuleInductionStoppingConditionChecker)
 	 */
 	@Override
-	public AbstractRuleConditionsPruner copyWithNewStoppingConditionChecker(RuleInductionStoppingConditionChecker stoppingConditionChecker) {
+	public FIFORuleConditionsPruner copyWithNewStoppingConditionChecker(RuleInductionStoppingConditionChecker stoppingConditionChecker) {
 		return new FIFORuleConditionsPruner(stoppingConditionChecker);
 	}
 	
