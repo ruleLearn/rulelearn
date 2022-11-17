@@ -16,7 +16,9 @@
 
 package org.rulelearn.wrappers;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -66,7 +68,7 @@ class PossibleVCDomLEMWrapperTest {
 						PossibleVCDomLEMWrapper possibleVCDomLEMWrapper = new PossibleVCDomLEMWrapper();
 						RuleSet rules = possibleVCDomLEMWrapper.induceRules(informationTable);
 						if (rules != null) {
-							assertEquals(18, rules.size());
+							assertEquals(17, rules.size());
 						}
 						else { 
 							fail("Unable to induce rules with VC-DomLEM");
@@ -118,7 +120,7 @@ class PossibleVCDomLEMWrapperTest {
 						PossibleVCDomLEMWrapper possibleVCDomLEMWrapper = new PossibleVCDomLEMWrapper();
 						RuleSetWithCharacteristics ruleSetWithCharacteristics = possibleVCDomLEMWrapper.induceRulesWithCharacteristics(informationTable);
 						if (ruleSetWithCharacteristics != null) {
-							assertEquals(18, ruleSetWithCharacteristics.size());
+							assertEquals(17, ruleSetWithCharacteristics.size());
 							assertEquals(0.04, ruleSetWithCharacteristics.getRuleCharacteristics(0).getStrength());
 							RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
 							// serialize rules
@@ -137,7 +139,7 @@ class PossibleVCDomLEMWrapperTest {
 							if ((allRules != null) && (allRules.size() > 0)) {
 								deserializedRuleSet = allRules.get(1);
 							}
-							assertEquals(18, deserializedRuleSet.size());
+							assertEquals(17, deserializedRuleSet.size());
 							assertEquals(0.04, deserializedRuleSet.getRuleCharacteristics(0).getStrength());
 						}
 						else { 

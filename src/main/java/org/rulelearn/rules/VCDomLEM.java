@@ -299,7 +299,10 @@ public class VCDomLEM {
 					ruleInducerComponents.getConditionGenerator(), ruleInducerComponents.getRuleInductionStoppingConditionChecker(), ruleInducerComponents.getConditionSeparator());
 			ruleConditions = ruleConditionsBuilder.build(); //build rule conditions
 			
+			//try to generalize rule conditions so they cover more objects, which could result in a lower number of rules
 			ruleConditions = ruleInducerComponents.getRuleConditionsPruner().prune(ruleConditions); //prune built rule conditions by removing redundant elementary conditions
+			ruleInducerComponents.getRuleConditionsGeneralizer().generalize(ruleConditions); //generalize built rule conditions by generalizing particular conditions, where possible
+			
 			approximatedSetRuleConditions.add(ruleConditions);
 			
 			//remove objects covered by the new rule conditions

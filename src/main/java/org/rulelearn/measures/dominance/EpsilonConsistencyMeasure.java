@@ -27,6 +27,7 @@ import org.rulelearn.measures.ConsistencyMeasure;
 import org.rulelearn.measures.CostTypeMeasure;
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.ConditionRemovalEvaluator;
+import org.rulelearn.rules.ConditionReplacementEvaluator;
 import org.rulelearn.rules.MonotonicConditionAdditionEvaluator;
 import org.rulelearn.rules.RuleConditions;
 import org.rulelearn.rules.RuleConditionsEvaluator;
@@ -49,7 +50,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMeasure<Union>, MonotonicConditionAdditionEvaluator, RuleConditionsEvaluator, ConditionRemovalEvaluator, RuleEvaluator {
+public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMeasure<Union>, MonotonicConditionAdditionEvaluator, RuleConditionsEvaluator, ConditionRemovalEvaluator, ConditionReplacementEvaluator, RuleEvaluator {
 
 	/**
 	 * Best possible value of this measure.
@@ -179,6 +180,28 @@ public class EpsilonConsistencyMeasure implements CostTypeMeasure, ConsistencyMe
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
 		
 		return calculateConsistency(ruleConditions.getIndicesOfCoveredObjectsWithoutCondition(conditionIndex),
+				ruleConditions.getIndicesOfPositiveObjects(), ruleConditions.getIndicesOfNeutralObjects(),
+				ruleConditions.getLearningInformationTable().getNumberOfObjects());
+	}
+	
+	/** 
+	 * {@inheritDoc}
+	 * 
+	 * @param ruleConditions {@inheritDoc}
+	 * @param conditionIndex {@inheritDoc}
+	 * @param newCondition {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * 
+	 * @throws NullPointerException {@inheritDoc}
+	 * @throws IndexOutOfBoundsException {@inheritDoc}
+	 */
+	@Override
+	public double evaluateWhenReplacingCondition(RuleConditions ruleConditions, int conditionIndex, Condition<? extends EvaluationField> newCondition) {
+		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
+		notNull(newCondition, "Replacing condition is null.");
+		
+		return calculateConsistency(ruleConditions.getIndicesOfCoveredObjectsWhenReplacingCondition(conditionIndex, newCondition),
 				ruleConditions.getIndicesOfPositiveObjects(), ruleConditions.getIndicesOfNeutralObjects(),
 				ruleConditions.getLearningInformationTable().getNumberOfObjects());
 	}

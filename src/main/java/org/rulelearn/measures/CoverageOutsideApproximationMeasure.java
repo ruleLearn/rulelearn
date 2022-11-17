@@ -21,6 +21,7 @@ import static org.rulelearn.core.Precondition.notNull;
 
 import org.rulelearn.rules.Condition;
 import org.rulelearn.rules.ConditionRemovalEvaluator;
+import org.rulelearn.rules.ConditionReplacementEvaluator;
 import org.rulelearn.rules.MonotonicConditionAdditionEvaluator;
 import org.rulelearn.rules.RuleConditions;
 import org.rulelearn.rules.RuleConditionsEvaluator;
@@ -35,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public class CoverageOutsideApproximationMeasure implements CostTypeMeasure, RuleConditionsEvaluator, MonotonicConditionAdditionEvaluator, ConditionRemovalEvaluator {
+public class CoverageOutsideApproximationMeasure implements CostTypeMeasure, RuleConditionsEvaluator, MonotonicConditionAdditionEvaluator, ConditionRemovalEvaluator, ConditionReplacementEvaluator {
 	
 	/**
 	 * The only instance of this measure (singleton).
@@ -115,6 +116,30 @@ public class CoverageOutsideApproximationMeasure implements CostTypeMeasure, Rul
 	public double evaluateWithoutCondition(RuleConditions ruleConditions, int conditionIndex) {
 		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
 		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWithoutCondition(conditionIndex);
+		IntSet approximationObjects = ruleConditions.getIndicesOfApproximationObjects();
+		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
+		
+		return getNumberOfElementsFromListNotPresentInSets(coveredObjects, approximationObjects, neutralObjects);
+	}
+	
+	/** 
+	 * {@inheritDoc}
+	 * 
+	 * @param ruleConditions {@inheritDoc}
+	 * @param conditionIndex {@inheritDoc}
+	 * @param newCondition {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 * 
+	 * @throws NullPointerException {@inheritDoc}
+	 * @throws IndexOutOfBoundsException {@inheritDoc}
+	 */
+	@Override
+	public double evaluateWhenReplacingCondition(RuleConditions ruleConditions, int conditionIndex, Condition<? extends EvaluationField> newCondition) {
+		notNull(ruleConditions, "Rule conditions for which evaluation is made are null.");
+		notNull(newCondition, "Replacing condition is null.");
+		
+		IntList coveredObjects = ruleConditions.getIndicesOfCoveredObjectsWhenReplacingCondition(conditionIndex, newCondition);
 		IntSet approximationObjects = ruleConditions.getIndicesOfApproximationObjects();
 		IntSet neutralObjects = ruleConditions.getIndicesOfNeutralObjects();
 		

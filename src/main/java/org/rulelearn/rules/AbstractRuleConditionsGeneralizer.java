@@ -20,7 +20,7 @@ import org.rulelearn.core.Precondition;
 
 /**
  * Abstract rule conditions generalizer, storing {@link RuleInductionStoppingConditionChecker rule induction stopping condition checker}
- * and implementing {@link RuleConditionsGeneralizer} interface.
+ * and implementing {@link RuleConditionsGeneralizer} interface. When generalizing rule conditions, makes sure that stopping conditions are obeyed.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -46,7 +46,7 @@ public abstract class AbstractRuleConditionsGeneralizer implements RuleCondition
 	/**
 	 * Makes a copy of rule conditions generalizer with provided stopping condition checker.
 	 * 
-	 * @param stoppingConditionChecker stopping condition checker {@link RuleInductionStoppingConditionChecker} stored in generalizer
+	 * @param stoppingConditionChecker {@link RuleInductionStoppingConditionChecker stopping condition checker} stored in the returned generalizer
 	 * @return a copy of rule conditions generalizer with provided stopping condition checker
 	 */
 	public abstract AbstractRuleConditionsGeneralizer copyWithNewStoppingConditionChecker(RuleInductionStoppingConditionChecker stoppingConditionChecker); //TODO: remove this method?

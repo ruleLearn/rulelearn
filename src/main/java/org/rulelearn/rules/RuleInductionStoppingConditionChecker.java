@@ -16,6 +16,8 @@
 
 package org.rulelearn.rules;
 
+import org.rulelearn.types.EvaluationField;
+
 /**
  * Contract of a checker verifying rule conditions {@link RuleConditions} against different stopping conditions, like reaching a given number of conditions.
  *
@@ -47,5 +49,19 @@ public interface RuleInductionStoppingConditionChecker {
 	 * @throws IndexOutOfBoundsException if given condition index is less than zero or too big concerning the number of conditions present in given rule conditions
 	 */
 	public boolean isStoppingConditionSatisifiedWithoutCondition(RuleConditions ruleConditions, int conditionIndex);
+	
+	/**
+	 * Checks if tested stopping condition in satisfied by given rule conditions when condition with given index is replaced by given condition.
+	 * 
+	 * @param ruleConditions rule conditions to be checked
+	 * @param conditionIndex index of the condition to be excluded from given rule conditions
+	 * @param newCondition new condition to be included into given rule conditions
+	 * @return {@code true} if tested stopping condition in satisfied by given rule conditions when condition with given index is replaced by given condition,
+	 *         {@code false} otherwise
+	 * 
+	 * @throws NullPointerException if given rule conditions are {@code null}, or when given new condition is {@code null}
+	 * @throws IndexOutOfBoundsException if given condition index is less than zero or too big concerning the number of conditions present in given rule conditions
+	 */
+	public boolean isStoppingConditionSatisifiedWhenReplacingCondition(RuleConditions ruleConditions, int conditionIndex, Condition<? extends EvaluationField> newCondition);
 
 }

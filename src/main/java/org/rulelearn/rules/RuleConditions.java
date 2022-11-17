@@ -343,8 +343,7 @@ public class RuleConditions {
 		}
 		this.attributeIndex2ConditionIndices.get(attributeIndex).add(addedConditionIndex);
 		
-		updateCoveredObjectsWithCondition(this.indicesOfCoveredObjects, condition);
-		updateNotCoveringConditionsCountsWithCondition(condition);
+		updateCoveredObjectsWithCondition(this.indicesOfCoveredObjects, condition, true);
 		
 		return addedConditionIndex;
 	}
@@ -401,7 +400,7 @@ public class RuleConditions {
 		notNull(condition, "Condition is null.");
 		
 		IntList indicesOfCoveredObjects = new IntArrayList(this.indicesOfCoveredObjects); //copy list
-		updateCoveredObjectsWithCondition(indicesOfCoveredObjects, condition);
+		updateCoveredObjectsWithCondition(indicesOfCoveredObjects, condition, false);
 		
 		return indicesOfCoveredObjects;
 	}
@@ -422,13 +421,73 @@ public class RuleConditions {
 	}
 	
 	/**
-	 * Updates given set of indices of objects covered by these rule conditions assuming addition of given condition.
+	 * Gets indices of objects covered by these rule conditions if condition with given index is replaced by given new condition.
+	 * Typically one would consider such scenario when generalizing rule conditions,
+	 * but technically speaking, it is even not necessary for both conditions to concern the same attribute.
 	 * 
-	 * @param indicesOfCoveredObjects indices of objects covered so far by these rule conditions
-	 * @param condition condition that is going to or can be added to these rule conditions
+	 * @param conditionIndex index of condition in these rule conditions that is considered to be replaced
+	 * @param newCondition condition that is considered to be replacing condition with given index
+	 * @return indices of objects covered by these rule conditions if condition with given index is replaced by given condition
+	 * 
+	 * @throws NullPointerException if given new condition is {@code null}
+	 * @throws IndexOutOfBoundsException if given condition index is less than zero or too big concerning the number of stored conditions
 	 */
-	private void updateCoveredObjectsWithCondition(IntList indicesOfCoveredObjects, Condition<? extends EvaluationField> condition) {
-		IntSet nonCoveredObjects = new IntOpenHashSet(indicesOfCoveredObjects.size()); //ensures faster execution of indicesOfCoveredObjects.removeAll(nonCoveredObjects); expected capacity ensures no need of rehashing)
+	public IntList getIndicesOfCoveredObjectsWhenReplacingCondition(int conditionIndex, Condition<? extends EvaluationField> newCondition) {
+		notNull(newCondition, "Replacing condition is null.");
+		
+		IntList indicesOfCoveredObjects = new IntArrayList(this.indicesOfCoveredObjects); //copy list
+		updateCoveredObjectsWithoutCondition(indicesOfCoveredObjects, conditionIndex, false);
+		updateCoveredObjectsWithCondition(indicesOfCoveredObjects, newCondition, false);
+		
+		return indicesOfCoveredObjects;
+	}
+	
+//	/**
+//	 * Updates given set of indices of objects covered by these rule conditions assuming addition of given condition.
+//	 * 
+//	 * @param indicesOfCoveredObjects indices of objects covered so far by these rule conditions;
+//	 *        this parameter is modified to reflect the situation
+//	 *        when given condition is added to these rule conditions
+//	 * @param condition condition that is going to or can be added to these rule conditions
+//	 */
+//	private void updateCoveredObjectsWithCondition(IntList indicesOfCoveredObjects, Condition<? extends EvaluationField> condition) {
+//		IntSet nonCoveredObjects = new IntOpenHashSet(indicesOfCoveredObjects.size()); //ensures faster execution of indicesOfCoveredObjects.removeAll(nonCoveredObjects); expected capacity ensures no need of rehashing
+//		
+//		for (int objectIndex : indicesOfCoveredObjects) { //iterate over already covered objects to see if they remain covered or get "rejected" by the given condition
+//			if (!condition.satisfiedBy(objectIndex, this.learningInformationTable)) {
+//				nonCoveredObjects.add(objectIndex);
+//			}
+//		}
+//		
+//		indicesOfCoveredObjects.removeAll(nonCoveredObjects);
+//	}
+//	
+//	/**
+//	 * Updates counts of not covering conditions {@link #notCoveringConditionsCounts} in view of adding given condition.
+//	 * Assumes that {@link #learningInformationTable} and {@link #notCoveringConditionsCounts} are already set.
+//	 */
+//	private void updateNotCoveringConditionsCountsWithCondition(Condition<? extends EvaluationField> condition) {
+//		int objectsCount = this.learningInformationTable.getNumberOfObjects();
+//		
+//		for (int objectIndex = 0; objectIndex < objectsCount; objectIndex++) { //iterate over all objects to see which are not covered by the given condition
+//			if (!condition.satisfiedBy(objectIndex, this.learningInformationTable)) { //condition eliminates given object
+//				this.notCoveringConditionsCounts[objectIndex] = this.notCoveringConditionsCounts[objectIndex] + 1; //increase counter for considered object
+//			}
+//		}
+//	}
+
+	/**
+	 * Updates given set of indices of objects covered by these rule conditions, and optionally (depending on the flag) also array with counts of conditions not covering particular objects,
+	 * <br>assuming addition of given condition.
+	 * 
+	 * @param indicesOfCoveredObjects indices of objects covered so far by these rule conditions;
+	 *        this parameter is modified to reflect the situation
+	 *        when given condition is added to these rule conditions
+	 * @param condition condition that is going to or can be added to these rule conditions
+	 * @param updateNotCoveringConditionsCounts tells if {@link #notCoveringConditionsCounts} should be also updated, apart of the given list of indices of objects covered by these rule conditions
+	 */
+	private void updateCoveredObjectsWithCondition(IntList indicesOfCoveredObjects, Condition<? extends EvaluationField> condition, boolean updateNotCoveringConditionsCounts) {
+		IntSet nonCoveredObjects = new IntOpenHashSet(indicesOfCoveredObjects.size()); //ensures faster execution of indicesOfCoveredObjects.removeAll(nonCoveredObjects); expected capacity ensures no need of rehashing
 		
 		for (int objectIndex : indicesOfCoveredObjects) { //iterate over already covered objects to see if they remain covered or get "rejected" by the given condition
 			if (!condition.satisfiedBy(objectIndex, this.learningInformationTable)) {
@@ -437,18 +496,14 @@ public class RuleConditions {
 		}
 		
 		indicesOfCoveredObjects.removeAll(nonCoveredObjects);
-	}
-	
-	/**
-	 * Updates counts of not covering conditions {@link #notCoveringConditionsCounts} in view of adding given condition.
-	 * Assumes that {@link #learningInformationTable} and {@link #notCoveringConditionsCounts} are already set.
-	 */
-	private void updateNotCoveringConditionsCountsWithCondition(Condition<? extends EvaluationField> condition) {
-		int objectsCount = this.learningInformationTable.getNumberOfObjects();
 		
-		for (int objectIndex = 0; objectIndex < objectsCount; objectIndex++) { //iterate over all objects to see which are not covered by the given condition
-			if (!condition.satisfiedBy(objectIndex, this.learningInformationTable)) { //condition eliminates given object
-				this.notCoveringConditionsCounts[objectIndex] = this.notCoveringConditionsCounts[objectIndex] + 1; //increase counter for considered object
+		if (updateNotCoveringConditionsCounts) {
+			int objectsCount = this.notCoveringConditionsCounts.length;
+			
+			for (int objectIndex = 0; objectIndex < objectsCount; objectIndex++) { //iterate over all objects to see which are not covered by the given condition
+				if (!condition.satisfiedBy(objectIndex, this.learningInformationTable)) { //condition eliminates given object
+					this.notCoveringConditionsCounts[objectIndex]++; //increase counter for considered object
+				}
 			}
 		}
 	}
@@ -461,7 +516,7 @@ public class RuleConditions {
 	 *        this parameter is modified to reflect the situation
 	 *        when condition with given index is dropped from these rule conditions
 	 * @param conditionIndex index of condition considered to be removed from these rule conditions
-	 * @param tells if {@link #notCoveringConditionsCounts} should be also updated, apart of the given set of indices of objects covered by these rule conditions
+	 * @param updateNotCoveringConditionsCounts tells if {@link #notCoveringConditionsCounts} should be also updated, apart of the given list of indices of objects covered by these rule conditions
 	 * 
 	 * @throws NullPointerException if the given list is {@code null}
 	 * @throws IndexOutOfBoundsException if given condition index is less than zero or too big concerning number of stored conditions
@@ -513,7 +568,7 @@ public class RuleConditions {
 		}
 		
 		int position;
-		for (IntList listOfTestedConditionIndices : this.attributeIndex2ConditionIndices.values()) { //consider all lists of condition indices, no matter for which attribute they refer to
+		for (IntList listOfTestedConditionIndices : this.attributeIndex2ConditionIndices.values()) { //consider all lists of condition indices, no matter to which attribute they refer to
 			position = 0;
 			for (int conditionIndex : listOfTestedConditionIndices) {
 				if (conditionIndex > removedConditionIndex) {
@@ -536,11 +591,33 @@ public class RuleConditions {
 		
 		//first call method that gets considered condition ...
 		this.updateCoveredObjectsWithoutCondition(this.indicesOfCoveredObjects, conditionIndex, true);
-		//...and only then remove that condition
+		//...and only then remove that condition (which shifts subsequent conditions)
 		this.conditions.remove(conditionIndex);
 		
 		//remove condition index from the map and decrement remaining indices greater than removed index!
 		this.updateAttributeIndex2ConditionIndices(attributeIndex, conditionIndex);
+	}
+	
+	/**
+	 * Replaces in the list of conditions the condition with given index by given condition.
+	 * Does not change indices of other conditions in the list.
+	 * 
+	 * @param conditionIndex index of a condition to replace in this list of conditions
+	 * @param newCondition new condition that replaces the old condition
+	 * 
+	 * @throws IndexOutOfBoundsException if given index does not refer to any stored condition
+	 * @throws NullPointerException if new condition is {@code null}
+	 */
+	public void replaceCondition(int conditionIndex, Condition<? extends EvaluationField> newCondition) {
+		updateCoveredObjectsWithoutCondition(this.indicesOfCoveredObjects, conditionIndex, true);
+		updateCoveredObjectsWithCondition(this.indicesOfCoveredObjects, newCondition, true);
+		
+		//necessary cast to Condition<EvaluationField>, so when conditions are returned by getConditions() method, there is no wildcard in the return type
+		@SuppressWarnings("unchecked")
+		Condition<EvaluationField> _newCondition = (Condition<EvaluationField>)(notNull(newCondition, "Replacing condition is null."));
+		this.conditions.set(conditionIndex, _newCondition);
+		
+		//does not change attributeIndex2ConditionIndices
 	}
 	
 	/**
