@@ -24,10 +24,10 @@ import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
 import org.rulelearn.measures.dominance.RoughMembershipMeasure;
 
 /**
- * Characteristics of a decision rule, calculated using rule coverage information {@link RuleCoverageInformation}. This class extends {@link RuleCharacteristics}
+ * Characteristics of a decision rule, calculated using {@link RuleCoverageInformation rule coverage information}. This class extends {@link RuleCharacteristics}
  * by ensuring that if any characteristic is not stored explicitly, it will be calculated on demand.
- * This class also offers caching of rule characteristics, i.e., each referenced characteristic will be calculated only once and stored, and all subsequent
- * calls will return the stored value.
+ * This class also offers caching of rule characteristics, i.e., each referenced characteristic will be calculated only once and stored,
+ * and all subsequent calls will return the stored value.
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
@@ -46,13 +46,13 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	int negativeNotCoveredObjectsCount = UNKNOWN_INT_VALUE;
 	
 	/**
-	 * Parameter of confirmation measure $c<sub>1</sub>$.
+	 * Parameter alpha of confirmation measure c<sub>1</sub>. Initialized with default value 0.5.
 	 */
-	double alpha = 0.5;
+	double c1ConfirmationAlpha = 0.5;
 	/**
-	 * Parameter of confirmation measure $c<sub>1</sub>$.
+	 * Parameter beta of confirmation measure c<sub>1</sub>. Initialized with default value 0.5.
 	 */
-	double beta = 0.5;
+	double c1ConfirmationBeta = 0.5;
 	
 	/**
 	 * Creates these rule characteristics using given rule coverage information.
@@ -75,8 +75,6 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 		return ruleEvaluator.evaluate(getRuleCoverageInformation());
 	}
 	
-	//TODO: use additional supplementary fields: positiveNotCoveredObjectsCount, negativeNotCoveredObjectsCount
-	
 	/**
 	 * Gets coverage information concerning considered decision rule.
 	 * 
@@ -98,9 +96,9 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	}
 	
 	/**
-	 * Gets support of a decision rule in the context of an information table.
+	 * Gets support of a decision rule (i.e., number of positive objects covered by the rule) in the context of an information table.
 	 * 
-	 * @return support of the decision rule in the context of the information table
+	 * @return support of the decision rule (i.e., number of positive objects covered by the rule) in the context of the information table
 	 */
 	@Override
 	public int getSupport() {
@@ -185,6 +183,39 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	}
 	
 	/**
+	 * Gets number of positive objects not covered by the rule.
+	 * 
+	 * @return number of positive objects not covered by the rule
+	 */
+	int getPositiveNotCoveredObjectsCount() {
+		if (positiveNotCoveredObjectsCount == UNKNOWN_INT_VALUE) {
+			if (getRuleCoverageInformation().getIndicesOfPositiveObjects() != null) {
+				positiveNotCoveredObjectsCount = getRuleCoverageInformation().getIndicesOfPositiveObjects().size() - getSupport(); //number of all positive objects - number of covered positive objects
+			}
+		}
+		return positiveNotCoveredObjectsCount;
+	}
+	
+	/**
+	 * Gets number of negative objects not covered by the rule.
+	 * 
+	 * @return number of negative objects not covered by the rule
+	 */
+	int getNegativeNotCoveredObjectsCount() {
+		if (negativeNotCoveredObjectsCount == UNKNOWN_INT_VALUE) {
+			if (getRuleCoverageInformation().getIndicesOfPositiveObjects() != null &&
+					getRuleCoverageInformation().getIndicesOfNeutralObjects() != null) {
+				
+				negativeNotCoveredObjectsCount = (getRuleCoverageInformation().getAllObjectsCount()
+						- getRuleCoverageInformation().getIndicesOfPositiveObjects().size()
+						- getRuleCoverageInformation().getIndicesOfNeutralObjects().size()) //get number of all negative objects
+						- getNegativeCoverage(); //and subtract number of covered negative objects
+			}
+		}
+		return negativeNotCoveredObjectsCount;
+	}
+	
+	/**
 	 * Gets value of rule consistency measure $\epsilon$ calculated for the decision rule in the context of the information table.
 	 * 
 	 * @return value of rule consistency measure $\epsilon$ calculated for the decision rule in the context of the information table
@@ -205,86 +236,208 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	@Override
 	public double getEpsilonPrime() {
 		if (epsilonPrime == UNKNOWN_DOUBLE_VALUE) {
-			//TODO: calculate measure
+			epsilonPrime = (double)getNegativeCoverage() / (double)getRuleCoverageInformation().getIndicesOfPositiveObjects().size();
 		}
 		return epsilonPrime;
 	}
 	
 	/**
-	 * Gets value of rule confirmation measure $f$ calculated for the decision rule in the context of the information table.
+	 * Gets value of rule confirmation measure F calculated for the decision rule in the context of the information table.
 	 * 
-	 * @return value of rule confirmation measure $f$ calculated for the decision rule in the context of the information table
+	 * @return value of rule confirmation measure F calculated for the decision rule in the context of the information table
 	 */
 	@Override
 	public double getFConfirmation() {
 		if (fConfirmation == UNKNOWN_DOUBLE_VALUE) {
-			//TODO: calculate measure
+			double a, b, c, d;
+			
+			a = getSupport();
+			b = getPositiveNotCoveredObjectsCount();
+			c = getNegativeCoverage();
+			d = getNegativeNotCoveredObjectsCount();
+			
+			fConfirmation = ( ((a*d)-(b*c)) / ((a*d)+(b*c)+(2*a*c)) );
 		}
+		
 		return fConfirmation;
 	}
 	
 	/**
-	 * Gets value of rule confirmation measure $a$ calculated for the decision rule in the context of the information table.
+	 * Gets value of rule confirmation measure A calculated for the decision rule in the context of the information table.
 	 * 
-	 * @return value of rule confirmation measure $a$ calculated for the decision rule in the context of the information table
+	 * @return value of rule confirmation measure A calculated for the decision rule in the context of the information table
 	 */
 	@Override
 	public double getAConfirmation() {
 		if (aConfirmation == UNKNOWN_DOUBLE_VALUE) {
-			//TODO: calculate measure
+			double a, b, c, d;
+			
+			a = getSupport();
+			b = getPositiveNotCoveredObjectsCount();
+			c = getNegativeCoverage();
+			d = getNegativeNotCoveredObjectsCount();
+			
+			if ( (a / (a+c)) >= ((a+b) / (a+b+c+d)) ) {
+				aConfirmation = ( ((a*d)-(b*c)) / ((a+b)*(b+d)) );
+			}
+			else {
+				aConfirmation = ( ((a*d)-(b*c)) / ((b+d)*(c+d)) );
+			}
 		}
+		
 		return aConfirmation;
 	}
 	
 	/**
-	 * Gets value of rule confirmation measure $z$ calculated for the decision rule in the context of the information table.
+	 * Gets value of rule confirmation measure Z calculated for the decision rule in the context of the information table.
 	 * 
-	 * @return value of rule confirmation measure $z$ calculated for the decision rule in the context of the information table
+	 * @return value of rule confirmation measure Z calculated for the decision rule in the context of the information table
 	 */
 	@Override
 	public double getZConfirmation() {
 		if (zConfirmation == UNKNOWN_DOUBLE_VALUE) {
-			//TODO: calculate measure
+			double a, b, c, d;
+			
+			a = getSupport();
+			b = getPositiveNotCoveredObjectsCount();
+			c = getNegativeCoverage();
+			d = getNegativeNotCoveredObjectsCount();
+			
+			if ( (a / (a+c)) >= ((a+b)/(a+b+c+d)) ) {
+				zConfirmation = ( ((a*d)-(b*c)) / ((a+c)*(c+d)) );
+			}
+			else {
+				zConfirmation = ( ((a*d)-(b*c)) / ((a+c)*(a+b)) );
+			}
 		}
+		
 		return zConfirmation;
 	}
 	
 	/**
-	 * Gets value of rule confirmation measure $l$ calculated for the decision rule in the context of the information table.
+	 * Gets value of rule confirmation measure L calculated for the decision rule in the context of the information table.
 	 * 
-	 * @return value of rule confirmation measure $l$ calculated for the decision rule in the context of the information table
+	 * @return value of rule confirmation measure L calculated for the decision rule in the context of the information table
 	 */
 	@Override
 	public double getLConfirmation() {
 		if (lConfirmation == UNKNOWN_DOUBLE_VALUE) {
-			//TODO: calculate measure
+			double a, b, c, d;
+			
+			a = getSupport();
+			b = getPositiveNotCoveredObjectsCount();
+			c = getNegativeCoverage();
+			d = getNegativeNotCoveredObjectsCount();
+			
+			if (c != 0) {
+				lConfirmation = Math.log( (a / (a+b)) / (c / (c+d)) );
+			}
+			else if (a == 0) {
+				lConfirmation = Double.NaN;
+			}
+			else {
+				lConfirmation = Double.POSITIVE_INFINITY;
+			}
 		}
 		return lConfirmation;
 	}
 	
 	/**
-	 * Gets value of rule confirmation measure $c_1$ calculated for the decision rule in the context of the information table.
+	 * Gets value of rule confirmation measure c<sub>1</sub> calculated for the decision rule in the context of the information table.
 	 * 
-	 * @return value of rule confirmation measure $c_1$ calculated for the decision rule in the context of the information table
+	 * @return value of rule confirmation measure c<sub>1</sub> calculated for the decision rule in the context of the information table
 	 */
 	@Override
 	public double getC1Confirmation() {
 		if (c1Confirmation == UNKNOWN_DOUBLE_VALUE) {
-			//TODO: calculate measure
+			double a, b, c, d;
+
+			a = getSupport();
+			b = getPositiveNotCoveredObjectsCount();
+			c = getNegativeCoverage();
+			d = getNegativeNotCoveredObjectsCount();
+			
+			if ( (a / (a+c)) >= ((a+b) / (a+b+c+d)) ) {
+				if (c == 0.0) {
+					c1Confirmation = c1ConfirmationAlpha + (c1ConfirmationBeta * ( ((a*d)-(b*c)) / ((a+b)*(b+d)) ));
+				}
+				else {
+					c1Confirmation = (c1ConfirmationAlpha * ( ((a*d)-(b*c)) / ((a+c)*(c+d)) ));
+				}
+			}
+			else {
+				if (a == 0.0) {
+					c1Confirmation = (-1 * c1ConfirmationAlpha) + (c1ConfirmationBeta * ( ((a*d)-(b*c)) / ((b+d)*(c+d)) ));
+				}
+				else {
+					c1Confirmation = (c1ConfirmationAlpha * ( ((a*d)-(b*c)) / ((a+b)*(a+c)) ));
+				}
+			}
 		}
+		
 		return c1Confirmation;
 	}
 	
 	/**
-	 * Gets value of rule confirmation measure $s$ calculated for the decision rule in the context of the information table.
+	 * Gets parameter alpha of rule confirmation measure c<sub>1</sub>.
+	 * Default value is 0.5.
 	 * 
-	 * @return value of rule confirmation measure $s$ calculated for the decision rule in the context of the information table
+	 * @return parameter alpha of rule confirmation measure c<sub>1</sub>.
+	 */
+	public double getC1ConfirmationAlpha() {
+		return c1ConfirmationAlpha;
+	}
+	
+	/**
+	 * Gets parameter beta of rule confirmation measure c<sub>1</sub>.
+	 * Default value is 0.5.
+	 * 
+	 * @return parameter beta of rule confirmation measure c<sub>1</sub>.
+	 */
+	public double getC1ConfirmationBeta() {
+		return c1ConfirmationBeta;
+	}
+	
+	/**
+	 * Sets parameters of rule confirmation measure c<sub>1</sub>, only if value of confirmation measure c<sub>1</sub> has not been calculated yet
+	 * ({@link #isC1ConfirmationSet()} returns {@code false}). This restriction corresponds to the case when parameters alpha and beta would be set
+	 * in constructor, and is concordant with general design choice of making objects unmodifiable.
+	 * 
+	 * @param c1ConfirmationAlpha new parameter alpha of rule confirmation measure c<sub>1</sub>
+	 * @param c1ConfirmationBeta new parameter beta of rule confirmation measure c<sub>1</sub>
+	 * 
+	 * @return {@code true} if parameters alpha and beta of rule confirmation measure c<sub>1</sub> have been successfully set,
+	 *         {@code false} otherwise
+	 */
+	public boolean setC1ConfirmationParameters(double c1ConfirmationAlpha, double c1ConfirmationBeta) {
+		if (c1Confirmation == UNKNOWN_DOUBLE_VALUE) {
+			this.c1ConfirmationAlpha = c1ConfirmationAlpha;
+			this.c1ConfirmationBeta = c1ConfirmationBeta;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Gets value of rule confirmation measure S calculated for the decision rule in the context of the information table.
+	 * 
+	 * @return value of rule confirmation measure S calculated for the decision rule in the context of the information table
 	 */
 	@Override
 	public double getSConfirmation() {
 		if (sConfirmation == UNKNOWN_DOUBLE_VALUE) {
-			//TODO: calculate measure
+			//s(H,E) = Pr(H|E) - Pr(H|not E)
+			double a, b, c, d;
+
+			a = getSupport();
+			b = getPositiveNotCoveredObjectsCount();
+			c = getNegativeCoverage();
+			d = getNegativeNotCoveredObjectsCount();
+			
+			sConfirmation = a / (a + c) - b / (b + d); //does not take into account neutral objects!
 		}
+		
 		return sConfirmation;
 	}
 	

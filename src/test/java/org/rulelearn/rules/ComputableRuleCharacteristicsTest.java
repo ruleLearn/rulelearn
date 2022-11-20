@@ -41,6 +41,7 @@ class ComputableRuleCharacteristicsTest {
 	
 	private static ComputableRuleCharacteristics computableRuleCharacteristics01;
 	private static ComputableRuleCharacteristics computableRuleCharacteristics02;
+	private static ComputableRuleCharacteristics computableRuleCharacteristics03;
 	
 	@BeforeAll
 	static void setUp() {
@@ -79,6 +80,25 @@ class ComputableRuleCharacteristicsTest {
 		Mockito.when(ruleCoverageInformationMock2.getAllObjectsCount()).thenReturn(allObjectsCount);
 		
 		computableRuleCharacteristics02 = new ComputableRuleCharacteristics(ruleCoverageInformationMock2);
+		
+		//-----
+		
+		indicesOfPositiveObjects = new IntLinkedOpenHashSet(new int[] {0, 1, 2});
+		indicesOfNeutralObjects = new IntLinkedOpenHashSet(new int[] {6, 7}); //two neutral objects
+		indicesOfCoveredObjects = new IntArrayList(new int[] {0, 1, 3, 6}); //covered 1 neutral object
+		@SuppressWarnings("unchecked")
+		Int2ObjectMap<Decision> decisionsOfCoveredObjectsMock3 = Mockito.mock(Int2ObjectOpenHashMap.class);
+		//Mockito.when(decisionsOfCoveredObjectsMock3.size()).thenReturn(indicesOfCoveredObjects.size());
+		allObjectsCount = 8;
+		
+		RuleCoverageInformation ruleCoverageInformationMock3 = Mockito.mock(RuleCoverageInformation.class);
+		Mockito.when(ruleCoverageInformationMock3.getIndicesOfPositiveObjects()).thenReturn(indicesOfPositiveObjects);
+		Mockito.when(ruleCoverageInformationMock3.getIndicesOfNeutralObjects()).thenReturn(indicesOfNeutralObjects);
+		Mockito.when(ruleCoverageInformationMock3.getIndicesOfCoveredObjects()).thenReturn(indicesOfCoveredObjects);
+		Mockito.when(ruleCoverageInformationMock3.getDecisionsOfCoveredObjects()).thenReturn(decisionsOfCoveredObjectsMock3);
+		Mockito.when(ruleCoverageInformationMock3.getAllObjectsCount()).thenReturn(allObjectsCount);
+		
+		computableRuleCharacteristics03 = new ComputableRuleCharacteristics(ruleCoverageInformationMock3);
 	}
 
 	/**
@@ -190,8 +210,16 @@ class ComputableRuleCharacteristicsTest {
 	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getEpsilonPrime()}.
 	 */
 	@Test
-	void testGetEpsilonPrime() {
-		//TODO: implement test
+	void testGetEpsilonPrime_01() {
+		assertEquals(computableRuleCharacteristics01.getEpsilonPrime(), (double)2 / (double)6);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getEpsilonPrime()}.
+	 */
+	@Test
+	void testGetEpsilonPrime_02() {
+		assertEquals(computableRuleCharacteristics02.getEpsilonPrime(), (double)4 / (double)8);
 	}
 
 	/**
@@ -199,7 +227,7 @@ class ComputableRuleCharacteristicsTest {
 	 */
 	@Test
 	void testGetFConfirmation() {
-		//TODO: implement test
+		assertEquals(computableRuleCharacteristics03.getFConfirmation(), (double)1 / (double)3);
 	}
 
 	/**
@@ -207,7 +235,7 @@ class ComputableRuleCharacteristicsTest {
 	 */
 	@Test
 	void testGetAConfirmation() {
-		//TODO: implement test
+		assertEquals(computableRuleCharacteristics03.getAConfirmation(), (double)1 / (double)3);
 	}
 
 	/**
@@ -215,7 +243,7 @@ class ComputableRuleCharacteristicsTest {
 	 */
 	@Test
 	void testGetZConfirmation() {
-		//TODO: implement test
+		assertEquals(computableRuleCharacteristics03.getZConfirmation(), (double)1 / (double)3);
 	}
 
 	/**
@@ -223,7 +251,7 @@ class ComputableRuleCharacteristicsTest {
 	 */
 	@Test
 	void testGetLConfirmation() {
-		//TODO: implement test
+		assertEquals(computableRuleCharacteristics03.getLConfirmation(), Math.log(2));
 	}
 
 	/**
@@ -233,13 +261,15 @@ class ComputableRuleCharacteristicsTest {
 	void testGetC1Confirmation() {
 		//TODO: implement test
 	}
+	
+	//TODO: more tests of calculation of rule confirmation measures
 
 	/**
 	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getSConfirmation()}.
 	 */
 	@Test
 	void testGetSConfirmation() {
-		//TODO: implement test
+		assertEquals(computableRuleCharacteristics01.getSConfirmation(), (double)4 / (double)6 - (double)2 / (double)4);
 	}
 
 	/**

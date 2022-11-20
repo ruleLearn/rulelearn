@@ -52,7 +52,7 @@ public class RuleCharacteristics {
 	
 	//initialization of all characteristics as unknown
 	/**
-	 * Support (positive coverage) of a decision rule in the context of an information table.
+	 * Support (positive coverage) of a decision rule (i.e., number of positive objects covered by the rule) in the context of an information table.
 	 */
 	protected int support = UNKNOWN_INT_VALUE;
 	/**
@@ -85,27 +85,27 @@ public class RuleCharacteristics {
 	 */
 	protected double epsilonPrime = UNKNOWN_DOUBLE_VALUE;
 	/**
-	 * Value of rule confirmation measure $f$ calculated for a decision rule in the context of an information table.
+	 * Value of rule confirmation measure F calculated for a decision rule in the context of an information table.
 	 */
 	protected double fConfirmation = UNKNOWN_DOUBLE_VALUE;
 	/**
-	 * Value of rule confirmation measure $a$ calculated for a decision rule in the context of an information table.
+	 * Value of rule confirmation measure A calculated for a decision rule in the context of an information table.
 	 */
 	protected double aConfirmation = UNKNOWN_DOUBLE_VALUE;
 	/**
-	 * Value of rule confirmation measure $z$ calculated for a decision rule in the context of an information table.
+	 * Value of rule confirmation measure Z calculated for a decision rule in the context of an information table.
 	 */
 	protected double zConfirmation = UNKNOWN_DOUBLE_VALUE;
 	/**
-	 * Value of rule confirmation measure $l$ calculated for a decision rule in the context of an information table.
+	 * Value of rule confirmation measure L calculated for a decision rule in the context of an information table.
 	 */
 	protected double lConfirmation = UNKNOWN_DOUBLE_VALUE;
 	/**
-	 * Value of rule confirmation measure $c<sub>1</sub>$ calculated for a decision rule in the context of an information table.
+	 * Value of rule confirmation measure c<sub>1</sub> calculated for a decision rule in the context of an information table.
 	 */
 	protected double c1Confirmation = UNKNOWN_DOUBLE_VALUE;
 	/**
-	 * Value of rule confirmation measure $s$ calculated for a decision rule in the context of an information table.
+	 * Value of rule confirmation measure S calculated for a decision rule in the context of an information table.
 	 */
 	protected double sConfirmation = UNKNOWN_DOUBLE_VALUE;
 	
@@ -151,9 +151,9 @@ public class RuleCharacteristics {
 	}
 	
 	/**
-	 * Gets support of a decision rule in the context of an information table.
+	 * Gets support of a decision rule (i.e., number of positive objects covered by the rule) in the context of an information table.
 	 * 
-	 * @return support of a decision rule in the context of an information table
+	 * @return support of a decision rule (i.e., number of positive objects covered by the rule) in the context of an information table
 	 * @throws UnknownValueException if support is unknown (not stored in these characteristics)
 	 */
 	public int getSupport() {
@@ -331,10 +331,10 @@ public class RuleCharacteristics {
 	 * @throws UnknownValueException if negative coverage is unknown (not stored in these characteristics) and cannot be computed
 	 *         as either support or coverage is also unknown
 	 */
-	public int getNegativeCoverage() { //TODO: take into account neutral objects?
+	public int getNegativeCoverage() {
 		if (negativeCoverage == UNKNOWN_INT_VALUE) {
 			try {
-				negativeCoverage = getCoverage() - getSupport(); 
+				negativeCoverage = getCoverage() - getSupport(); //TODO: take into account neutral objects?
 			} catch (UnknownValueException exception) {
 				throw new UnknownValueException("Rule's negative coverage is unknown and cannot be computed.");
 			}
@@ -430,184 +430,184 @@ public class RuleCharacteristics {
 	}
 	
 	/**
-	 * Gets value of rule confirmation measure $f$ calculated for a decision rule in the context of an information table.
+	 * Gets value of rule confirmation measure F calculated for a decision rule in the context of an information table.
 	 * 
-	 * @return value of rule confirmation measure $f$ calculated for a decision rule in the context of an information table
-	 * @throws UnknownValueException if value of rule confirmation measure $f$ is unknown (not stored in these characteristics)
+	 * @return value of rule confirmation measure F calculated for a decision rule in the context of an information table
+	 * @throws UnknownValueException if value of rule confirmation measure F is unknown (not stored in these characteristics)
 	 */
 	public double getFConfirmation() {
-		return known(fConfirmation, UNKNOWN_DOUBLE_VALUE, "Value of rule confirmation measure 'f' is unknown.");
+		return known(fConfirmation, UNKNOWN_DOUBLE_VALUE, "Value of rule confirmation measure 'F' is unknown.");
 	}
 
 	/**
-	 * Sets value of rule confirmation measure $f$ calculated for a decision rule in the context of an information table.
+	 * Sets value of rule confirmation measure F calculated for a decision rule in the context of an information table.
 	 * In order to forget stored value of this rule confirmation measure, one can invoke this method with {@link #UNKNOWN_DOUBLE_VALUE}.
 	 * 
-	 * @param fConfirmation value of rule confirmation measure $f$ calculated for a decision rule in the context of an information table
-	 * @throws InvalidValueException if given value of rule confirmation measure 'f' is outside interval [-1,1]
+	 * @param fConfirmation value of rule confirmation measure F calculated for a decision rule in the context of an information table
+	 * @throws InvalidValueException if given value of rule confirmation measure F is outside interval [-1,1]
 	 */
 	public void setFConfirmation(double fConfirmation) {
 		if (fConfirmation != UNKNOWN_DOUBLE_VALUE) { //do validation
-			withinMinus1Plus1Interval(fConfirmation, "Value of rule confirmation measure 'f' has to be within interval [-1,1].");
+			withinMinus1Plus1Interval(fConfirmation, "Value of rule confirmation measure 'F' has to be within interval [-1,1].");
 		}
 		this.fConfirmation = fConfirmation;
 	}
 
 	/**
-	 * Checks whether rule confirmation measure $f$ is set.
-	 * @return {@code true} if rule confirmation measure $f$ is set or {@code false} otherwise
+	 * Checks whether rule confirmation measure F is set.
+	 * @return {@code true} if rule confirmation measure F is set or {@code false} otherwise
 	 */
 	public boolean isFConfirmationSet() {
 		return (fConfirmation != UNKNOWN_DOUBLE_VALUE);
 	}
 	
 	/**
-	 * Gets value of rule confirmation measure $a$ calculated for a decision rule in the context of an information table.
+	 * Gets value of rule confirmation measure A calculated for a decision rule in the context of an information table.
 	 * 
-	 * @return value of rule confirmation measure $a$ calculated for a decision rule in the context of an information table
-	 * @throws UnknownValueException if value of rule confirmation measure $a$ is unknown (not stored in these characteristics)
+	 * @return value of rule confirmation measure A calculated for a decision rule in the context of an information table
+	 * @throws UnknownValueException if value of rule confirmation measure A is unknown (not stored in these characteristics)
 	 */
 	public double getAConfirmation() {
-		return known(aConfirmation, UNKNOWN_DOUBLE_VALUE, "Value of rule confirmation measure 'a' is unknown.");
+		return known(aConfirmation, UNKNOWN_DOUBLE_VALUE, "Value of rule confirmation measure 'A' is unknown.");
 	}
 
 	/**
-	 * Sets value of rule confirmation measure $a$ calculated for a decision rule in the context of an information table.
+	 * Sets value of rule confirmation measure A calculated for a decision rule in the context of an information table.
 	 * In order to forget stored value of this rule confirmation measure, one can invoke this method with {@link #UNKNOWN_DOUBLE_VALUE}.
 	 * 
-	 * @param aConfirmation value of rule confirmation measure $a$ calculated for a decision rule in the context of an information table
-	 * @throws InvalidValueException if given value of rule confirmation measure 'a' is outside interval [-1,1]
+	 * @param aConfirmation value of rule confirmation measure A calculated for a decision rule in the context of an information table
+	 * @throws InvalidValueException if given value of rule confirmation measure 'A' is outside interval [-1,1]
 	 */
 	public void setAConfirmation(double aConfirmation) {
 		if (aConfirmation != UNKNOWN_DOUBLE_VALUE) { //do validation
-			withinMinus1Plus1Interval(aConfirmation, "Value of rule confirmation measure 'a' has to be within interval [-1,1].");
+			withinMinus1Plus1Interval(aConfirmation, "Value of rule confirmation measure 'A' has to be within interval [-1,1].");
 		}
 		this.aConfirmation = aConfirmation;
 	}
 
 	/**
-	 * Checks whether rule confirmation measure $a$ is set.
-	 * @return {@code true} if rule confirmation measure $a$ is set or {@code false} otherwise
+	 * Checks whether rule confirmation measure A is set.
+	 * @return {@code true} if rule confirmation measure A is set or {@code false} otherwise
 	 */
 	public boolean isAConfirmationSet() {
 		return (aConfirmation != UNKNOWN_DOUBLE_VALUE);
 	}
 	
 	/**
-	 * Gets value of rule confirmation measure $z$ calculated for a decision rule in the context of an information table.
+	 * Gets value of rule confirmation measure Z calculated for a decision rule in the context of an information table.
 	 * 
-	 * @return value of rule confirmation measure $z$ calculated for a decision rule in the context of an information table
-	 * @throws UnknownValueException if value of rule confirmation measure $z$ is unknown (not stored in these characteristics)
+	 * @return value of rule confirmation measure Z calculated for a decision rule in the context of an information table
+	 * @throws UnknownValueException if value of rule confirmation measure Z is unknown (not stored in these characteristics)
 	 */
 	public double getZConfirmation() {
-		return known(zConfirmation, UNKNOWN_DOUBLE_VALUE, "Value of rule confirmation measure 'z' is unknown.");
+		return known(zConfirmation, UNKNOWN_DOUBLE_VALUE, "Value of rule confirmation measure 'Z' is unknown.");
 	}
 
 	/**
-	 * Sets value of rule confirmation measure $z$ calculated for a decision rule in the context of an information table.
+	 * Sets value of rule confirmation measure Z calculated for a decision rule in the context of an information table.
 	 * In order to forget stored value of this rule confirmation measure, one can invoke this method with {@link #UNKNOWN_DOUBLE_VALUE}.
 	 * 
-	 * @param zConfirmation value of rule confirmation measure $z$ calculated for a decision rule in the context of an information table
-	 * @throws InvalidValueException if given value of rule confirmation measure 'z' is outside interval [-1,1]
+	 * @param zConfirmation value of rule confirmation measure Z calculated for a decision rule in the context of an information table
+	 * @throws InvalidValueException if given value of rule confirmation measure 'Z' is outside interval [-1,1]
 	 */
 	public void setZConfirmation(double zConfirmation) {
 		if (zConfirmation != UNKNOWN_DOUBLE_VALUE) { //do validation
-			withinMinus1Plus1Interval(zConfirmation, "Value of rule confirmation measure 'z' has to be within interval [-1,1].");
+			withinMinus1Plus1Interval(zConfirmation, "Value of rule confirmation measure 'Z' has to be within interval [-1,1].");
 		}
 		this.zConfirmation = zConfirmation;
 	}
 	
 	/**
-	 * Checks whether rule confirmation measure $z$ is set.
-	 * @return {@code true} if rule confirmation measure $z$ is set or {@code false} otherwise
+	 * Checks whether rule confirmation measure Z is set.
+	 * @return {@code true} if rule confirmation measure Z is set or {@code false} otherwise
 	 */
 	public boolean isZConfirmationSet() {
 		return (zConfirmation != UNKNOWN_DOUBLE_VALUE);
 	}
 
 	/**
-	 * Gets value of rule confirmation measure $l$ calculated for a decision rule in the context of an information table.
+	 * Gets value of rule confirmation measure L calculated for a decision rule in the context of an information table.
 	 * 
-	 * @return value of rule confirmation measure $l$ calculated for a decision rule in the context of an information table
-	 * @throws UnknownValueException if value of rule confirmation measure $l$ is unknown (not stored in these characteristics)
+	 * @return value of rule confirmation measure L calculated for a decision rule in the context of an information table
+	 * @throws UnknownValueException if value of rule confirmation measure L is unknown (not stored in these characteristics)
 	 */
 	public double getLConfirmation() {
-		return known(lConfirmation, UNKNOWN_DOUBLE_VALUE, "Value of rule confirmation measure 'l' is unknown.");
+		return known(lConfirmation, UNKNOWN_DOUBLE_VALUE, "Value of rule confirmation measure 'L' is unknown.");
 	}
 
 	/**
-	 * Sets value of rule confirmation measure $l$ calculated for a decision rule in the context of an information table.
+	 * Sets value of rule confirmation measure L calculated for a decision rule in the context of an information table.
 	 * In order to forget stored value of this rule confirmation measure, one can invoke this method with {@link #UNKNOWN_DOUBLE_VALUE}.
 	 * 
-	 * @param lConfirmation value of rule confirmation measure $l$ calculated for a decision rule in the context of an information table
+	 * @param lConfirmation value of rule confirmation measure L calculated for a decision rule in the context of an information table
 	 */
 	public void setLConfirmation(double lConfirmation) {
 		this.lConfirmation = lConfirmation;
 	}
 
 	/**
-	 * Checks whether rule confirmation measure $l$ is set.
-	 * @return {@code true} if rule confirmation measure $l$ is set or {@code false} otherwise
+	 * Checks whether rule confirmation measure L is set.
+	 * @return {@code true} if rule confirmation measure L is set or {@code false} otherwise
 	 */
 	public boolean isLConfirmationSet() {
 		return (lConfirmation != UNKNOWN_DOUBLE_VALUE);
 	}
 	
 	/**
-	 * Gets value of rule confirmation measure $c<sub>1</sub>$ calculated for a decision rule in the context of an information table.
+	 * Gets value of rule confirmation measure c<sub>1</sub> calculated for a decision rule in the context of an information table.
 	 * 
-	 * @return value of rule confirmation measure $c<sub>1</sub>$ calculated for a decision rule in the context of an information table
-	 * @throws UnknownValueException if value of rule confirmation measure $c<sub>1</sub>$ is unknown (not stored in these characteristics)
+	 * @return value of rule confirmation measure c<sub>1</sub> calculated for a decision rule in the context of an information table
+	 * @throws UnknownValueException if value of rule confirmation measure c<sub>1</sub> is unknown (not stored in these characteristics)
 	 */
 	public double getC1Confirmation() {
 		return known(c1Confirmation, UNKNOWN_DOUBLE_VALUE, "Value of rule confirmation measure 'c_1' is unknown.");
 	}
 
 	/**
-	 * Sets value of rule confirmation measure $c<sub>1</sub>$ calculated for a decision rule in the context of an information table.
+	 * Sets value of rule confirmation measure c<sub>1</sub> calculated for a decision rule in the context of an information table.
 	 * In order to forget stored value of this rule confirmation measure, one can invoke this method with {@link #UNKNOWN_DOUBLE_VALUE}.
 	 * 
-	 * @param c1Confirmation value of rule confirmation measure $c<sub>1</sub>$ calculated for a decision rule in the context of an information table
+	 * @param c1Confirmation value of rule confirmation measure c<sub>1</sub> calculated for a decision rule in the context of an information table
 	 */
 	public void setC1Confirmation(double c1Confirmation) {
 		this.c1Confirmation = c1Confirmation; //no additional validation possible in the general case, with any values of measure's parameters alpha and beta
 	}
 	
 	/**
-	 * Checks whether rule confirmation measure $c<sub>1</sub>$ is set.
-	 * @return {@code true} if rule confirmation measure $c<sub>1</sub>$ is set or {@code false} otherwise
+	 * Checks whether rule confirmation measure c<sub>1</sub> is set.
+	 * @return {@code true} if rule confirmation measure c<sub>1</sub> is set or {@code false} otherwise
 	 */
 	public boolean isC1ConfirmationSet() {
 		return (c1Confirmation != UNKNOWN_DOUBLE_VALUE);
 	}
 	
 	/**
-	 * Gets value of rule confirmation measure $s$ calculated for a decision rule in the context of an information table.
+	 * Gets value of rule confirmation measure S calculated for a decision rule in the context of an information table.
 	 * 
-	 * @return value of rule confirmation measure $s$ calculated for a decision rule in the context of an information table
-	 * @throws UnknownValueException if value of rule confirmation measure $s$ is unknown (not stored in these characteristics)
+	 * @return value of rule confirmation measure S calculated for a decision rule in the context of an information table
+	 * @throws UnknownValueException if value of rule confirmation measure S is unknown (not stored in these characteristics)
 	 */
 	public double getSConfirmation() {
-		return known(sConfirmation, UNKNOWN_DOUBLE_VALUE, "Value of rule confirmation measure 's' is unknown.");
+		return known(sConfirmation, UNKNOWN_DOUBLE_VALUE, "Value of rule confirmation measure 'S' is unknown.");
 	}
 	
 	/**
-	 * Sets value of rule confirmation measure $s$ calculated for a decision rule in the context of an information table.
+	 * Sets value of rule confirmation measure S calculated for a decision rule in the context of an information table.
 	 * In order to forget stored value of this rule confirmation measure, one can invoke this method with {@link #UNKNOWN_DOUBLE_VALUE}.
 	 * 
-	 * @param sConfirmation value of rule confirmation measure $s$ calculated for a decision rule in the context of an information table
-	 * @throws InvalidValueException if given value of rule confirmation measure 's' is outside interval [-1,1]
+	 * @param sConfirmation value of rule confirmation measure S calculated for a decision rule in the context of an information table
+	 * @throws InvalidValueException if given value of rule confirmation measure 'S' is outside interval [-1,1]
 	 */
 	public void setSConfirmation(double sConfirmation) {
 		if (sConfirmation != UNKNOWN_DOUBLE_VALUE) { //do validation
-			withinMinus1Plus1Interval(sConfirmation, "Value of rule confirmation measure 's' has to be within interval [-1,1].");
+			withinMinus1Plus1Interval(sConfirmation, "Value of rule confirmation measure 'S' has to be within interval [-1,1].");
 		}
 		this.sConfirmation = sConfirmation;
 	}
 	
 	/**
-	 * Checks whether rule confirmation measure $s$ is set.
-	 * @return {@code true} if rule confirmation measure $s$ is set or {@code false} otherwise
+	 * Checks whether rule confirmation measure S is set.
+	 * @return {@code true} if rule confirmation measure S is set or {@code false} otherwise
 	 */
 	public boolean isSConfirmationSet() {
 		return (sConfirmation != UNKNOWN_DOUBLE_VALUE);
