@@ -56,7 +56,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * <br>
  * Different scenarios considered in this generalizer are presented in the following graphics:
  * <img src="./doc-files/OptimizingRuleConditionsGeneralizer.png" alt="Condition generalization scenarios"> and in this file:
- * <a href="./doc-files/OptimizingRuleConditionsGeneralizer-generalization-possibilities.xlsx" alt="Condition generalization scenarios">OptimizingRuleConditionsGeneralizer-generalization-possibilities.xlsx</a>
+ * <a href="./doc-files/OptimizingRuleConditionsGeneralizer-generalization-possibilities.xlsx">OptimizingRuleConditionsGeneralizer-generalization-possibilities.xlsx</a>
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
