@@ -425,4 +425,16 @@ class OrdinalMisclassificationMatrixTest {
 		assertEquals(0.0, misclassificationMatrix.getRMSE());
 	}
 	
+	/**
+	 * Tests for {@link OrdinalMisclassificationMatrix#serialize()}. Just prints resulting text;
+	 */
+	@Test
+	void testSerialize01() {
+		originalDecisions = new SimpleDecision[] {decision1, decision2, decision3, decision4, decision5, decision1, decision2}; //original decisions of subsequent objects
+		assignedDecisions = new SimpleDecision[] {decision1, decision2, decision3, decision4, decision5, decision5, decision4}; //decisions assigned to subsequent objects
+		OrdinalMisclassificationMatrix misclassificationMatrix = new OrdinalMisclassificationMatrix(orderedDecisions, originalDecisions, assignedDecisions);
+		
+		System.out.println(misclassificationMatrix.serialize()); //should succeed
+	}
+	
 }

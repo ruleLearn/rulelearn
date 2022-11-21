@@ -20,6 +20,8 @@ import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.data.Decision;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 /**
  * Representation of results of classification in a form of a misclassification matrix (sometimes also called confusion matrix or an error matrix).
  * Order is assumed for assigned (predicted) and original (true) {@link Decision decisions} in this matrix.
@@ -144,12 +146,77 @@ public class OrdinalMisclassificationMatrix extends MisclassificationMatrix {
 	}
 	
 	/**
-	 * Serializes this ordinal misclassification matrix to a (multiline) text file.
+	 * Serializes this ordinal misclassification matrix to a (multiline) text.
 	 *  
 	 * @return serialized ordinal misclassification matrix
 	 */
 	public String serialize() {
-		return "Serialized ordinal misclassification matrix.";
+		StringBuilder resultBuilder = new StringBuilder();
+		String separator = "\t";
+		String newLine = "\n";
+
+		resultBuilder.append("original decision\\suggested decision");
+		resultBuilder.append(newLine);
+		
+		//print top left cell - row\column header
+		resultBuilder.append("X");
+		
+		//print column headers
+		for (Decision assignedDecision : orderOfDecisions) {
+			resultBuilder.append(separator);
+			resultBuilder.append(serializeDecision(assignedDecision));
+		}
+		
+		resultBuilder.append(newLine);
+		
+		//-----
+		
+		for (Decision originalDecision : orderOfDecisions) {
+			resultBuilder.append(serializeDecision(originalDecision));
+			
+			for (Decision assignedDecision : orderOfDecisions) {
+				resultBuilder.append(separator);
+				resultBuilder.append(getValue(originalDecision, assignedDecision));
+			}
+			
+			resultBuilder.append(newLine);
+		}
+		
+		//-----
+		
+		resultBuilder.append("Accuracy: ").append(getAccuracy()).append(newLine);
+		resultBuilder.append("MAE: ").append(getMAE()).append(newLine);
+		resultBuilder.append("RMSE: ").append(getRMSE()).append(newLine);
+		resultBuilder.append("GMean: ").append(getGmean()).append(newLine);
+		resultBuilder.append("Number of correct assignments: ").append(getNumberOfCorrectAssignments()).append(newLine);
+		resultBuilder.append("Number of incorrect assignments: ").append(getNumberOfIncorrectAssignments()).append(newLine);
+		resultBuilder.append("Number of objects with assigned decision: ").append(getNumberObjectsWithAssignedDecision()).append(newLine);
+		
+		return resultBuilder.toString();
+	}
+	
+	/**
+	 * Serializes given decision to single-line text.
+	 * 
+	 * @param decision decision to convert to text
+	 * @return serialized decision
+	 */
+	private String serializeDecision(Decision decision) {
+		StringBuilder serializedDecisionBuilder = new StringBuilder();
+		
+		int evaluationsCount = decision.getNumberOfEvaluations();
+		IntSet attributeIndices = decision.getAttributeIndices();
+		
+		int count = 0;
+		for (int attributeIndex : attributeIndices) { //TODO: assure ascending order of attribute indices if there is more than 1 attribute index in the set
+			serializedDecisionBuilder.append(decision.getEvaluation(attributeIndex));
+			count++;
+			if (count < evaluationsCount) { //there will be next evaluation
+				serializedDecisionBuilder.append(",");
+			}
+		}
+		
+		return serializedDecisionBuilder.toString();
 	}
 	
 }
