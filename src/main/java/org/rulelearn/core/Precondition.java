@@ -301,6 +301,20 @@ public final class Precondition {
 	}
 	
 	/**
+	 * Verifies if given value is {@code true}.
+	 * 
+	 * @param test value to be tested
+	 * @param errorMsg error message of the thrown {@link InvalidValueException}, used when given value is {@code false}
+	 * 
+	 * @throws InvalidValueException if given value is {@code false}
+	 */
+	public static void satisfied(boolean test, String errorMsg) {
+		if (!test) {
+			throw new InvalidValueException(errorMsg);
+		}
+	}
+	
+	/**
 	 * Constructor preventing object creation.
 	 */
 	private Precondition() {
