@@ -22,7 +22,6 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.Precondition;
@@ -31,6 +30,7 @@ import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 
 /**
@@ -121,7 +121,7 @@ public class CrossValidator {
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table} is {@code null}
 	 * @throws InvalidValueException when the provided number of folds is negative
 	 */
-	public List<CrossValidationFold<InformationTable>> splitIntoKFold (InformationTable informationTable, int k) {
+	public List<CrossValidationFold<InformationTable>> splitIntoKFold(InformationTable informationTable, int k) {
 		return splitIntoKFold(informationTable, false, k);
 	}
 	
@@ -140,7 +140,7 @@ public class CrossValidator {
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table} is {@code null}
 	 * @throws InvalidValueException when the provided number of folds is negative
 	 */
-	public List<CrossValidationFold<InformationTable>> splitIntoKFold (InformationTable informationTable, boolean accelerateByReadOnlyResult, int k) {
+	public List<CrossValidationFold<InformationTable>> splitIntoKFold(InformationTable informationTable, boolean accelerateByReadOnlyResult, int k) {
 		Precondition.notNull(informationTable, "Information table provided to cross-validate is null.");
 		Precondition.nonNegative(k, "Provided number of folds is negative.");
 		List<CrossValidationFold<InformationTable>> folds = new ArrayList<CrossValidationFold<InformationTable>> (k);
@@ -162,7 +162,7 @@ public class CrossValidator {
 				}
 			}
 			else {
-				splitSize =  (int)(informationTableSize/k);
+				splitSize =  (int)(informationTableSize/k); //TODO: this leads to too big last fold!
 				indices = new int [splitSize];
 				i = 0;
 				while (i < splitSize) {
@@ -187,7 +187,10 @@ public class CrossValidator {
 	 * Randomly splits {@link InformationTable an information table} provided as a parameter into a given number k (also provided as a parameter) 
 	 * of {@link CrossValidationFold folds}. Each fold consists of two disjoint sub-tables of the information table. 
 	 * This splitting preserves distribution of decisions in the information table (i.e., each constructed sub-table has the same distribution of 
-	 * decisions as the original information table).
+	 * decisions as the original information table).<br>
+	 * <br>
+	 * This method is deprecated since version 0.25.0 of the library, due to producing uneven splits into folds (with too large last fold).
+	 * Use {@link #splitStratifiedIntoKFolds(InformationTableWithDecisionDistributions, int)} instead.
 	 * 
 	 * @param informationTable {@link InformationTable information table} which will be split into folds
 	 * @param k number of folds
@@ -197,15 +200,21 @@ public class CrossValidator {
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table} is {@code null}
 	 * @throws InvalidValueException when the provided number of folds is negative
 	 */
-	public List<CrossValidationFold<InformationTable>> splitStratifiedIntoKFold (InformationTableWithDecisionDistributions informationTable, int k) {
+	@Deprecated
+	public List<CrossValidationFold<InformationTable>> splitStratifiedIntoKFold(InformationTableWithDecisionDistributions informationTable, int k) {
 		return splitStratifiedIntoKFold(informationTable, false, k);
 	}
+	
+	
 	
 	/**
 	 * Randomly splits {@link InformationTable an information table} provided as a parameter into a given number k (also provided as a parameter) 
 	 * of {@link CrossValidationFold folds}. Each fold consists of two disjoint sub-tables of the information table. 
 	 * This splitting preserves distribution of decisions in the information table (i.e., each constructed sub-table has the same distribution of
-	 * decisions as the original information table).
+	 * decisions as the original information table).<br>
+	 * <br>
+	 * This method is deprecated since version 0.25.0 of the library, due to producing uneven splits into folds (with too large last fold).
+	 * Use {@link #splitStratifiedIntoKFolds(InformationTableWithDecisionDistributions, boolean, int)} instead.
 	 * 
 	 * @param informationTable {@link InformationTable information table} which will be split into folds
 	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
@@ -218,79 +227,239 @@ public class CrossValidator {
 	 * @throws NullPointerException when the informationTable {@link InformationTable information table} is {@code null}
 	 * @throws InvalidValueException when the provided number of folds is negative
 	 */
-	public List<CrossValidationFold<InformationTable>> splitStratifiedIntoKFold (InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, int k) {
+	@Deprecated
+	public List<CrossValidationFold<InformationTable>> splitStratifiedIntoKFold(InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, int k) {
 		Precondition.notNull(informationTable, "Information table provided to cross-validate is null.");
 		Precondition.nonNegative(k, "Provided number of folds is negative.");
 		List<CrossValidationFold<InformationTable>> folds = new ArrayList<CrossValidationFold<InformationTable>> (k);
 		
 		// initialization
-		Set<Decision> decisions = informationTable.getDecisionDistribution().getDecisions();
-		int numberOfDecisions = decisions.size(), numberOfObjectsForDecision;
-		Map<Decision, IntArrayList> objectsToSelect = new Object2ObjectLinkedOpenHashMap<Decision, IntArrayList>(numberOfDecisions);
+		int numberOfDecisions = informationTable.getDecisionDistribution().getDecisions().size();
+		int numberOfObjectsForDecision;
+		
+		//TODO: are linked maps necessary?
+		Map<Decision, IntArrayList> objectsToSelect = new Object2ObjectLinkedOpenHashMap<Decision, IntArrayList>(numberOfDecisions); //maps decision to list of indices of objects having that decision
 		Map<Decision, BitSet> pickedObjects = new Object2ObjectLinkedOpenHashMap<Decision, BitSet>(numberOfDecisions);
-		Decision [] decisionsSet = informationTable.getUniqueDecisions();
+		
+		Decision[] decisionsSet = informationTable.getUniqueDecisions(); //array with all unique decisions
+		
 		if (decisionsSet != null) {
-			for (Decision decision : decisionsSet) {
+			for (Decision decision : decisionsSet) { //iterate over all unique decisions and allocate memory
 				numberOfObjectsForDecision = informationTable.getDecisionDistribution().getCount(decision);
-				objectsToSelect.put(decision, new IntArrayList(numberOfObjectsForDecision));
+				objectsToSelect.put(decision, new IntArrayList(numberOfObjectsForDecision)); //use known capacity to skip future relocation
 				pickedObjects.put(decision, new BitSet(numberOfObjectsForDecision));
 			}
-			Decision[] objectDecisions = informationTable.getDecisions();
+			
+			Decision[] objectDecisions = informationTable.getDecisions(); //get decisions of subsequent objects from the information table
+			
 			if (objectDecisions != null) {
 				IntArrayList list;
-				for (int i = 0; i < objectDecisions.length; i++) {
+				
+				for (int i = 0; i < objectDecisions.length; i++) { //fill objectsToSelect for each decision
 					list = objectsToSelect.get(objectDecisions[i]);
 					list.add(i);
 				}
-				// selection
-				IntArrayList indices = null;
+				
+				IntArrayList validationSetObjectIndices = null; //indices of objects in the validation set of the current fold
 				BitSet picked = null;
-				int numberOfObjects = informationTable.getNumberOfObjects(), numberSelectedSoFar = 0, splitForDecisionSize, i, j;
-				for (int l = 0; l < k; l++) {
-					if (l == (k-1)) {
-						// in the last fold - take all that remained
-						indices = new IntArrayList(numberOfObjects - numberSelectedSoFar);
-						for (Decision decision : decisionsSet) {
+				
+				int numberOfObjects = informationTable.getNumberOfObjects();
+				int numberOfObjectsSelectedSoFar = 0; //number of objects selected so far in all the folds (increases with number of folds)
+				int numberOfObjectsToSelectForDecisionWithinFold;
+				int i, j;
+				
+//				//maps decision to number of objects selected for that decision during all folds preceding the current one
+//				Object2IntMap<Decision> decision2CumulatedNumberOfObjects = new Object2IntOpenHashMap<Decision>(numberOfDecisions);
+//				for (Decision decision : decisionsSet) {
+//					decision2CumulatedNumberOfObjects.put(decision, 0);
+//				}
+//				int targetNumberOfObjectsAfterFold;
+
+				//selection loop (assigning training and test objects for each of the k folds)
+				for (int l = 0; l < k; l++) { //for each fold
+					if (l == (k-1)) { //last fold
+						// in the last fold - take all objects that remained
+						validationSetObjectIndices = new IntArrayList(numberOfObjects - numberOfObjectsSelectedSoFar);
+						
+						for (Decision decision : decisionsSet) { //within fold, select objects for each decision
 							numberOfObjectsForDecision = informationTable.getDecisionDistribution().getCount(decision);
+							
 							list = objectsToSelect.get(decision);
 							picked = pickedObjects.get(decision);
+							
 							for (j = 0; j < numberOfObjectsForDecision; j++) {
 								if (!picked.get(j)) {
-									indices.add(list.getInt(j));
+									validationSetObjectIndices.add(list.getInt(j));
 									picked.set(j);
-									numberSelectedSoFar++;
+									numberOfObjectsSelectedSoFar++;
 								}
-							}
-						}
-					}
-					else {
-						indices = new IntArrayList((int)(((double)numberOfObjects)/k));
-						for (Decision decision : decisionsSet) {
+							} //for
+						} //for decision
+					} //if
+					else { //not in the last fold
+						//TODO: control total number of objects in fold!
+						validationSetObjectIndices = new IntArrayList((int)(((double)numberOfObjects)/k));
+//						validationSetObjectIndices = new IntArrayList((int)Math.ceil((double)numberOfObjects / k) + numberOfDecisions); //be prepared for a bit more objects due to in-fold rounding of the number of objects having each decision
+						
+						for (Decision decision : decisionsSet) { //within fold, select objects for each decision
 							numberOfObjectsForDecision = informationTable.getDecisionDistribution().getCount(decision);
-							splitForDecisionSize = (int)(((double)numberOfObjectsForDecision)/k);
+							numberOfObjectsToSelectForDecisionWithinFold = (int)(((double)numberOfObjectsForDecision)/k); //TODO: this leads to too big last fold!
+							
+//							targetNumberOfObjectsAfterFold = (int)Math.round(((double)(l+1)) * ((double)numberOfObjectsForDecision / k)); //calculate target cumulated number of objects (after current fold) for current decision
+//							numberOfObjectsToSelectForDecisionWithinFold = targetNumberOfObjectsAfterFold - decision2CumulatedNumberOfObjects.getInt(decision); //calculate how many objects should be added to achieve the target
+//							decision2CumulatedNumberOfObjects.put(decision, targetNumberOfObjectsAfterFold); //set cumulated number of objects after this fold
+							
 							list = objectsToSelect.get(decision);
 							picked = pickedObjects.get(decision);
+							
 							i = 0;
-							while (i < splitForDecisionSize) {
+							
+							while (i < numberOfObjectsToSelectForDecisionWithinFold) { //draw as long as not successful 
 								j = random.nextInt(numberOfObjectsForDecision);
+								
 								if (!picked.get(j)) {
-									indices.add(list.getInt(j));
+									validationSetObjectIndices.add(list.getInt(j));
 									picked.set(j);
-									numberSelectedSoFar++;
-									i++;
+									numberOfObjectsSelectedSoFar++;
+									i++; //increase the number of objects already drawn
 								}
-							}
-						}
-					}
+							} //while
+						} //for decision
+					} //else
 					
-					int[] indicesArray = indices.toIntArray();
-					Arrays.sort(indicesArray); //sort indices, so the objects in the validation table are also in the original order
+					int[] sortedValidationSetObjectIndices = validationSetObjectIndices.toIntArray();
+					Arrays.sort(sortedValidationSetObjectIndices); //sort indices, so the objects in the validation table are also in the original order
 					
-					folds.add(new CrossValidationFold<InformationTable>(informationTable.discard(indicesArray, accelerateByReadOnlyResult), 
-							informationTable.select(indicesArray, accelerateByReadOnlyResult)));
-				}
+					folds.add(new CrossValidationFold<InformationTable>(informationTable.discard(sortedValidationSetObjectIndices, accelerateByReadOnlyResult), 
+							informationTable.select(sortedValidationSetObjectIndices, accelerateByReadOnlyResult)));
+				} //for each fold
+			} //if
+		} //if
+		
+		return folds;
+	}
+	
+	/**
+	 * Randomly splits {@link InformationTable an information table} provided as a parameter into a given number k (also provided as a parameter) 
+	 * of {@link CrossValidationFold folds}. Each fold consists of two disjoint sub-tables of the information table. 
+	 * This splitting preserves distribution of decisions in the information table (i.e., each constructed sub-table has the same distribution of 
+	 * decisions as the original information table).
+	 * 
+	 * @param informationTable {@link InformationTable information table} which will be split into folds
+	 * @param k number of folds
+	 * 
+	 * @return k {@link CrossValidationFold folds}
+	 * 
+	 * @throws NullPointerException when the informationTable {@link InformationTable information table} is {@code null}
+	 * @throws InvalidValueException when the provided number of folds is not positive
+	 */
+	public List<CrossValidationFold<InformationTable>> splitStratifiedIntoKFolds(InformationTableWithDecisionDistributions informationTable, int k) {
+		return splitStratifiedIntoKFolds(informationTable, false, k);
+	}
+	
+	/**
+	 * Randomly splits {@link InformationTable an information table} provided as a parameter into a given number k (also provided as a parameter) 
+	 * of {@link CrossValidationFold folds}. Each fold consists of two disjoint sub-tables of the information table. 
+	 * This splitting preserves distribution of decisions in the information table (i.e., each constructed sub-table has the same distribution of
+	 * decisions as the original information table).
+	 * 
+	 * @param informationTable {@link InformationTable information table} which will be split into folds
+	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
+	 *        at the cost of returning read-only information tables, or should return folds with safe information tables (which may be modified),
+	 *        at the cost of returning the result slower
+	 * @param k number of folds (should be &gt;=1)
+	 * 
+	 * @return k {@link CrossValidationFold folds}
+	 * 
+	 * @throws NullPointerException when the informationTable {@link InformationTable information table} is {@code null}
+	 * @throws InvalidValueException when the provided number of folds is not positive
+	 */
+	public List<CrossValidationFold<InformationTable>> splitStratifiedIntoKFolds(InformationTableWithDecisionDistributions informationTable, boolean accelerateByReadOnlyResult, int k) {
+		Precondition.notNull(informationTable, "Information table provided to cross-validate is null.");		
+		Precondition.satisfied(k > 0, "Provided number of folds is not positive.");
+		
+		final class FoldIndexPicker {
+			private int numberOfFolds;
+			private int currentFoldIndex;
+			
+			//assumes numberOfFolds >= 1
+			private FoldIndexPicker(int numberOfFolds) {
+				this.numberOfFolds = numberOfFolds;
+				this.currentFoldIndex = 0; //initially fold 0 is picked!
+			}
+			
+			//picks next fold index, gracefully wrapping to 0 after the last fold index
+			private int next() {
+				return currentFoldIndex = (currentFoldIndex + 1 == numberOfFolds ? 0 : currentFoldIndex + 1);
 			}
 		}
+		
+		List<CrossValidationFold<InformationTable>> folds = new ArrayList<CrossValidationFold<InformationTable>>(k);
+		IntList[] validationSetObjectIndices = new IntList[k]; //for each fold, stores indices of validation set objects
+		Decision[] decisionsSet = informationTable.getUniqueDecisions(); //array with all unique decisions
+		
+		int numberOfDecisions = informationTable.getDecisionDistribution().getDecisions().size();
+		Map<Decision, IntArrayList> objectsToSelect = new Object2ObjectLinkedOpenHashMap<Decision, IntArrayList>(numberOfDecisions); //maps decision to list of indices of objects having that decision
+		
+		int numberOfObjectsForDecision;
+		
+		if (decisionsSet != null) {
+			for (Decision decision : decisionsSet) { //iterate over all unique decisions and allocate memory
+				numberOfObjectsForDecision = informationTable.getDecisionDistribution().getCount(decision);
+				objectsToSelect.put(decision, new IntArrayList(numberOfObjectsForDecision)); //use known capacity to skip future relocation
+			}
+			
+			Decision[] objectDecisions = informationTable.getDecisions(); //get decisions of subsequent objects from the information table
+			
+			if (objectDecisions != null) {
+				for (int objectIndex = 0; objectIndex < objectDecisions.length; objectIndex++) { //fill objectsToSelect for each decision
+					objectsToSelect.get(objectDecisions[objectIndex]).add(objectIndex); //add current object index to list of indices of objects having given decision
+				}
+				
+				//allocate memory for validation set indices in each fold
+				for (int foldIndex = 0; foldIndex < k; foldIndex++) {
+					validationSetObjectIndices[foldIndex] = new IntArrayList((int)Math.ceil((double)informationTable.getNumberOfObjects() / k) + numberOfDecisions);
+				}
+				
+				//initialize fold index picker
+				FoldIndexPicker foldIndexPicker = new FoldIndexPicker(k);
+				
+				//supplementary variables
+				int numberOfSelectedObjectsForDecision; //number of objects selected so far among objects having current decision
+				BitSet selected;
+				int randomObjectIndex;
+				int[] inFoldSortedValidationSetObjectIndices;
+				
+				//distribute validation objects among folds, as evenly as possible
+				for (Decision decision : decisionsSet) { //go over all unique decisions
+					numberOfObjectsForDecision = informationTable.getDecisionDistribution().getCount(decision);
+					numberOfSelectedObjectsForDecision = 0;
+					selected = new BitSet(numberOfObjectsForDecision);
+					
+					while (numberOfSelectedObjectsForDecision < numberOfObjectsForDecision) { //iterate until all objects having current decision are distributed among folds
+						//select to current fold, at random, one object having current decision
+						randomObjectIndex = random.nextInt(numberOfObjectsForDecision);
+						
+						if (!selected.get(randomObjectIndex)) { //new object index has been selected
+							validationSetObjectIndices[foldIndexPicker.currentFoldIndex].add(objectsToSelect.get(decision).getInt(randomObjectIndex));
+							selected.set(randomObjectIndex); //mark selected
+							numberOfSelectedObjectsForDecision++;
+							foldIndexPicker.next(); //choose next fold (possibly wrapping to fold 0)
+						}
+					}
+				}
+				
+				//create folds
+				for (int foldIndex = 0; foldIndex < k; foldIndex++) {
+					inFoldSortedValidationSetObjectIndices = validationSetObjectIndices[foldIndex].toIntArray();
+					Arrays.sort(inFoldSortedValidationSetObjectIndices); //sort indices, so the objects in the validation table are also in the original order
+					
+					folds.add(new CrossValidationFold<InformationTable>(
+							informationTable.discard(inFoldSortedValidationSetObjectIndices, accelerateByReadOnlyResult), 
+							informationTable.select(inFoldSortedValidationSetObjectIndices, accelerateByReadOnlyResult)));
+				}
+			} //if
+		} //if
 		
 		return folds;
 	}

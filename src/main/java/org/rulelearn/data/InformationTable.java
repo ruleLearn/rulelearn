@@ -199,7 +199,7 @@ public class InformationTable {
 			Decision[] decisions, 
 			IdentificationField[] activeIdentificationAttributeFields, int activeIdentificationAttributeIndex,
 			int[] attributeMap, Int2IntMap localActiveConditionAttributeIndex2GlobalAttributeIndexMap, boolean accelerateByReadOnlyParams) {
-		this.attributes = accelerateByReadOnlyParams ? attributes : attributes.clone();
+		this.attributes = accelerateByReadOnlyParams ? attributes : ( (attributes == null) ? null : attributes.clone());
 		this.mapper = mapper;
 		this.activeConditionAttributeFields = activeConditionAttributeFields;
 		this.notActiveOrDescriptionAttributeFields = notActiveOrDescriptionAttributeFields;
@@ -215,9 +215,9 @@ public class InformationTable {
 			( (activeIdentificationAttributeFields == null) ? null : activeIdentificationAttributeFields.clone() );
 		this.activeIdentificationAttributeIndex = activeIdentificationAttributeIndex;
 		
-		this.attributeMap = accelerateByReadOnlyParams ? attributeMap : attributeMap.clone();
+		this.attributeMap = accelerateByReadOnlyParams ? attributeMap : ( (attributeMap == null) ? null : attributeMap.clone());
 		this.localActiveConditionAttributeIndex2GlobalAttributeIndexMap = accelerateByReadOnlyParams ? localActiveConditionAttributeIndex2GlobalAttributeIndexMap :
-			new Int2IntOpenHashMap(localActiveConditionAttributeIndex2GlobalAttributeIndexMap);
+			( (localActiveConditionAttributeIndex2GlobalAttributeIndexMap == null) ? null : new Int2IntOpenHashMap(localActiveConditionAttributeIndex2GlobalAttributeIndexMap));
 	}
 	
 	

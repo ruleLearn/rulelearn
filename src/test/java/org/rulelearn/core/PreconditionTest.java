@@ -16,7 +16,9 @@
 
 package org.rulelearn.core;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 
@@ -343,6 +345,24 @@ class PreconditionTest {
 	@Test
 	void testWithinMinus1Plus1Interval05() {
 		assertEquals(Precondition.withinMinus1Plus1Interval(0, "Test message."), 0);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.core.Precondition#satisfied(boolean, String)}.
+	 */
+	@Test
+	void testSatisfied01() {
+		int k = 0;
+		assertThrows(InvalidValueException.class, () -> Precondition.satisfied(k > 0, "Condition is not satisfied."));
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.core.Precondition#satisfied(boolean, String)}.
+	 */
+	@Test
+	void testSatisfied02() {
+		int k = 1;
+		Precondition.satisfied(k > 0, "Condition is not satisfied.");
 	}
 
 }
