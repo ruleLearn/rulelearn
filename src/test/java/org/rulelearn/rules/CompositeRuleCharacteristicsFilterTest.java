@@ -221,7 +221,7 @@ class CompositeRuleCharacteristicsFilterTest {
 		CompositeRuleCharacteristicsFilter compositeRuleFilter01 = CompositeRuleCharacteristicsFilter.of(textualCompositeFilter01);
 		CompositeRuleCharacteristicsFilter compositeRuleFilter02 = CompositeRuleCharacteristicsFilter.of(textualCompositeFilter02);
 		
-		assertEquals(textualCompositeFilter01.toString(), textualCompositeFilter01);
-		assertEquals(textualCompositeFilter02.toString(), textualCompositeFilter02);
+		assertEquals(compositeRuleFilter01.toString(), textualCompositeFilter01);
+		assertEquals(compositeRuleFilter02.toString(), "support>10&confidence>=0.95&epsilon=0.1&coverage<0.3&negative-coverage<=12");
 	}
 }
