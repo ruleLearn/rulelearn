@@ -205,8 +205,6 @@ public class CrossValidator {
 		return splitStratifiedIntoKFold(informationTable, false, k);
 	}
 	
-	
-	
 	/**
 	 * Randomly splits {@link InformationTable an information table} provided as a parameter into a given number k (also provided as a parameter) 
 	 * of {@link CrossValidationFold folds}. Each fold consists of two disjoint sub-tables of the information table. 
@@ -268,13 +266,6 @@ public class CrossValidator {
 				int numberOfObjectsToSelectForDecisionWithinFold;
 				int i, j;
 				
-//				//maps decision to number of objects selected for that decision during all folds preceding the current one
-//				Object2IntMap<Decision> decision2CumulatedNumberOfObjects = new Object2IntOpenHashMap<Decision>(numberOfDecisions);
-//				for (Decision decision : decisionsSet) {
-//					decision2CumulatedNumberOfObjects.put(decision, 0);
-//				}
-//				int targetNumberOfObjectsAfterFold;
-
 				//selection loop (assigning training and test objects for each of the k folds)
 				for (int l = 0; l < k; l++) { //for each fold
 					if (l == (k-1)) { //last fold
@@ -299,15 +290,10 @@ public class CrossValidator {
 					else { //not in the last fold
 						//TODO: control total number of objects in fold!
 						validationSetObjectIndices = new IntArrayList((int)(((double)numberOfObjects)/k));
-//						validationSetObjectIndices = new IntArrayList((int)Math.ceil((double)numberOfObjects / k) + numberOfDecisions); //be prepared for a bit more objects due to in-fold rounding of the number of objects having each decision
 						
 						for (Decision decision : decisionsSet) { //within fold, select objects for each decision
 							numberOfObjectsForDecision = informationTable.getDecisionDistribution().getCount(decision);
 							numberOfObjectsToSelectForDecisionWithinFold = (int)(((double)numberOfObjectsForDecision)/k); //TODO: this leads to too big last fold!
-							
-//							targetNumberOfObjectsAfterFold = (int)Math.round(((double)(l+1)) * ((double)numberOfObjectsForDecision / k)); //calculate target cumulated number of objects (after current fold) for current decision
-//							numberOfObjectsToSelectForDecisionWithinFold = targetNumberOfObjectsAfterFold - decision2CumulatedNumberOfObjects.getInt(decision); //calculate how many objects should be added to achieve the target
-//							decision2CumulatedNumberOfObjects.put(decision, targetNumberOfObjectsAfterFold); //set cumulated number of objects after this fold
 							
 							list = objectsToSelect.get(decision);
 							picked = pickedObjects.get(decision);

@@ -442,6 +442,20 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 	}
 	
 	/**
+	 * Gets the number of elementary conditions in the rule.
+	 * 
+	 * @return the number of elementary conditions in the rule
+	 */
+	@Override
+	public int getNumberOfConditions() {
+		if (numberOfConditions == UNKNOWN_INT_VALUE) {
+			numberOfConditions = getRuleCoverageInformation().getNumberOfConditions();
+		}
+		
+		return numberOfConditions;
+	}
+	
+	/**
 	 * Enforces that values of all rule characteristics are calculated instantly and remembered, so each subsequent call to any getter
 	 * will return requested characteristic at once, without additional calculations.
 	 */
@@ -460,5 +474,6 @@ public class ComputableRuleCharacteristics extends RuleCharacteristics {
 		this.getStrength();
 		this.getSupport();
 		this.getZConfirmation();
+		this.getNumberOfConditions();
 	}
 }

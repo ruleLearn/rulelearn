@@ -64,6 +64,11 @@ public class BasicRuleCoverageInformation {
 	int allObjectsCount;
 	
 	/**
+	 * Number of conditions in the rule.
+	 */
+	int numberOfConditions;
+	
+	/**
 	 * Constructs this basic rule coverage info.
 	 * 
 	 * @param ruleConditions rule conditions supplying useful information: {@link RuleConditions#getIndicesOfCoveredObjects() indices of covered objects},
@@ -92,6 +97,8 @@ public class BasicRuleCoverageInformation {
 		this.decisionsOfCoveredObjects = decisionsOfCoveredObjects;
 		
 		allObjectsCount = ruleConditions.getLearningInformationTable().getNumberOfObjects();
+		numberOfConditions = ruleConditions.size();
+		
 	}
 	
 	/**
@@ -121,6 +128,7 @@ public class BasicRuleCoverageInformation {
 				}
 			}
 		}
+		numberOfConditions = rule.getConditions(true).length;
 	}
 	
 	/**
@@ -160,6 +168,15 @@ public class BasicRuleCoverageInformation {
 	 */
 	public int getAllObjectsCount() {
 		return allObjectsCount;
+	}
+	
+	/**
+	 * Gets number of conditions in the rule.
+	 * 
+	 * @return number of conditions in the rule
+	 */
+	public int getNumberOfConditions() {
+		return numberOfConditions;
 	}
 	
 }

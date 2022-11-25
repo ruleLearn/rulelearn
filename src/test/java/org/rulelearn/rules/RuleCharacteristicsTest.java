@@ -296,33 +296,6 @@ class RuleCharacteristicsTest {
 		int coverage = 20;
 		ruleCharacteristics.setSupport(support);
 		ruleCharacteristics.setCoverage(coverage);
-		assertEquals(ruleCharacteristics.getConfidence(), (double)support / (double)coverage);
-	}
-	
-	/**
-	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setConfidence(double)}
-	 * and {@link org.rulelearn.rules.RuleCharacteristics#getConfidence()}.
-	 */
-	@Test
-	void testSetConfidence06() {
-		int support = 10; //coverage remains unknown
-		ruleCharacteristics.setSupport(support);
-		try {
-			ruleCharacteristics.getConfidence();
-			fail("Should not get unknown confidence.");
-		} catch (UnknownValueException exception) {
-			//exception is correctly thrown => do nothing
-		}
-	}
-	
-	/**
-	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setConfidence(double)}
-	 * and {@link org.rulelearn.rules.RuleCharacteristics#getConfidence()}.
-	 */
-	@Test
-	void testSetConfidence07() {
-		int coverage = 20; //support remains unknown
-		ruleCharacteristics.setCoverage(coverage);
 		try {
 			ruleCharacteristics.getConfidence();
 			fail("Should not get unknown confidence.");
@@ -1231,6 +1204,82 @@ class RuleCharacteristicsTest {
 		
 		ruleCharacteristics.setSConfirmation(1.0);
 		assertEquals(true, ruleCharacteristics.isSConfirmationSet());
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#getNumberOfConditions()}.
+	 */
+	@Test
+	void testGetNumberOfConditions() {
+		try {
+			ruleCharacteristics.getNumberOfConditions();
+			fail("Should not get unknown number of conditions.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setNumberOfConditions(int)}.
+	 */
+	@Test
+	void testSetNumberOfConditions01() {
+		try {
+			ruleCharacteristics.setNumberOfConditions(-1);
+			fail("Should not set invalid number of conditions.");
+		} catch (InvalidValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setNumberOfConditions(int)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getNumberOfConditions()}.
+	 */
+	@Test
+	void testSetNumberOfConditions02() {
+		ruleCharacteristics.setNumberOfConditions(RuleCharacteristics.UNKNOWN_INT_VALUE);
+		
+		try {
+			ruleCharacteristics.getNumberOfConditions();
+			fail("Should not get unknown number of conditions.");
+		} catch (UnknownValueException exception) {
+			//exception is correctly thrown => do nothing
+		}
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setNumberOfConditions(int)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getNumberOfConditions()}.
+	 */
+	@Test
+	void testSetNumberOfConditions03() {
+		int numberOfConditions = 0;
+		ruleCharacteristics.setNumberOfConditions(numberOfConditions);
+		assertEquals(ruleCharacteristics.getNumberOfConditions(), numberOfConditions);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#setNumberOfConditions(int)}
+	 * and {@link org.rulelearn.rules.RuleCharacteristics#getNumberOfConditions()}.
+	 */
+	@Test
+	void testSetNumberOfConditions04() {
+		int numberOfConditions = 2;
+		ruleCharacteristics.setNumberOfConditions(numberOfConditions);
+		assertEquals(ruleCharacteristics.getNumberOfConditions(), numberOfConditions);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.RuleCharacteristics#isNumberOfConditionsSet()}.
+	 */
+	@Test
+	void testIsNumberOfConditionsSet() {
+		ruleCharacteristics.setNumberOfConditions(RuleCharacteristics.UNKNOWN_INT_VALUE);
+		assertEquals(false, ruleCharacteristics.isNumberOfConditionsSet());
+		
+		ruleCharacteristics.setNumberOfConditions(1);
+		assertEquals(true, ruleCharacteristics.isNumberOfConditionsSet());
 	}
 	
 	/**
