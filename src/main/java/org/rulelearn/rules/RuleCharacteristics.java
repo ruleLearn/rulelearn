@@ -73,7 +73,7 @@ public class RuleCharacteristics {
 	protected int coverage = UNKNOWN_INT_VALUE;
 	/**
 	 * Negative coverage of a decision rule (number of negative objects covered by the rule) in the context of an information table.
-	 * An object is negative, if its decision part does not match rule's decision part.
+	 * An object is negative, if its decision part does not match rule's decision part (and also its decision is not neutral w.r.t. rule's decision part).
 	 */
 	protected int negativeCoverage = UNKNOWN_INT_VALUE;
 	/**
@@ -108,6 +108,11 @@ public class RuleCharacteristics {
 	 * Value of rule confirmation measure S calculated for a decision rule in the context of an information table.
 	 */
 	protected double sConfirmation = UNKNOWN_DOUBLE_VALUE;
+	
+	/**
+	 * Number of elementary conditions in the rule.
+	 */
+	protected int numberOfConditions = UNKNOWN_INT_VALUE;
 	
 	/**
 	 * Basic rule coverage information concerning considered decision rule. Equals {@code null} by default.
@@ -215,22 +220,13 @@ public class RuleCharacteristics {
 	}
 
 	/**
-	 * Gets confidence of a decision rule in the context of an information table. If confidence is not stored in these characteristics,
-	 * an attempt is made to compute it as a ratio of support and coverage.
+	 * Gets confidence of a decision rule in the context of an information table.
 	 * 
 	 * @return confidence confidence of a decision rule in the context of an information table
-	 * @throws UnknownValueException if confidence is unknown (not stored in these characteristics) and cannot be computed
-	 *         as either support or coverage is also unknown
+	 * @throws UnknownValueException if confidence is unknown (not stored in these characteristics)
 	 */
 	public double getConfidence() {
-		if (confidence == UNKNOWN_DOUBLE_VALUE) {
-			try {
-				confidence = (double)getSupport() / (double)getCoverage();
-			} catch (UnknownValueException exception) {
-				throw new UnknownValueException("Rule's confidence is unknown and cannot be computed.");
-			}
-		}
-		return confidence;
+		return known(confidence, UNKNOWN_DOUBLE_VALUE, "Rule's confidence is unknown.");
 	}
 
 	/**
@@ -321,25 +317,13 @@ public class RuleCharacteristics {
 	
 	/**
 	 * Gets negative coverage of a decision rule (number of negative objects covered by the rule) in the context of an information table.
-	 * An object is negative, if its decision does not match rule's decision part.
-	 * If negative coverage is not stored in these characteristics, an attempt is made to compute it as a difference between coverage and support.<br>
-	 * <br>
-	 * It is important to note that this method does not take into account the presence of neutral objects. If there are such objects, correct negative 
-	 * coverage can be lower that the one returned by this method.
+	 * An object is negative, if its decision does not match rule's decision part (and also its decision is not neutral w.r.t. rule's decision part).
 	 * 
 	 * @return negative coverage of a decision rule (number of negative objects covered by the rule) in the context of an information table
-	 * @throws UnknownValueException if negative coverage is unknown (not stored in these characteristics) and cannot be computed
-	 *         as either support or coverage is also unknown
+	 * @throws UnknownValueException if negative coverage is unknown (not stored in these characteristics)
 	 */
 	public int getNegativeCoverage() {
-		if (negativeCoverage == UNKNOWN_INT_VALUE) {
-			try {
-				negativeCoverage = getCoverage() - getSupport(); //TODO: take into account neutral objects?
-			} catch (UnknownValueException exception) {
-				throw new UnknownValueException("Rule's negative coverage is unknown and cannot be computed.");
-			}
-		}
-		return negativeCoverage;
+		return known(negativeCoverage, UNKNOWN_INT_VALUE, "Rule's negative coverage is unknown.");
 	}
 
 	/**
@@ -611,6 +595,37 @@ public class RuleCharacteristics {
 	 */
 	public boolean isSConfirmationSet() {
 		return (sConfirmation != UNKNOWN_DOUBLE_VALUE);
+	}
+	
+	/**
+	 * Gets the number of elementary conditions in the rule.
+	 * 
+	 * @return the number of elementary conditions in the rule
+	 * @throws UnknownValueException if the number of elementary conditions in the rule is unknown (not stored in these characteristics)
+	 */
+	public int getNumberOfConditions() {
+		return known(numberOfConditions, UNKNOWN_INT_VALUE, "Value of rule length (number of conditions) is unknown.");
+	}
+	
+	/**
+	 * Sets the number of elementary conditions in the rule.
+	 * 
+	 * @param numberOfConditions the number of elementary conditions in the rule
+	 * @throws InvalidValueException if given number of elementary conditions in negative
+	 */
+	public void setNumberOfConditions(int numberOfConditions) {
+		if (numberOfConditions != UNKNOWN_INT_VALUE) {
+			nonNegative(numberOfConditions, "Rule's number of conditions has to be >= 0."); //assert that characteristic satisfies constraint(s)
+		}
+		this.numberOfConditions = numberOfConditions;
+	}
+	
+	/**
+	 * Checks whether the number of elementary conditions in the rule is set.
+	 * @return {@code true} if the number of elementary conditions in the rule is set or {@code false} otherwise
+	 */
+	public boolean isNumberOfConditionsSet() {
+		return (numberOfConditions != UNKNOWN_INT_VALUE);
 	}
 	
 	/**

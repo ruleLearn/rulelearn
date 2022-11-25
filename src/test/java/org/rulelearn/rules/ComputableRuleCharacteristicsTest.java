@@ -52,6 +52,7 @@ class ComputableRuleCharacteristicsTest {
 		Int2ObjectMap<Decision> decisionsOfCoveredObjectsMock = Mockito.mock(Int2ObjectOpenHashMap.class);
 		//Mockito.when(decisionsOfCoveredObjectsMock.size()).thenReturn(indicesOfCoveredObjects.size());
 		int allObjectsCount = 13;
+		int numberOfConditions = 3;
 		
 		RuleCoverageInformation ruleCoverageInformationMock = Mockito.mock(RuleCoverageInformation.class);
 		Mockito.when(ruleCoverageInformationMock.getIndicesOfPositiveObjects()).thenReturn(indicesOfPositiveObjects);
@@ -59,6 +60,7 @@ class ComputableRuleCharacteristicsTest {
 		Mockito.when(ruleCoverageInformationMock.getIndicesOfCoveredObjects()).thenReturn(indicesOfCoveredObjects);
 		Mockito.when(ruleCoverageInformationMock.getDecisionsOfCoveredObjects()).thenReturn(decisionsOfCoveredObjectsMock);
 		Mockito.when(ruleCoverageInformationMock.getAllObjectsCount()).thenReturn(allObjectsCount);
+		Mockito.when(ruleCoverageInformationMock.getNumberOfConditions()).thenReturn(numberOfConditions);
 		
 		computableRuleCharacteristics01 = new ComputableRuleCharacteristics(ruleCoverageInformationMock);
 		
@@ -270,6 +272,14 @@ class ComputableRuleCharacteristicsTest {
 	@Test
 	void testGetSConfirmation() {
 		assertEquals(computableRuleCharacteristics01.getSConfirmation(), (double)4 / (double)6 - (double)2 / (double)4);
+	}
+	
+	/**
+	 * Test method for {@link org.rulelearn.rules.ComputableRuleCharacteristics#getNumberOfConditions()}.
+	 */
+	@Test
+	void testGetNumberOfConditions() {
+		assertEquals(computableRuleCharacteristics01.getNumberOfConditions(), 3);
 	}
 
 	/**
