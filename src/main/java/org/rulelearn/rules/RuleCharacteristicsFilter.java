@@ -124,23 +124,23 @@ public class RuleCharacteristicsFilter implements RuleFilter {
 		String[] splitResult;
 		if (ruleCharacteristicFilter.contains(Relation.ge)) {
 			splitResult = ruleCharacteristicFilter.split(Relation.ge);
-			return of(splitResult[0], Relation.ge, splitResult[1]);
+			return of(splitResult[0].trim(), Relation.ge, splitResult[1]);
 		}
 		if (ruleCharacteristicFilter.contains(Relation.le)) {
 			splitResult = ruleCharacteristicFilter.split(Relation.le);
-			return of(splitResult[0], Relation.le, splitResult[1]);
+			return of(splitResult[0].trim(), Relation.le, splitResult[1]);
 		}
 		if (ruleCharacteristicFilter.contains(Relation.gt)) {
 			splitResult = ruleCharacteristicFilter.split(Relation.gt);
-			return of(splitResult[0], Relation.gt, splitResult[1]);
+			return of(splitResult[0].trim(), Relation.gt, splitResult[1]);
 		}
 		if (ruleCharacteristicFilter.contains(Relation.lt)) {
 			splitResult = ruleCharacteristicFilter.split(Relation.lt);
-			return of(splitResult[0], Relation.lt, splitResult[1]);
+			return of(splitResult[0].trim(), Relation.lt, splitResult[1]);
 		}
 		if (ruleCharacteristicFilter.contains(Relation.eq)) {
 			splitResult = ruleCharacteristicFilter.split(Relation.eq);
-			return of(splitResult[0], Relation.eq, splitResult[1]);
+			return of(splitResult[0].trim(), Relation.eq, splitResult[1]);
 		}
 		throw new InvalidValueException("Could not construct rule characteristics filter due to lack of relation.");
 	}

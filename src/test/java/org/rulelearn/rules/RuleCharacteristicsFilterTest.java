@@ -94,6 +94,7 @@ class RuleCharacteristicsFilterTest {
 	void testAccepts02() {
 		RuleCharacteristics ruleCharacteristicsMock = Mockito.mock(RuleCharacteristics.class);
 		Mockito.when(ruleCharacteristicsMock.getEpsilon()).thenReturn(0.01);
+		Mockito.when(ruleCharacteristicsMock.getNumberOfConditions()).thenReturn(2);
 		
 		assertTrue(new RuleCharacteristicsFilter(RuleCharacteristics::getEpsilon, RuleCharacteristic.EPSILON.getName(), Relation.GE, 0.01).accepts(null, ruleCharacteristicsMock));
 		assertTrue(new RuleCharacteristicsFilter(RuleCharacteristics::getEpsilon, RuleCharacteristic.EPSILON.getName(), Relation.GE, 0).accepts(null, ruleCharacteristicsMock));
@@ -112,6 +113,9 @@ class RuleCharacteristicsFilterTest {
 		
 		assertTrue(new RuleCharacteristicsFilter(RuleCharacteristics::getEpsilon, RuleCharacteristic.EPSILON.getName(), Relation.LT, 0.02).accepts(null, ruleCharacteristicsMock));
 		assertFalse(new RuleCharacteristicsFilter(RuleCharacteristics::getEpsilon, RuleCharacteristic.EPSILON.getName(), Relation.LT, 0.01).accepts(null, ruleCharacteristicsMock));
+		
+		assertTrue(new RuleCharacteristicsFilter(RuleCharacteristics::getNumberOfConditions, RuleCharacteristic.LENGTH.getName(), Relation.LE, 2).accepts(null, ruleCharacteristicsMock));
+		assertFalse(new RuleCharacteristicsFilter(RuleCharacteristics::getNumberOfConditions, RuleCharacteristic.LENGTH.getName(), Relation.LT, 2).accepts(null, ruleCharacteristicsMock));
 	}
 	
 	/**
@@ -126,6 +130,7 @@ class RuleCharacteristicsFilterTest {
 		Mockito.when(ruleCharacteristicsMock.getSupport()).thenReturn(10);
 		Mockito.when(ruleCharacteristicsMock.getCoverage()).thenReturn(12);
 		Mockito.when(ruleCharacteristicsMock.getNegativeCoverage()).thenReturn(2);
+		Mockito.when(ruleCharacteristicsMock.getNumberOfConditions()).thenReturn(3);
 		
 		assertTrue(new RuleCharacteristicsFilter(RuleCharacteristic.EPSILON, Relation.GE, 0.01).accepts(null, ruleCharacteristicsMock));
 		assertTrue(new RuleCharacteristicsFilter(RuleCharacteristic.EPSILON, Relation.GE, 0).accepts(null, ruleCharacteristicsMock));
@@ -144,6 +149,9 @@ class RuleCharacteristicsFilterTest {
 		
 		assertTrue(new RuleCharacteristicsFilter(RuleCharacteristic.NEGATIVE_COVERAGE, Relation.LT, 3).accepts(null, ruleCharacteristicsMock));
 		assertFalse(new RuleCharacteristicsFilter(RuleCharacteristic.NEGATIVE_COVERAGE, Relation.LT, 2).accepts(null, ruleCharacteristicsMock));
+		
+		assertTrue(new RuleCharacteristicsFilter(RuleCharacteristic.LENGTH, Relation.LE, 3).accepts(null, ruleCharacteristicsMock));
+		assertFalse(new RuleCharacteristicsFilter(RuleCharacteristic.LENGTH, Relation.LT, 3).accepts(null, ruleCharacteristicsMock));
 	}
 	
 	/**
@@ -158,6 +166,7 @@ class RuleCharacteristicsFilterTest {
 		Mockito.when(ruleCharacteristicsMock.getSupport()).thenReturn(10);
 		Mockito.when(ruleCharacteristicsMock.getCoverage()).thenReturn(12);
 		Mockito.when(ruleCharacteristicsMock.getNegativeCoverage()).thenReturn(2);
+		Mockito.when(ruleCharacteristicsMock.getNumberOfConditions()).thenReturn(3);
 		
 		assertTrue(RuleCharacteristicsFilter.of(RuleCharacteristic.epsilon, Relation.ge, "0.01").accepts(null, ruleCharacteristicsMock));
 		assertTrue(RuleCharacteristicsFilter.of(RuleCharacteristic.epsilon, Relation.ge, "0").accepts(null, ruleCharacteristicsMock));
@@ -175,7 +184,10 @@ class RuleCharacteristicsFilterTest {
 		assertFalse(RuleCharacteristicsFilter.of(RuleCharacteristic.coverage, Relation.le, "11").accepts(null, ruleCharacteristicsMock));
 		
 		assertTrue(RuleCharacteristicsFilter.of(RuleCharacteristic.negativeCoverage, Relation.lt, "3.0").accepts(null, ruleCharacteristicsMock));
-		assertFalse(RuleCharacteristicsFilter.of(RuleCharacteristic.negativeCoverage, Relation.lt, "2.0").accepts(null, ruleCharacteristicsMock));
+		assertFalse(RuleCharacteristicsFilter.of(RuleCharacteristic.negativeCoverage, Relation.lt, " 2.0 ").accepts(null, ruleCharacteristicsMock));
+		
+		assertTrue(RuleCharacteristicsFilter.of(RuleCharacteristic.length, Relation.le, "3").accepts(null, ruleCharacteristicsMock));
+		assertFalse(RuleCharacteristicsFilter.of(RuleCharacteristic.length, Relation.lt, " 3 ").accepts(null, ruleCharacteristicsMock));
 	}
 	
 	/**
@@ -190,25 +202,36 @@ class RuleCharacteristicsFilterTest {
 		Mockito.when(ruleCharacteristicsMock.getSupport()).thenReturn(10);
 		Mockito.when(ruleCharacteristicsMock.getCoverage()).thenReturn(12);
 		Mockito.when(ruleCharacteristicsMock.getNegativeCoverage()).thenReturn(2);
+		Mockito.when(ruleCharacteristicsMock.getNumberOfConditions()).thenReturn(4);
 		
-		assertTrue(RuleCharacteristicsFilter.of("epsilon>=0.01").accepts(null, ruleCharacteristicsMock));
-		assertTrue(RuleCharacteristicsFilter.of("confidence>0.94").accepts(null, ruleCharacteristicsMock));
-		assertTrue(RuleCharacteristicsFilter.of("support=10.0").accepts(null, ruleCharacteristicsMock));
-		assertTrue(RuleCharacteristicsFilter.of("coverage<=12").accepts(null, ruleCharacteristicsMock));
-		assertTrue(RuleCharacteristicsFilter.of("negative-coverage<3").accepts(null, ruleCharacteristicsMock));
+		assertTrue(RuleCharacteristicsFilter.of("epsilon>= 0.01 ").accepts(null, ruleCharacteristicsMock));
+		assertTrue(RuleCharacteristicsFilter.of("confidence >0.94").accepts(null, ruleCharacteristicsMock));
+		assertTrue(RuleCharacteristicsFilter.of("support = 10.0").accepts(null, ruleCharacteristicsMock));
+		assertTrue(RuleCharacteristicsFilter.of(" coverage<=12").accepts(null, ruleCharacteristicsMock));
+		assertTrue(RuleCharacteristicsFilter.of(" negative-coverage <3").accepts(null, ruleCharacteristicsMock));
+		assertTrue(RuleCharacteristicsFilter.of(" length >= 4 ").accepts(null, ruleCharacteristicsMock));
 	}
 	
 	/**
 	 * Test for {@link RuleCharacteristicsFilter#toString()}.
 	 */
 	@Test
-	void testToString() {
+	void testToString01() {
 		assertEquals(RuleCharacteristicsFilter.of(RuleCharacteristic.support, Relation.gt, "10.0").toString(), "support>10"); //tests if support is stored as int, despite written as double
 		assertEquals(RuleCharacteristicsFilter.of(RuleCharacteristic.strength, Relation.ge, "0.04").toString(), "strength>=0.04");
 		
 		assertEquals(RuleCharacteristicsFilter.of(RuleCharacteristic.coverageFactor, Relation.eq, "0.03").toString(), "coverage-factor=0.03");
 		assertEquals(RuleCharacteristicsFilter.of(RuleCharacteristic.coverage, Relation.le, "12").toString(), "coverage<=12");
 		assertEquals(RuleCharacteristicsFilter.of(RuleCharacteristic.epsilon, Relation.lt, "0.01").toString(), "epsilon<0.01");
+		assertEquals(RuleCharacteristicsFilter.of(RuleCharacteristic.length, Relation.eq, "2.0").toString(), "length=2");
+	}
+	
+	/**
+	 * Test for {@link RuleCharacteristicsFilter#toString()}.
+	 */
+	@Test
+	void testToString02() {
+		assertEquals(RuleCharacteristicsFilter.of(" length >= 4 ").toString(), "length>=4");
 	}
 
 }

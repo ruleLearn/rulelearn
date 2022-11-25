@@ -39,7 +39,8 @@ public enum RuleCharacteristic {
 	Z,
 	L,
 	C1,
-	S;
+	S,
+	LENGTH;
 	
 	/**
 	 * Textual representation of {@link #SUPPORT} value.
@@ -97,6 +98,10 @@ public enum RuleCharacteristic {
 	 * Textual representation of {@link #S} value.
 	 */
 	public static final String s = "S";
+	/**
+	 * Textual representation of {@link #LENGTH} value.
+	 */
+	public static final String length = "length";
 	
 	/**
 	 * Gets reference to method of {@link RuleCharacteristics} that calculates given characteristic.
@@ -133,6 +138,8 @@ public enum RuleCharacteristic {
 			return RuleCharacteristics::getC1Confirmation;
 		case S:
 			return RuleCharacteristics::getSConfirmation;
+		case LENGTH:
+			return RuleCharacteristics::getNumberOfConditions;
 		default:
 			throw new InvalidValueException("Not supported rule characteristic."); //this should not happen
 		}
@@ -174,6 +181,8 @@ public enum RuleCharacteristic {
 			return c1;
 		case S:
 			return s;
+		case LENGTH:
+			return length;
 		default:
 			throw new InvalidValueException("Not supported rule characteristic."); //this should not happen
 		}
@@ -210,6 +219,7 @@ public enum RuleCharacteristic {
 		if (ruleCharacteristicName.equalsIgnoreCase(l)) {return L;}
 		if (ruleCharacteristicName.equalsIgnoreCase(c1)) {return C1;}
 		if (ruleCharacteristicName.equalsIgnoreCase(s)) {return S;}
+		if (ruleCharacteristicName.equalsIgnoreCase(length)) {return LENGTH;}
 		throw new InvalidValueException("Not supported textual representation of rule characteristic.");
 	}
 	
