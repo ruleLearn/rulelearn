@@ -116,7 +116,7 @@ public class CompositeRuleCharacteristicsFilter implements RuleFilter {
 	public static CompositeRuleCharacteristicsFilter of(String compositeRuleCharacteristicsFilter) {
 		List<RuleCharacteristicsFilter> basicFilters = new ArrayList<RuleCharacteristicsFilter>();
 		
-		if (compositeRuleCharacteristicsFilter == null || compositeRuleCharacteristicsFilter == "") {
+		if (compositeRuleCharacteristicsFilter == null || compositeRuleCharacteristicsFilter.equals("")) {
 			return new CompositeRuleCharacteristicsFilter(basicFilters); //go with empty list of basic filters
 		}
 		
