@@ -383,6 +383,7 @@ public class RuleConditions {
 	 * 
 	 * @return indices of objects covered by these rules conditions;
 	 *         this list is in general non-ordered if at least one condition has been removed from these rule conditions
+	 *         or at least one condition has been replaced in these rule conditions
 	 */
 	public IntList getIndicesOfCoveredObjects() {
 		return IntLists.unmodifiable(this.indicesOfCoveredObjects);
