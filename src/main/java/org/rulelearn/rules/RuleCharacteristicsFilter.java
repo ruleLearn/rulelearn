@@ -23,7 +23,8 @@ import org.rulelearn.core.Precondition;
 import org.rulelearn.core.UnknownValueException;
 
 /**
- * Rule characteristics filter used to filter using a single rule quality measure, e.g., confidence or coverage factor. 
+ * Rule filter used to filter using a single rule quality measure (single rule characteristic), e.g., confidence or coverage factor.
+ * It does not take into account the rule itself. 
  *
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */

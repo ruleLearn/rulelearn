@@ -106,24 +106,27 @@ public class CompositeRuleCharacteristicsFilter implements RuleFilter {
 	/**
 	 * Constructs and returns composite rule characteristics filter using textual representation of filter.
 	 * 
-	 * @param compositeRuleCharacteristicsFilter textual representation of the filter
+	 * @param compositeRuleCharacteristicsFilter textual representation of the filter;
+	 *        if {@code null} or equal to empty string, then constructs composite filter with 0 basic filters (accepting everything)
 	 * @return constructed composite rule characteristics filter
 	 * 
-	 * @throws NullPointerException if given text is {@code null}
 	 * @throws InvalidValueException if textual representation of any basic filter (between separators) is not correct
 	 * @throws NumberFormatException if threshold in textual representation of any basic filter (between separators) is not a valid number
 	 */
 	public static CompositeRuleCharacteristicsFilter of(String compositeRuleCharacteristicsFilter) {
-		Precondition.notNull(compositeRuleCharacteristicsFilter, "Textual representation of composite rule characteristics filter is null.");
 		List<RuleCharacteristicsFilter> basicFilters = new ArrayList<RuleCharacteristicsFilter>();
 		
-		if (compositeRuleCharacteristicsFilter.contains(separator)) {
+		if (compositeRuleCharacteristicsFilter == null || compositeRuleCharacteristicsFilter == "") {
+			return new CompositeRuleCharacteristicsFilter(basicFilters); //go with empty list of basic filters
+		}
+		
+		if (compositeRuleCharacteristicsFilter.contains(separator)) { //expects many basic filters
 			String[] splitResult = compositeRuleCharacteristicsFilter.split(separator);
 			for (String basicFilterText : splitResult) {
 				basicFilters.add(RuleCharacteristicsFilter.of(basicFilterText));
 			}
 			return new CompositeRuleCharacteristicsFilter(basicFilters);
-		} else {
+		} else { //expects single basic filter
 			basicFilters.add(RuleCharacteristicsFilter.of(compositeRuleCharacteristicsFilter));
 			return new CompositeRuleCharacteristicsFilter(basicFilters);
 		}

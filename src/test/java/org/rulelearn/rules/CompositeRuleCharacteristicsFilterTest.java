@@ -215,7 +215,7 @@ class CompositeRuleCharacteristicsFilterTest {
 	 * Test for {@link CompositeRuleCharacteristicsFilter#of(String)}.
 	 */
 	@Test
-	void testOf() {
+	void testOf01() {
 		String textualCompositeFilter01 = "support>10";
 		String textualCompositeFilter02 = "support>10&confidence>=0.95&epsilon=0.1&coverage<0.3&negative-coverage<=12.0";
 		CompositeRuleCharacteristicsFilter compositeRuleFilter01 = CompositeRuleCharacteristicsFilter.of(textualCompositeFilter01);
@@ -224,4 +224,25 @@ class CompositeRuleCharacteristicsFilterTest {
 		assertEquals(compositeRuleFilter01.toString(), textualCompositeFilter01);
 		assertEquals(compositeRuleFilter02.toString(), "support>10&confidence>=0.95&epsilon=0.1&coverage<0.3&negative-coverage<=12");
 	}
+	
+	/**
+	 * Test for {@link CompositeRuleCharacteristicsFilter#of(String)}.
+	 */
+	@Test
+	void testOf02() {
+		CompositeRuleCharacteristicsFilter compositeRuleFilter = CompositeRuleCharacteristicsFilter.of("");
+		RuleCharacteristics ruleCharacteristicsMock = Mockito.mock(RuleCharacteristics.class);
+		assertTrue(compositeRuleFilter.accepts(null, ruleCharacteristicsMock));
+	}
+	
+	/**
+	 * Test for {@link CompositeRuleCharacteristicsFilter#of(String)}.
+	 */
+	@Test
+	void testOf03() {
+		CompositeRuleCharacteristicsFilter compositeRuleFilter = CompositeRuleCharacteristicsFilter.of(null);
+		RuleCharacteristics ruleCharacteristicsMock = Mockito.mock(RuleCharacteristics.class);
+		assertTrue(compositeRuleFilter.accepts(null, ruleCharacteristicsMock));
+	}
+	
 }
