@@ -31,6 +31,7 @@ import org.rulelearn.rules.ApproximatedSetRuleDecisionsProvider;
 import org.rulelearn.rules.AttributeOrderRuleConditionsPruner;
 import org.rulelearn.rules.CertainRuleInducerComponents;
 import org.rulelearn.rules.EvaluationAndCoverageStoppingConditionChecker;
+import org.rulelearn.rules.OptimizingRuleConditionsGeneralizer;
 import org.rulelearn.rules.RuleConditions;
 import org.rulelearn.rules.RuleInducerComponents;
 import org.rulelearn.rules.RuleInductionStoppingConditionChecker;
@@ -144,6 +145,7 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(stoppingConditionChecker).
 				ruleConditionsPruner(new AttributeOrderRuleConditionsPruner(stoppingConditionChecker)).
+				ruleConditionsGeneralizer(new OptimizingRuleConditionsGeneralizer(stoppingConditionChecker)).
 				build();
 		
 		InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = (informationTable instanceof InformationTableWithDecisionDistributions ?
@@ -183,6 +185,7 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(stoppingConditionChecker).
 				ruleConditionsPruner(new AttributeOrderRuleConditionsPruner(stoppingConditionChecker)).
+				ruleConditionsGeneralizer(new OptimizingRuleConditionsGeneralizer(stoppingConditionChecker)).
 				build();
 		
 		InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = (informationTable instanceof InformationTableWithDecisionDistributions ?

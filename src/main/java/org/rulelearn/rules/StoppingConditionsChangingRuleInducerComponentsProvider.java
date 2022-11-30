@@ -44,11 +44,16 @@ public class StoppingConditionsChangingRuleInducerComponentsProvider implements 
 	RuleConditionsPrunerProvider ruleConditionsPrunerProvider;
 	
 	/**
+	 * Provider of {@link RuleConditionsGeneralizer rule conditions generalizers}.
+	 */
+	RuleConditionsGeneralizerProvider ruleConditionsGeneralizerProvider;
+	
+	/**
 	 * Constructs this provider of rule inducer components with a given {@link RuleInductionStoppingConditionCheckerProvider rule induction stopping condition checker provider}.<br>
 	 * It is assumed that other rule inducer components, which are provided by this provider, are not dependent on {@link RuleInductionStoppingConditionChecker rule induction stopping condition checkers} 
 	 * provided by the given rule induction stopping condition checker provider.<br>
 	 *   
-	 * In case when this is not true, different a constructor should be used.<br>  
+	 * In case when this is not true, a different constructor should be used.<br>  
 	 * 
 	 * @param builder builder of {@link RuleInducerComponents rule inducer components}
 	 * @param stoppingCondtionCheckerProvider provider of {@link RuleInductionStoppingConditionChecker rule induction stopping condition checkers}
@@ -60,6 +65,7 @@ public class StoppingConditionsChangingRuleInducerComponentsProvider implements 
 		// set stopping condition checker provider
 		this.stoppingCondtionCheckerProvider = (notNull(stoppingCondtionCheckerProvider, "Provided rule induction stopping condition checker provider is null."));
 		this.ruleConditionsPrunerProvider = null; //be straightforward
+		this.ruleConditionsGeneralizerProvider = null; //be straightforward
 	}
 	
 	/**
@@ -71,12 +77,14 @@ public class StoppingConditionsChangingRuleInducerComponentsProvider implements 
 	 * @param builder builder of {@link RuleInducerComponents rule inducer components}
 	 * @param stoppingCondtionCheckerProvider provider of {@link RuleInductionStoppingConditionChecker rule induction stopping condition checkers}
 	 * @param ruleConditionsPrunerProvider provider of {@link RuleConditionsPruner rule condition pruners}
+	 * @param ruleConditionsGeneralizerProvider provider of {@link RuleConditionsGeneralizer rule condition generalizers}
 	 * 
 	 * @throws NullPointerException if any of the parameters is {@code null}
-	 * @throws InvalidValueException if the number of stopping condition checkers and the number rule conditions pruners specified by providers differ
+	 * @throws InvalidValueException if the number of stopping condition checkers and the number rule conditions pruners specified by respective providers differ
+	 * @throws InvalidValueException if the number of stopping condition checkers and the number rule conditions generalizers specified by respective providers differ
 	 */
 	public StoppingConditionsChangingRuleInducerComponentsProvider(RuleInducerComponents.Builder builder, RuleInductionStoppingConditionCheckerProvider stoppingCondtionCheckerProvider,
-			RuleConditionsPrunerProvider ruleConditionsPrunerProvider) {
+			RuleConditionsPrunerProvider ruleConditionsPrunerProvider, RuleConditionsGeneralizerProvider ruleConditionsGeneralizerProvider) {
 		this.builder = notNull(builder, "Provdided rule components builder is null.");
 		// set stopping condition checker provider
 		this.stoppingCondtionCheckerProvider = notNull(stoppingCondtionCheckerProvider, "Provided rule induction stopping condition checker provider is null.");
@@ -85,6 +93,11 @@ public class StoppingConditionsChangingRuleInducerComponentsProvider implements 
 		if (this.stoppingCondtionCheckerProvider.getCount() != this.ruleConditionsPrunerProvider.getCount()) {
 			throw new InvalidValueException("Different number of stopping condition checkers and rule conditions pruners in providers.");
 		}
+		this.ruleConditionsGeneralizerProvider = notNull(ruleConditionsGeneralizerProvider, "Provided rule conditions generalizer provider is null.");
+		if (this.stoppingCondtionCheckerProvider.getCount() != this.ruleConditionsGeneralizerProvider.getCount()) {
+			throw new InvalidValueException("Different number of stopping condition checkers and rule conditions generalizers in providers.");
+		}
+		
 	}
 	
 	/**
@@ -103,6 +116,10 @@ public class StoppingConditionsChangingRuleInducerComponentsProvider implements 
 		if (ruleConditionsPrunerProvider != null) { //check if pruner depends on checker
 			//then update builder's pruner too
 			builder.ruleConditionsPruner(ruleConditionsPrunerProvider.getRuleConditionsPruner(i)); 
+		}
+		if (ruleConditionsGeneralizerProvider != null) { //check if generalizer depends on checker
+			//then update builder's generalizer too
+			builder.ruleConditionsGeneralizer(ruleConditionsGeneralizerProvider.getRuleConditionsGeneralizer(i)); 
 		}
 		return builder.build();
 	}

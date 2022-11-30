@@ -17,29 +17,27 @@
 package org.rulelearn.rules;
 
 /**
- * Contract of a provider of {@link RuleConditionsPruner rule conditions pruners}.
+ * Contract of a provider of {@link RuleConditionsGeneralizer rule conditions generalizers}.
  *
- * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
-public interface RuleConditionsPrunerProvider {
-
+public interface RuleConditionsGeneralizerProvider {
+	
 	/**
-	 * Gets number of rule conditions pruners that this provider has to offer.
+	 * Gets number of rule conditions generalizers that this provider has to offer.
 	 * 
-	 * @return number of rule conditions pruners offered by this provider
+	 * @return number of rule conditions generalizers offered by this provider
 	 */
 	public int getCount();
 	
 	/**
-	 * Gets i-th rule conditions pruner.
+	 * Gets i-th rule conditions generalizer.
 	 * 
-	 * @param i index of requested rule conditions pruner
-	 * @return i-th rule conditions pruner
+	 * @param i index of requested rule conditions generalizer
+	 * @return i-th rule conditions generalizer
 	 * 
 	 * @throws IndexOutOfBoundsException if given index is less than zero or
-	 *         greater or equal to the number of available rule conditions pruners
+	 *         greater or equal to the number of available rule conditions generalizers
 	 */
-	public RuleConditionsPruner getRuleConditionsPruner(int i);
-	
+	public RuleConditionsGeneralizer getRuleConditionsGeneralizer(int i);
 }
