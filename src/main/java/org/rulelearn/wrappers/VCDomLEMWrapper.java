@@ -16,6 +16,10 @@
 
 package org.rulelearn.wrappers;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.rulelearn.approximations.ClassicalDominanceBasedRoughSetCalculator;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
@@ -86,10 +90,14 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
 		ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 		
-		RuleSet upwardRules = (new VCDomLEM(ruleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider)).generateRules();
-		RuleSet downwardRules = (new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
+		List<VCDomLEM> vcDomLEMs = new ArrayList<VCDomLEM>(2);
+		vcDomLEMs.add(new VCDomLEM(ruleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider));
+		vcDomLEMs.add(new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider));
 		
-		return RuleSet.join(upwardRules, downwardRules);
+		//calculate rules and their characteristics in parallel
+		List<RuleSet> ruleSets = vcDomLEMs.parallelStream().map(vcDomLem -> vcDomLem.generateRules()).collect(Collectors.toList());
+		
+		return RuleSet.join(ruleSets.get(0), ruleSets.get(1));
 	}
 	
 	/**
@@ -115,12 +123,15 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
 		ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 		
-		RuleSetWithComputableCharacteristics upwardRules = (new VCDomLEM(ruleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider)).generateRules();
-		upwardRules.calculateAllCharacteristics();
-		RuleSetWithComputableCharacteristics downwardRules = (new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
-		downwardRules.calculateAllCharacteristics();
+		List<VCDomLEM> vcDomLEMs = new ArrayList<VCDomLEM>(2);
+		vcDomLEMs.add(new VCDomLEM(ruleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider));
+		vcDomLEMs.add(new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider));
 		
-		return RuleSetWithComputableCharacteristics.join(upwardRules, downwardRules);
+		//calculate rules and their characteristics in parallel
+		List<RuleSetWithComputableCharacteristics> ruleSets = vcDomLEMs.parallelStream().map(vcDomLem -> vcDomLem.generateRules()).collect(Collectors.toList());
+		ruleSets.parallelStream().forEach(ruleSet -> ruleSet.calculateAllCharacteristics());
+		
+		return RuleSetWithComputableCharacteristics.join(ruleSets.get(0), ruleSets.get(1));
 	}
 
 	/**
@@ -157,10 +168,14 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
 		ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 		
-		RuleSet upwardRules = (new VCDomLEM(ruleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider)).generateRules();
-		RuleSet downwardRules = (new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
+		List<VCDomLEM> vcDomLEMs = new ArrayList<VCDomLEM>(2);
+		vcDomLEMs.add(new VCDomLEM(ruleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider));
+		vcDomLEMs.add(new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider));
 		
-		return RuleSet.join(upwardRules, downwardRules);
+		//calculate rules and their characteristics in parallel
+		List<RuleSet> ruleSets = vcDomLEMs.parallelStream().map(vcDomLem -> vcDomLem.generateRules()).collect(Collectors.toList());
+		
+		return RuleSet.join(ruleSets.get(0), ruleSets.get(1));
 	}
 
 	/**
@@ -197,12 +212,15 @@ public class VCDomLEMWrapper implements VariableConsistencyRuleInducerWrapper {
 		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
 		ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 		
-		RuleSetWithComputableCharacteristics upwardRules = (new VCDomLEM(ruleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider)).generateRules();
-		upwardRules.calculateAllCharacteristics();
-		RuleSetWithComputableCharacteristics downwardRules = (new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
-		downwardRules.calculateAllCharacteristics();
+		List<VCDomLEM> vcDomLEMs = new ArrayList<VCDomLEM>(2);
+		vcDomLEMs.add(new VCDomLEM(ruleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider));
+		vcDomLEMs.add(new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider));
 		
-		return RuleSetWithComputableCharacteristics.join(upwardRules, downwardRules);
+		//calculate rules and their characteristics in parallel
+		List<RuleSetWithComputableCharacteristics> ruleSets = vcDomLEMs.parallelStream().map(vcDomLem -> vcDomLem.generateRules()).collect(Collectors.toList());
+		ruleSets.parallelStream().forEach(ruleSet -> ruleSet.calculateAllCharacteristics());
+		
+		return RuleSetWithComputableCharacteristics.join(ruleSets.get(0), ruleSets.get(1));
 	}
 
 }
