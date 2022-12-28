@@ -170,7 +170,7 @@ public class VCDomLEM {
 		ApproximatedSet approximatedSet; //supplementary variable
 		RuleInducerComponents ruleInducerComponents; //supplementary variable
 		
-		for (int i = 0; i < approximatedSetsCount; i++) {
+		for (int i = 0; i < approximatedSetsCount; i++) { //TODO: perform calculation of approximatedSetRuleConditions using streams, to potentially allow for their parallel calculation
 			ruleInducerComponents = ruleInducerComponentsProvider.provide(i);
 			approximatedSet = approximatedSetProvider.getApproximatedSet(i);
 			

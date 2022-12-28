@@ -308,6 +308,7 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 			for (int coveredObjectIndex : indicesOfCoveredLearningObjects) {
 				//decision of object covered by current rule is equal to downLimit 
 				if (((SimpleDecision)decisionsOfCoveredLearningObjects.get(coveredObjectIndex)).getEvaluation().isEqualTo(decisionEvaluation) == TernaryLogicValue.TRUE) {
+					//TODO: add version of mode classifier that apart from decision class of the training object also checks if its respective partial dominance cone (concordant with rule type) contains classified object?
 					indicesOfCoveredLearningObjectsWithDecisionEvaluation.add(coveredObjectIndex); //ensure learning object is in the set (will do nothing if already present there)
 				}
 			}
