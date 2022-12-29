@@ -187,13 +187,8 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 						upLimit = decisionCondition.getLimitingEvaluation();
 					}
 					else {
-						try {
-							if (decisionCondition.getLimitingEvaluation().compareToEx(upLimit) > 0) {
-								upLimit = decisionCondition.getLimitingEvaluation();
-							}
-						}
-						catch (UncomparableException ex) {
-							throw new InvalidValueException("Cannot compare limiting evaluations of two decisions of type at least.");
+						if (decisionCondition.getLimitingEvaluation().compareToEx(upLimit) > 0) {
+							upLimit = decisionCondition.getLimitingEvaluation();
 						}
 					}
 				}
@@ -203,13 +198,8 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 						downLimit = decisionCondition.getLimitingEvaluation();
 					}
 					else {
-						try {
-							if (decisionCondition.getLimitingEvaluation().compareToEx(downLimit) < 0) {
-								downLimit = decisionCondition.getLimitingEvaluation();
-							}
-						}
-						catch (UncomparableException ex) {
-							throw new InvalidValueException("Cannot compare limiting evaluations of two decisions of type at most.");
+						if (decisionCondition.getLimitingEvaluation().compareToEx(downLimit) < 0) {
+							downLimit = decisionCondition.getLimitingEvaluation();
 						}
 					}
 				}

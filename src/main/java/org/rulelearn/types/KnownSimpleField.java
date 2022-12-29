@@ -35,15 +35,14 @@ public abstract class KnownSimpleField extends SimpleField implements Comparable
 	 * 
 	 * @return negative value if this field is smaller than the other field,<br>
 	 *         zero if both fields are equal,<br>
-	 *         positive number if this field is greater than the other field
+	 *         positive number if this field is greater than the other field,
+	 *         {@code null} if the other field is a {@link UnknownSimpleField} and this field is semantically uncomparable with the other field
 	 * 
 	 * @throws ClassCastException if type of the other field is neither {@link KnownSimpleField} nor {@link UnknownSimpleField}
 	 * @throws NullPointerException if the other field is {@code null}
-	 * @throws UncomparableException if the other field represents an unknown value (i.e., is of type {@link UnknownSimpleField},
-	 *         and value of this known field cannot be compared with that unknown value
 	 */
 	@Override
-	public int compareToEx(EvaluationField otherField) throws UncomparableException {
+	public Integer compareToEx(EvaluationField otherField) {
 		if (otherField instanceof UnknownSimpleField) {
 			return ((UnknownSimpleField)otherField).reverseCompareToEx(this);
 		} else {

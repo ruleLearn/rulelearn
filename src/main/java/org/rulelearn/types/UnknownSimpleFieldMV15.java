@@ -96,9 +96,9 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	@Override
-	public int compareToEx(EvaluationField otherField) {
+	public Integer compareToEx(EvaluationField otherField) {
 		if (this.canBeComparedWith(otherField)) {
-			return 0;
+			return Integer.valueOf(0);
 		} else {
 			throw new ClassCastException("Other field cannot be compared to this uknown field.");
 		}
@@ -108,18 +108,17 @@ public class UnknownSimpleFieldMV15 extends UnknownSimpleField {
 	 * Compares the other field to this field. Does the reverse comparison than {@link ComparableExt#compareToEx(Object)}.
 	 * 
 	 * @param otherField other field to be compared to this field
-	 * @return zero, as any other non-null simple field is assumed to be equal to this field
+	 * @return {@code null}, as any other non-null simple field is assumed to be uncomparable to this field
 	 * 
 	 * @throws NullPointerException if the other field is {@code null}
-	 * @throws UncomparableException if the other field is not {@code null} (so one cannot decide
-	 *         the result of comparison of the other known simple field to this unknown simple field)
 	 */
 	@Override
-	public int reverseCompareToEx(KnownSimpleField otherField) throws UncomparableException {
+	public Integer reverseCompareToEx(KnownSimpleField otherField) {
 		if (otherField == null) {
 			throw new NullPointerException("Field is null.");
 		} else {
-			throw new UncomparableException("Other field cannot be compared to this unknown field.");
+			return null;
+			//throw new UncomparableException("Other field cannot be compared to this unknown field.");
 		}
 	}
 

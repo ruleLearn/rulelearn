@@ -34,17 +34,17 @@ public interface ReverseComparableExt<T> {
 	 * @param otherObject other object to be compared to this object
 	 * @return negative number if the other object is smaller than this object,<br>
 	 *         zero if both objects are equal,<br>
-	 *         positive number if the other object is greater than this object
+	 *         positive number if the other object is greater than this object,
+	 *         {@code null} if the other object is semantically uncomparable with this object
 	 * 
 	 * @throws ClassCastException if type of the other object is such that the other object cannot be compared to this object  
 	 * @throws NullPointerException if the other object is {@code null}
-	 * @throws UncomparableException if the other object is semantically uncomparable with this object
 	 */
-	abstract public int reverseCompareToEx(T otherObject) throws UncomparableException;
+	abstract public Integer reverseCompareToEx(T otherObject);
 	
 	/**
 	 * Compares the other object to this object. Conveniently wraps {@link ReverseComparableExt#reverseCompareToEx(Object)},
-	 * handling possible {@link UncomparableException} exception by returning {@link ComparisonResult#UNCOMPARABLE}.
+	 * handling possible {@code null} result by returning {@link ComparisonResult#UNCOMPARABLE}.
 	 * 
 	 * @param otherObject other object to be compared to this object
 	 * @return {@link ComparisonResult#SMALLER_THAN} if the other object is smaller than this object,<br>
@@ -56,19 +56,20 @@ public interface ReverseComparableExt<T> {
 	 * @throws NullPointerException if the other object is {@code null}
 	 */
 	public default ComparisonResult reverseCompareToEnum(T otherObject) {
-		int result;
-		try {
-			result = this.reverseCompareToEx(otherObject);
-			if (result > 0) {
-				return ComparisonResult.GREATER_THAN;
-			} else if (result == 0) {
-				return ComparisonResult.EQUAL;
-			} else {
-				return ComparisonResult.SMALLER_THAN;
-			}
-		} catch (UncomparableException exception) {
+		Integer result = this.reverseCompareToEx(otherObject);
+		
+		if (result == null) {
 			return ComparisonResult.UNCOMPARABLE;
 		}
+		
+		if (result.intValue() > 0) {
+			return ComparisonResult.GREATER_THAN;
+		} else if (result.intValue() == 0) {
+			return ComparisonResult.EQUAL;
+		} else {
+			return ComparisonResult.SMALLER_THAN;
+		}
+
 	}
 
 }

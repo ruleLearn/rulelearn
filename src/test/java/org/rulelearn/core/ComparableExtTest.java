@@ -46,7 +46,7 @@ class ComparableExtTest {
 		 * @return {@inheritDoc}
 		 */
 		@Override
-		public abstract int compareToEx(Field otherObject);
+		public abstract Integer compareToEx(Field otherObject);
 	}
 	
 	/**
@@ -98,10 +98,7 @@ class ComparableExtTest {
 	@Test
 	void testCompareToEnum04() {
 		ComparableExt<Field> comparableExt = (ComparableExt<Field>)mock(ComparableExt.class);
-		try {
-			when(comparableExt.compareToEx(otherField)).thenThrow(new UncomparableException("Fields are uncomparable."));
-		} catch (UncomparableException e) {
-		}
+		when(comparableExt.compareToEx(otherField)).thenReturn(null);
 		when(comparableExt.compareToEnum(otherField)).thenCallRealMethod();
 		assertEquals(comparableExt.compareToEnum(otherField), ComparisonResult.UNCOMPARABLE);
 	}

@@ -18,6 +18,7 @@ package org.rulelearn.types;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.atMost;
@@ -388,28 +389,24 @@ class PairFieldTest {
 		assertEquals(comparisonResult, TernaryLogicValue.FALSE);
 	}
 	
-	private int compareToEx(int firstCompareToResult, int secondCompareToResult) throws UncomparableException {
+	private Integer compareToEx(int firstCompareToResult, int secondCompareToResult) {
 		IntegerField firstFieldMock = mock(IntegerField.class);
 		IntegerField secondFieldMock = mock(IntegerField.class);
 		PairField<IntegerField> firstPair = new PairField<>(firstFieldMock, secondFieldMock);
 		
-		int comparisonResult = 0;
+		Integer comparisonResult = 0;
 		
 		IntegerField firstFieldMock2 = mock(IntegerField.class);
 		IntegerField secondFieldMock2 = mock(IntegerField.class);
 		PairField<IntegerField> secondPair = new PairField<>(firstFieldMock2, secondFieldMock2);
+
+		when(firstFieldMock.compareToEx(firstFieldMock2)).thenReturn(firstCompareToResult);
+		when(secondFieldMock.compareToEx(secondFieldMock2)).thenReturn(secondCompareToResult);
 		
-		try {
-			when(firstFieldMock.compareToEx(firstFieldMock2)).thenReturn(firstCompareToResult);
-			when(secondFieldMock.compareToEx(secondFieldMock2)).thenReturn(secondCompareToResult);
-			
-			comparisonResult = firstPair.compareToEx(secondPair);
-			verify(firstFieldMock).compareToEx(firstFieldMock2);
-			verify(secondFieldMock).compareToEx(secondFieldMock2);
-		} catch (UncomparableException exception) {
-			throw exception;
-		}
-		
+		comparisonResult = firstPair.compareToEx(secondPair);
+		verify(firstFieldMock).compareToEx(firstFieldMock2);
+		verify(secondFieldMock).compareToEx(secondFieldMock2);
+
 		return comparisonResult;
 	}
 	
@@ -418,12 +415,7 @@ class PairFieldTest {
 	 */
 	@Test
 	public void testCompareToEx_01() {
-		try {
-			compareToEx(-1, -1);
-			fail("Uncomparable pairs found to be comparable.");
-		} catch (UncomparableException exception) {
-			//OK - do nothing
-		}
+		assertNull(compareToEx(-1, -1));
 	}
 	
 	/**
@@ -431,11 +423,7 @@ class PairFieldTest {
 	 */
 	@Test
 	public void testCompareToEx_02() {
-		try {
-			assertTrue(compareToEx(-1, 0) < 0);
-		} catch (UncomparableException exception) {
-			fail("Comparable pairs found to be uncomparable.");
-		}
+		assertTrue(compareToEx(-1, 0) < 0);
 	}
 	
 	/**
@@ -443,11 +431,7 @@ class PairFieldTest {
 	 */
 	@Test
 	public void testCompareToEx_03() {
-		try {
-			assertTrue(compareToEx(-1, 1) < 0);
-		} catch (UncomparableException exception) {
-			fail("Comparable pairs found to be uncomparable.");
-		}
+		assertTrue(compareToEx(-1, 1) < 0);
 	}
 	
 	/**
@@ -455,11 +439,7 @@ class PairFieldTest {
 	 */
 	@Test
 	public void testCompareToEx_04() {
-		try {
-			assertTrue(compareToEx(0, -1) > 0);
-		} catch (UncomparableException exception) {
-			fail("Comparable pairs found to be uncomparable.");
-		}
+		assertTrue(compareToEx(0, -1) > 0);
 	}
 	
 
@@ -468,11 +448,7 @@ class PairFieldTest {
 	 */
 	@Test
 	public void testCompareToEx_05() {
-		try {
-			assertTrue(compareToEx(0, 0) == 0);
-		} catch (UncomparableException exception) {
-			fail("Comparable pairs found to be uncomparable.");
-		}
+		assertTrue(compareToEx(0, 0) == 0);
 	}
 	
 	/**
@@ -480,11 +456,7 @@ class PairFieldTest {
 	 */
 	@Test
 	public void testCompareToEx_06() {
-		try {
-			assertTrue(compareToEx(0, 1) < 0);
-		} catch (UncomparableException exception) {
-			fail("Comparable pairs found to be uncomparable.");
-		}
+		assertTrue(compareToEx(0, 1) < 0);
 	}
 	
 	/**
@@ -492,11 +464,7 @@ class PairFieldTest {
 	 */
 	@Test
 	public void testCompareToEx_07() {
-		try {
-			assertTrue(compareToEx(1, -1) > 0);
-		} catch (UncomparableException exception) {
-			fail("Comparable pairs found to be uncomparable.");
-		}
+		assertTrue(compareToEx(1, -1) > 0);
 	}
 	
 	/**
@@ -504,11 +472,7 @@ class PairFieldTest {
 	 */
 	@Test
 	public void testCompareToEx_08() {
-		try {
-			assertTrue(compareToEx(1, 0) > 0);
-		} catch (UncomparableException exception) {
-			fail("Comparable pairs found to be uncomparable.");
-		}
+		assertTrue(compareToEx(1, 0) > 0);
 	}
 	
 	/**
@@ -516,12 +480,7 @@ class PairFieldTest {
 	 */
 	@Test
 	public void testCompareToEx_09() {
-		try {
-			compareToEx(1, 1);
-			fail("Uncomparable pairs found to be comparable.");
-		} catch (UncomparableException exception) {
-			//OK - do nothing
-		}
+		assertNull(compareToEx(1, 1));
 	}
 	
 	/**

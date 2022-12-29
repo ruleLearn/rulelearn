@@ -72,16 +72,13 @@ public class PairField<T extends SimpleField> extends CompositeField {
 	}
 
 	@Override
-	public int compareToEx(EvaluationField otherField) throws UncomparableException {
+	public Integer compareToEx(EvaluationField otherField) {
 		if (otherField instanceof PairField<?>) {
-			int firstCompareExResult;
-			int secondCompareExResult;
+			Integer firstCompareExResult = this.firstValue.compareToEx(((PairField<?>)otherField).firstValue);
+			Integer secondCompareExResult = this.secondValue.compareToEx(((PairField<?>)otherField).secondValue);
 			
-			try {
-				firstCompareExResult = this.firstValue.compareToEx(((PairField<?>)otherField).firstValue);
-				secondCompareExResult = this.secondValue.compareToEx(((PairField<?>)otherField).secondValue);
-			} catch (UncomparableException exception) { //first or second values in pairs cannot be compared
-				throw new UncomparableException("This pair field cannot be compared with the other pair field.");
+			if (firstCompareExResult == null || secondCompareExResult == null) {
+				return null; //This pair field cannot be compared with the other pair field
 			}
 				
 			if (firstCompareExResult == 0 && secondCompareExResult == 0) {
@@ -93,7 +90,8 @@ public class PairField<T extends SimpleField> extends CompositeField {
 					secondCompareExResult >= 0) {
 				return -1;
 			} else {
-				throw new UncomparableException("This pair field cannot be compared with the other pair field.");
+				return null;
+				//throw new UncomparableException("This pair field cannot be compared with the other pair field.");
 			}
 		} else {
 			throw new ClassCastException("This pair field cannot be compared with the other field.");
