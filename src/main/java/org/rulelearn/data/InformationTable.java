@@ -179,6 +179,36 @@ public class InformationTable {
 	public static final String attributeNameSuffixNone = ""; //constant
 	
 	/**
+	 * Constructs new information table that differs from given information table only by given decisions.
+	 * 
+	 * @param originalInformationTable original information table
+	 * @param newDecisions new decisions to be used in the constructed table instead of original decisions
+	 * 
+	 * @throws NullPointerException if given information table is {@code null}
+	 */
+	public InformationTable(InformationTable originalInformationTable, Decision[] newDecisions) {
+		this(originalInformationTable, newDecisions, false);
+	}
+	
+	/**
+	 * Constructs new information table that differs from given information table only by given decisions.
+	 * 
+	 * @param originalInformationTable original information table
+	 * @param newDecisions new decisions to be used in the constructed table instead of original decisions
+	 * @param accelerateByReadOnlyParams tells if construction of this information table should be accelerated by assuming that the given references
+	 *        to arrays are not going to be used outside this class
+	 *        to modify that arrays (and thus, this object does not need to clone the arrays for internal read-only use)
+	 * 
+	 * @throws NullPointerException if given information table is {@code null}
+	 */
+	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT)
+	public InformationTable(InformationTable originalInformationTable, Decision[] newDecisions, boolean accelerateByReadOnlyParams) {
+		this(Precondition.notNull(originalInformationTable, "Original information table is null.").attributes, originalInformationTable.mapper, originalInformationTable.activeConditionAttributeFields, originalInformationTable.notActiveOrDescriptionAttributeFields,
+				newDecisions, originalInformationTable.activeIdentificationAttributeFields, originalInformationTable.activeIdentificationAttributeIndex,
+				originalInformationTable.attributeMap, originalInformationTable.localActiveConditionAttributeIndex2GlobalAttributeIndexMap, accelerateByReadOnlyParams);
+	}
+	
+	/**
 	 * Protected copy constructor for internal use only. Sets all data fields of this information table.
 	 * 
 	 * @param attributes all attributes of constructed information table (identification and evaluation (condition/decision/description) ones, both active and non-active)
@@ -195,8 +225,9 @@ public class InformationTable {
 	 *        to arrays are not going to be used outside this class
 	 *        to modify that arrays (and thus, this object does not need to clone the arrays for internal read-only use)
 	 */
+	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT)
 	protected InformationTable(Attribute[] attributes, Index2IdMapper mapper, Table<EvaluationAttribute, EvaluationField> activeConditionAttributeFields, Table<Attribute, Field> notActiveOrDescriptionAttributeFields,
-			Decision[] decisions, 
+			Decision[] decisions,
 			IdentificationField[] activeIdentificationAttributeFields, int activeIdentificationAttributeIndex,
 			int[] attributeMap, Int2IntMap localActiveConditionAttributeIndex2GlobalAttributeIndexMap, boolean accelerateByReadOnlyParams) {
 		this.attributes = accelerateByReadOnlyParams ? attributes : ( (attributes == null) ? null : attributes.clone());
@@ -206,7 +237,8 @@ public class InformationTable {
 		
 		// decisions not always must be set in the information table (i.e., they may be null)
 		this.decisions = accelerateByReadOnlyParams ? decisions : ( (decisions == null) ? null : decisions.clone() );
-		/* depreciated
+		
+		/* deprecated
 		 this.activeDecisionAttributeIndex = activeDecisionAttributeIndex;
 		*/
 
@@ -494,6 +526,7 @@ public class InformationTable {
 	 * 
 	 * @return array of all unique decisions assigned to objects of this information table
 	 */
+	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
 	public Decision[] getUniqueDecisions() {
 		if (uniqueDecisions == null) {
 			uniqueDecisions = calculateUniqueDecisions(); //quickly returns null if decisions are indeed null
@@ -550,6 +583,7 @@ public class InformationTable {
 	 *         or {@code null} if this information table does not store any decisions ({@link #getDecisions()} returns {@code null})
 	 * @see Decision#hasNoMissingEvaluation()
 	 */
+	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.OUTPUT)
 	public Decision[] getOrderedUniqueFullyDeterminedDecisions() {
 		if (orderedUniqueFullyDeterminedDecisions == null) {
 			orderedUniqueFullyDeterminedDecisions = calculateOrderedUniqueFullyDeterminedDecisions(); //quickly returns null if decisions are indeed null
