@@ -116,6 +116,19 @@ public abstract class Unions extends ApproximatedSets {
 	 */
 	@Override
 	public double getQualityOfApproximation() {
+		int allObjectCount = getInformationTable().getNumberOfObjects();
+		
+		return (double)getNumberOfConsistentObjects() / (double)allObjectCount;
+	}
+	
+	/**
+	 * Gets the number of consistent objects in the information table for which all unions stored in this container are defined.
+	 * 
+	 * @return the number of consistent objects in the information table for which all unions stored in this container are defined
+	 *         (this is the numerator of the quality of approximation)
+	 */
+	@Override
+	public int getNumberOfConsistentObjects() {
 		Union[] upwardUnions = getUpwardUnions(true);
 		Union[] downwardUnions = getDownwardUnions(true);
 		
@@ -129,7 +142,7 @@ public abstract class Unions extends ApproximatedSets {
 			inconsistentObjectIndices.addAll(union.getBoundary());
 		}
 		
-		return (double)(allObjectCount - inconsistentObjectIndices.size()) / (double)allObjectCount;
+		return allObjectCount - inconsistentObjectIndices.size();
 	}
 	
 	/**
