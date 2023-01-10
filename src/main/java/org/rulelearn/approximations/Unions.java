@@ -125,7 +125,7 @@ public abstract class Unions extends ApproximatedSets {
 	 * Gets the number of consistent objects in the information table for which all unions stored in this container are defined.
 	 * 
 	 * @return the number of consistent objects in the information table for which all unions stored in this container are defined
-	 *         (this is the numerator of the quality of approximation)
+	 *         (this is the numerator of the quality of classification)
 	 */
 	@Override
 	public int getNumberOfConsistentObjects() {
@@ -143,6 +143,37 @@ public abstract class Unions extends ApproximatedSets {
 		}
 		
 		return allObjectCount - inconsistentObjectIndices.size();
+	}
+	
+	/**
+	 * Gets ordered indices of all consistent objects.
+	 * 
+	 * @return ordered indices of all consistent objects
+	 */
+	public int[] getNumbersOfConsistentObjects() {
+		Union[] upwardUnions = getUpwardUnions(true);
+		Union[] downwardUnions = getDownwardUnions(true);
+		
+		int allObjectCount = getInformationTable().getNumberOfObjects();
+		IntSet inconsistentObjectIndices = new IntOpenHashSet();
+		
+		//collect inconsistent objects
+		for (Union union : upwardUnions) {
+			inconsistentObjectIndices.addAll(union.getBoundary());
+		}
+		for (Union union : downwardUnions) {
+			inconsistentObjectIndices.addAll(union.getBoundary());
+		}
+		
+		int[] result = new int[allObjectCount - inconsistentObjectIndices.size()];
+		int index = 0;
+		for (int i = 0; i < allObjectCount; i++) {
+			if (!inconsistentObjectIndices.contains(i)) {
+				result[index++] = i;
+			}
+		}
+		
+		return result;
 	}
 	
 	/**
