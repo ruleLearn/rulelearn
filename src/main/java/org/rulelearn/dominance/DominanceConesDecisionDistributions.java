@@ -41,22 +41,22 @@ public class DominanceConesDecisionDistributions {
 	 * Decision distributions of positive dominance cones w.r.t. (straight) dominance relation D (y D x &lt;=&gt; y dominates x), one for each object x from an information table.
 	 * Formally, D^+(x) = {y \in U : y D x}. 
 	 */
-	protected DecisionDistribution[] positiveDConesDecisionDistributions;
+	protected DecisionDistribution[] positiveDConesDecisionDistributions = null;
 	/**
 	 * Decision distributions of negative dominance cones w.r.t. (straight) dominance relation D (x D y &lt;=&gt; x dominates y), one for each object x from an information table.
 	 * Formally, D^-(x) = {y \in U : x D y}.
 	 */
-	protected DecisionDistribution[] negativeDConesDecisionDistributions; //used to calc lower appx of union "at most"
+	protected DecisionDistribution[] negativeDConesDecisionDistributions = null; //used to calc lower appx of union "at most"
 	/**
 	 * Decision distributions of positive dominance cones w.r.t. (inverse) dominance relation InvD (x InvD y &lt;=&gt; x is dominated by y), one for each object x from an information table.
 	 * Formally, InvD^+(x) = {y \in U : x InvD y}.
 	 */
-	protected DecisionDistribution[] positiveInvDConesDecisionDistributions; //used to calc lower appx of union "at least"
+	protected DecisionDistribution[] positiveInvDConesDecisionDistributions = null; //used to calc lower appx of union "at least"
 	/**
 	 * Decision distributions of negative dominance cones w.r.t. (inverse) dominance relation InvD (y InvD x &lt;=&gt; y is dominated by x), one for each object x from an information table.
 	 * Formally, InvD^-(x) = {y \in U : y InvD x}.
 	 */
-	protected DecisionDistribution[] negativeInvDConesDecisionDistributions;
+	protected DecisionDistribution[] negativeInvDConesDecisionDistributions = null;
 	
 	/**
 	 * Number of objects for which dominance cones are processed in this object.
@@ -82,6 +82,34 @@ public class DominanceConesDecisionDistributions {
 		this.calculateNegativeDConesDecisionDistributions(informationTable);
 		this.calculatePositiveInvDConesDecisionDistributions(informationTable);
 		this.calculateNegativeInvDConesDecisionDistributions(informationTable);
+	}
+	
+	/**
+	 * Constructs this object by calculating distribution of decisions in each dominance cone of every object.
+	 * 
+	 * @param informationTable information table containing objects for which dominance cones should be processed
+	 * @param onlyNecessaryDistributions tells if only necessary, i.e., {@code positiveInvDConeDecisionClassDistribution} and {@code negativeDConeDecisionClassDistribution} distributions are calculated
+	 *        (to finish calculations faster),
+	 *        or all distributions are calculated (e.g., to present them in a GUI)
+	 * @throws NullPointerException if given information table is {@code null}
+	 */
+	public DominanceConesDecisionDistributions(InformationTable informationTable, boolean onlyNecessaryDistributions) {
+		notNull(informationTable, "Information table for calculation of dominance cones is null.");
+		this.numberOfObjects = informationTable.getNumberOfObjects();
+		
+		this.positiveInvDConesDecisionDistributions = new DecisionDistribution[this.numberOfObjects];
+		this.negativeDConesDecisionDistributions = new DecisionDistribution[this.numberOfObjects];
+		
+		this.calculatePositiveInvDConesDecisionDistributions(informationTable);
+		this.calculateNegativeDConesDecisionDistributions(informationTable);
+		
+		if (!onlyNecessaryDistributions) {
+			this.positiveDConesDecisionDistributions = new DecisionDistribution[this.numberOfObjects];
+			this.negativeInvDConesDecisionDistributions = new DecisionDistribution[this.numberOfObjects];
+			
+			this.calculatePositiveDConesDecisionDistributions(informationTable);
+			this.calculateNegativeInvDConesDecisionDistributions(informationTable);
+		}
 	}
 	
 	/**
@@ -177,6 +205,7 @@ public class DominanceConesDecisionDistributions {
 	 * @return decision distribution in positive dominance cone w.r.t. (straight) dominance relation D, originating in object x having given index
 	 * 
 	 * @throws IndexOutOfBoundsException if given object index is lower than zero or exceeds {code{@link #getNumberOfObjects()}-1}
+	 * @throws NullPointerException if this object has been created using {@link #DominanceConesDecisionDistributions(InformationTable, boolean)} with second parameter set to {@code true}
 	 */
 	public DecisionDistribution getPositiveDConeDecisionClassDistribution(int objectIndex) {
 		return this.positiveDConesDecisionDistributions[objectIndex];
@@ -216,6 +245,7 @@ public class DominanceConesDecisionDistributions {
 	 * @return decision distribution in negative dominance cone w.r.t. (inverse) dominance relation InvD, originating in object x having given index
 	 * 
 	 * @throws IndexOutOfBoundsException if given object index is lower than zero or exceeds {code{@link #getNumberOfObjects()}-1}
+	 * @throws NullPointerException if this object has been created using {@link #DominanceConesDecisionDistributions(InformationTable, boolean)} with second parameter set to {@code true}
 	 */
 	public DecisionDistribution getNegativeInvDConeDecisionClassDistribution(int objectIndex) {
 		return this.negativeInvDConesDecisionDistributions[objectIndex];

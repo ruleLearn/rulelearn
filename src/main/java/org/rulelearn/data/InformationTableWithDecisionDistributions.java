@@ -76,7 +76,31 @@ public class InformationTableWithDecisionDistributions extends InformationTable 
 	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT)
 	public InformationTableWithDecisionDistributions(Attribute[] attributes, List<Field[]> listOfFields, boolean accelerateByReadOnlyParams) {
 		super(attributes, listOfFields, accelerateByReadOnlyParams);
-		initializeDistributions();
+		initializeDistributions(false);
+	}
+	
+	/**
+	 * Information table constructor. Invokes superclass constructor {@link InformationTable#InformationTable(Attribute[], List, boolean)} for basic construction.
+	 * Then, checks if there is at least one active decision attribute (throwing an {@link InvalidValueException} exception if this is not the case).
+	 * Finally, calculates:<br>
+	 * - distribution of decisions found in this information table among requested dominance cones originating in objects from this information table,<br>
+	 * - distribution of decisions among objects of this information table.<br>
+	 * Which cones are requested depends on the flag {@code onlyNecessaryDominanceConesDecisionDistributions}.
+	 * 
+	 * @param attributes see {@link InformationTable#InformationTable(Attribute[], List, boolean)}
+	 * @param listOfFields see {@link InformationTable#InformationTable(Attribute[], List, boolean)}
+	 * @param accelerateByReadOnlyParams see {@link InformationTable#InformationTable(Attribute[], List, boolean)}
+	 * @param onlyNecessaryDominanceConesDecisionDistributions tells if only necessary, i.e., {@code positiveInvDConeDecisionClassDistribution} and {@code negativeDConeDecisionClassDistribution}
+	 *        dominance cone distributions are calculated (to finish calculations faster), or all dominance cone distributions are calculated (e.g., to present them in a GUI)
+	 * 
+	 * @throws NullPointerException see {@link InformationTable#InformationTable(Attribute[], List, boolean)}
+	 * @throws InvalidValueException see {@link InformationTable#InformationTable(Attribute[], List, boolean)}
+	 * @throws InvalidValueException if the given array of attributes does not contain any active decision attribute
+	 */
+	@ReadOnlyArrayReference(at = ReadOnlyArrayReferenceLocation.INPUT)
+	public InformationTableWithDecisionDistributions(Attribute[] attributes, List<Field[]> listOfFields, boolean accelerateByReadOnlyParams, boolean onlyNecessaryDominanceConesDecisionDistributions) {
+		super(attributes, listOfFields, accelerateByReadOnlyParams);
+		initializeDistributions(onlyNecessaryDominanceConesDecisionDistributions);
 	}
 	
 	/**
@@ -93,7 +117,7 @@ public class InformationTableWithDecisionDistributions extends InformationTable 
 	}
 	
 	/**
-	 * Information table constructor. Invokes superclass constructor {@link InformationTable#InformationTable(InformationTable)} for basic construction.
+	 * Information table constructor. Invokes superclass constructor {@link InformationTable#InformationTable(InformationTable, boolean)} for basic construction.
 	 * Then, checks if there is at least one active decision attribute (throwing an {@link InvalidValueException} exception if this is not the case).
 	 * Finally, calculates:<br>
 	 * - distribution of decisions found in this information table among different dominance cones originating in objects from this information table,<br>
@@ -109,7 +133,30 @@ public class InformationTableWithDecisionDistributions extends InformationTable 
 	 */
 	public InformationTableWithDecisionDistributions(InformationTable informationTable, boolean accelerateByReadOnlyResult) {
 		super(informationTable, accelerateByReadOnlyResult);
-		initializeDistributions();
+		initializeDistributions(false);
+	}
+	
+	/**
+	 * Information table constructor. Invokes superclass constructor {@link InformationTable#InformationTable(InformationTable, boolean)} for basic construction.
+	 * Then, checks if there is at least one active decision attribute (throwing an {@link InvalidValueException} exception if this is not the case).
+	 * Finally, calculates:<br>
+	 * - distribution of decisions found in this information table among requested dominance cones originating in objects from this information table,<br>
+	 * - distribution of decisions among objects of this information table.<br>
+	 * Which cones are requested depends on the flag {@code onlyNecessaryDominanceConesDecisionDistributions}.
+	 * 
+	 * @param informationTable information table to be copied and then extended by decision distributions
+	 * @param accelerateByReadOnlyResult tells if this method should return the result faster,
+	 *        at the cost of returning a read-only information table, or should return a safe information table (that can be modified),
+	 *        at the cost of returning the result slower
+	 * @param onlyNecessaryDominanceConesDecisionDistributions tells if only necessary, i.e., {@code positiveInvDConeDecisionClassDistribution} and {@code negativeDConeDecisionClassDistribution}
+	 *        dominance cone distributions are calculated (to finish calculations faster), or all dominance cone distributions are calculated (e.g., to present them in a GUI)
+	 * 
+	 * @throws NullPointerException if the given information table is {@code null}
+	 * @throws InvalidValueException if the given information table does not contain any active decision attribute
+	 */
+	public InformationTableWithDecisionDistributions(InformationTable informationTable, boolean accelerateByReadOnlyResult, boolean onlyNecessaryDominanceConesDecisionDistributions) {
+		super(informationTable, accelerateByReadOnlyResult);
+		initializeDistributions(onlyNecessaryDominanceConesDecisionDistributions);
 	}
 	
 	/**
@@ -117,11 +164,11 @@ public class InformationTableWithDecisionDistributions extends InformationTable 
 	 * 
 	 * @throws InvalidValueException if this information table does not contain any active decision attribute
 	 */
-	void initializeDistributions() {
+	void initializeDistributions(boolean onlyNecessaryDistributions) {
 		if (this.getDecisions(true) == null) {
 			throw new InvalidValueException("Information table for which decision distributions should be calculated does not have any active decision attribute.");
 		}
-		this.dominanceConesDecisionDistributions = new DominanceConesDecisionDistributions(this);
+		this.dominanceConesDecisionDistributions = new DominanceConesDecisionDistributions(this, onlyNecessaryDistributions);
 		this.decisionDistribution = new DecisionDistribution(this);
 	}
 
