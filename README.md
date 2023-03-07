@@ -6,7 +6,7 @@ Rule models are induced according to VC-DomLEM sequential covering algorithm pre
 ruleLearn also allows to validate constructed rule models in stratified cross-validation.
 
 ## Quick start guide
-Data sets analyzed by ruleLearn are represented as decision tables, which are composed of objects described by attributes. Data sets should be provided in `CSV` or `JSON` format []. 
+Data sets analyzed by ruleLearn are represented as decision tables, which are composed of objects described by attributes. Data sets should be provided in `JSON`+CSV` or `JSON`+JSON` format (metadata always in `JSON` format, evaluations of objects either in `JSON` or in `CSV` format).
 
 We consider the following use cases, which are typical forms of use of ruleLearn.
 
@@ -17,10 +17,11 @@ In this case we will have to calculate lower and upper approximations of unions 
 
 #### Induction of a rule model
 
+#### Validation of the rule model on a test set
 
-#### Validation of a rule model
+#### Validation of the rule model using cross-validation
 
-### Importing into build.gradle
+### Importing ruleLearn library into build.gradle
 ```
 repositories {
     maven { url 'https://jitpack.io' }
@@ -33,7 +34,7 @@ dependencies {
 }
 ```
 
-### Importing into pom.xml
+### Importing ruleLearn library into pom.xml
 ```
 <repositories>
     <repository>
@@ -66,7 +67,7 @@ e.g., on a Windows machine:
 or set `JAVA_HOME` environmental variable to local path to the installed Java JDK.
 
 ### Other settings
-When importing ruleLearn into an IDE (e.g., Eclipse, IntelliJ), one should specify the following settings: `UTF-8` encoding, and `LF` (i.e., line feed) line endings.
+When importing ruleLearn into an IDE (e.g., Eclipse, IntelliJ IDEA), one should specify the following settings: `UTF-8` encoding, and `LF` (i.e., line feed) line endings.
 
 ## References
 
