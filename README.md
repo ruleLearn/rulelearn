@@ -26,7 +26,7 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
-$RL_VERSION = '0.14.3' //e.g. '0.14.3'
+$RL_VERSION = '0.24.2' //e.g. '0.24.2'
 
 dependencies {
     compile("com.github.ruleLearn:rulelearn:${RL_VERSION}")
@@ -46,7 +46,7 @@ dependencies {
     <dependency>
         <groupId>com.github.ruleLearn</groupId>
         <artifactId>rulelearn</artifactId>
-        <version>0.14.3</version>
+        <version>0.24.2</version>
     </dependency>
 </dependencies>
 ```
