@@ -1,5 +1,5 @@
 # ruleLearn
-Open source library for learning rule models from decision examples and applying these models to classify or rank new examples. 
+Open-source Java library for learning rule models from decision examples and applying these models to classify or rank new examples.
 
 Rule models are induced according to VC-DomLEM sequential covering algorithm presented in [[1]](#VCDomLEM). The learning is preceded by analysis of consistency of data, which is based on rough set theory. More precisely, this library implements dominance-based rough et approaches: original one (DRSA) [[2]](#DRSA) and its variable consistency extensions (VC-DRSA) [[3]](#VCDRSA). Rule models can be used to classify new examples, using VC-DRSA classifier [[4](#VCDRSA-Classifier)], or MODE classifier [[5](#Mode-Classifier)]. During data analysis, missing attribute values are handled [[6](#DRSA-MV)].
 
