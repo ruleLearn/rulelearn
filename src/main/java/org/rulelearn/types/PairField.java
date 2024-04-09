@@ -21,7 +21,6 @@ import java.util.Objects;
 import org.rulelearn.core.EvaluationFieldCalculator;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.TernaryLogicValue;
-import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.AttributePreferenceType;
 
 /**

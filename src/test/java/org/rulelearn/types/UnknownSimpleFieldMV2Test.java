@@ -16,7 +16,11 @@
 
 package org.rulelearn.types;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -24,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.TernaryLogicValue;
-import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.EvaluationAttribute;
 

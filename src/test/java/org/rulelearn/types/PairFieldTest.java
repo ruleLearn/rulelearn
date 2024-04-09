@@ -29,7 +29,6 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.Test;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.TernaryLogicValue;
-import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.AttributePreferenceType;
 
 /**

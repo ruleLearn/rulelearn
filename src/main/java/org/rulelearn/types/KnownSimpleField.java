@@ -16,7 +16,6 @@
 
 package org.rulelearn.types;
 
-import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.AttributePreferenceType;
 
 /**

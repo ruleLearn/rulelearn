@@ -20,7 +20,6 @@ import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.ModeCalculator;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.core.TernaryLogicValue;
-import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.FieldDistribution;
 import org.rulelearn.data.InformationTable;

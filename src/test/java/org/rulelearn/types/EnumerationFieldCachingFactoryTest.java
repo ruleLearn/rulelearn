@@ -30,12 +30,6 @@ import org.rulelearn.core.FieldParseException;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.EvaluationAttribute;
-import org.rulelearn.types.ElementList;
-import org.rulelearn.types.EnumerationField;
-import org.rulelearn.types.EnumerationFieldCachingFactory;
-import org.rulelearn.types.EnumerationFieldFactory;
-import org.rulelearn.types.EvaluationField;
-import org.rulelearn.types.IntegerField;
 
 /**
  * Tests for {@link EnumerationFieldCachingFactory} class.

@@ -102,6 +102,7 @@ class CrossValidatorRealTest {
 			int validationTableSize = 0;
 			InformationTable validationTable = null;
 			for (int j = 0; j < a; j++) {
+				@SuppressWarnings("deprecation")
 				List<CrossValidator.CrossValidationFold<InformationTable>> folds = validator.splitStratifiedIntoKFold(windsor, n);
 				for (int i = 0; i < n; i++) {
 					rules = vcDomLEMWrapper.induceRulesWithCharacteristics(folds.get(i).getTrainingTable(), consistencyThreshold);
@@ -192,6 +193,7 @@ class CrossValidatorRealTest {
 			int validationTableSize = 0;
 			InformationTable validationTable = null;
 			for (int j = 0; j < a; j++) {
+				@SuppressWarnings("deprecation")
 				List<CrossValidator.CrossValidationFold<InformationTable>> folds = validator.splitStratifiedIntoKFold(learningSet, n);
 				for (int i = 0; i < n; i++) {
 					rules = vcDomLEMWrapper.induceRulesWithCharacteristics(folds.get(i).getTrainingTable(), consistencyThreshold);
@@ -280,6 +282,7 @@ class CrossValidatorRealTest {
 			int validationTableSize = 0;
 			InformationTable validationTable = null;
 			for (int j = 0; j < a; j++) {
+				@SuppressWarnings("deprecation")
 				List<CrossValidator.CrossValidationFold<InformationTable>> folds = validator.splitStratifiedIntoKFold(learningSet, n);
 				for (int i = 0; i < n; i++) {
 					rules = vcDomLEMWrapper.induceRulesWithCharacteristics(folds.get(i).getTrainingTable(), consistencyThreshold);

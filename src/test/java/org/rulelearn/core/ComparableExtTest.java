@@ -16,13 +16,12 @@
 
 package org.rulelearn.core;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.types.Field;
-import org.rulelearn.core.UncomparableException;
-
-import static org.mockito.Mockito.*;
 
 /**
  * Test for {@link ComparableExt}.
