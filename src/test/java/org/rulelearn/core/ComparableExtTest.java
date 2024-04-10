@@ -96,7 +96,7 @@ class ComparableExtTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	void testCompareToEnum04() {
-		ComparableExt<Field> comparableExt = (ComparableExt<Field>)mock(ComparableExt.class);
+		ComparableExtTestOnlyImpl comparableExt = mock(ComparableExtTestOnlyImpl.class);
 		when(comparableExt.compareToEx(otherField)).thenReturn(null);
 		when(comparableExt.compareToEnum(otherField)).thenCallRealMethod();
 		assertEquals(comparableExt.compareToEnum(otherField), ComparisonResult.UNCOMPARABLE);

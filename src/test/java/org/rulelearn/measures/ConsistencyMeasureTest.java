@@ -33,12 +33,16 @@ import org.rulelearn.approximations.ApproximatedSet;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 class ConsistencyMeasureTest {
+
+	private abstract class ConsistencyMeasureTestOnlyImpl implements ConsistencyMeasure<ApproximatedSet> {
+
+	}
 	
 	private int objectIndex;
 	private double threshold;
 	
 	@Mock
-	private ConsistencyMeasure<ApproximatedSet> measureMock;
+	private ConsistencyMeasureTestOnlyImpl measureMock;
 	@Mock
 	private ApproximatedSet setMock;
 	

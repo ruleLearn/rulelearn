@@ -26,6 +26,8 @@ import org.rulelearn.types.EvaluationField;
 /**
  * Equality condition that is satisfied by a given object's evaluation if that evaluation is equal to limiting evaluation of this condition.
  *
+ * @param <T> subtype of {@link EvaluationField}
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */

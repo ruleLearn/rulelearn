@@ -26,6 +26,9 @@ import org.rulelearn.types.Field;
  * Table storing data, i.e., fields corresponding to objects and attributes.
  * Each field is identified by object's index and attribute's index.
  *
+ * @param <S> subtype of {@link Attribute}
+ * @param <T> subtype of {@link Field}
+ *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */

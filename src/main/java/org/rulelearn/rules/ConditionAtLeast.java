@@ -21,9 +21,12 @@ import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.AttributeType;
 import org.rulelearn.data.EvaluationAttributeWithContext;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.Field;
 
 /**
  * Condition reflecting relation "&gt;=".
+ *
+ * @param <T> subtype of {@link EvaluationField}
  *
  * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)

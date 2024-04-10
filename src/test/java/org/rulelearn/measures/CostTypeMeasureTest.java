@@ -32,8 +32,12 @@ import org.mockito.MockitoAnnotations;
  */
 class CostTypeMeasureTest {
 
+	private abstract class CostTypeMeasureTestOnlyImpl implements CostTypeMeasure {
+
+	}
+
 	@Mock
-	private CostTypeMeasure measureMock;
+	private CostTypeMeasureTestOnlyImpl measureMock;
 	
 	@BeforeEach
 	void setUp() {

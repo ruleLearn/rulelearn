@@ -33,12 +33,16 @@ import org.rulelearn.measures.Measure;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 class ConditionRemovalEvaluatorTest {
+
+	private abstract class ConditionRemovalEvaluatorTestOnlyImpl implements ConditionRemovalEvaluator {
+
+	}
 	
 	private int conditionIndex;
 	private double threshold;
 	
 	@Mock
-	ConditionRemovalEvaluator conditionRemovalEvaluatorMock;
+	ConditionRemovalEvaluatorTestOnlyImpl conditionRemovalEvaluatorMock;
 	@Mock
 	RuleConditions ruleConditionsMock;
 	
