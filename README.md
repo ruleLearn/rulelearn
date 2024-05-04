@@ -6,7 +6,7 @@ Rule models are induced according to VC-DomLEM sequential covering algorithm pre
 ruleLearn also allows to validate constructed rule models in stratified cross-validation.
 
 ## Quick start guide
-Data sets analyzed by ruleLearn are represented as decision tables, which are composed of objects described by attributes. Data sets should be provided in `JSON`+CSV` or `JSON`+JSON` format (metadata always in `JSON` format, evaluations of objects either in `JSON` or in `CSV` format).
+Data sets analyzed by ruleLearn are represented as decision tables, which are composed of objects described by attributes. Data sets should be provided in `JSON`+`CSV` or `JSON`+`JSON` format (metadata always in `JSON` format, evaluations of objects either in `JSON` or in `CSV` format).
 
 We consider the following use cases, which are typical forms of use of ruleLearn.
 
@@ -59,7 +59,7 @@ dependencies {
 
 ### Configuration of Gradle build:
 Developers should either extend/supply `gradle.properties` file (in the main directory of the project
-or in the `USER_HOME/.gradle` directory), specifying inside this local path to the installed Java JDK,
+or in the `USER_HOME/.gradle` directory), specifying inside this file a local path to the installed Java JDK,
 e.g., on a Windows machine:
 
 `org.gradle.java.home=C:\\Program Files\\Java\\jdk-21`
