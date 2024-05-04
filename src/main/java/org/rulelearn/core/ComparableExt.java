@@ -16,8 +16,6 @@
 
 package org.rulelearn.core;
 
-import org.rulelearn.core.UncomparableException;
-
 /**
  * Generalization of standard {@link Comparable} interface, accounting for uncomparable objects. 
  *
@@ -31,24 +29,24 @@ public interface ComparableExt<T> {
 	/**
 	 * Compares two objects - this object, being the object of interest, and the other object.
 	 * This is an extended version of {@link Comparable#compareTo(Object)} that can be used to
-	 * compare objects that may turn out to be semantically uncomparable - see {@link UncomparableException}.
+	 * compare objects that may turn out to be semantically uncomparable.
 	 * 
 	 * @param otherObject other object that this object is compared to
 	 * 
 	 * @return negative value if this object is smaller than the other object,<br>
 	 *         zero if both objects are equal,<br>
-	 *         positive number if this object is greater than the other object
+	 *         positive number if this object is greater than the other object,
+	 *         {@code null} if this object is semantically uncomparable with the other object
 	 * 
 	 * @throws ClassCastException if type of the other object is such that this object cannot be compared to the other object
 	 * @throws NullPointerException if the other object is {@code null}
-	 * @throws UncomparableException if this object is semantically uncomparable with the other object
 	 */
-	public int compareToEx(T otherObject) throws UncomparableException;
+	public Integer compareToEx(T otherObject);
 	
 	/**
 	 * Compares two objects - this object, being the object of interest, and the other object.
 	 * Conveniently wraps {@link ComparableExt#compareToEx(Object)},
-	 * handling possible {@link UncomparableException} exception by returning {@link ComparisonResult#UNCOMPARABLE}.
+	 * handling possible {@code null} result by returning {@link ComparisonResult#UNCOMPARABLE}.
 	 * 
 	 * @param otherObject other object that this object is compared to
 	 * @return {@link ComparisonResult#SMALLER_THAN} if this object is smaller than the other object,<br>
@@ -60,18 +58,18 @@ public interface ComparableExt<T> {
 	 * @throws NullPointerException if the other object is {@code null}
 	 */
 	public default ComparisonResult compareToEnum(T otherObject) {
-		int result;
-		try {
-			result = this.compareToEx(otherObject);
-			if (result > 0) {
-				return ComparisonResult.GREATER_THAN;
-			} else if (result == 0) {
-				return ComparisonResult.EQUAL;
-			} else {
-				return ComparisonResult.SMALLER_THAN;
-			}
-		} catch (UncomparableException exception) {
+		Integer result = this.compareToEx(otherObject);
+		
+		if (result == null) {
 			return ComparisonResult.UNCOMPARABLE;
+		}
+		
+		if (result.intValue() > 0) {
+			return ComparisonResult.GREATER_THAN;
+		} else if (result.intValue() == 0) {
+			return ComparisonResult.EQUAL;
+		} else {
+			return ComparisonResult.SMALLER_THAN;
 		}
 	}
 

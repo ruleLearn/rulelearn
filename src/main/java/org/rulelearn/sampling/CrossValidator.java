@@ -45,6 +45,8 @@ public class CrossValidator {
 	/** 
 	 * Cross-validation fold consisting of two sub-tables: {@link InformationTable training table} and {@link InformationTable validation table}.
 	 *
+	 * @param <T> subtype of {@link InformationTable}
+	 *
 	 * @author Jerzy Błaszczyński (<a href="mailto:jurek.blaszczynski@cs.put.poznan.pl">jurek.blaszczynski@cs.put.poznan.pl</a>)
 	 * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
 	 */

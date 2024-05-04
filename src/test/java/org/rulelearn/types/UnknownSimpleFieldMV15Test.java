@@ -16,7 +16,11 @@
 
 package org.rulelearn.types;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -24,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.core.TernaryLogicValue;
-import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.EvaluationAttribute;
 
@@ -211,7 +214,7 @@ class UnknownSimpleFieldMV15Test {
 	 * Test for {@link UnknownSimpleFieldMV15#compareToEx(Field)} method. Tests if result of comparison of mv_{1.5} missing value and another mv_{1.5} missing value is equal to zero.
 	 */
 	@Test
-	public void testCompareToEx_01() throws UncomparableException {
+	public void testCompareToEx_01() {
 		UnknownSimpleField mvField = new UnknownSimpleFieldMV15();
 		EvaluationField otherField = new UnknownSimpleFieldMV15();
 		assertEquals(mvField.compareToEx(otherField), 0);
@@ -221,25 +224,21 @@ class UnknownSimpleFieldMV15Test {
 	 * Test for {@link UnknownSimpleFieldMV15#compareToEx(Field)} method. Tests if result of comparison of mv_{1.5} missing value and other known field is equal to zero.
 	 */
 	@Test
-	public void testCompareToEx_02() throws UncomparableException {
+	public void testCompareToEx_02() {
 		UnknownSimpleField mvField = new UnknownSimpleFieldMV15();
 		KnownSimpleField otherField = IntegerFieldFactory.getInstance().create(2, AttributePreferenceType.GAIN);
 		assertEquals(mvField.compareToEx(otherField), 0);
 	}
 
 	/**
-	 *  Test for {@link UnknownSimpleFieldMV15#reverseCompareToEx(Field)} method. Tests if comparison of a known simple field and mv_{1.5} missing value causes an exception.
+	 *  Test for {@link UnknownSimpleFieldMV15#reverseCompareToEx(Field)} method. Tests if comparison of a known simple field and mv_{1.5} missing gives {@code null} result.
 	 */
 	@Test
-	public void testReverseCompareToEx() throws UncomparableException {
+	public void testReverseCompareToEx() {
 		UnknownSimpleField mvField = new UnknownSimpleFieldMV15();
 		KnownSimpleField otherField = RealFieldFactory.getInstance().create(-1.0, AttributePreferenceType.NONE);
-		try {
-			mvField.reverseCompareToEx(otherField);
-			fail("Known simple field should be incomparable with mv_{1.5} missing value.");
-		} catch (UncomparableException exception) {
-			
-		}
+		
+		assertEquals(mvField.reverseCompareToEx(otherField), null);
 	}
 
 	/**

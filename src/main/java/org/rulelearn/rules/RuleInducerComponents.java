@@ -32,6 +32,8 @@ public abstract class RuleInducerComponents {
 	
 	private final RuleConditionsPruner ruleConditionsPruner;
 	
+	private final RuleConditionsGeneralizer ruleConditionsGeneralizer;
+	
 	private final RuleConditionsSetPruner ruleConditionsSetPruner;
 	
 	private final RuleMinimalityChecker ruleMinimalityChecker;
@@ -79,6 +81,14 @@ public abstract class RuleInducerComponents {
 		 * @return this builder
 		 */
 		public Builder ruleConditionsPruner(RuleConditionsPruner ruleConditionsPruner);
+		
+		/**
+		 * Sets {@link RuleConditionsGeneralizer generalizer of rule conditions} used to generalize conditions from rule conditions.
+		 * 
+		 * @param ruleConditionsGeneralizer a rule conditions generalizer
+		 * @return this builder
+		 */
+		public Builder ruleConditionsGeneralizer(RuleConditionsGeneralizer ruleConditionsGeneralizer);
 		
 		/**
 		 * Sets pruner of rule conditions set {@link RuleConditionsSetPruner} used to remove redundant rules from rule conditions set.
@@ -134,6 +144,14 @@ public abstract class RuleInducerComponents {
 		 */
 		public RuleConditionsPruner ruleConditionsPruner();
 		
+		
+		/**
+		 * Gets {@link RuleConditionsGeneralizer generalizer of rule conditions} used to generalize conditions from rule conditions.
+		 * 
+		 * @return the rule conditions generalizer
+		 */
+		public RuleConditionsGeneralizer ruleConditionsGeneralizer();
+		
 		/**
 		 * Gets pruner of rule conditions set {@link RuleConditionsSetPruner} used to remove redundant rules from rule conditions set.
 		 * 
@@ -181,6 +199,7 @@ public abstract class RuleInducerComponents {
 		this.ruleInductionStoppingConditionChecker = builder.ruleInductionStoppingConditionChecker();
 		this.conditionSeparator = builder.conditionSeparator();
 		this.ruleConditionsPruner = builder.ruleConditionsPruner();
+		this.ruleConditionsGeneralizer = builder.ruleConditionsGeneralizer();
 		this.ruleConditionsSetPruner = builder.ruleConditionsSetPruner();
 		this.ruleMinimalityChecker = builder.ruleMinimalityChecker();
 		this.ruleType = builder.ruleType();
@@ -221,6 +240,15 @@ public abstract class RuleInducerComponents {
 	 */
 	public RuleConditionsPruner getRuleConditionsPruner() {
 		return ruleConditionsPruner;
+	}
+	
+	/**
+	 * Gets {@link RuleConditionsGeneralizer generalizer of rule conditions} used to generalize conditions from rule conditions.
+	 * 
+	 * @return the rule conditions generalizer
+	 */
+	public RuleConditionsGeneralizer getRuleConditionsGeneralizer() {
+		return ruleConditionsGeneralizer;
 	}
 
 	/**

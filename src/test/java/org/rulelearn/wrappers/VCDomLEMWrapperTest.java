@@ -68,7 +68,16 @@ class VCDomLEMWrapperTest {
 						VCDomLEMWrapper vcDomLEMWrapper = new VCDomLEMWrapper();
 						RuleSet rules = vcDomLEMWrapper.induceRules(informationTable);
 						if (rules != null) {
-							assertEquals(18, rules.size());
+//							for (int i = 0; i < rules.size(); i++) {
+//								//System.out.println(ruleSet.getRule(i).toString(true));
+//								System.out.println(rules.getRule(i).toString());
+//							} //!
+//							System.out.println("---"); //!
+							
+							assertEquals(17, rules.size()); //using rule conditions generalizer,
+							//we get rule (TimeFromDetectTime >= 1531.7505) & (SeverityForAttackCategory <= med)
+							//generalized to (TimeFromDetectTime >= 1531.7505) & (SeverityForAttackCategory <= high), which causes that rule
+							//(TimeFromDetectTime >= 1983.7672333333333) => (Priority >= 3) becomes redundant and gets deleted
 						}
 						else { 
 							fail("Unable to induce rules with VC-DomLEM");
@@ -120,7 +129,17 @@ class VCDomLEMWrapperTest {
 						VCDomLEMWrapper vcDomLEMWrapper = new VCDomLEMWrapper();
 						RuleSetWithCharacteristics ruleSetWithCharacteristics = vcDomLEMWrapper.induceRulesWithCharacteristics(informationTable);
 						if (ruleSetWithCharacteristics != null) {
-							assertEquals(18, ruleSetWithCharacteristics.size());
+//							for (int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
+//								//System.out.println(ruleSet.getRule(i).toString(true));
+//								System.out.println(ruleSetWithCharacteristics.getRule(i).toString());
+//							} //!
+//							System.out.println("---"); //!
+							
+							assertEquals(17, ruleSetWithCharacteristics.size()); //using rule conditions generalizer,
+							//we get rule (TimeFromDetectTime >= 1531.7505) & (SeverityForAttackCategory <= med)
+							//generalized to (TimeFromDetectTime >= 1531.7505) & (SeverityForAttackCategory <= high), which causes that rule
+							//(TimeFromDetectTime >= 1983.7672333333333) => (Priority >= 3) becomes redundant and gets deleted
+							
 							assertEquals(0.04, ruleSetWithCharacteristics.getRuleCharacteristics(0).getStrength());
 							RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
 							// serialize rules
@@ -139,7 +158,7 @@ class VCDomLEMWrapperTest {
 							if ((allRules != null) && (allRules.size() > 0)) {
 								deserializedRuleSet = allRules.get(1);
 							}
-							assertEquals(18, deserializedRuleSet.size());
+							assertEquals(17, deserializedRuleSet.size());
 							assertEquals(0.04, deserializedRuleSet.getRuleCharacteristics(0).getStrength());
 						}
 						else { 

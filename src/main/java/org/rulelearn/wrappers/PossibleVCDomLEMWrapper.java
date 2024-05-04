@@ -16,6 +16,10 @@
 
 package org.rulelearn.wrappers;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.rulelearn.approximations.ClassicalDominanceBasedRoughSetCalculator;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
@@ -29,7 +33,6 @@ import org.rulelearn.rules.ApproximatedSetRuleDecisionsProvider;
 import org.rulelearn.rules.PossibleRuleInducerComponents;
 import org.rulelearn.rules.RuleInducerComponents;
 import org.rulelearn.rules.RuleSet;
-import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
 import org.rulelearn.rules.UnionProvider;
 import org.rulelearn.rules.UnionWithSingleLimitingDecisionRuleDecisionsProvider;
@@ -70,10 +73,14 @@ public class PossibleVCDomLEMWrapper implements RuleInducerWrapper {
 		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
 		ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 		
-		RuleSet upwardRules = (new VCDomLEM(ruleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider)).generateRules();
-		RuleSet downwardRules = (new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
+		List<VCDomLEM> vcDomLEMs = new ArrayList<VCDomLEM>(2);
+		vcDomLEMs.add(new VCDomLEM(ruleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider));
+		vcDomLEMs.add(new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider));
 		
-		return RuleSet.join(upwardRules, downwardRules);
+		//calculate rules and their characteristics in parallel
+		List<RuleSet> ruleSets = vcDomLEMs.parallelStream().map(vcDomLem -> vcDomLem.generateRules()).collect(Collectors.toList());
+		
+		return RuleSet.join(ruleSets.get(0), ruleSets.get(1));
 	}
 	
 	/**
@@ -85,7 +92,7 @@ public class PossibleVCDomLEMWrapper implements RuleInducerWrapper {
 	 * @throws NullPointerException {@inheritDoc}
 	 */
 	@Override
-	public RuleSetWithCharacteristics induceRulesWithCharacteristics(InformationTable informationTable) {
+	public RuleSetWithComputableCharacteristics induceRulesWithCharacteristics(InformationTable informationTable) {
 		Precondition.notNull(informationTable, "Information table for VC-DomLEM wrapper inducing possible decision rules is null.");
 		
 		RuleInducerComponents ruleInducerComponents = new PossibleRuleInducerComponents.Builder().build();
@@ -96,12 +103,15 @@ public class PossibleVCDomLEMWrapper implements RuleInducerWrapper {
 		ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
 		ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 		
-		RuleSetWithComputableCharacteristics upwardRules = (new VCDomLEM(ruleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider)).generateRules();
-		upwardRules.calculateAllCharacteristics();
-		RuleSetWithComputableCharacteristics downwardRules = (new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
-		downwardRules.calculateAllCharacteristics();
+		List<VCDomLEM> vcDomLEMs = new ArrayList<VCDomLEM>(2);
+		vcDomLEMs.add(new VCDomLEM(ruleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider));
+		vcDomLEMs.add(new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider));
 		
-		return RuleSetWithCharacteristics.join(upwardRules, downwardRules);
+		//calculate rules and their characteristics in parallel
+		List<RuleSetWithComputableCharacteristics> ruleSets = vcDomLEMs.parallelStream().map(vcDomLem -> vcDomLem.generateRules()).collect(Collectors.toList());
+		ruleSets.parallelStream().forEach(ruleSet -> ruleSet.calculateAllCharacteristics());
+		
+		return RuleSetWithComputableCharacteristics.join(ruleSets.get(0), ruleSets.get(1));
 	}
 
 }

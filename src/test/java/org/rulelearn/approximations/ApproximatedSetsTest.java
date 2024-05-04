@@ -47,6 +47,11 @@ class ApproximatedSetsTest {
 				public double getQualityOfApproximation() {
 					return -1;
 				}
+
+				@Override
+				public int getNumberOfConsistentObjects() {
+					return 0;
+				}
 			};
 		});
 	}
@@ -67,6 +72,11 @@ class ApproximatedSetsTest {
 				public double getQualityOfApproximation() {
 					return -1;
 				}
+				
+				@Override
+				public int getNumberOfConsistentObjects() {
+					return 0;
+				}
 			};
 		}); 
 	}
@@ -85,6 +95,11 @@ class ApproximatedSetsTest {
 			new ApproximatedSets(informationTableMock, roughSetCalculatorMock) {
 				public double getQualityOfApproximation() {
 					return -1;
+				}
+				
+				@Override
+				public int getNumberOfConsistentObjects() {
+					return 0;
 				}
 			};
 		} catch (Throwable throwable) {
@@ -105,6 +120,11 @@ class ApproximatedSetsTest {
 			public double getQualityOfApproximation() {
 				return -1;
 			}
+			
+			@Override
+			public int getNumberOfConsistentObjects() {
+				return 0;
+			}
 		};
 		
 		assertEquals(approximatedSets.getInformationTable(), informationTableMock);
@@ -122,6 +142,11 @@ class ApproximatedSetsTest {
 		ApproximatedSets approximatedSets = new ApproximatedSets(informationTableMock, roughSetCalculatorMock) {
 			public double getQualityOfApproximation() {
 				return -1;
+			}
+			
+			@Override
+			public int getNumberOfConsistentObjects() {
+				return 0;
 			}
 		};
 		

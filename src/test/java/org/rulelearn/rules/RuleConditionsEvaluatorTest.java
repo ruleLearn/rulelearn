@@ -33,11 +33,15 @@ import org.rulelearn.measures.Measure;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 class RuleConditionsEvaluatorTest {
-	
+
+	private abstract class RuleConditionsEvaluatorTestOnlyImpl implements RuleConditionsEvaluator {
+
+	}
+
 	private double threshold;
 	
 	@Mock
-	RuleConditionsEvaluator ruleConditionsEvaluatorMock;
+	RuleConditionsEvaluatorTestOnlyImpl ruleConditionsEvaluatorMock;
 	@Mock
 	RuleConditions ruleConditionsMock;
 	@Mock

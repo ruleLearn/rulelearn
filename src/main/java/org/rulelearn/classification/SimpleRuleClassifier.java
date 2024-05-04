@@ -20,7 +20,6 @@ import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.MeanCalculator;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.core.TernaryLogicValue;
-import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.SimpleDecision;
 import org.rulelearn.rules.Condition;
@@ -122,13 +121,8 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 						upLimit = decisionCondition.getLimitingEvaluation();
 					}
 					else {
-						try {
-							if (decisionCondition.getLimitingEvaluation().compareToEx(upLimit) > 0) {
-								upLimit = decisionCondition.getLimitingEvaluation();
-							}
-						}
-						catch (UncomparableException ex) {
-							throw new InvalidValueException("Cannot compare limiting evaluations of two decisions of type at least.");
+						if (decisionCondition.getLimitingEvaluation().compareToEx(upLimit) > 0) {
+							upLimit = decisionCondition.getLimitingEvaluation();
 						}
 					}
 				}
@@ -137,13 +131,8 @@ public class SimpleRuleClassifier extends RuleClassifier implements SimpleClassi
 						downLimit = decisionCondition.getLimitingEvaluation();
 					}
 					else {
-						try {
-							if (decisionCondition.getLimitingEvaluation().compareToEx(downLimit) < 0) {
-								downLimit = decisionCondition.getLimitingEvaluation();
-							}
-						}
-						catch (UncomparableException ex) {
-							throw new InvalidValueException("Cannot compare limiting evaluations of two decisions of type at most.");
+						if (decisionCondition.getLimitingEvaluation().compareToEx(downLimit) < 0) {
+							downLimit = decisionCondition.getLimitingEvaluation();
 						}
 					}
 				}

@@ -915,4 +915,37 @@ public abstract class MisclassificationMatrix implements ValidationResult {
 		return gmean;
 	}
 	
+	/**
+	 * Gets a copy of the set containing all decisions assigned by a classifier.
+	 * 
+	 * @return a copy of the set containing all assigned decisions
+	 */
+	public ObjectSet<Decision> getSetOfAllAssignedDecisions() {
+		final ObjectSet<Decision> newSet;
+		if (setOfAllAssignedDecisions != null) {
+			newSet = new ObjectOpenHashSet<Decision>();
+			setOfAllAssignedDecisions.forEach(decision -> newSet.add(decision));
+		} else {
+			newSet = null;
+		}
+		return newSet;
+	}
+
+	/**
+	 * Gets a copy of the set containing all original decisions found among classified objects.
+	 * 
+	 * @return a copy of the set containing all original decisions found among classified objects
+	 */
+	public ObjectSet<Decision> getSetOfAllOriginalDecisions() {
+		final ObjectSet<Decision> newSet;
+		if (setOfAllOriginalDecisions != null) {
+			newSet = new ObjectOpenHashSet<Decision>();
+			setOfAllOriginalDecisions.forEach(decision -> newSet.add(decision));
+		} else {
+			newSet = null;
+		}
+		return newSet;
+	}
+
+	
 }

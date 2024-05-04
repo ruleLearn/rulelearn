@@ -26,20 +26,65 @@ import org.rulelearn.core.InvalidValueException;
  * @author Marcin Szeląg (<a href="mailto:marcin.szelag@cs.put.poznan.pl">marcin.szelag@cs.put.poznan.pl</a>)
  */
 public enum RuleCharacteristic {
+	/**
+	 * Indicator of {@link RuleCharacteristics#getSupport() support} rule characteristic.
+	 */
 	SUPPORT,
+	/**
+	 * Indicator of {@link RuleCharacteristics#getStrength() strength} rule characteristic.
+	 */
 	STRENGTH,
+	/**
+	 * Indicator of {@link RuleCharacteristics#getConfidence() confidence} rule characteristic.
+	 */
 	CONFIDENCE,
+	/**
+	 * Indicator of {@link RuleCharacteristics#getCoverageFactor() coverage factor} rule characteristic.
+	 */
 	COVERAGE_FACTOR,
+	/**
+	 * Indicator of {@link RuleCharacteristics#getCoverage() coverage} rule characteristic.
+	 */
 	COVERAGE,
+	/**
+	 * Indicator of {@link RuleCharacteristics#getNegativeCoverage() negative coverage} rule characteristic.
+	 */
 	NEGATIVE_COVERAGE,
+	/**
+	 * Indicator of {@link RuleCharacteristics#getEpsilon() epsilon} rule characteristic.
+	 */
 	EPSILON,
+	/**
+	 * Indicator of {@link RuleCharacteristics#getEpsilonPrime() epsilon'} rule characteristic.
+	 */
 	EPSILON_PRIME,
+	/**
+	 * Indicator of {@link RuleCharacteristics#getFConfirmation() F confirmation} rule characteristic.
+	 */
 	F,
+	/**
+	 * Indicator of {@link RuleCharacteristics#getAConfirmation() Z confirmation} rule characteristic.
+	 */
 	A,
+	/**
+	 * Indicator of {@link RuleCharacteristics#getZConfirmation() Z confirmation} rule characteristic.
+	 */
 	Z,
+	/**
+	 * Indicator of {@link RuleCharacteristics#getLConfirmation() L confirmation} rule characteristic.
+	 */
 	L,
+	/**
+	 * Indicator of {@link RuleCharacteristics#getC1Confirmation() c<sub>1</sub> confirmation} rule characteristic.
+	 */
 	C1,
+	/**
+	 * Indicator of {@link RuleCharacteristics#getSConfirmation() S confirmation} rule characteristic.
+	 */
 	S,
+	/**
+	 * Indicator of {@link RuleCharacteristics#getNumberOfConditions() length (number of conditions)} rule characteristic.
+	 */
 	LENGTH;
 	
 	/**

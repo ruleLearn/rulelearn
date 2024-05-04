@@ -95,11 +95,11 @@ public class UnknownSimpleFieldMV2 extends UnknownSimpleField {
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	@Override
-	public int compareToEx(EvaluationField otherField) {
+	public Integer compareToEx(EvaluationField otherField) {
 		if (otherField == null) {
 			throw new NullPointerException("Other field is null.");
 		} else if (otherField instanceof SimpleField) {
-			return 0;
+			return Integer.valueOf(0);
 		} else {
 			throw new ClassCastException("Other field is not a simple field.");
 		}
@@ -114,11 +114,11 @@ public class UnknownSimpleFieldMV2 extends UnknownSimpleField {
 	 * @throws NullPointerException if the other field is {@code null}
 	 */
 	@Override
-	public int reverseCompareToEx(KnownSimpleField otherField) {
+	public Integer reverseCompareToEx(KnownSimpleField otherField) {
 		if (otherField == null) {
 			throw new NullPointerException("Other field is null.");
 		} else {
-			return 0;
+			return Integer.valueOf(0);
 		}
 	}
 

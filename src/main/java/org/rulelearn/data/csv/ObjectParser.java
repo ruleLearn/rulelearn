@@ -198,11 +198,12 @@ public class ObjectParser {
 	public InformationTable parseObjects(Reader reader) {
 		notNull(reader, "Reader is null.");
 		
-		//TODO: the code below is the same as in InformationTableBuilder.safelyBuildFromCSVFile(String, String, boolean, char) ...
+		//TODO: the code below is the same as in InformationTableBuilder.safelyBuildFromCSVFile(String, String, boolean, char) ... - but better, as it uses ObjectBuilder.getObjects(Reader)!
 		
 		InformationTable informationTable = null;
 		List<String[]> objects = null;
-		ObjectBuilder objectBuilder = new ObjectBuilder.Builder().attributes(this.attributes).encoding(this.encoding).header(this.header).separator(this.separator).build();
+		ObjectBuilder objectBuilder = new ObjectBuilder.Builder().attributes(this.attributes)
+				.encoding(this.encoding).header(this.header).separator(this.separator).missingValueString(this.missingValueString).build();
 		
 		if (objectBuilder != null) {
 			objects = objectBuilder.getObjects(reader); //can throw ObjectParseException

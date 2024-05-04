@@ -32,8 +32,12 @@ import org.mockito.MockitoAnnotations;
  */
 class GainTypeMeasureTest {
 
+	private abstract class GainTypeMeasureTestOnlyImpl implements GainTypeMeasure {
+
+	}
+
 	@Mock
-	private GainTypeMeasure measureMock;
+	private GainTypeMeasureTestOnlyImpl measureMock;
 	
 	@BeforeEach
 	void setUp() {

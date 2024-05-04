@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import org.apache.tools.ant.taskdefs.condition.Os
  
  plugins {
 	 id 'java-library'
@@ -20,7 +21,7 @@
  }
 
 group = 'org.rulelearn'
-version = '0.24.3'
+version = '0.25.0'
 ext.javadocDestinationDir = docsDir.getPath().replace('\\', '/') + '/javadoc' //add javadoc destination dir to project
 
 // In this section you declare where to find the dependencies of your project
@@ -66,7 +67,7 @@ tasks.named('compileJava') {
   		println ''
   		
   		options.fork = true
-  		options.forkOptions.executable = "${System.getenv('JAVA_HOME')}\\bin\\javac".replace('\\', '/')
+  		options.forkOptions.executable = "${System.getenv('JAVA_HOME')}\\bin\\javac${Os.isFamily(Os.FAMILY_WINDOWS) ? '.exe' : ''}".replace('\\', '/')
   		options.compilerArgs << '-Xlint:unchecked'
 		options.compilerArgs << '-deprecation'
   	}
@@ -81,7 +82,7 @@ tasks.named('compileTestJava') {
   		println ''
   		
   		options.fork = true
-  		options.forkOptions.executable = "${System.getenv('JAVA_HOME')}\\bin\\javac".replace('\\', '/')
+  		options.forkOptions.executable = "${System.getenv('JAVA_HOME')}\\bin\\javac${Os.isFamily(Os.FAMILY_WINDOWS) ? '.exe' : ''}".replace('\\', '/')
   	}
   }
 }
@@ -131,7 +132,7 @@ tasks.named('javadoc') {
   			println "[note@build.gradle/javadoc] JAVA_HOME=${System.getenv('JAVA_HOME')}"
   			println ''
 		
-	 		setExecutable("${System.getenv('JAVA_HOME')}\\bin\\javadoc".replace('\\', '/'))
+	 		setExecutable("${System.getenv('JAVA_HOME')}\\bin\\javadoc${Os.isFamily(Os.FAMILY_WINDOWS) ? '.exe' : ''}".replace('\\', '/'))
 	 	}
     }
     
@@ -182,7 +183,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-			artifact javadocJar //TODO: change to avoid confuguration of javadocJar (when supported by Gradle)
+			artifact javadocJar //TODO: change to avoid configuration of javadocJar (when supported by Gradle)
             pom {
                 name = 'ruleLearn library'
                 description = 'Open source library for learning rule models from decision examples and applying these models to classify or rank new examples'

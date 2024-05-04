@@ -48,19 +48,26 @@ public class PossibleRuleInducerComponents extends RuleInducerComponents {
 	 * Default evaluator of a condition while it may added to an induced rule.
 	 */
 	public static final ConditionAdditionEvaluator[] DEFAULT_CONDITION_ADDITION_EVALUATORS = new MonotonicConditionAdditionEvaluator[] {
-			RelativeCoverageOutsideApproximationMeasure.getInstance(), 
+			RelativeCoverageOutsideApproximationMeasure.getInstance(),
 			CoverageInApproximationMeasure.getInstance()};
 	
 	/**
 	 * Default checker used to determine occurrence of stopping condition of rule induction process {@link RuleInductionStoppingConditionChecker}.
 	 */
 	public static final RuleInductionStoppingConditionChecker DEFAULT_STOPPING_CONDITION_CHECKER = 
-			new EvaluationAndCoverageStoppingConditionChecker(RelativeCoverageOutsideApproximationMeasure.getInstance(), RelativeCoverageOutsideApproximationMeasure.getInstance(), 0.0);
+			new EvaluationAndCoverageStoppingConditionChecker(RelativeCoverageOutsideApproximationMeasure.getInstance(), RelativeCoverageOutsideApproximationMeasure.getInstance(),
+					RelativeCoverageOutsideApproximationMeasure.getInstance(), 0.0);
 	
 	/**
 	 * Default rule conditions pruner.
 	 */
 	public static final RuleConditionsPruner DEFAULT_RULE_CONDITIONS_PRUNER = new AttributeOrderRuleConditionsPruner(DEFAULT_STOPPING_CONDITION_CHECKER);
+	
+	/**
+	 * Default rule conditions generalizer.
+	 */
+	public static final RuleConditionsGeneralizer DEFAULT_RULE_CONDITIONS_GENERALIZER = new OptimizingRuleConditionsGeneralizer(DEFAULT_STOPPING_CONDITION_CHECKER);//
+	//public static final RuleConditionsGeneralizer DEFAULT_RULE_CONDITIONS_GENERALIZER = new DummyRuleConditionsGeneralizer();
 	
 	/**
 	 * Contract of a builder of possible rule inducer components {@link PossibleRuleInducerComponents}.
@@ -77,6 +84,8 @@ public class PossibleRuleInducerComponents extends RuleInducerComponents {
 		private ConditionSeparator conditionSeparator = null;
 		
 		private RuleConditionsPruner ruleConditionsPruner = DEFAULT_RULE_CONDITIONS_PRUNER;
+		
+		private RuleConditionsGeneralizer ruleConditionsGeneralizer = DEFAULT_RULE_CONDITIONS_GENERALIZER;
 		
 		private RuleConditionsSetPruner ruleConditionsSetPruner = new EvaluationsAndOrderRuleConditionsSetPruner(DEFAULT_RULE_CONDITIONS_EVALUATORS);
 		
@@ -134,6 +143,19 @@ public class PossibleRuleInducerComponents extends RuleInducerComponents {
 		@Override
 		public Builder ruleConditionsPruner(RuleConditionsPruner ruleConditionsPruner) {
 			this.ruleConditionsPruner = notNull(ruleConditionsPruner, "Provided rule conditions pruner is null.");
+			return this;
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @param ruleConditionsGeneralizer {@inheritDoc}
+		 * @return {@inheritDoc}
+		 * @throws NullPointerException if given parameter is {@code null}
+		 */
+		@Override
+		public Builder ruleConditionsGeneralizer(RuleConditionsGeneralizer ruleConditionsGeneralizer) {
+			this.ruleConditionsGeneralizer = notNull(ruleConditionsGeneralizer, "Provided rule conditions generalizer is null.");
 			return this;
 		}
 		
@@ -221,6 +243,17 @@ public class PossibleRuleInducerComponents extends RuleInducerComponents {
 		 * @return {@inheritDoc}
 		 */
 		@Override
+		public RuleConditionsGeneralizer ruleConditionsGeneralizer() {
+			return this.ruleConditionsGeneralizer;
+		}
+		
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @return {@inheritDoc}
+		 */
+		@Override
 		public RuleConditionsSetPruner ruleConditionsSetPruner() {
 			return this.ruleConditionsSetPruner;
 		}
@@ -282,10 +315,11 @@ public class PossibleRuleInducerComponents extends RuleInducerComponents {
 	 * @return {@inheritDoc}
 	 */
 	@Override
-	public RuleInducerComponents.Builder builder() {
+	public PossibleRuleInducerComponents.Builder builder() {
 		PossibleRuleInducerComponents.Builder builder = new PossibleRuleInducerComponents.Builder();
 		return builder.conditionGenerator(this.getConditionGenerator()).
 				conditionSeparator(this.getConditionSeparator()).ruleConditionsPruner(this.getRuleConditionsPruner()).
+				ruleConditionsGeneralizer(this.getRuleConditionsGeneralizer()).
 				ruleConditionsSetPruner(this.getRuleConditionsSetPruner()).ruleInductionStoppingConditionChecker(this.getRuleInductionStoppingConditionChecker()).
 				ruleMinimalityChecker(this.getRuleMinimalityChecker()).ruleType(this.getRuleType());
 	}

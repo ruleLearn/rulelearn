@@ -586,7 +586,7 @@ public class InformationTableBuilder {
 			
 			//construct information table builder
 			if (attributes != null) {
-				//TODO: the code below is the same as in ObjectParser.parseObjects(Reader) ...
+				//TODO: the code below is the same as in ObjectParser.parseObjects(Reader) ... - except that here ObjectBuilder.getObjects(String) is used instead of (more general) ObjectBuilder.getObjects(Reader)
 				
 				//load objects 
 				org.rulelearn.data.csv.ObjectBuilder ob = new org.rulelearn.data.csv.ObjectBuilder.Builder().attributes(attributes).header(header).separator(separator).build();

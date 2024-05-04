@@ -95,6 +95,7 @@ class CrossValidatorSmallTest {
 	void testCrossValidator02() {
 		InformationTableWithDecisionDistributions informationTable = new InformationTableWithDecisionDistributions(informationTableTestConfiguration.getInformationTable(true));
 		CrossValidator validator = new CrossValidator(new Random(64));
+		@SuppressWarnings("deprecation")
 		List<CrossValidator.CrossValidationFold<InformationTable>> folds = validator.splitStratifiedIntoKFold(informationTable, 3);
 		assertEquals(3, folds.size());
 		assertEquals(6, folds.get(0).getTrainingTable().getNumberOfObjects());

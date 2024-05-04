@@ -303,6 +303,8 @@ public class RuleMLElements {
     }
 
 	/**
+	 * Gets assert keyword.
+	 *
 	 * @return the assert keyword
 	 */
 	public static String getAssertKeyword() {
@@ -310,6 +312,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets implies keyword.
+	 *
 	 * @return the implies keyword
 	 */
 	public static String getImpliesKeyword() {
@@ -317,13 +321,17 @@ public class RuleMLElements {
 	}
 
 	/**
-	 * @return the if
+	 * Gets if keyword.
+	 *
+	 * @return the if keyword
 	 */
 	public static String getIfKeyword() {
 		return IF;
 	}
 
 	/**
+	 * Gets and keyword.
+	 *
 	 * @return the and keyword
 	 */
 	public static String getAndKeyword() {
@@ -331,6 +339,8 @@ public class RuleMLElements {
 	}
 	
 	/**
+	 * Gets or keyword.
+	 *
 	 * @return the or keyword
 	 */
 	public static String getOrKeyword() {
@@ -338,6 +348,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets atom keyword.
+	 *
 	 * @return the atom keyword
 	 */
 	public static String getAtomKeyword() {
@@ -345,6 +357,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets operation keyword.
+	 *
 	 * @return the operation keyword
 	 */
 	public static String getOperationKeyword() {
@@ -352,6 +366,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets relation keyword.
+	 *
 	 * @return the relation keyword
 	 */
 	public static String getRelationKeyword() {
@@ -359,6 +375,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets constant keyword.
+	 *
 	 * @return the constant keyword
 	 */
 	public static String getConstantKeyword() {
@@ -366,6 +384,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets variable keyword.
+	 *
 	 * @return the variable keyword
 	 */
 	public static String getVariableKeyword() {
@@ -373,6 +393,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets then keyword.
+	 *
 	 * @return the then keyword
 	 */
 	public static String getThenKeyword() {
@@ -380,6 +402,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets evaluation keyword.
+	 *
 	 * @return the evaluation keyword
 	 */
 	public static String getEvaluationKeyword() {
@@ -387,6 +411,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets evaluations keyword.
+	 *
 	 * @return the evaluations keyword
 	 */
 	public static String getEvaluationsKeyword() {
@@ -394,13 +420,17 @@ public class RuleMLElements {
 	}
 
 	/**
-	 * @return the positive covered keyword
+	 * Gets positive covered keyword.
+	 *
+	 * @return the positive covered keyword.
 	 */
 	public static String getPositiveCoveredKeyword() {
 		return POSITIVE_COVERED;
 	}
 
 	/**
+	 * Get negative covered keyword.
+	 *
 	 * @return the negative covered keyword
 	 */
 	public static String getNegativeCoveredKeyword() {
@@ -408,6 +438,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets case keyword.
+	 *
 	 * @return the case keyword
 	 */
 	public static String getCaseKeyword() {
@@ -415,6 +447,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets at least keyword.
+	 *
 	 * @return the at least keyword
 	 */
 	public static String getAtLeastKeyword() {
@@ -422,6 +456,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets greater keyword.
+	 *
 	 * @return the greater keyword
 	 */
 	public static String getGreaterKeyword() {
@@ -429,6 +465,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets at most keyword.
+	 *
 	 * @return the at most keyword
 	 */
 	public static String getAtMostKeyword() {
@@ -436,6 +474,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets less keyword.
+	 *
 	 * @return the less keyword
 	 */
 	public static String getLessKeyword() {
@@ -443,6 +483,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets equals keyword.
+	 *
 	 * @return the equals keyword
 	 */
 	public static String getEqualsKeyword() {
@@ -450,6 +492,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets not equals keyword.
+	 *
 	 * @return the not equals keyword
 	 */
 	public static String getNotEqualsKeyword() {
@@ -457,6 +501,8 @@ public class RuleMLElements {
 	}
 	
 	/**
+	 * Gets rule semantics keyword.
+	 *
 	 * @return the rule semantics keyword
 	 */
 	public static String getRuleSemanticsKeyword() {
@@ -464,6 +510,8 @@ public class RuleMLElements {
 	}
 	
 	/**
+	 * Gets rule type keyword.
+	 *
 	 * @return the rule type keyword
 	 */
 	public static String getRuleTypeKeyword() {
@@ -471,6 +519,8 @@ public class RuleMLElements {
 	}
 	
 	/**
+	 * Gets keyword for given rule type.
+	 *
 	 * @param ruleType type of a rule
 	 * @return keyword representing rule type value 
 	 * @throws UnknownRuleSemanticsException when rule type is unknown
@@ -491,6 +541,8 @@ public class RuleMLElements {
 	}
 	
 	/**
+	 * Gets type keyword.
+	 *
 	 * @return the type keyword
 	 */
 	public static String getTypeKeyword() {
@@ -498,6 +550,8 @@ public class RuleMLElements {
 	}
 	
 	/**
+	 * Gets certain keyword.
+	 *
 	 * @return the certain keyword
 	 */
 	public static String getCertainKeyword() {
@@ -505,6 +559,8 @@ public class RuleMLElements {
 	}
 	
 	/**
+	 * Gets possible keyword.
+	 *
 	 * @return the possible keyword
 	 */
 	public static String getPossibleKeyword() {
@@ -512,6 +568,8 @@ public class RuleMLElements {
 	}
 	
 	/**
+	 * Gets approximate keyword.
+	 *
 	 * @return the approximate keyword
 	 */
 	public static String getApproximateKeyword() {
@@ -519,6 +577,8 @@ public class RuleMLElements {
 	}
 	
 	/**
+	 * Gets objects vs threshold keyword.
+	 *
 	 * @return the object versus threshold keyword
 	 */
 	public static String getObjectVSThresholdKeyword() {
@@ -526,6 +586,8 @@ public class RuleMLElements {
 	}
 	
 	/**
+	 * Gets threshold vs objects keyword.
+	 *
 	 * @return the threshold versus object keyword
 	 */
 	public static String getThresholdVSObjectKeyword() {
@@ -533,6 +595,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets new line keyword.
+	 *
 	 * @return the new line keyword
 	 */
 	public static String getNewLine() {
@@ -540,6 +604,8 @@ public class RuleMLElements {
 	}
 
 	/**
+	 * Gets tab keyword.
+	 *
 	 * @return the tab keyword
 	 */
 	public static String getTab() {

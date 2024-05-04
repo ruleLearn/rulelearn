@@ -202,13 +202,14 @@ class VCDomLEMTest {
 		
 		RuleConditionsEvaluator ruleConditionsEvaluator = consistencyMeasure;
 		ConditionRemovalEvaluator conditionRemovalEvaluator = consistencyMeasure;
+		ConditionReplacementEvaluator conditionReplacementEvaluator = consistencyMeasure;
 		MonotonicConditionAdditionEvaluator[] conditionAdditionEvaluators = {consistencyMeasure, SupportMeasure.getInstance()};  //see page 11 of the VC-DomLEM article
 		ConditionRemovalEvaluator[] conditionRemovalEvaluators = {consistencyMeasure};
 		RuleConditionsEvaluator[] ruleConditionsEvaluators = {SupportMeasure.getInstance(), consistencyMeasure}; //see page 12 of the VC-DomLEM article
 		//RuleEvaluator ruleEvaluator = consistencyMeasure; //just single evaluator, for rule minimality checker taking into account just single evaluation
 		
 		ConditionGenerator conditionGenerator = new M4OptimizedConditionGenerator(conditionAdditionEvaluators);
-		RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker = new EvaluationAndCoverageStoppingConditionChecker(ruleConditionsEvaluator, conditionRemovalEvaluator, consistencyThreshold);
+		RuleInductionStoppingConditionChecker ruleInductionStoppingConditionChecker = new EvaluationAndCoverageStoppingConditionChecker(ruleConditionsEvaluator, conditionRemovalEvaluator, conditionReplacementEvaluator, consistencyThreshold);
 		
 		ConditionSeparator conditionSeparator = null; //no separation required - all conditions concern limiting evaluations of type SimpleField
 		
@@ -425,7 +426,7 @@ class VCDomLEMTest {
 		
 		double consistencyThreshold = (double)1 / (double)10;
 		final RuleInductionStoppingConditionChecker STOPPING_CONDITION_CHECKER =
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 				
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(STOPPING_CONDITION_CHECKER).
@@ -499,7 +500,10 @@ class VCDomLEMTest {
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 		
-		RuleSet ruleSet = (new VCDomLEM((new CertainRuleInducerComponents.Builder()).build(), approximatedSetProvider, approximatedSetRuleDecisionsProvider)).generateRules();
+		RuleSet ruleSet = (new VCDomLEM((new CertainRuleInducerComponents.Builder()).
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
+				build(),
+				approximatedSetProvider, approximatedSetRuleDecisionsProvider)).generateRules();
 		
 		assertEquals(ruleSet.size(), 4);
 		
@@ -645,7 +649,7 @@ class VCDomLEMTest {
 		
 		double consistencyThreshold = (double)2 / (double)7;
 		final RuleInductionStoppingConditionChecker STOPPING_CONDITION_CHECKER =
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 				
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(STOPPING_CONDITION_CHECKER).
@@ -766,6 +770,7 @@ class VCDomLEMTest {
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
 				ruleConditionsSetPruner(new DummyRuleConditionsSetPruner()).
 				ruleMinimalityChecker(new DummyRuleMinimalityChecker()).
 				build();
@@ -993,7 +998,9 @@ class VCDomLEMTest {
 	public void testWindsorUpwardUnionsCertainRulesDRSAPruning() {
 		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
-		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().build();
+		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
+				build();
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 		
@@ -1113,10 +1120,11 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
 				ruleConditionsSetPruner(new DummyRuleConditionsSetPruner()).
 				ruleMinimalityChecker(new DummyRuleMinimalityChecker()).
 				ruleInductionStoppingConditionChecker(stoppingConditionChecker).
@@ -1456,11 +1464,12 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(stoppingConditionChecker).
 				ruleConditionsPruner(new AttributeOrderRuleConditionsPruner(stoppingConditionChecker)).
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
 				build();
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new UnionsWithSingleLimitingDecision(informationTable, new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold)));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
@@ -1562,6 +1571,7 @@ class VCDomLEMTest {
 		
 		RuleInducerComponents ruleInducerComponents = new PossibleRuleInducerComponents.Builder().
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
 				ruleConditionsSetPruner(new DummyRuleConditionsSetPruner()).
 				ruleMinimalityChecker(new DummyRuleMinimalityChecker()).
 				build();
@@ -1808,7 +1818,9 @@ class VCDomLEMTest {
 	public void testWindsorUpwardUnionsPossibleRulesDRSAPruning() {
 		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
-		RuleInducerComponents ruleInducerComponents = new PossibleRuleInducerComponents.Builder().build();
+		RuleInducerComponents ruleInducerComponents = new PossibleRuleInducerComponents.Builder().
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
+				build();
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 
@@ -1897,6 +1909,7 @@ class VCDomLEMTest {
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
 				ruleConditionsSetPruner(new DummyRuleConditionsSetPruner()).
 				ruleMinimalityChecker(new DummyRuleMinimalityChecker()).
 				build();
@@ -2071,7 +2084,9 @@ class VCDomLEMTest {
 	public void testWindsorDownwardUnionsCertainRulesDRSAPruning() {
 		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
-		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().build();
+		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
+				build();
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_MOST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 		
@@ -2152,10 +2167,11 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
 				ruleConditionsSetPruner(new DummyRuleConditionsSetPruner()).
 				ruleMinimalityChecker(new DummyRuleMinimalityChecker()).
 				ruleInductionStoppingConditionChecker(stoppingConditionChecker).
@@ -2513,7 +2529,7 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(stoppingConditionChecker).
@@ -2625,6 +2641,7 @@ class VCDomLEMTest {
 		
 		RuleInducerComponents ruleInducerComponents = new PossibleRuleInducerComponents.Builder().
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
 				ruleConditionsSetPruner(new DummyRuleConditionsSetPruner()).
 				ruleMinimalityChecker(new DummyRuleMinimalityChecker()).
 				build();
@@ -2942,7 +2959,9 @@ class VCDomLEMTest {
 	public void testWindsorDownwardUnionsPossibleRulesDRSAPruning() {
 		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor.csv");
 		
-		RuleInducerComponents ruleInducerComponents = new PossibleRuleInducerComponents.Builder().build();
+		RuleInducerComponents ruleInducerComponents = new PossibleRuleInducerComponents.Builder().
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
+				build();
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_MOST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 
@@ -3033,6 +3052,7 @@ class VCDomLEMTest {
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
 				ruleConditionsSetPruner(new DummyRuleConditionsSetPruner()).
 				ruleMinimalityChecker(new DummyRuleMinimalityChecker()).
 				build();
@@ -3246,7 +3266,9 @@ class VCDomLEMTest {
 	public void testWindsorMV2UpwardUnionsCertainRulesDRSAPruning() {
 		InformationTableWithDecisionDistributions informationTable = getInformationTableWindsor("src/test/resources/data/csv/windsor.json", "src/test/resources/data/csv/windsor-mv.csv");
 		
-		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().build();
+		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
+				build();
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new UnionsWithSingleLimitingDecision(informationTable, new ClassicalDominanceBasedRoughSetCalculator()));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 		
@@ -3356,10 +3378,11 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
 				ruleConditionsSetPruner(new DummyRuleConditionsSetPruner()).
 				ruleMinimalityChecker(new DummyRuleMinimalityChecker()).
 				ruleInductionStoppingConditionChecker(stoppingConditionChecker).
@@ -3738,11 +3761,12 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(stoppingConditionChecker).
 				ruleConditionsPruner(new AttributeOrderRuleConditionsPruner(stoppingConditionChecker)).
+				ruleConditionsGeneralizer(new DummyRuleConditionsGeneralizer()). //ADDED-RULE-CONDITIONS-GENERALIZER
 				build();
 		ApproximatedSetProvider approximatedSetProvider = new UnionProvider(Union.UnionType.AT_LEAST, new UnionsWithSingleLimitingDecision(informationTable, new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold)));
 		ApproximatedSetRuleDecisionsProvider approximatedSetRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
@@ -3918,7 +3942,7 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleConditionsPruner(new DummyRuleConditionsPruner()).
@@ -3964,7 +3988,7 @@ class VCDomLEMTest {
 		final double consistencyThreshold = 0.1;
 		
 		final RuleInductionStoppingConditionChecker stoppingConditionChecker = 
-				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
+				new EvaluationAndCoverageStoppingConditionChecker(EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), EpsilonConsistencyMeasure.getInstance(), consistencyThreshold);
 		
 		RuleInducerComponents ruleInducerComponents = new CertainRuleInducerComponents.Builder().
 				ruleInductionStoppingConditionChecker(stoppingConditionChecker).

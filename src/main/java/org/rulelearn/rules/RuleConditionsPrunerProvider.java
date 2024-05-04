@@ -34,8 +34,8 @@ public interface RuleConditionsPrunerProvider {
 	/**
 	 * Gets i-th rule conditions pruner.
 	 * 
-	 * @param i index of requested rule conditions pruners
-	 * @return i-th rule conditions pruners
+	 * @param i index of requested rule conditions pruner
+	 * @return i-th rule conditions pruner
 	 * 
 	 * @throws IndexOutOfBoundsException if given index is less than zero or
 	 *         greater or equal to the number of available rule conditions pruners

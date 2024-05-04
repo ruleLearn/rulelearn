@@ -231,4 +231,32 @@ public class RuleSetWithComputableCharacteristics extends RuleSetWithCharacteris
 		return ruleSetWithComputableCharacteristics;
 	}
 	
+	/**
+	 * Serializes this rule set to multiline plain text (rules + chosen, most important characteristics).
+	 * If for any rule some characteristics is unknown, it gets calculated and then serialized to the returned String.
+	 * 
+	 * @return multiline plain text representation of this rule set
+	 */
+	@Override
+	public String serialize() {
+		StringBuilder rulesTxtBuilder = new StringBuilder();
+		int size = size();
+		ComputableRuleCharacteristics ruleCharacteristics;
+		
+		for (int ruleIndex = 0; ruleIndex < size; ruleIndex++) {
+			ruleCharacteristics = getRuleCharacteristics(ruleIndex);
+			rulesTxtBuilder.append(getRule(ruleIndex))
+			.append(" [support=").append(ruleCharacteristics.getSupport())
+			.append(", strength=").append(ruleCharacteristics.getStrength())
+			.append(", coverage-factor=").append(ruleCharacteristics.getCoverageFactor())
+			.append(", confidence=").append(ruleCharacteristics.getConfidence())
+			.append(", epsilon=").append(ruleCharacteristics.getEpsilon())
+			.append("]")
+			.append(System.lineSeparator());
+		}
+		
+		return rulesTxtBuilder.toString();
+	}
+	
+	
 }

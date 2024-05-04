@@ -16,13 +16,12 @@
 
 package org.rulelearn.core;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 import org.rulelearn.types.Field;
-import org.rulelearn.core.UncomparableException;
-
-import static org.mockito.Mockito.*;
 
 /**
  * Test for {@link ComparableExt}.
@@ -46,7 +45,7 @@ class ComparableExtTest {
 		 * @return {@inheritDoc}
 		 */
 		@Override
-		public abstract int compareToEx(Field otherObject);
+		public abstract Integer compareToEx(Field otherObject);
 	}
 	
 	/**
@@ -97,11 +96,8 @@ class ComparableExtTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	void testCompareToEnum04() {
-		ComparableExt<Field> comparableExt = (ComparableExt<Field>)mock(ComparableExt.class);
-		try {
-			when(comparableExt.compareToEx(otherField)).thenThrow(new UncomparableException("Fields are uncomparable."));
-		} catch (UncomparableException e) {
-		}
+		ComparableExtTestOnlyImpl comparableExt = mock(ComparableExtTestOnlyImpl.class);
+		when(comparableExt.compareToEx(otherField)).thenReturn(null);
 		when(comparableExt.compareToEnum(otherField)).thenCallRealMethod();
 		assertEquals(comparableExt.compareToEnum(otherField), ComparisonResult.UNCOMPARABLE);
 	}

@@ -219,4 +219,13 @@ public class OrdinalMisclassificationMatrix extends MisclassificationMatrix {
 		return serializedDecisionBuilder.toString();
 	}
 	
+	/**
+	 * Gets a clone of the array containing ordered decisions for which this ordinal misclassification matrix has been constructed.
+	 * 
+	 * @return a clone of the array containing ordered decisions for which this ordinal misclassification matrix has been constructed
+	 */
+	public Decision[] getOrderOfDecisions() {
+		return orderOfDecisions.clone();
+	}
+	
 }

@@ -28,11 +28,6 @@ import org.rulelearn.core.FieldParseException;
 import org.rulelearn.core.InvalidTypeException;
 import org.rulelearn.data.AttributePreferenceType;
 import org.rulelearn.data.EvaluationAttribute;
-import org.rulelearn.types.EvaluationField;
-import org.rulelearn.types.IntegerField;
-import org.rulelearn.types.IntegerFieldCachingFactory;
-import org.rulelearn.types.IntegerFieldFactory;
-import org.rulelearn.types.RealField;
 
 /**
  * Tests for {@link IntegerFieldCachingFactory} class.

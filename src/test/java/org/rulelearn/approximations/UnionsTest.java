@@ -235,4 +235,85 @@ public class UnionsTest {
 		assertEquals(unions.getQualityOfApproximation(), expectedQualityOfApproximation);
 	}
 	
+	/**
+	 * Test method for {@link Unions#getNumberOfConsistentObjects()} and {@link Unions#getNumbersOfConsistentObjects()}.
+	 * Tests Symptoms data set composed of 17 objects from classes 0-2, with class 2 being the best class and class 0 being the worst class.
+	 * Three objects from class 2 and two objects from class 1 are inconsistent w.r.t. dominance principle.
+	 */
+	@Test
+	void testGetNumbersOfConsistentObjects01() {
+		InformationTableWithDecisionDistributions informationTableMock = Mockito.mock(InformationTableWithDecisionDistributions.class);
+		Mockito.when(informationTableMock.getNumberOfObjects()).thenReturn(17);
+		
+		DominanceBasedRoughSetCalculator roughSetCalculatorMock = Mockito.mock(DominanceBasedRoughSetCalculator.class);
+		
+		//union >=2
+		Union unionGE2 = Mockito.mock(Union.class);
+		IntSortedSet boundaryGE2 = new IntLinkedOpenHashSet();
+		boundaryGE2.add(4);
+		boundaryGE2.add(5);
+		boundaryGE2.add(6);
+		boundaryGE2.add(7);
+		boundaryGE2.add(8);
+		Mockito.when(unionGE2.getBoundary()).thenReturn(boundaryGE2);
+		
+		//union >=1
+		Union unionGE1 = Mockito.mock(Union.class);
+		IntSortedSet boundaryGE1 = new IntLinkedOpenHashSet();
+		Mockito.when(unionGE1.getBoundary()).thenReturn(boundaryGE1);
+		
+		//union <=0
+		Union unionLE0 = Mockito.mock(Union.class);
+		IntSortedSet boundaryLE0 = new IntLinkedOpenHashSet();
+		Mockito.when(unionLE0.getBoundary()).thenReturn(boundaryLE0);
+		
+		//union <=1
+		Union unionLE1 = Mockito.mock(Union.class);
+		IntSortedSet boundaryLE1 = new IntLinkedOpenHashSet();
+		boundaryGE2.add(4);
+		boundaryGE2.add(5);
+		boundaryGE2.add(6);
+		boundaryGE2.add(7);
+		boundaryGE2.add(8);
+		Mockito.when(unionLE1.getBoundary()).thenReturn(boundaryLE1);
+		
+		Union[] upwardUnions = {unionGE2, unionGE1};
+		Union[] downwardUnions = {unionLE0, unionLE1};
+		
+		Unions unions = new Unions(informationTableMock, roughSetCalculatorMock) {
+			@Override
+			void calculateUpwardUnions() {
+				throw new UnsupportedOperationException("Calculation of upward unions should not be requested during test.");
+				//upwardUnions property is set in this test case before calling getUpwardUnions, so calculateUpwardUnions will not be called
+			}
+			
+			@Override
+			void calculateDownwardUnions() {
+				throw new UnsupportedOperationException("Calculation of downward unions should not be requested during test.");
+				//downwardUnions property is set in this test case before calling getDownwardUnions, so calculateDownwardUnions will not be called
+			}
+		};
+		
+		unions.upwardUnions = upwardUnions;
+		unions.downwardUnions = downwardUnions;
+		
+		assertEquals(unions.getNumberOfConsistentObjects(), 12);
+		
+		int[] numbersOfConsistentObjects = unions.getNumbersOfConsistentObjects();
+		assertEquals(numbersOfConsistentObjects.length, 12);
+		
+		assertEquals(numbersOfConsistentObjects[0], 0);
+		assertEquals(numbersOfConsistentObjects[1], 1);
+		assertEquals(numbersOfConsistentObjects[2], 2);
+		assertEquals(numbersOfConsistentObjects[3], 3);
+		assertEquals(numbersOfConsistentObjects[4], 9);
+		assertEquals(numbersOfConsistentObjects[5], 10);
+		assertEquals(numbersOfConsistentObjects[6], 11);
+		assertEquals(numbersOfConsistentObjects[7], 12);
+		assertEquals(numbersOfConsistentObjects[8], 13);
+		assertEquals(numbersOfConsistentObjects[9], 14);
+		assertEquals(numbersOfConsistentObjects[10], 15);
+		assertEquals(numbersOfConsistentObjects[11], 16);
+	}
+	
 }

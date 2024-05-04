@@ -61,6 +61,14 @@ public abstract class ApproximatedSets {
 	 * @return quality of approximation of all approximated sets which can be defined for information table
 	 */
 	public abstract double getQualityOfApproximation();
+	
+	/**
+	 * Gets the number of consistent objects in the information table for which all approximated sets stored in this container are defined.
+	 * 
+	 * @return the number of consistent objects in the information table for which all approximated sets stored in this container are defined
+	 *         (this is the numerator of the quality of approximation)
+	 */
+	public abstract int getNumberOfConsistentObjects();
 
 	/**
 	 * Constructs this container of approximated sets that can be defined with respect to an information table.

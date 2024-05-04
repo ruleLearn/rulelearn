@@ -20,7 +20,6 @@ import org.rulelearn.core.InvalidValueException;
 import org.rulelearn.core.ModeCalculator;
 import org.rulelearn.core.Precondition;
 import org.rulelearn.core.TernaryLogicValue;
-import org.rulelearn.core.UncomparableException;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.FieldDistribution;
 import org.rulelearn.data.InformationTable;
@@ -187,13 +186,8 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 						upLimit = decisionCondition.getLimitingEvaluation();
 					}
 					else {
-						try {
-							if (decisionCondition.getLimitingEvaluation().compareToEx(upLimit) > 0) {
-								upLimit = decisionCondition.getLimitingEvaluation();
-							}
-						}
-						catch (UncomparableException ex) {
-							throw new InvalidValueException("Cannot compare limiting evaluations of two decisions of type at least.");
+						if (decisionCondition.getLimitingEvaluation().compareToEx(upLimit) > 0) {
+							upLimit = decisionCondition.getLimitingEvaluation();
 						}
 					}
 				}
@@ -203,13 +197,8 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 						downLimit = decisionCondition.getLimitingEvaluation();
 					}
 					else {
-						try {
-							if (decisionCondition.getLimitingEvaluation().compareToEx(downLimit) < 0) {
-								downLimit = decisionCondition.getLimitingEvaluation();
-							}
-						}
-						catch (UncomparableException ex) {
-							throw new InvalidValueException("Cannot compare limiting evaluations of two decisions of type at most.");
+						if (decisionCondition.getLimitingEvaluation().compareToEx(downLimit) < 0) {
+							downLimit = decisionCondition.getLimitingEvaluation();
 						}
 					}
 				}
@@ -308,6 +297,7 @@ public class SimpleOptimizingRuleClassifier extends SimpleRuleClassifier {
 			for (int coveredObjectIndex : indicesOfCoveredLearningObjects) {
 				//decision of object covered by current rule is equal to downLimit 
 				if (((SimpleDecision)decisionsOfCoveredLearningObjects.get(coveredObjectIndex)).getEvaluation().isEqualTo(decisionEvaluation) == TernaryLogicValue.TRUE) {
+					//TODO: add version of mode classifier that apart from decision class of the training object also checks if its respective partial dominance cone (concordant with rule type) contains classified object?
 					indicesOfCoveredLearningObjectsWithDecisionEvaluation.add(coveredObjectIndex); //ensure learning object is in the set (will do nothing if already present there)
 				}
 			}
