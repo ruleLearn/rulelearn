@@ -27,7 +27,7 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
-$RL_VERSION = '0.24.2' //e.g. '0.24.2'
+$RL_VERSION = '0.25.0'
 
 dependencies {
     compile("com.github.ruleLearn:rulelearn:${RL_VERSION}")
@@ -47,7 +47,7 @@ dependencies {
     <dependency>
         <groupId>com.github.ruleLearn</groupId>
         <artifactId>rulelearn</artifactId>
-        <version>0.24.2</version>
+        <version>0.25.0</version>
     </dependency>
 </dependencies>
 ```
@@ -62,7 +62,7 @@ Developers should either extend/supply `gradle.properties` file (in the main dir
 or in the `USER_HOME/.gradle` directory), specifying inside this local path to the installed Java JDK,
 e.g., on a Windows machine:
 
-`org.gradle.java.home=C:\\Program Files\\Java\\jdk-11.0.1`
+`org.gradle.java.home=C:\\Program Files\\Java\\jdk-21`
 
 or set `JAVA_HOME` environmental variable to local path to the installed Java JDK.
 
